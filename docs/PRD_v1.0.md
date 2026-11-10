@@ -4,7 +4,7 @@
 
 | 项 | 内容 |
 |---|---|
-| 版本 | v1.0（待确认） |
+| 版本 | v1.0（已确认） |
 | 日期 | 2026-11-10 |
 | 关联文档 | IDEA_BRIEF、PROTOTYPE、TECH_DESIGN、SECURITY_DESIGN、DEVELOPMENT_PLAN |
 

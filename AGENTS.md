@@ -13,7 +13,8 @@
 |---|---|
 | 了解产品是什么、不做什么 | `docs/IDEA_BRIEF_v1.0.md` |
 | 实现或修改功能、页面 | `docs/PRD_v1.0.md`（页面编号 P00–P22，规则编号 R1–R43） |
-| 页面布局 | `docs/PROTOTYPE_v1.0.md` |
+| 页面布局 | `docs/PROTOTYPE_v1.0.md`、可点击原型 `docs/prototype.html` |
+| 颜色、字体、间距、组件样式 | `docs/UI_DESIGN_SYSTEM_v1.0.md` |
 | 架构、分层、数据模型、外部服务 | `docs/TECH_DESIGN_v1.0.md` |
 | 任何涉及密钥、加密、应用锁、备份文件的改动 | `docs/SECURITY_DESIGN_v1.0.md` |
 | 写代码的规范、提交格式、扩展步骤 | `docs/DEV_GUIDELINES_v1.0.md` |

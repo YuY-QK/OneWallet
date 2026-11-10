@@ -1,0 +1,305 @@
+<title>OneWallet 原型</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+/* 布局：左侧页面目录 + 居中的手机画框；窄屏时目录收成下拉框。视觉方向 A「沉稳金融」。 */
+:root{
+  --page:#E4E8EE; --bg:#F1F3F7; --surface:#FFFFFF; --ink:#16202E; --muted:#5E6B7D; --line:#DCE2EA;
+  --brand:#1F3A5F; --brand-ink:#FFFFFF; --brand-soft:#E6ECF4;
+  --up:#1B7F52; --down:#C2362B; --warn:#A8690F;
+  --up-soft:#E2F2EA; --down-soft:#FBE7E4; --warn-soft:#FAEFD9;
+  --sans:"IBM Plex Sans","PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono",Menlo,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --page:#080C12; --bg:#0E141C; --surface:#17202B; --ink:#E6ECF3; --muted:#93A1B3; --line:#263241;
+  --brand:#8DB4E2; --brand-ink:#0E141C; --brand-soft:#1D2A3A;
+  --up:#4CC38A; --down:#F0766B; --warn:#E0A84A;
+  --up-soft:#173326; --down-soft:#3A1D1A; --warn-soft:#382B12; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --page:#080C12; --bg:#0E141C; --surface:#17202B; --ink:#E6ECF3; --muted:#93A1B3; --line:#263241;
+  --brand:#8DB4E2; --brand-ink:#0E141C; --brand-soft:#1D2A3A;
+  --up:#4CC38A; --down:#F0766B; --warn:#E0A84A;
+  --up-soft:#173326; --down-soft:#3A1D1A; --warn-soft:#382B12; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--page);color:var(--ink);font-family:var(--sans);font-size:14px;line-height:1.5;
+  padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:860px;margin:0 auto;display:grid;grid-template-columns:220px minmax(0,390px);gap:28px;justify-content:center;align-items:start}
+.side h1{font-size:18px;margin:0 0 2px;font-weight:600}
+.side p{margin:0 0 14px;color:var(--muted);font-size:12.5px}
+.idx{display:flex;flex-direction:column;gap:1px}
+.idx button{all:unset;cursor:pointer;padding:5px 8px;border-radius:6px;font-size:13px;display:flex;gap:8px;color:var(--ink)}
+.idx button span{font-family:var(--mono);color:var(--muted);font-size:11.5px;width:28px;flex:none;padding-top:1px}
+.idx button:hover{background:var(--brand-soft)}
+.idx button.on{background:var(--brand);color:var(--brand-ink)}
+.idx button.on span{color:var(--brand-ink);opacity:.75}
+.idx button:focus-visible,.tap:focus-visible,.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+#jump{display:none;width:100%;padding:9px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit}
+.phone{background:var(--bg);border:1px solid var(--line);border-radius:28px;height:760px;max-height:calc(100vh - 60px);min-height:560px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.bar{display:flex;align-items:center;gap:8px;padding:14px 16px 10px;flex:none}
+.bar h2{font-size:17px;font-weight:600;margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ico{all:unset;cursor:pointer;width:34px;height:34px;display:grid;place-items:center;border-radius:8px;color:var(--brand);font-size:18px}
+.ico:hover{background:var(--brand-soft)}
+.body{flex:1;overflow-y:auto;padding:4px 16px 20px;display:flex;flex-direction:column;gap:12px}
+.body>*{flex:none}
+.tabs{flex:none;display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line);background:var(--surface)}
+.tabs button{all:unset;cursor:pointer;text-align:center;padding:10px 0 12px;font-size:12px;color:var(--muted)}
+.tabs button.on{color:var(--brand);font-weight:600;box-shadow:inset 0 2px 0 var(--brand)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.num{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.big{font-size:28px;font-weight:600;letter-spacing:-.5px}
+.muted{color:var(--muted);font-size:12.5px}
+.up{color:var(--up)}.down{color:var(--down)}.warn{color:var(--warn)}
+.list{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-top:1px solid var(--line);min-height:54px}
+.row:first-child{border-top:0}
+.tap{cursor:pointer}.tap:hover{background:var(--brand-soft)}
+.row .m{flex:1;min-width:0}
+.row .m b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .r{text-align:right;flex:none}
+.dot{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;font-size:11px;font-weight:600;background:var(--brand-soft);color:var(--brand);font-family:var(--mono)}
+.sq{border-radius:7px}
+.pill{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;padding:2px 8px;border-radius:99px;font-weight:500}
+.pill.g{background:var(--up-soft);color:var(--up)}.pill.r{background:var(--down-soft);color:var(--down)}.pill.o{background:var(--warn-soft);color:var(--warn)}
+.sec{font-size:12px;color:var(--muted);letter-spacing:.06em;margin:4px 2px -6px}
+.seg{display:flex;background:var(--brand-soft);border-radius:8px;padding:3px;gap:3px}
+.seg button{all:unset;cursor:pointer;flex:1;text-align:center;padding:6px 4px;border-radius:6px;font-size:13px;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--ink);font-weight:500}
+.btn{all:unset;cursor:pointer;display:block;text-align:center;padding:12px;border-radius:var(--r);background:var(--brand);color:var(--brand-ink);font-weight:600}
+.btn.ghost{background:transparent;color:var(--brand);border:1px solid var(--line)}
+.btn.sm{display:inline-block;padding:5px 10px;font-size:12.5px;font-weight:500;border-radius:7px}
+.btn.danger{background:transparent;color:var(--down);border:1px solid var(--line)}
+.note{border-radius:var(--r);padding:10px 12px;font-size:12.5px;background:var(--warn-soft);color:var(--warn);display:flex;gap:8px;align-items:center}
+.note.info{background:var(--brand-soft);color:var(--ink)}
+.note.red{background:var(--down-soft);color:var(--down)}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12.5px;color:var(--muted)}
+.in{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:10px 12px;color:var(--ink);font:inherit;width:100%;min-width:0}
+.share{height:4px;border-radius:2px;background:var(--line);margin-top:5px;overflow:hidden}
+.share i{display:block;height:100%;background:var(--brand)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);border-radius:7px;padding:5px 9px;font-size:12.5px;background:var(--surface)}
+.chip.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand);font-weight:500}
+.words{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.words div{border:1px solid var(--line);border-radius:7px;padding:7px 8px;font-family:var(--mono);font-size:12.5px;background:var(--surface);white-space:nowrap;overflow:hidden}
+.words div i{font-style:normal;color:var(--muted);margin-right:5px}
+.veil{border:1px dashed var(--line);border-radius:var(--r);padding:28px 14px;text-align:center;background:repeating-linear-gradient(135deg,var(--surface) 0 8px,var(--bg) 8px 16px)}
+.lock{display:flex;flex-direction:column;align-items:center;gap:22px;padding-top:70px}
+.pins{display:flex;gap:14px}.pins i{width:12px;height:12px;border-radius:50%;border:1.5px solid var(--brand)}.pins i.f{background:var(--brand)}
+.pad{display:grid;grid-template-columns:repeat(3,68px);gap:14px}
+.pad button{all:unset;cursor:pointer;height:60px;border-radius:50%;text-align:center;font-size:22px;font-family:var(--mono);background:var(--surface);border:1px solid var(--line)}
+.pad button:hover{background:var(--brand-soft)}
+.kv{display:flex;justify-content:space-between;gap:12px;font-size:13px;padding:3px 0}
+.steps{display:flex;flex-direction:column;gap:8px;counter-reset:s}
+.steps .card{display:flex;gap:10px;align-items:flex-start}
+.steps .card::before{counter-increment:s;content:counter(s);font-family:var(--mono);width:22px;height:22px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-size:12px;flex:none}
+.ex{font-size:11px;color:var(--muted);text-align:center;margin-top:10px}
+svg text{font-family:var(--mono);font-size:10px;fill:var(--muted)}
+@media (max-width:760px){.wrap{grid-template-columns:minmax(0,390px)}.idx{display:none}#jump{display:block}.side p{margin-bottom:8px}}
+@media (prefers-reduced-motion:no-preference){.body{scroll-behavior:smooth}}
+</style>
+
+<div class="wrap">
+  <div class="side">
+    <h1>OneWallet 原型</h1>
+    <p>点击手机画面里的内容可以跳转；也可以从目录直接打开某一页。画面中的数字、地址和助记词都是示例。</p>
+    <select id="jump" aria-label="跳转到页面"></select>
+    <div class="idx" id="idx"></div>
+  </div>
+  <div>
+    <div class="phone" id="phone"></div>
+    <div class="ex">示例数据 · 窄屏（手机）布局 · 视觉方向 A</div>
+  </div>
+</div>
+
+<script>
+const $=s=>document.querySelector(s);
+const PAGES=[
+ ['lock','P00','解锁'],['onboard','P01','首次引导'],['overview','P02','总览'],['accounts','P03','账户列表'],
+ ['add','P04','添加账户'],['addwallet','P05','观察链上地址'],['addex','P06','连接交易所'],['wallet','P07','钱包账户详情'],
+ ['exchange','P08','交易所账户详情'],['asset','P09','币种详情'],['book','P10','地址簿'],['checklist','P11','备份清单'],
+ ['vault','P12','保险库'],['master','P13','设置主密码'],['import','P14','导入密钥'],['key','P15','密钥详情'],
+ ['derive','P16','派生地址'],['backup','P17','加密备份'],['settings','P18','设置'],['security','P19','安全设置'],
+ ['sources','P20','数据源'],['sync','P21','同步状态'],['about','P22','关于与帮助']];
+const ROOT={overview:'总览',accounts:'账户',vault:'保险库',settings:'设置'};
+const TABOF={book:'accounts'};
+let stack=['overview'],st={dist:'coin',wtab:'assets',reveal:false,pin:0,range:30,t:60};
+let timer=null;
+
+const usd=n=>'$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const COINS=[['BTC','1.2034',82100.4,64],['ETH','8.51',25300.12,20],['USDT','15,020.50',15023.5,12],['SOL','22.4',3900.3,3],['ARB','5,200',2126,1]];
+const ACCTS=[['Uni 钱包','Uniswap Wallet',32100.55,'wallet','g','已入库'],['小狐狸主号','MetaMask',8420.1,'wallet','r','未备份'],['Bitget 无私钥','Bitget Wallet',1050,'wallet','o','无助记词'],['Binance 主账户','Binance',60200.1,'exchange'],['OKX','OKX',20879.57,'exchange','x']];
+const TOTAL=128450.32;
+
+const bar=(t,o={})=>`<div class="bar">${o.back?'<button class="ico" data-back aria-label="返回">‹</button>':''}<h2>${t}</h2>${o.lock?'<span class="pill o">敏感页面</span>':''}${o.right||''}</div>`;
+const row=(a,t,s,r,go,sq)=>`<div class="row ${go?'tap':''}" ${go?`data-go="${go}" tabindex="0" role="button"`:''}>${a?`<div class="dot ${sq?'sq':''}">${a}</div>`:''}<div class="m"><b>${t}</b><span class="muted">${s||''}</span></div><div class="r">${r||''}</div></div>`;
+const chev='<span class="muted">›</span>';
+
+function chart(){
+  const n=st.range,d=[];let v=118000;
+  for(let i=0;i<n;i++){v+=Math.sin(i*1.3)*900+Math.cos(i*.45)*1400+ (TOTAL-118000)/n*0.9;d.push(v)}
+  d[n-1]=TOTAL;const lo=Math.min(...d),hi=Math.max(...d),W=326,H=110,L=44,T=8,B=18;
+  const x=i=>L+(W-L-6)*i/(n-1),y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  const p=d.map((v,i)=>`${x(i).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="近 ${n} 天净值曲线">
+  <line x1="${L}" x2="${W-6}" y1="${y(hi)}" y2="${y(hi)}" stroke="var(--line)" fill="none"/><line x1="${L}" x2="${W-6}" y1="${y(lo)}" y2="${y(lo)}" stroke="var(--line)" fill="none"/>
+  <text x="0" y="${y(hi)+3}">${(hi/1000).toFixed(1)}k</text><text x="0" y="${y(lo)+3}">${(lo/1000).toFixed(1)}k</text>
+  <polygon points="${L},${y(lo)} ${p} ${x(n-1)},${y(lo)}" fill="var(--brand-soft)"/>
+  <polyline points="${p}" fill="none" stroke="var(--brand)" stroke-width="1.8" stroke-linejoin="round"/>
+  <circle cx="${x(n-1)}" cy="${y(TOTAL)}" r="3.5" fill="var(--brand)"/>
+  <text x="${L}" y="${H-3}">${n} 天前</text><text x="${W-6}" y="${H-3}" text-anchor="end">今天</text></svg>`;
+}
+
+const S={
+lock:()=>`<div class="body"><div class="lock"><div class="dot sq" style="width:56px;height:56px;font-size:20px">OW</div><b style="font-size:17px">OneWallet</b>
+ <div class="pins">${[0,1,2,3,4,5].map(i=>`<i class="${i<st.pin?'f':''}"></i>`).join('')}</div><span class="muted">输入 6 位 PIN（原型中任意数字即可）</span>
+ <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-pin>${n}</button>`).join('')}<button data-go="overview" style="font-size:13px">面容</button><button data-pin>0</button><button data-pinback style="font-size:16px">⌫</button></div></div></div>`,
+
+onboard:()=>bar('欢迎使用')+`<div class="body"><div class="card"><b style="font-size:16px">一处看全，备份不丢</b><p class="muted" style="margin:6px 0 0">查看所有链上钱包和交易所的资产，并把助记词存进本机的加密保险库。</p></div>
+ <div class="sec">开始前请了解</div><div class="list">${row('1','只读，不转账','app 不会发起任何交易')}${row('2','密钥只存在这台手机','不上传到任何服务器')}${row('3','PIN 和主密码无法找回','请务必记牢，并导出加密备份')}</div>
+ <div class="steps"><div class="card"><div><b>设置 6 位 PIN</b><div class="muted">输入两次确认</div></div></div><div class="card"><div><b>开启面容或指纹</b><div class="muted">可跳过</div></div></div></div>
+ <button class="btn" data-go="lock">我已了解，开始使用</button><button class="btn ghost" data-go="backup">从备份恢复</button></div>`,
+
+overview:()=>bar('总览',{right:'<button class="ico" aria-label="隐藏金额">◐</button><button class="ico" data-go="add" aria-label="添加账户">＋</button>'})+`<div class="body">
+ <div class="card"><div class="muted">总资产（USD）</div><div class="num big">${usd(TOTAL)}</div><div class="num up">▲ +1,203.11（+0.95%）<span class="muted"> 24 小时</span></div><div class="muted" style="margin-top:4px">3 分钟前同步</div></div>
+ <div class="card">${chart()}<div class="seg" style="margin-top:8px">${[7,30,90].map(r=>`<button class="${st.range==r?'on':''}" data-set="range:${r}">${r} 天</button>`).join('')}</div></div>
+ <div class="note tap" data-go="checklist" tabindex="0" role="button"><span>⚠</span><span style="flex:1">2 个钱包尚未备份</span><span>›</span></div>
+ <div class="note red tap" data-go="sync" tabindex="0" role="button"><span>!</span><span style="flex:1">1 个账户同步失败</span><span>›</span></div>
+ <div class="seg">${[['coin','按币种'],['acct','按账户'],['type','按类型']].map(([k,l])=>`<button class="${st.dist==k?'on':''}" data-set="dist:${k}">${l}</button>`).join('')}</div>
+ <div class="list">${st.dist=='coin'?COINS.map(c=>`<div class="row tap" data-go="asset" tabindex="0" role="button"><div class="dot">${c[0].slice(0,3)}</div><div class="m"><b>${c[0]} <span class="muted num">${c[1]}</span></b><div class="share"><i style="width:${c[3]}%"></i></div></div><div class="r num">${usd(c[2])}<div class="muted">${c[3]}%</div></div></div>`).join('')
+  :st.dist=='acct'?ACCTS.map(a=>`<div class="row tap" data-go="${a[3]}" tabindex="0" role="button"><div class="dot ${a[3]=='exchange'?'sq':''}">${a[0][0]}</div><div class="m"><b>${a[0]}</b><div class="share"><i style="width:${Math.round(a[2]/TOTAL*100)}%"></i></div></div><div class="r num">${usd(a[2])}<div class="muted">${Math.round(a[2]/TOTAL*100)}%</div></div></div>`).join('')
+  :`<div class="row"><div class="dot sq">所</div><div class="m"><b>交易所</b><div class="share"><i style="width:63%"></i></div></div><div class="r num">${usd(81079.67)}<div class="muted">63%</div></div></div><div class="row"><div class="dot">链</div><div class="m"><b>链上钱包</b><div class="share"><i style="width:37%"></i></div></div><div class="r num">${usd(47370.65)}<div class="muted">37%</div></div></div>`}</div>
+ <div class="muted" style="text-align:center">3 个币种无估值 · 已隐藏 12 个小额币种</div></div>`,
+
+accounts:()=>bar('账户',{right:'<button class="ico" data-go="add" aria-label="添加账户">＋</button>'})+`<div class="body"><div class="seg"><button class="on">账户</button><button data-go="book">地址簿</button></div>
+ <div class="sec">钱包</div><div class="list">${ACCTS.filter(a=>a[3]=='wallet').map(a=>row(a[0][0],a[0],a[1],`<div class="num">${usd(a[2])}</div><span class="pill ${a[4]}">${a[5]}</span>`,'wallet')).join('')}</div>
+ <div class="sec">交易所</div><div class="list">${ACCTS.filter(a=>a[3]=='exchange').map(a=>row(a[0][0],a[0],a[4]?'<span class="down">同步失败 · 上次成功 2 小时前</span>':a[1],`<div class="num">${usd(a[2])}</div>`,'exchange',1)).join('')}</div>
+ <div class="muted" style="text-align:center">长按账户可重命名或删除</div></div>`,
+
+book:()=>bar('账户')+`<div class="body"><div class="seg"><button data-go="accounts">账户</button><button class="on">地址簿</button></div>
+ <input class="in" id="q" placeholder="搜索地址、账户、备注"><div class="chips"><span class="chip on">全部链</span><span class="chip">EVM</span><span class="chip">Bitcoin</span><span class="chip">Solana</span><span class="chip">Tron</span></div>
+ <div class="list">${row('EVM','<span class="num">0x12ab…9f3c</span>','Uni 钱包 · 6 条 EVM 链 · 保险库派生',chev,'wallet')}${row('SOL','<span class="num">7xKX…mN2q</span>','Uni 钱包 · Solana',chev,'wallet')}${row('BTC','<span class="num">bc1q…7k2m</span>','冷钱包 · 备注：长期持有',chev,'wallet')}${row('TRX','<span class="num">TQn9…Lw4e</span>','小狐狸主号 · Tron',chev,'wallet')}</div>
+ <div class="note info">粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。</div></div>`,
+
+add:()=>bar('添加账户',{back:1})+`<div class="body"><div class="list">${row('看','观察链上地址','只需粘贴地址，不需要私钥',chev,'addwallet')}${row('所','连接交易所','使用只读 API Key',chev,'addex',1)}${row('钥','导入助记词或私钥','存入加密保险库，并自动生成观察地址',chev,'import',1)}</div></div>`,
+
+addwallet:()=>bar('观察链上地址',{back:1})+`<div class="body"><div class="field"><label for="n1">账户名称</label><input class="in" id="n1" value="Uni 钱包"></div>
+ <div class="field"><label for="n2">来源钱包</label><select class="in" id="n2"><option>Uniswap Wallet</option><option>MetaMask</option><option>OKX Web3</option><option>Bitget Wallet</option><option>其他</option></select></div>
+ <div class="field"><label for="n3">地址</label><input class="in num" id="n3" value="0x12ab34cd56ef7890ab12cd34ef567890ab129f3c"><span class="up" style="font-size:12.5px">✓ 识别为 EVM 地址</span></div>
+ <div class="field"><label>链（可多选）</label><div class="chips">${['Ethereum','BNB Chain','Arbitrum','Optimism','Base','Polygon'].map(c=>`<span class="chip on">✓ ${c}</span>`).join('')}</div></div>
+ <button class="btn ghost sm" style="align-self:flex-start">＋ 再添加一个地址</button>
+ <div class="field"><label>备份状态</label><div class="chips"><span class="chip on">未备份</span><span class="chip">已离线备份</span><span class="chip">无助记词钱包</span></div></div>
+ <button class="btn" data-go="wallet">保存</button></div>`,
+
+addex:()=>bar('连接交易所',{back:1})+`<div class="body"><div class="seg"><button class="on">Binance</button><button>OKX</button><button>Bybit</button><button>Bitget</button></div>
+ <div class="field"><label for="e1">账户名称</label><input class="in" id="e1" value="Binance 主账户"></div>
+ <div class="field"><label for="e2">API Key</label><input class="in num" id="e2" placeholder="粘贴或扫码"></div>
+ <div class="field"><label for="e3">API Secret</label><input class="in" id="e3" type="password" placeholder="粘贴或扫码"></div>
+ <div class="note"><span>ⓘ</span><span>请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。</span></div>
+ <div class="list">${row('','如何创建只读 API Key','分步图文说明',chev)}</div><button class="btn" data-go="exchange">测试并保存</button></div>`,
+
+wallet:()=>bar('Uni 钱包',{back:1,right:'<button class="ico" aria-label="编辑">✎</button>'})+`<div class="body">
+ <div class="card"><div class="num big">${usd(32100.55)}</div><div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap"><span class="pill g tap" data-go="checklist">● 已入库</span><span class="pill g tap" data-go="checklist">● 已离线备份</span></div></div>
+ <div class="seg"><button class="${st.wtab=='assets'?'on':''}" data-set="wtab:assets">资产</button><button class="${st.wtab=='addr'?'on':''}" data-set="wtab:addr">地址</button></div>
+ ${st.wtab=='assets'?`<div class="list">${row('ETH','ETH <span class="muted num">6.2</span>','Ethereum 4.0 · Base 2.2',`<span class="num">${usd(18400.25)}</span>`,'asset')}${row('USD','USDC <span class="muted num">9,800</span>','Solana',`<span class="num">${usd(9800)}</span>`,'asset')}${row('ARB','ARB <span class="muted num">5,200</span>','Arbitrum',`<span class="num">${usd(2126)}</span>`,'asset')}${row('USD','USDT <span class="muted num">1,774.30</span>','Arbitrum',`<span class="num">${usd(1774.3)}</span>`,'asset')}</div>`
+ :`<div class="sec">EVM</div><div class="list">${row('EVM','<span class="num">0x12ab…9f3c</span>','6 条链 · m/44\'/60\'/0\'/0/0',`<span class="num">${usd(22300.55)}</span>`)}</div><div class="sec">Solana</div><div class="list">${row('SOL','<span class="num">7xKX…mN2q</span>','m/44\'/501\'/0\'/0\'',`<span class="num">${usd(9800)}</span>`)}</div><button class="btn ghost" data-go="addwallet">＋ 添加地址</button><div class="muted" style="text-align:center">点击地址可查看二维码、复制、在浏览器中打开</div>`}
+ <div class="list">${row('钥','保险库中的密钥','Uni 主助记词',chev,'key',1)}</div></div>`,
+
+exchange:()=>bar('Binance 主账户',{back:1,right:'<button class="ico" aria-label="编辑">✎</button>'})+`<div class="body">
+ <div class="card"><div class="num big">${usd(60200.1)}</div><div style="margin-top:6px"><span class="pill g">API Key 正常 · 只读</span></div></div>
+ <div class="seg"><button>按币种</button><button class="on">按子账户</button></div>
+ <div class="list">${[['现货',41000.1],['资金',5200],['合约（权益）',9000],['理财',5000]].map(x=>row('',x[0],'',`<span class="num">${usd(x[1])}</span>`)).join('')}</div>
+ <div class="list">${row('','充值地址','由交易所控制，仅供查看',chev)}</div>
+ <button class="btn ghost" data-go="addex">更换 API Key</button><button class="btn danger">删除账户</button></div>`,
+
+asset:()=>bar('USDT',{back:1})+`<div class="body"><div class="card"><div class="kv"><span class="muted">当前价格</span><span class="num">$1.0002 <span class="up">+0.01%</span></span></div><div class="kv"><span class="muted">持有</span><span class="num">15,020.50</span></div><div class="kv"><span class="muted">估值</span><span class="num">${usd(15023.5)}</span></div></div>
+ <div class="sec">分布</div><div class="list">${row('B','Binance 主账户','现货','<span class="num">8,000.00</span><div class="muted">53%</div>','exchange',1)}${row('O','OKX','资金','<span class="num">3,246.20</span><div class="muted">22%</div>','exchange',1)}${row('小','小狐狸主号','Tron','<span class="num">2,000.00</span><div class="muted">13%</div>','wallet')}${row('U','Uni 钱包','Arbitrum','<span class="num">1,774.30</span><div class="muted">12%</div>','wallet')}</div>
+ <div class="sec">合约地址</div><div class="list">${row('','Ethereum','<span class="num">0xdAC1…1ec7</span>','<button class="btn ghost sm">复制</button>')}${row('','Tron','<span class="num">TR7N…Lj6t</span>','<button class="btn ghost sm">复制</button>')}</div></div>`,
+
+checklist:()=>bar('备份清单',{back:1})+`<div class="body"><div class="card"><b style="font-size:16px"><span class="num">3 / 5</span> 个钱包已备份</b><div class="share" style="height:6px"><i style="width:60%"></i></div>
+ <div class="muted" style="margin-top:8px">加密备份文件：11-02 导出</div><div class="warn" style="font-size:12.5px">之后保险库有更改，尚未导出</div><button class="btn" style="margin-top:10px" data-go="backup">导出加密备份</button></div>
+ <div class="sec">待处理</div><div class="list">
+  <div class="row"><div class="m"><b>小狐狸主号 <span class="pill r">未备份</span></b><span class="muted num">${usd(8420.1)}</span><div style="margin-top:7px;display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-go="import">去入库</button><button class="btn ghost sm">标记已离线备份</button></div></div></div>
+  <div class="row"><div class="m"><b>Bitget 无私钥 <span class="pill o">无助记词钱包</span></b><span class="muted num">${usd(1050)}</span><div class="muted" style="margin-top:5px">这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。</div></div></div></div>
+ <div class="sec">已完成</div><div class="list">${row('','Uni 钱包','上次核对 2026-09-01','<span class="pill g">已入库</span> <span class="pill g">离线</span>','wallet')}${row('','冷钱包','<span class="warn">超过 180 天未核对</span>','<button class="btn ghost sm">今天已核对</button>')}${row('','Tron 小号','上次核对 2026-10-20','<span class="pill g">已入库</span>')}</div>
+ <div class="note info">交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。</div></div>`,
+
+vault:()=>bar('保险库',{right:'<button class="ico" data-go="import" aria-label="导入密钥">＋</button>'})+`<div class="body"><div class="note tap" data-go="checklist" tabindex="0" role="button"><span>⚠</span><span style="flex:1">备份清单：2 个钱包未备份</span><span>›</span></div>
+ <div class="list">${row('钥','Uni 主助记词','助记词 · 12 词 · Uni 钱包',chev,'key',1)}${row('钥','冷钱包','助记词 · 24 词',chev,'key',1)}${row('钥','Tron 单独私钥','私钥 · Tron · Tron 小号',chev,'key',1)}</div>
+ <div class="muted" style="text-align:center">保险库内容仅存于本机。请定期导出加密备份。</div><button class="btn ghost" data-go="master">查看「首次启用保险库」页面</button></div>`,
+
+master:()=>bar('创建保险库',{back:1,lock:1})+`<div class="body"><p style="margin:0">主密码用于保护你的助记词，换手机恢复时也需要它。</p><div class="note red"><span>!</span><b>主密码无法找回</b></div>
+ <div class="field"><label for="m1">主密码（至少 10 个字符）</label><input class="in" id="m1" type="password" value="correct-horse"><div class="share" style="height:5px"><i style="width:70%;background:var(--up)"></i></div><span class="up" style="font-size:12.5px">强度：较强</span></div>
+ <div class="field"><label for="m2">再次输入</label><input class="in" id="m2" type="password" value="correct-horse"></div>
+ <label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="m3" checked><span>我明白主密码丢失后，保险库内容无法恢复。</span></label>
+ <div class="list">${row('','使用面容解锁保险库','日常查看更方便','<span class="pill g">开</span>')}</div><button class="btn" data-go="import">创建保险库</button></div>`,
+
+import:()=>bar('导入到保险库',{back:1,lock:1})+`<div class="body"><div class="seg"><button class="on">助记词</button><button>私钥</button></div>
+ <div class="field"><label for="i1">名称</label><input class="in" id="i1" value="小狐狸主号"></div>
+ <div class="field"><label>词数</label><div class="chips">${[12,15,18,21,24].map(n=>`<span class="chip ${n==12?'on':''}">${n}</span>`).join('')}</div></div>
+ <div class="words">${['legal','winner','thank','year','wa'].map((w,i)=>`<div><i>${i+1}</i>${w}</div>`).join('')}${[6,7,8,9,10,11,12].map(i=>`<div><i>${i}</i></div>`).join('')}</div>
+ <div class="field"><label>联想（应用内键盘，不经过系统输入法）</label><div class="chips"><span class="chip">wage</span><span class="chip">wagon</span><span class="chip">wait</span><span class="chip">walk</span><span class="chip">wave</span></div></div>
+ <div class="list">${row('','高级：BIP39 passphrase','可选的「第 25 个词」',chev)}${row('','关联账户','小狐狸主号',chev)}</div>
+ <button class="btn" data-go="derive">保存到保险库</button><div class="muted" style="text-align:center">保存前需要验证；离开本页会清空已输入内容</div></div>`,
+
+key:()=>bar('Uni 主助记词',{back:1,lock:1})+`<div class="body"><div class="card"><div class="kv"><span class="muted">类型</span><span>助记词 · 12 词</span></div><div class="kv"><span class="muted">创建于</span><span class="num">2026-11-10</span></div><div class="kv"><span class="muted">关联账户</span><span>Uni 钱包</span></div></div>
+ ${st.reveal?`<div class="words">${'legal winner thank year wave sausage worth useful legal winner thank yellow'.split(' ').map((w,i)=>`<div><i>${i+1}</i>${w}</div>`).join('')}</div><div style="display:flex;justify-content:space-between;align-items:center"><span class="muted"><span class="num" id="cd">${st.t}</span> 秒后自动隐藏（示例助记词）</span><button class="btn ghost sm" data-set="reveal:">隐藏</button></div>`
+ :`<div class="veil"><div class="muted" style="margin-bottom:10px">每次查看都需要面容或主密码验证</div><button class="btn sm" data-set="reveal:1">验证后查看</button></div>`}
+ <div class="list">${row('','已派生地址','4 个地址已在观察中',chev,'derive')}</div><button class="btn danger">删除此密钥</button><div class="muted" style="text-align:center">不提供复制；本页禁止截屏</div></div>`,
+
+derive:()=>bar('派生地址',{back:1})+`<div class="body"><div class="note info">仅地址会用于查询余额，密钥不会离开保险库。</div><div class="seg"><button class="on">EVM</button><button>Bitcoin</button><button>Solana</button><button>Tron</button></div>
+ <div class="field"><label for="d1">派生路径</label><select class="in num" id="d1"><option>标准 m/44'/60'/0'/0/i</option><option>Ledger Live m/44'/60'/i'/0/0</option></select></div>
+ <div class="list">${[['0x12ab…9f3c','有资产',1],['0x88cd…01aa','',0],['0x4f20…be71','',0],['0x9a3e…77d0','',0],['0xc015…2e4b','',0]].map((a,i)=>`<label class="row tap"><input type="checkbox" id="dv${i}" ${a[2]?'checked':''}><div class="m"><b class="num">#${i} ${a[0]}</b></div><div class="r">${a[1]?`<span class="pill g">${a[1]}</span>`:''}</div></label>`).join('')}</div>
+ <div style="display:flex;gap:8px"><button class="btn ghost sm">显示更多</button><button class="btn ghost sm">检测余额</button></div>
+ <div class="list">${row('','加入到','新建账户：小狐狸主号',chev)}</div><button class="btn" data-go="checklist">加入观察</button><button class="btn ghost" data-go="vault">跳过</button></div>`,
+
+backup:()=>bar('加密备份',{back:1,lock:1})+`<div class="body"><div class="sec">导出</div><div class="steps">
+ <div class="card"><div><b>确认内容</b><div class="muted">账户、地址、备份状态、全部密钥、设置。可选是否包含交易所 API Key（默认不包含）。</div></div></div>
+ <div class="card"><div><b>输入主密码</b><div class="muted">这一步不接受面容或指纹</div></div></div>
+ <div class="card"><div><b>设置备份密码</b><div class="muted">使用主密码，或另设一个</div></div></div>
+ <div class="card"><div><b>保存文件</b><div class="muted num">OneWallet-备份-20261110-1432.owbak</div><div class="muted">通过系统分享面板保存。请存到手机以外的地方。</div></div></div></div>
+ <button class="btn">开始导出</button><div class="sec">恢复</div><div class="list">${row('','从备份文件恢复','选择 .owbak 文件并输入备份密码',chev)}</div>
+ <div class="note info">备份格式是公开的。即使没有这个 app，也能用独立的解密工具在电脑上解开。</div></div>`,
+
+settings:()=>bar('设置')+`<div class="body"><div class="sec">安全</div><div class="list">${row('','应用锁与生物识别','',chev,'security')}${row('','加密备份','上次导出 11-02',chev,'backup')}</div>
+ <div class="sec">数据</div><div class="list">${row('','数据源','',chev,'sources')}${row('','同步状态','1 个账户失败',chev,'sync')}${row('','计价货币','','USD ›')}${row('','隐藏小额币种','低于 $1','<span class="pill g">开</span>')}${row('','未识别代币','',chev)}</div>
+ <div class="sec">其他</div><div class="list">${row('','外观','','跟随系统 ›')}${row('','关于与帮助','',chev,'about')}</div><button class="btn danger">清除全部数据</button></div>`,
+
+security:()=>bar('安全设置',{back:1})+`<div class="body"><div class="sec">应用锁</div><div class="list">${row('','修改 PIN','',chev)}${row('','面容解锁','','<span class="pill g">开</span>')}${row('','自动锁定','','立即 ›')}</div>
+ <div class="sec">保险库</div><div class="list">${row('','面容解锁保险库','开启时需输入主密码','<span class="pill g">开</span>')}${row('','修改主密码','',chev)}</div>
+ <div class="sec">设备</div><div class="list">${row('','设备安全状态','未检测到越狱或 root','<span class="pill g">正常</span>')}</div></div>`,
+
+sources:()=>bar('数据源',{back:1})+`<div class="body"><div class="list">${row('EVM','EVM 链','Alchemy · 已配置 Key','<span class="pill g">正常</span>')}${row('BTC','Bitcoin','mempool.space · 无需 Key','<span class="pill g">正常</span>')}${row('SOL','Solana','公共 RPC','<span class="pill o">限频较严</span>')}${row('TRX','Tron','TronGrid · 未配置 Key','<span class="pill o">建议配置</span>')}${row('价','价格','CoinGecko','<span class="pill g">正常</span>')}</div>
+ <div class="note info">查询余额时，你的地址和 IP 会被发送给所选的数据服务商。</div></div>`,
+
+sync:()=>bar('同步状态',{back:1})+`<div class="body"><div class="card"><div class="kv"><span class="muted">上次全量同步</span><span class="num">14:29 · 用时 11 秒</span></div><button class="btn" style="margin-top:8px">立即同步</button></div>
+ <div class="list">${row('','Uni 钱包','14:29','<span class="pill g">成功</span>')}${row('','小狐狸主号','14:29','<span class="pill g">成功</span>')}${row('','Binance 主账户','14:29','<span class="pill g">成功</span>')}${row('','OKX','API Key 已失效，请更换 · 上次成功 12:10','<span class="pill r">失败</span>','addex')}</div></div>`,
+
+about:()=>bar('关于与帮助',{back:1})+`<div class="body"><div class="list">${row('','版本','','<span class="num">1.0.0</span>')}${row('','安全设计说明','',chev)}${row('','备份文件格式与解密工具','',chev)}${row('','常见问题','派生路径是什么、为什么地址对不上',chev)}${row('','开源许可','',chev)}</div></div>`
+};
+
+function render(){
+  const id=stack[stack.length-1],tab=ROOT[id]?id:TABOF[id];
+  clearInterval(timer);
+  $('#phone').innerHTML=S[id]()+(tab?`<div class="tabs">${Object.entries(ROOT).map(([k,l])=>`<button class="${k==tab?'on':''}" data-go="${k}">${l}</button>`).join('')}</div>`:'');
+  document.querySelectorAll('#idx button').forEach(b=>b.classList.toggle('on',b.dataset.go==id));
+  $('#jump').value=id;
+  if(id=='key'&&st.reveal){timer=setInterval(()=>{st.t--;const c=$('#cd');if(c)c.textContent=st.t;if(st.t<=0){st.reveal=false;st.t=60;render()}},1000)}
+}
+function go(id,fromIdx){if(!S[id])return;if(ROOT[id]||fromIdx)stack=[id];else stack.push(id);if(id!='key'){st.reveal=false;st.t=60}st.pin=0;render()}
+$('#idx').innerHTML=PAGES.map(p=>`<button data-go="${p[0]}" data-idx="1"><span>${p[1]}</span>${p[2]}</button>`).join('');
+$('#jump').innerHTML=PAGES.map(p=>`<option value="${p[0]}">${p[1]} ${p[2]}</option>`).join('');
+$('#jump').addEventListener('change',e=>go(e.target.value,true));
+function act(e){
+  const t=e.target.closest('[data-go],[data-back],[data-set],[data-pin],[data-pinback]');if(!t)return;
+  if(t.dataset.go){e.preventDefault();go(t.dataset.go,!!t.dataset.idx)}
+  else if('back' in t.dataset){stack.length>1?stack.pop():stack=['overview'];st.reveal=false;render()}
+  else if(t.dataset.set){const [k,v]=t.dataset.set.split(':');st[k]=k=='range'?+v:k=='reveal'?!!v:v;if(k=='reveal')st.t=60;render()}
+  else if('pin' in t.dataset){st.pin++;if(st.pin>=6){go('overview')}else render()}
+  else if('pinback' in t.dataset){st.pin=Math.max(0,st.pin-1);render()}
+}
+document.addEventListener('click',act);
+document.addEventListener('keydown',e=>{if((e.key=='Enter'||e.key==' ')&&e.target.matches('[role=button]')){e.preventDefault();act(e)}});
+render();
+</script>
