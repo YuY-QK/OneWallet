@@ -30,8 +30,8 @@
 | 状态管理 | Riverpod | 依赖注入与状态合一，便于替换平台实现和测试 |
 | 路由 | go_router | 声明式；支持嵌套导航，便于在窄屏与宽屏间切换导航外壳 |
 | 本地数据库 | Drift + SQLCipher | 类型安全的 SQL；整库加密；全平台可用 |
-| 密码学 | libsodium（经 Dart 绑定） | Argon2id、XChaCha20-Poly1305 的成熟实现；不自己实现算法 |
-| 密钥派生（BIP39/32/44、SLIP-0010） | M0 评估后选定 | 候选与评估标准见 5.4 |
+| 密码学 | libsodium（经 Dart 绑定 `sodium`） | Argon2id、XChaCha20-Poly1305 的成熟实现；不自己实现算法。注意：旧的 `sodium_libs` 包已停止维护，原生库现由 `sodium` 自身的构建钩子提供，接入方式在技术验证三中确认 |
+| 密钥派生（BIP39/32/44、SLIP-0010） | `blockchain_utils`（纯 Dart，零依赖） | 已通过官方向量与独立实现对照，见 ADR_004 |
 | 网络 | dio | 拦截器便于统一做签名、限频、脱敏日志 |
 | 不可变模型 | freezed + json_serializable | 减少手写样板 |
 | 多包管理 | Dart workspace（或 melos） | 用包边界强制隔离保险库 |
@@ -239,7 +239,7 @@ SyncAll
 
 - 标准：BIP39（助记词到种子）、BIP32（secp256k1 分层派生，用于 EVM、Bitcoin、Tron）、SLIP-0010（ed25519，用于 Solana）、BIP44/49/84/86（路径约定）。
 - 地址编码：EVM 为 Keccak-256 加 EIP-55；Bitcoin 为 Base58Check、Bech32、Bech32m；Tron 为 Base58Check（前缀 0x41）；Solana 为公钥的 Base58。
-- **库的选择在 M0 决定**。候选：(a) Trust Wallet Core 的原生库经 FFI 调用；(b) 维护活跃的纯 Dart 库组合。评估标准：是否有审计或被广泛使用、维护状况、全平台可用性（含桌面端）、依赖数量。无论选哪种，都必须通过全部官方测试向量，并与至少三款主流钱包的真实派生结果对照。
+- **库已选定**：`blockchain_utils`，锁定确切版本，只用于校验助记词、生成种子、分层派生和地址编码。评估过程与对照测试见 ADR_004。路径模板定义在 `ow_domain` 的 `DerivationScheme`。
 - 派生在独立的 isolate 中执行，结束后清除种子和私钥，只把地址返回主 isolate。
 
 ## 6. 持久化、网络与外部集成
@@ -304,7 +304,7 @@ iOS 上对数据库和保险库文件设置"排除出 iCloud 与 iTunes 备份"�
 
 | 编号 | 问题 | 何时决定 |
 |---|---|---|
-| T1 | 地址派生库的选择 | M0 |
+| T1 | ~~地址派生库的选择~~ 已决定，见 ADR_004 | — |
 | T2 | 硬件密钥插件自己写还是用现成的 Flutter 插件 | M0；倾向自己写最小实现，见 ADR_003 |
 | T3 | EVM 数据服务最终选哪家 | M1 |
 | T4 | 桌面端保险库的硬件支持程度（各系统差异大） | 做桌面端时 |

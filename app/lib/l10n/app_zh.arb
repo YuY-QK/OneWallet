@@ -1,0 +1,18 @@
+{
+  "@@locale": "zh",
+  "appTitle": "OneWallet",
+  "tabOverview": "总览",
+  "tabAccounts": "账户",
+  "tabVault": "保险库",
+  "tabSettings": "设置",
+  "overviewEmptyTitle": "还没有账户",
+  "overviewEmptyBody": "添加一个链上地址或交易所，就能在这里看到总资产。",
+  "overviewEmptyAction": "添加第一个账户",
+  "accountsEmptyTitle": "还没有账户",
+  "accountsEmptyBody": "钱包和交易所账户会显示在这里。",
+  "vaultIntroTitle": "保险库尚未启用",
+  "vaultIntroBody": "保险库把助记词和私钥加密保存在这台设备上，不会联网。",
+  "vaultIntroAction": "启用保险库",
+  "settingsPlaceholder": "设置项将在后续里程碑加入。",
+  "notAvailableYet": "此功能尚未实现"
+}

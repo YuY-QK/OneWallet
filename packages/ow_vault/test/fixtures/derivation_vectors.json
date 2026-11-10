@@ -1,0 +1,215 @@
+{
+ "generator": "python bip_utils 2.12.3",
+ "cases": [
+  {
+   "name": "abandon",
+   "mnemonic": "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about",
+   "passphrase": "",
+   "addresses": {
+    "evmStandard": [
+     "0x9858EfFD232B4033E47d90003D41EC34EcaEda94",
+     "0x6Fac4D18c912343BF86fa7049364Dd4E424Ab9C0",
+     "0xb6716976A3ebe8D39aCEB04372f22Ff8e6802D7A",
+     "0xF3f50213C1d2e255e4B2bAD430F8A38EEF8D718E",
+     "0x51cA8ff9f1C0a99f88E86B8112eA3237F55374cA"
+    ],
+    "evmLedgerLive": [
+     "0x9858EfFD232B4033E47d90003D41EC34EcaEda94",
+     "0x78839F6054d7ed13918bAe0473BA31b1Ca9D7265",
+     "0x07B5FdfEB4E11826D233403Fe8Db0611CCF4c231",
+     "0x8559A4270Db933caC30830f2be9D099fD477A51D",
+     "0xB9506F020318c2ECA294e0557222511f1e5333CB"
+    ],
+    "btcNativeSegwit": [
+     "bc1qcr8te4kr609gcawutmrza0j4xv80jy8z306fyu",
+     "bc1qnjg0jd8228aq7egyzacy8cys3knf9xvrerkf9g",
+     "bc1qp59yckz4ae5c4efgw2s5wfyvrz0ala7rgvuz8z",
+     "bc1qgl5vlg0zdl7yvprgxj9fevsc6q6x5dmcyk3cn3",
+     "bc1qm97vqzgj934vnaq9s53ynkyf9dgr05rargr04n"
+    ],
+    "btcTaproot": [
+     "bc1p5cyxnuxmeuwuvkwfem96lqzszd02n6xdcjrs20cac6yqjjwudpxqkedrcr",
+     "bc1p4qhjn9zdvkux4e44uhx8tc55attvtyu358kutcqkudyccelu0was9fqzwh",
+     "bc1p0d0rhyynq0awa9m8cqrcr8f5nxqx3aw29w4ru5u9my3h0sfygnzs9khxz8",
+     "bc1py0vryk8aqusz65yzuudypggvswzkcpwtau8q0sjm0stctwup0xlqkkxler",
+     "bc1pjpp8nwqvhkx6kdna6vpujdqglvz2304twfd308ve5ppyxpmcjufs7k6xyr"
+    ],
+    "btcNestedSegwit": [
+     "37VucYSaXLCAsxYyAPfbSi9eh4iEcbShgf",
+     "3LtMnn87fqUeHBUG414p9CWwnoV6E2pNKS",
+     "3B4cvWGR8X6Xs8nvTxVUoMJV77E4f7oaia",
+     "38CahkVftQneLonbWtfWxiiaT2fdnzsEAN",
+     "37mbeJptxfQC6SNNLJ9a8efCY4BwBh5Kak"
+    ],
+    "btcLegacy": [
+     "1LqBGSKuX5yYUonjxT5qGfpUsXKYYWeabA",
+     "1Ak8PffB2meyfYnbXZR9EGfLfFZVpzJvQP",
+     "1MNF5RSaabFwcbtJirJwKnDytsXXEsVsNb",
+     "1MVGa13XFvvpKGZdX389iU8b3qwtmAyrsJ",
+     "1Gka4JdwhLxRwXaC6oLNH4YuEogeeSwqW7"
+    ],
+    "solanaStandard": [
+     "HAgk14JpMQLgt6rVgv7cBQFJWFto5Dqxi472uT3DKpqk",
+     "Hh8QwFUA6MtVu1qAoq12ucvFHNwCcVTV7hpWjeY1Hztb",
+     "7WktogJEd2wQ9eH2oWusmcoFTgeYi6rS632UviTBJ2jm",
+     "3YqEpfo3c818GhvbQ1UmVY1nJxw16vtu4JB9peJXT94k",
+     "6nod592sTfEWD3VSVPdQndLMVBCNmMc6ngt7MyGBK21j"
+    ],
+    "solanaLegacy": [
+     "GjJyeC1r2RgkuoCWMyPYkCWSGSGLcz266EaAkLA27AhL",
+     "ANf3TEKFL6jPWjzkndo4CbnNdUNkBk4KHPggJs2nu8Xi",
+     "Ag74i82rUZBTgMGLacCA1ZLnotvAca8CLscXcrG6Nwem",
+     "weCFpgyyyrzum6nA8XdmJXjDGDTXmG5P2DdgHv59hgQ",
+     "4w6V162fV7HJQNma7vZvxjunqmkie8hM2x1DqaFQqxqL"
+    ],
+    "tronStandard": [
+     "TUEZSdKsoDHQMeZwihtdoBiN46zxhGWYdH",
+     "TSeJkUh4Qv67VNFwY8LaAxERygNdy6NQZK",
+     "TYJPRrdB5APNeRs4R7fYZSwW3TcrTKw2gx",
+     "TRhVWK5XEDkQBDevcdCWW7RW51aRncty4W",
+     "TT2X2yyubp7qpAWYYNE5JQWBtoZ7ikQFsY"
+    ]
+   }
+  },
+  {
+   "name": "legal_pp",
+   "mnemonic": "legal winner thank year wave sausage worth useful legal winner thank yellow",
+   "passphrase": "TREZOR",
+   "addresses": {
+    "evmStandard": [
+     "0x6006ef1944FB519A746d00cDAf715Cbd27a5a008",
+     "0xA5Cd5A7a353DAD72643512f25F395eC1857Bc1CA",
+     "0xB6b04040Df8e63FeE7105a644904826cC69De344",
+     "0xde0529Db2f587089caAC177930ef70ED00d44431",
+     "0x316Ce3AE1ef6365A356f6929C59E1F1E3f458bdc"
+    ],
+    "evmLedgerLive": [
+     "0x6006ef1944FB519A746d00cDAf715Cbd27a5a008",
+     "0xC31586D2dFcf058dC45fE44563cf106e78abEdfC",
+     "0x96eD7945310151a42a17F1b99E707887d68Eb949",
+     "0xE404E48A101512B1EEeD42F7a5526645fC03cb1a",
+     "0xEF7D8a700AaF1630A19a8980d6230E405384AeD6"
+    ],
+    "btcNativeSegwit": [
+     "bc1qcgphwddfcv5pax0agdw697rd8ewde8r02nwrex",
+     "bc1qku5m0l93z59dnvylens3gs075jyms99vrvnqpp",
+     "bc1qvhrrn9edhc9pna3ukjtu9xt6ntdwq9gwz77vlr",
+     "bc1quxve9dgnrxp6rvc8t6rqzyz4fw5ye0k2yx2tn0",
+     "bc1qp06mm6t2nlx343ljezklmrkx57lwv4wsjlxsvm"
+    ],
+    "btcTaproot": [
+     "bc1py95g80zqw74m0tcy8dhnmhqcgty36tfrfunu908tmnk9xslvy62sfgpnqr",
+     "bc1pzz7ltxw4pcp49xqsqvj68xx5mh9ggand7pfg4w6k4fm6qpdwxdjqpf80cx",
+     "bc1py0s7llcvc6ss9trhynm904purl8aw948ad8kflwzej8f50hhgfuqavuq88",
+     "bc1p6q7728zwem8qdcas6pfx7kvhe32h968k85jk28tnetvpxuydczhsut7s9v",
+     "bc1prs90g2rfx78d9dvhhrextt3w9c24rcnejc8j3csarps4zyv9wg5sdx6mer"
+    ],
+    "btcNestedSegwit": [
+     "3HLYoykVrarXnoJF1fwu5YV7EzZiihQr5R",
+     "3HQLcAwQnFpBhRNzkQVp3TtvQR2HQXa2hk",
+     "35sVgeZsyHTUn6ThhtRvVVvKCJcRHoCGMi",
+     "3BQRegC2DpmtWnRYRjytis5GpcCRnzwUBy",
+     "3CUG8oHoAhnRGifCqXrYNZNugUapejVysg"
+    ],
+    "btcLegacy": [
+     "18MNH3xiSXsYNYxCvwQ6JouW2RkWwStSwy",
+     "16uFjFcdHDS7qSCMEHL6caUgZ8JsNnU8te",
+     "15YNLtb4a19T9Zz2pZXgshvrQL2e2RfB1e",
+     "16WrwvYZKBoiH3B75krcMih3xxH3HzsZ1K",
+     "1FbHhBPHRV525SrG6CYyBz3NLEQJWqYMAL"
+    ],
+    "solanaStandard": [
+     "AzshxZEXxrMd9UHDsAQWbVYa1aMDchbh9BFrDa5KgiJN",
+     "2Eki9EzVVF8dtZfnKtkbJqseyy3AgeCxoXMhvS55GmRy",
+     "4gdokcE9KfiU7c8FDNtmAnzRGbKuKJYMEafyufQsVE1V",
+     "8v8aE4wn1R4ERF2T4o7RoFRFkMmu5XbGLcZULhmGJrso",
+     "APqUosK3nHXrQA4iNH5RpQqYY4vXFKrYGndUrQJaqRWF"
+    ],
+    "solanaLegacy": [
+     "DPaQFaSTXE1KpXwbbGE7aHLe1DwDCvG9tVo2Z16Lp6Fc",
+     "EGbHXZpWAkavUGAGHSxm5hkLVYbZA2fBaYTi215Scau6",
+     "7S5LnavpCF4uvcYXVneotR8fo3rDRYGCVsZUGnJ4hEA8",
+     "BjwJYGjjCVfV7FNk7pf73qqRPQQ3kmyV5m3eHUyPHoi7",
+     "G3Q93dEwyhzcCoYJA6mDBtZg1CznEf618TihjR6uMboS"
+    ],
+    "tronStandard": [
+     "TLKvhyqakrxrN5SYXFpLETSyHvy4QMS84L",
+     "TQeMnrxMgCJmgkzdH4NXA3GPJkLiWCooNB",
+     "TKzm6KYmhJnfD4nZjszmwgZ4BubrzGtqgn",
+     "TUXB7pmBB6xz7qgDgDhm2wC6MDFitnS7rg",
+     "TSPZY7edKrrbUWCd97W6Sj1ZkhaWd6HrCT"
+    ]
+   }
+  },
+  {
+   "name": "zoo24",
+   "mnemonic": "zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo zoo vote",
+   "passphrase": "",
+   "addresses": {
+    "evmStandard": [
+     "0x1959f5f4979c5Cd87D5CB75c678c770515cb5E0E",
+     "0xEFC840572B9889de6bF172Da76b7fA59B53a0Ea0",
+     "0xa5DbAf63306F0dA50c930158Bf5D1Ec90465E5F4",
+     "0x381C29E5e401bf44Ab0f1E2c6578971AB2452caa",
+     "0x57Dc1AcfA4A904BDF72BC01e7db3dc3bB5ddD83e"
+    ],
+    "evmLedgerLive": [
+     "0x1959f5f4979c5Cd87D5CB75c678c770515cb5E0E",
+     "0xbCD02d8f6EaC6528546cE07e3f636Cb7cdEC9259",
+     "0x651A673a13Db340A7Fa121B39C3ECB83CcCfE845",
+     "0x150d39c4F1f3Ded369e36daD00713C42503b1C3b",
+     "0xB6Dd89c6D4b8d14c225314f9523B89Efed49D0DA"
+    ],
+    "btcNativeSegwit": [
+     "bc1qctmx7cs89xvm2vvz6fwu7wyh67x84x9d50zluq",
+     "bc1qqaauex480r67x2qrruvgnhqxk0v3vx4z44cnxj",
+     "bc1q7sf0u330nk2ghtad9x3m237macn99geml2n0ql",
+     "bc1qy9y6l5amm87nwzwfkkvs0xv57s5x6f6sqn9d8x",
+     "bc1q0h3jwlga9vfjs4w76fah3j4umr0dtxuuq6dwyw"
+    ],
+    "btcTaproot": [
+     "bc1pawdw93cxa44vyht9ujks086znenqhlykz3jursx0z677eycdjj6shug7aa",
+     "bc1pywwq4ygfluze3pytecm9ccsggynwhvrjnlwf06eqpgrr0lvspwjs229s4w",
+     "bc1pxmvct630deuhkgwmu9g9l8g480mq2ze3tam78xspylpn6mxyjp4qxlkpe2",
+     "bc1pnpc54n59r5znzm7aa0h6marz264ylklvzuz4cg4j4ly4pwg0elhqg8njl7",
+     "bc1psut5jwwfak6wfp69yn4wss5e7sa378md8dpd58pkfkaewl5e0vvs8t027q"
+    ],
+    "btcNestedSegwit": [
+     "386yQdFWfbAuEUa1ctbZo9Lgacj3PhXs9R",
+     "32CqcJpGjMwjHwyd52PyyLj4RERci6zszJ",
+     "39y6GWJfLbSExm3fs3QVouaPasfpwVeg6i",
+     "37URemj6fvDJjFQr2M4p35gCNp23wLUpMZ",
+     "3HzwkYaGrUXx71H3RPhBAdr2dNPZoaU13Y"
+    ],
+    "btcLegacy": [
+     "17XJgXjL6MCFhxLAsLeSNx2m3eFx7xeYyV",
+     "19LNs9QJB6zvReGr2zkvqiqtiSeNmTLQnK",
+     "19wbeRmeqZNyxkTNcpzjeUfhoJM7dNAv7U",
+     "195Sqwy6abK7reM6A1sKxxQGmo5HGUqt8L",
+     "16FQoKGjggGTdPkDM7XFGARvAjN9SRGMLv"
+    ],
+    "solanaStandard": [
+     "4wX8yu9YmSe4mv9ZPtTeoF9pe6Ji4ScjuJEffS3sCKZ4",
+     "4pD4GUDpxajyFDE3jPhReL4DnLjHL98Z8UXpxf73rbT4",
+     "3Nfk5kNbjWzNgBA4oGjFjdEJVru53f1QGek5NnRGdoGn",
+     "69ZFKvuunoRjBexwRrbZVZEJ1q2YD51FS9KAYcnAs4mk",
+     "32TsQd3neLRDTYCVmuM2ZHbtVxHvdLMHvwBsvotMdpig"
+    ],
+    "solanaLegacy": [
+     "F1bMRUwGqs7sFYc6rFWcasX8H4K7mieABafuUjGPyWFV",
+     "6usuHVZVgukfG5S5tgVqjRwwxZP68ChMLZkTWSAKkz79",
+     "HXEtubpdjawx9jc2x3QAp57zSWYwpJ3WkwkZXjUk8yPZ",
+     "4LPBtB9V4VQZ6C9P634dXtcrD45xqWwYTPVbu15sg8F4",
+     "FH1pyx3bNMJSNuxFq1QzJWxrhuWC983c89v99595Janc"
+    ],
+    "tronStandard": [
+     "TNsC5fdh1ZfbTZpMjbiXZifseoxKRgNrqb",
+     "TQRdZWxpRrDNPr3UrLZ1Y5y1qdkMhcquFh",
+     "TFRxquMTigYvaxms1AFs1MMt4KGteA4xfi",
+     "TSDyD9MYxCB6zuWnNmUZobvdtYUhAuFZPq",
+     "TJM5auf8F7bqqCHVcwMagEfB9HrqQKy5fQ"
+    ]
+   }
+  }
+ ]
+}

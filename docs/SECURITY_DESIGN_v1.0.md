@@ -175,7 +175,8 @@
 ## 9. 供应链
 
 - 所有依赖锁定到确切版本，锁文件入库。
-- `ow_vault` 的依赖白名单：libsodium 的 Dart 绑定、派生库（M0 选定）、Dart 标准库。新增依赖需要写 ADR。
+- `ow_vault` 的依赖白名单：`ow_domain`、派生库 `blockchain_utils`（ADR_004）、libsodium 的 Dart 绑定（接入时加入）、Dart 标准库。白名单写在 `tools/ci/check_deps.dart` 中，新增依赖需要写 ADR。
+- `ow_vault` 自身代码不得导入 `dart:io`：文件读写通过注入的存储接口完成，由 `ow_data` 或 `ow_platform` 提供实现。
 - 升级任何依赖前阅读其变更说明；升级 `ow_vault` 的依赖时还要审阅代码差异。
 - 不使用带统计、广告、远程配置功能的 SDK。
 - 原生层（Swift、Kotlin）只使用系统自带的安全框架，不引入第三方原生库。

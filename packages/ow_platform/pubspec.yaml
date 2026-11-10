@@ -1,0 +1,19 @@
+name: ow_platform
+description: 平台适配层：硬件密钥、生物识别、防截屏、文件导出。每个平台一份实现。
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ow_domain:
+    path: ../ow_domain
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  lints: ^6.0.0

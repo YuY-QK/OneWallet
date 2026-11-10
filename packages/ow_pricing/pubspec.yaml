@@ -1,0 +1,16 @@
+name: ow_pricing
+description: 价格源与币种归一化映射。
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  ow_domain:
+    path: ../ow_domain
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0

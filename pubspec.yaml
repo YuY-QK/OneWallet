@@ -1,0 +1,20 @@
+name: onewallet_workspace
+description: OneWallet 工作区。各包的职责与依赖规则见 docs/TECH_DESIGN_v1.0.md。
+publish_to: none
+
+environment:
+  sdk: ^3.13.0
+
+workspace:
+  - app
+  - packages/ow_domain
+  - packages/ow_application
+  - packages/ow_data
+  - packages/ow_chains
+  - packages/ow_exchanges
+  - packages/ow_pricing
+  - packages/ow_vault
+  - packages/ow_platform
+
+dev_dependencies:
+  lints: ^6.0.0

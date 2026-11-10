@@ -1,0 +1,16 @@
+name: ow_data
+description: 数据层：本地数据库与仓储实现。
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  ow_domain:
+    path: ../ow_domain
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0

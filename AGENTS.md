@@ -37,4 +37,21 @@
 
 ## 项目命令
 
-工程尚未建立。M0 完成后在此补充：安装依赖、运行、测试、格式化、静态检查、依赖边界检查的命令。
+需要 Flutter 3.47.9（Dart 3.13）。全部命令在仓库根目录运行。
+
+| 目的 | 命令 |
+|---|---|
+| 安装依赖 | `flutter pub get` |
+| 合并前的全部检查（格式、静态检查、依赖边界、测试） | `tools/check.sh` |
+| 只跑依赖边界与安全红线检查 | `dart run tools/ci/check_deps.dart` |
+| 格式化 | `dart format .` |
+| 静态检查 | `flutter analyze` |
+| 单个纯 Dart 包的测试 | `cd packages/<包名> && dart test` |
+| 应用的测试 | `cd app && flutter test` |
+| 运行应用（需要已连接的设备或模拟器） | `cd app && flutter run` |
+| 重新生成派生对照样本 | `pip install bip_utils && python3 packages/ow_vault/test/fixtures/generate_vectors.py` |
+| 修改 ARB 文案后重新生成本地化代码 | `flutter pub get` 会自动生成 `app/lib/l10n/app_localizations*.dart` |
+
+## 目录
+
+`app/` 是 Flutter 应用；`packages/ow_*` 是各层的包；`tools/` 是检查脚本；`docs/` 是文档。各包的职责与依赖规则见 `docs/TECH_DESIGN_v1.0.md` 3.2、3.3 节和 `docs/DEV_GUIDELINES_v1.0.md` 第 2 节。
