@@ -7,12 +7,17 @@
 - **只看不动**：不签名、不转账、不交易。
 - **不依赖任何人**：没有自有服务器；备份格式公开，可脱离 app 解密。
 
-状态：计划阶段，尚未开始实施。见 [`docs/progress.md`](docs/progress.md)。
+状态：M0 进行中。见 [`docs/progress.md`](docs/progress.md)。
+
+**参与开发**：先读 [`AGENTS.md`](AGENTS.md) 和 [`docs/EXECUTION_GUIDE.md`](docs/EXECUTION_GUIDE.md)，任务在 [`docs/TASKS.md`](docs/TASKS.md)。交给 AI 执行时使用 [`docs/KICKOFF_PROMPT.md`](docs/KICKOFF_PROMPT.md) 中的指令。
 
 ## 文档
 
 | 文档 | 内容 |
 |---|---|
+| [执行手册](docs/EXECUTION_GUIDE.md) | 工作流程、完成标准、禁止事项 |
+| [任务清单](docs/TASKS.md) | 逐条任务、验收、环境要求 |
+| [实现规格](docs/IMPLEMENTATION_SPEC_v1.0.md) | 类型名、接口、路由、表结构的约定 |
 | [想法简报](docs/IDEA_BRIEF_v1.0.md) | 一页说清做什么、不做什么 |
 | [产品需求文档](docs/PRD_v1.0.md) | 规则与逐页需求 |
 | [原型说明](docs/PROTOTYPE_v1.0.md) | 信息架构与页面线框 |

@@ -40,6 +40,11 @@ final fundMovingPaths = RegExp(
   caseSensitive: false,
 );
 
+/// 被 [fundMovingPaths] 误拦、但确属只读的接口路径。
+///
+/// 每加一条都要在旁边注明用途和官方文档链接，并在 docs/EXTERNAL_APIS.md 中记录。
+const readOnlyPathAllowlist = <String>{};
+
 /// 平台名称判断只允许出现在 ow_platform 和 app/lib/bootstrap。
 final platformChecks = RegExp(
   r'\b(Platform\.is(Android|IOS|MacOS|Windows|Linux|Fuchsia)|defaultTargetPlatform)\b',
@@ -117,7 +122,12 @@ void _checkVaultDependencySources() {
 
 void _checkExchangeSources() {
   for (final file in _dartFiles('packages/ow_exchanges/lib')) {
-    _scan(file, fundMovingPaths, '交易所适配器不得包含能动用资金的接口');
+    _scan(
+      file,
+      fundMovingPaths,
+      '交易所适配器不得包含能动用资金的接口',
+      allow: (match) => readOnlyPathAllowlist.any(match.contains),
+    );
   }
 }
 
@@ -137,13 +147,18 @@ void _checkPlatformLeaks() {
   }
 }
 
-void _scan(File file, RegExp pattern, String message) {
+void _scan(
+  File file,
+  RegExp pattern,
+  String message, {
+  bool Function(String match)? allow,
+}) {
   final lines = file.readAsLinesSync();
   for (var i = 0; i < lines.length; i++) {
     final line = lines[i];
     if (line.trimLeft().startsWith('//')) continue;
     final match = pattern.firstMatch(line);
-    if (match != null) {
+    if (match != null && !(allow?.call(match.group(0)!) ?? false)) {
       errors.add('$message：${file.path}:${i + 1}  ${match.group(0)}');
     }
   }
