@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../theme/ow_colors.dart';
+import '../theme/ow_text_styles.dart';
+import 'ow_primary_button.dart';
 
 /// 空状态：图标、一句说明、至多一个主按钮。
 class EmptyState extends StatelessWidget {
@@ -35,21 +37,17 @@ class EmptyState extends StatelessWidget {
               Text(
                 title,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: c.ink,
-                ),
+                style: OwTextStyles.emphasis.copyWith(color: c.ink),
               ),
               const SizedBox(height: 6),
               Text(
                 body,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 14, color: c.muted),
+                style: OwTextStyles.body.copyWith(color: c.muted),
               ),
               if (actionLabel != null) ...[
                 const SizedBox(height: 20),
-                FilledButton(onPressed: onAction, child: Text(actionLabel!)),
+                OwPrimaryButton(label: actionLabel!, onPressed: onAction),
               ],
             ],
           ),

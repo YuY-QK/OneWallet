@@ -183,6 +183,78 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'此功能尚未实现'**
   String get notAvailableYet;
+
+  /// No description provided for @timeJustNow.
+  ///
+  /// In zh, this message translates to:
+  /// **'刚刚'**
+  String get timeJustNow;
+
+  /// No description provided for @timeMinutesAgo.
+  ///
+  /// In zh, this message translates to:
+  /// **'{minutes} 分钟前'**
+  String timeMinutesAgo(int minutes);
+
+  /// No description provided for @failureNetwork.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络不可用或请求超时。请检查网络连接后重试。'**
+  String get failureNetwork;
+
+  /// No description provided for @failureRateLimited.
+  ///
+  /// In zh, this message translates to:
+  /// **'请求太频繁，被数据服务暂时限制了。请等一两分钟再刷新。'**
+  String get failureRateLimited;
+
+  /// No description provided for @failureUnauthorized.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 或 Secret 不正确，服务商拒绝了请求。请检查后重新填写。'**
+  String get failureUnauthorized;
+
+  /// No description provided for @failureKeyExpired.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效，请到交易所重新创建并更换。'**
+  String get failureKeyExpired;
+
+  /// No description provided for @failureClockSkew.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。'**
+  String get failureClockSkew;
+
+  /// No description provided for @failureServiceDown.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据服务暂时出了问题。请稍后重试，已有的数据不受影响。'**
+  String get failureServiceDown;
+
+  /// No description provided for @failureValidation.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入的内容格式不正确。请检查后重新输入。'**
+  String get failureValidation;
+
+  /// No description provided for @failureWrongPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码不正确。请重新输入。'**
+  String get failureWrongPassword;
+
+  /// No description provided for @failureUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前设备不支持这个功能。'**
+  String get failureUnsupported;
+
+  /// No description provided for @failureUnknown.
+  ///
+  /// In zh, this message translates to:
+  /// **'出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。'**
+  String get failureUnknown;
 }
 
 class _AppLocalizationsDelegate
