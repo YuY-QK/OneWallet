@@ -1,0 +1,7 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          # 时间以 ISO-8601 文本存储，保留毫秒与微秒精度，UTC 时字典序即时间序。
+          store_date_time_values_as_text: true

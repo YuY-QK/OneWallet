@@ -438,7 +438,13 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 | `settings` | **key**, value（文本） |
 | `token_visibility` | **token_key**, hidden |
 
-- 外键开启级联删除。
+- 外键开启级联删除：`addresses.account_id`、`holdings.account_id`、`sync_records.account_id` 都指向 `accounts` 并级联。`holdings.address_id` 不设外键，删除地址时由仓储在同一事务内删除它的持仓；删除账户时由仓储清理 `snapshot_items` 中该账户的明细。
+- 交易所币种（`token_kind` 为 exchange）的交易所 id 存在 `token_chain_id` 列，符号存在 `token_symbol` 列。
+- 时间以 ISO-8601 文本存储（UTC，保留毫秒）。
+- 所有 upsert 用 `INSERT … ON CONFLICT DO UPDATE`，不用 `INSERT OR REPLACE`（后者会先删父行并触发级联删除）。
+- 读取时遇到无法解码的行（未知枚举名、未知链 id、损坏的金额）：列表类读取跳过该行，按键读取返回 null，不崩溃。
+- `sync_records` 全表只保留最近 50 条。每次全量同步会为每个账户各写一条，所以每个账户最近一次的状态始终在内。
+- 生成的 `ow_database.g.dart` 纳入版本控制；改表后运行 `cd packages/ow_data && dart run build_runner build`。
 - 数据库 `schemaVersion` 从 1 开始；每次改表都写迁移并加迁移测试。
 - 文件名 `onewallet.db`，位于应用支持目录。
 
