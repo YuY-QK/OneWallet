@@ -11,9 +11,10 @@ const internalAllowed = <String, Set<String>>{
   'ow_domain': {},
   'ow_application': {'ow_domain'},
   'ow_data': {'ow_domain'},
-  'ow_chains': {'ow_domain'},
-  'ow_exchanges': {'ow_domain'},
-  'ow_pricing': {'ow_domain'},
+  'ow_net': {'ow_domain'},
+  'ow_chains': {'ow_domain', 'ow_net'},
+  'ow_exchanges': {'ow_domain', 'ow_net'},
+  'ow_pricing': {'ow_domain', 'ow_net'},
   'ow_vault': {'ow_domain'},
   'ow_platform': {'ow_domain'},
 };

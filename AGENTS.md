@@ -72,6 +72,7 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 | `packages/ow_domain` | 实体、接口、规则（纯 Dart，无 IO） |
 | `packages/ow_application` | 用例 |
 | `packages/ow_data` | 数据库与仓储实现 |
+| `packages/ow_net` | 网络基础设施：仅 HTTPS 的客户端工厂、脱敏日志、失败映射、限速器（纯 Dart） |
 | `packages/ow_chains`、`ow_exchanges`、`ow_pricing` | 数据源适配器 |
 | `packages/ow_vault` | 保险库核心（禁止联网） |
 | `packages/ow_platform` | 平台适配（含原生代码） |
