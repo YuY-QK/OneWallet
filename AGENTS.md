@@ -63,6 +63,7 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 | 运行应用（需要已连接的设备或模拟器） | `cd app && flutter run` |
 | 重新生成派生对照样本 | `pip install bip_utils && python3 packages/ow_vault/test/fixtures/generate_vectors.py` |
 | 修改 ARB 文案后重新生成本地化代码 | `flutter pub get` 会自动生成 `app/lib/l10n/app_localizations*.dart` |
+| 修改数据库表结构后重新生成（生成的 `*.g.dart` 需提交） | `cd packages/ow_data && dart run build_runner build` |
 
 ## 目录
 

@@ -15,5 +15,7 @@ jobs:
           channel: stable
           flutter-version: 3.47.9
           cache: true
+      - name: 安装 SQLite 开发库（ow_data 的测试用内存数据库需要）
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
       - name: 格式、静态检查、依赖边界、全部测试
         run: tools/check.sh

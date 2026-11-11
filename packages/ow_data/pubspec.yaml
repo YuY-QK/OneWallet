@@ -8,9 +8,14 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  decimal: 3.2.6
+  drift: 2.35.4
   ow_domain:
     path: ../ow_domain
+  sqlite3: 3.9.1
 
 dev_dependencies:
+  build_runner: 2.16.1
+  drift_dev: 2.35.3
   lints: ^6.0.0
   test: ^1.25.0
