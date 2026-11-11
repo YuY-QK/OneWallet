@@ -1,0 +1,42 @@
+{
+  "0xaaaa000000000000000000000000000000000001": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "decimals": 6,
+      "logo": "https://example.invalid/a.png",
+      "name": "Fake Dollar",
+      "symbol": "FUSD"
+    }
+  },
+  "0xaaaa000000000000000000000000000000000003": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "decimals": 18,
+      "logo": null,
+      "name": "Fake Wrapped Ether",
+      "symbol": "FWETH"
+    }
+  },
+  "0xaaaa000000000000000000000000000000000004": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "decimals": 0,
+      "logo": null,
+      "name": "Fake Ticket",
+      "symbol": "TIX"
+    }
+  },
+  "0xaaaa000000000000000000000000000000000006": {
+    "jsonrpc": "2.0",
+    "id": 1,
+    "result": {
+      "decimals": 6,
+      "logo": null,
+      "name": null,
+      "symbol": null
+    }
+  }
+}
