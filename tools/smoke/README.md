@@ -5,3 +5,17 @@
 - Key 一律从环境变量读取，例如 `OW_ALCHEMY_KEY`、`OW_BINANCE_KEY`、`OW_BINANCE_SECRET`。
 - 脚本不得把 Key 写入文件或打印出来。
 - 这些脚本不在 CI 中运行。
+
+## 价格源（CoinGecko）
+
+脚本在 `packages/ow_pricing/tool/smoke_price.dart`（需要 `ow_pricing` 的依赖，所以放在包内；`tools/` 属于不带依赖的根工作区，无法直接导入）。
+
+```
+cd packages/ow_pricing
+dart run tool/smoke_price.dart             # 打印 BTC、ETH、USDT 的 USD 价格与 24 小时涨跌
+dart run tool/smoke_price.dart --catalog   # 核对内置映射表里每个 priceId 是否都查得到价格
+```
+
+- Key 从环境变量 `OW_COINGECKO_KEY` 读取，可缺省：`OW_COINGECKO_KEY=你的Key dart run tool/smoke_price.dart`。
+- 无 Key 时免费档限频很严，遇到 `RateLimitedFailure` 稍等一分钟再试。
+- `--catalog` 在上线前至少运行一次：映射表中的 priceId 来自既有知识，未能对照 CoinGecko 官方清单核对，这一步用真实接口验证。

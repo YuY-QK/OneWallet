@@ -1,0 +1,6 @@
+{
+  "id": "fake-tether-token",
+  "symbol": "usdt",
+  "name": "Totally Tether",
+  "asset_platform_id": "binance-smart-chain"
+}
