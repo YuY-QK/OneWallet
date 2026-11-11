@@ -1,2 +1,6 @@
-/// OneWallet 价格与币种映射。M0 仅建立包骨架，内容在后续里程碑加入。
+/// OneWallet 价格与币种映射：内置币种映射表与 CoinGecko 价格源。
+///
+/// 纯 Dart。网络访问经由 `ow_net`。
 library;
+
+export 'src/catalog/built_in_asset_catalog.dart';

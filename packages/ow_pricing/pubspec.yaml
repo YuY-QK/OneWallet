@@ -8,8 +8,12 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  decimal: 3.2.6
+  dio: 5.11.1
   ow_domain:
     path: ../ow_domain
+  ow_net:
+    path: ../ow_net
 
 dev_dependencies:
   lints: ^6.0.0
