@@ -205,16 +205,46 @@ final class PortfolioSummary {
   final Decimal exchangeTotal;
 }
 
+/// 某币种在一个账户、一个位置上的分布（P09）。
+final class DistributionEntry {
+  final String accountId;
+  final HoldingLocation location;
+  final Decimal amount;
+  final Decimal? value;              // 币种无价格时为 null
+  final Decimal share;               // 0–100；总估值为 0 或无价格时为 0
+}
+
 abstract final class PortfolioCalculator {
   static PortfolioSummary summarize({
     required List<Account> accounts,
     required List<Holding> holdings,
-    required Map<String, Price> prices,   // 以 assetId 为键
-    required bool hideSmall,              // 阈值固定为 1 USD
-    required Set<String> hiddenTokens,    // 用户手动隐藏
+    required Map<String, Price> prices,   // 以 assetId 为键，当前计价货币
+    required bool hideSmall,
+    required Decimal smallThreshold,      // "1 USD 折合当前计价货币"的值，由调用方换算；估值低于它的币种在 hideSmall 时隐藏
+    required Set<String> hiddenTokens,    // 用户手动隐藏的 tokenKey；这些持仓完全排除
+  });
+
+  /// 某币种在各账户、各位置的分布，按估值降序（无估值排最后，再按数量降序、账户 id 升序）。
+  static List<DistributionEntry> distributionOf({
+    required String assetId,
+    required List<Holding> holdings,
+    required Map<String, Price> prices,
+    Set<String> hiddenTokens = const {},
   });
 }
+
+/// part 占 total 的百分数（0–100），保留 18 位小数；total 为 0 时返回 0。
+Decimal shareOf(Decimal part, Decimal total);
 ```
+
+`summarize` 的规则要点：
+
+- 账户不在 `accounts` 中的持仓整体忽略，因此 `byAccount` 估值之和 = `total`；`onChainTotal`（按持仓位置）+ `exchangeTotal` = `total`。
+- 无估值（assetId 为空或 `prices` 无该 assetId）的持仓不计入任何总额；`unpricedCount` 为这类**不同币种**数（assetId 为空的以 `tokenKey` 为准）；被手动隐藏的不计入。
+- 同一 assetId 合并为一个 `AssetSlice`，`displaySymbol` 取第一条持仓的符号。`hideSmall` 只隐藏列表项，仍计入总额与账户汇总。
+- 排序：`byAsset` 估值降序、assetId 升序；`byAccount` 含全部传入账户，估值降序、名称升序。
+- 24 小时变化 = 当前数量 × 24 小时前价格估算，前值 = 估值 / (1 + 涨跌百分比 / 100)。缺百分比（或 ≤ −100%，避免除以零）的持仓按"无变化"计入；全部缺或前值合计为 0 时 `change24h`、`change24hPercent` 为 null。
+- 除法在精确分数上进行，最终四舍五入（远离零）到 18 位小数。
 
 ### 2.5 其他
 
