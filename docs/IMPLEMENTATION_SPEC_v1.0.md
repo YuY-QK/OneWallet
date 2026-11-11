@@ -42,7 +42,8 @@ final class ChainInfo {
 
 abstract final class Chains {      // 内置链表，v1.0 固定 9 条
   static const List<ChainInfo> all;
-  static ChainInfo byId(String id);
+  static ChainInfo byId(String id);         // 未知 id 抛 ArgumentError（程序缺陷）
+  static ChainInfo? tryById(String id);     // 未知 id 返回 null，用于外部来源的数据
   static List<ChainInfo> ofFamily(ChainFamily family);
 }
 ```
@@ -63,16 +64,35 @@ abstract final class Chains {      // 内置链表，v1.0 固定 9 条
 
 ```dart
 /// 地址校验与规范化。纯函数，不联网。实现放在 ow_domain，供界面即时校验。
-abstract final class AddressCodec {
-  static ChainFamily? detectFamily(String input);   // 识别不了返回 null
-  static bool isValid(String input, ChainFamily family);
+/// 只看格式的操作是静态方法；用到校验和的操作是实例方法，校验和由构造函数注入。
+final class AddressCodec {
+  const AddressCodec({AddressChecksum? checksum});  // 为 null 时只做格式判断
+  static ChainFamily? detectFamily(String input);   // 只看格式；识别不了返回 null
+  bool isValid(String input, ChainFamily family);   // 格式通过后再调 checksum.verify
   static String normalize(String input, ChainFamily family); // EVM 转小写；其余原样去空白
-  static String display(String normalized, ChainFamily family); // EVM 转 EIP-55
-  static String shorten(String address);            // 前 6 后 4
+  String display(String normalized, ChainFamily family);     // EVM 转 EIP-55；未注入时原样
+  static String shorten(String address);            // 前 6 后 4，中间为"…"
+}
+
+/// 校验和验证与 EIP-55 转换，由 ow_chains 实现。
+abstract interface class AddressChecksum {
+  bool verify(String address, ChainFamily family);  // 地址已通过格式判断并去除首尾空白
+  String toEip55(String normalizedEvmAddress);
 }
 ```
 
-EIP-55 需要 Keccak-256，Base58Check 需要 SHA-256，Bech32 需要校验和。`ow_domain` 不引入密码学库，所以 `AddressCodec` 的**格式判断**（前缀、长度、字符集）在 `ow_domain`，**校验和验证与 EIP-55 转换**通过接口 `AddressChecksum` 注入，由 `ow_chains` 提供实现（`ow_chains` 可依赖 `blockchain_utils`，仅用于地址编解码）。
+EIP-55 需要 Keccak-256，Base58Check 需要 SHA-256，Bech32 需要校验和。`ow_domain` 不引入密码学库，所以 `AddressCodec` 的**格式判断**（前缀、长度、字符集）在 `ow_domain`，**校验和验证与 EIP-55 转换**通过接口 `AddressChecksum` 注入，由 `ow_chains` 提供实现（`ow_chains` 可依赖 `blockchain_utils`，仅用于地址编解码）。注入走构造函数而不是全局可变状态，所以 `AddressCodec` 是可实例化的类，由 `app/lib/bootstrap/` 装配带校验和的实例。
+
+格式判断规则（输入先去首尾空白）：
+
+| 家族 | 格式 |
+|---|---|
+| EVM | `0x` 加 40 个十六进制字符（大小写不限） |
+| Bitcoin | `1` 或 `3` 开头的 Base58 字符串，总长 26–35；或 `bc1q` 开头、小写 bech32 字符集、总长 42 或 62；或 `bc1p` 开头、小写 bech32 字符集、总长 62 |
+| Solana | Base58 字符集，长度 32–44 |
+| Tron | `T` 开头的 Base58 字符串，长度 34 |
+
+`detectFamily` 按 EVM、Tron、Bitcoin、Solana 的顺序判断，因为 Tron 地址和 `1`、`3` 开头的 Bitcoin 地址同时满足 Solana 的格式。
 
 ### 2.2 `account/`
 
@@ -170,6 +190,8 @@ final class Price {
 
 ```dart
 final class ValuedHolding { final Holding holding; final Decimal? value; }
+final class AssetSlice { final String assetId; final String displaySymbol; final Decimal amount; final Decimal value; } // 只含有估值的标准币种
+final class AccountSlice { final String accountId; final Decimal value; }
 
 final class PortfolioSummary {
   final Decimal total;
