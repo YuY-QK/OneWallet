@@ -1,2 +1,14 @@
-/// OneWallet 应用层用例。M0 仅建立包骨架，内容在后续里程碑加入。
+/// OneWallet 应用层用例。只依赖 `ow_domain`，依赖一律经构造函数注入。
 library;
+
+export 'src/accounts/add_addresses_to_account.dart';
+export 'src/accounts/add_wallet_account.dart';
+export 'src/accounts/address_input.dart';
+export 'src/portfolio/watch_portfolio.dart';
+export 'src/sync/failure_type_name.dart';
+export 'src/sync/holding_normalizer.dart';
+export 'src/sync/retry_policy.dart';
+export 'src/sync/sync_account.dart';
+export 'src/sync/sync_all_accounts.dart';
+export 'src/sync/sync_all_result.dart';
+export 'src/sync/sync_cancellation.dart';
