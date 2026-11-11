@@ -97,7 +97,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 依据：IMPLEMENTATION_SPEC 第 8 节（先写 `EXTERNAL_APIS.md` 的对应小节）。
   - 验收：用录制样本测试解析、限频映射为 `RateLimitedFailure`、网络错误映射；`tools/smoke/price.dart` 可手动运行。
 
-- [ ] **M1-05** 网络基础设施 〔离线〕
+- [x] **M1-05** 网络基础设施 〔离线〕 2026-11-11
   - 做什么：在一个新的纯 Dart 包 `ow_net` 中提供 HTTP 客户端工厂（超时、仅 HTTPS、脱敏日志拦截器）、`RateLimiter`、统一的 HTTP 状态到 `Failure` 的映射。把 `ow_net` 加入工作区和 `check_deps.dart` 的规则（`ow_chains`、`ow_exchanges`、`ow_pricing` 可依赖它；`ow_vault` 不可）。同步更新 TECH_DESIGN 3.2、3.3 与 DEV_GUIDELINES 第 2 节的表。
   - 验收：日志拦截器测试断言输出中不含完整 API Key、签名、Secret；`http://` 地址被拒绝。
 

@@ -54,7 +54,7 @@ class RedactingLogInterceptor extends Interceptor {
         : '-';
     final query = redactor.formatQuery(uri.queryParametersAll);
     final headers = redactor.formatHeaders(options.headers);
-    return '${options.method} ${uri.host}${uri.path}'
+    return '${options.method} ${uri.host}${redactor.formatPath(uri.path)}'
         '${query.isEmpty ? '' : '?$query'} headers=$headers '
         '-> $outcome $elapsed';
   }

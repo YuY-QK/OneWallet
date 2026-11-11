@@ -1,4 +1,4 @@
-/// 请求头与查询参数的脱敏规则（DEV_GUIDELINES 第 6 节：API Key 只保留前 4 位）。
+/// 请求头、查询参数与路径的脱敏规则（DEV_GUIDELINES 第 6 节：API Key 只保留前 4 位）。
 ///
 /// - 名称（不区分大小写）含 `key|secret|sign|signature|token|passphrase|
 ///   authorization|password` 的视为敏感；
@@ -52,6 +52,17 @@ class Redactor {
     ];
     return parts.join('&');
   }
+
+  static final _opaqueSegment = RegExp(r'^[A-Za-z0-9_\-]{16,}$');
+
+  /// 脱敏后的路径：长度不小于 16 的不透明路径段只保留前 4 位。
+  ///
+  /// 有的服务商把 API Key 放在路径里，链上查询也常把地址放在路径里；
+  /// 两者都不应完整进入日志。
+  String formatPath(String path) => path
+      .split('/')
+      .map((s) => _opaqueSegment.hasMatch(s) ? '${s.substring(0, 4)}***' : s)
+      .join('/');
 
   /// [name] 是否敏感（用于跨主机重定向时剥离敏感请求头）。
   bool isSensitive(String name) {
