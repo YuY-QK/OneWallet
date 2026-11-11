@@ -68,8 +68,9 @@ abstract final class Chains {      // 内置链表，v1.0 固定 9 条
 final class AddressCodec {
   const AddressCodec({AddressChecksum? checksum});  // 为 null 时只做格式判断
   static ChainFamily? detectFamily(String input);   // 只看格式；识别不了返回 null
+  ChainFamily? detect(String input);                // 按 EVM、Tron、Bitcoin、Solana 顺序返回第一个格式与校验和都通过的家族；未注入校验和时等同 detectFamily。界面一律用它
   bool isValid(String input, ChainFamily family);   // 格式通过后再调 checksum.verify
-  static String normalize(String input, ChainFamily family); // EVM 转小写；其余原样去空白
+  static String normalize(String input, ChainFamily family); // EVM 转小写；Bitcoin 全大写 bech32 转小写；其余原样去空白
   String display(String normalized, ChainFamily family);     // EVM 转 EIP-55；未注入时原样
   static String shorten(String address);            // 前 6 后 4，中间为"…"
 }
@@ -92,7 +93,9 @@ EIP-55 需要 Keccak-256，Base58Check 需要 SHA-256，Bech32 需要校验和�
 | Solana | Base58 字符集，长度 32–44 |
 | Tron | `T` 开头的 Base58 字符串，长度 34 |
 
-`detectFamily` 按 EVM、Tron、Bitcoin、Solana 的顺序判断，因为 Tron 地址和 `1`、`3` 开头的 Bitcoin 地址同时满足 Solana 的格式。
+`detectFamily` 按 EVM、Tron、Bitcoin、Solana 的顺序判断，因为 Tron 地址和 `1`、`3` 开头的 Bitcoin 地址同时满足 Solana 的格式。反过来，个别 Solana 地址（如系统程序地址，32 个 `1`）格式上也满足 Bitcoin，`detectFamily` 会误判；`detect` 用同样的顺序但要求校验和也通过，从而消除这类歧义（M1-02）。
+
+Bitcoin 的 bech32 地址（`bc1q`、`bc1p`）接受全大写形式（BIP173 允许，常见于二维码），`normalize` 把它转为小写；大小写混用的不合法。`ChainAddressChecksum`（`ow_chains`）还检查：Base58 地址的版本字节（P2PKH `0x00`、P2SH `0x05`）、HRP 必须为 `bc`、`bc1q` 的见证版本为 0（Bech32，程序 20 或 32 字节）、`bc1p` 为 1（Bech32m，32 字节）；Tron 版本字节 `0x41`；Solana 解码后恰为 32 字节；EVM 全小写或全大写视为无校验和，大小写混合须通过 EIP-55。
 
 ### 2.2 `account/`
 

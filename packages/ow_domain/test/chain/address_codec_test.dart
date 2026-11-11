@@ -35,6 +35,19 @@ final class FakeChecksum implements AddressChecksum {
   String toEip55(String normalizedEvmAddress) => 'EIP55:$normalizedEvmAddress';
 }
 
+/// 只认指定家族的校验和替身。
+final class _OnlyFamily implements AddressChecksum {
+  _OnlyFamily(this.family);
+
+  final ChainFamily family;
+
+  @override
+  bool verify(String address, ChainFamily f) => f == family;
+
+  @override
+  String toEip55(String normalizedEvmAddress) => normalizedEvmAddress;
+}
+
 void main() {
   const codec = AddressCodec();
 
@@ -80,7 +93,7 @@ void main() {
         '0x${'g' * 40}', // 非十六进制
         '0X${'a' * 40}', // 前缀大写
         'bc1z${'0' * 38}', // 未知见证版本（用 0 避免同时满足 Solana 格式）
-        'BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3T4', // 大写 bech32
+        'BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3t4', // 大小写混用的 bech32
         'bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3tb', // 含 b，不在 bech32 字符集
         '0OIl${'1' * 30}', // 含 Base58 排除的字符
         'a' * 31, // 短于 Solana 下限
@@ -112,11 +125,23 @@ void main() {
         btcP2wpkh.substring(0, 41), // bc1q 长度 41
         'bc1q${'q' * 48}', // bc1q 长度 52
         btcTaproot.substring(0, 42), // bc1p 长度 42
-        btcTaproot.toUpperCase(),
+        'Bc1q${btcP2wpkh.substring(4)}', // 大小写混用
+        'BC1QW508D6QEJXTDG4Y5R3ZARVARY0C5XW7KV8F3t4', // 大小写混用
+        'BC1P${btcTaproot.substring(4)}', // 大小写混用
         evmEip55,
       ]) {
         expect(codec.isValid(a, ChainFamily.bitcoin), isFalse, reason: a);
       }
+    });
+
+    test('isValid_Bitcoin全大写bech32_接受', () {
+      for (final a in [btcP2wpkh, btcP2wsh, btcTaproot]) {
+        expect(codec.isValid(a.toUpperCase(), ChainFamily.bitcoin), isTrue);
+      }
+      expect(
+        AddressCodec.detectFamily(btcTaproot.toUpperCase()),
+        ChainFamily.bitcoin,
+      );
     });
 
     test('isValid_Solana_合法与非法', () {
@@ -174,6 +199,36 @@ void main() {
     });
   });
 
+  group('detect', () {
+    test('detect_未注入校验和_等同detectFamily', () {
+      for (final a in [evmEip55, btcP2pkh, solSystemProgram, tronUsdt, 'x']) {
+        expect(codec.detect(a), AddressCodec.detectFamily(a), reason: a);
+      }
+    });
+
+    test('detect_注入校验和_返回第一个格式与校验和都通过的家族', () {
+      // 校验和只认 solana：Tron、Bitcoin 格式匹配但被跳过。
+      final c = AddressCodec(checksum: _OnlyFamily(ChainFamily.solana));
+      expect(c.detect(solSystemProgram), ChainFamily.solana);
+      // Tron 地址格式上也满足 Solana，校验和只认 solana 时归为 solana。
+      expect(c.detect(tronUsdt), ChainFamily.solana);
+      expect(c.detect(evmEip55), isNull);
+      expect(c.detect(btcP2pkh), ChainFamily.solana);
+    });
+
+    test('detect_校验和全部不通过_返回null', () {
+      final c = AddressCodec(checksum: FakeChecksum(result: false));
+      expect(c.detect(evmEip55), isNull);
+      expect(c.detect(solUsdcMint), isNull);
+    });
+
+    test('detect_格式都不匹配_不调用校验和', () {
+      final fake = FakeChecksum();
+      expect(AddressCodec(checksum: fake).detect('hello'), isNull);
+      expect(fake.calls, isEmpty);
+    });
+  });
+
   group('normalize', () {
     test('normalize_EVM_去空白并转小写', () {
       expect(
@@ -192,6 +247,22 @@ void main() {
         solUsdcMint,
       );
       expect(AddressCodec.normalize('$tronUsdt ', ChainFamily.tron), tronUsdt);
+    });
+
+    test('normalize_Bitcoin全大写bech32_转小写，混用与Base58不动', () {
+      expect(
+        AddressCodec.normalize(
+          ' ${btcP2wpkh.toUpperCase()} ',
+          ChainFamily.bitcoin,
+        ),
+        btcP2wpkh,
+      );
+      expect(
+        AddressCodec.normalize(btcTaproot.toUpperCase(), ChainFamily.bitcoin),
+        btcTaproot,
+      );
+      const mixed = 'Bc1qw508d6qejxtdg4y5r3zarvary0c5xw7kv8f3t4';
+      expect(AddressCodec.normalize(mixed, ChainFamily.bitcoin), mixed);
     });
   });
 
