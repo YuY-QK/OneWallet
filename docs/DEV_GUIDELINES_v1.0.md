@@ -43,7 +43,7 @@
 - 遵循 Effective Dart；静态检查使用 `flutter_lints` 加仓库根目录 `analysis_options.yaml` 中的严格规则（`strict-casts`、`strict-inference`、`strict-raw-types`）。
 - 提交前运行 `dart format`；CI 检查格式。
 - 命名：文件用 `snake_case`，类型用 `UpperCamelCase`，成员用 `lowerCamelCase`。页面类以 `Page` 结尾，控制器以 `Controller` 结尾，用例以动词开头（`SyncAllAccounts`）。
-- 模型一律不可变（freezed）。
+- 模型一律不可变。`ow_domain` 中手写（final 字段、const 构造函数、值相等、需要时加 copyWith），不用代码生成；其他包可按需使用 freezed，同一个包内保持一致。
 - 公开接口写文档注释，说明"做什么"和"失败时怎样"；实现细节的注释只写"为什么"。
 - 单个文件不超过 400 行，单个函数不超过 60 行；超过时拆分。
 - 不使用 `dynamic`；不使用 `!` 强制解包，除非紧邻处有判空。

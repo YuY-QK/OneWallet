@@ -47,7 +47,7 @@
   - 依据：UI_DESIGN_SYSTEM 第 4、5 节；`docs/prototype.html`；IMPLEMENTATION_SPEC 7.3、7.4。
   - 验收：每个组件有浅色和深色下的组件测试；`formatters` 的单元测试覆盖 7.3 表中每一行，包括极小值、零、隐藏金额。
 
-- [ ] **M0-09** 领域模型与接口 〔离线〕
+- [x] **M0-09** 领域模型与接口 〔离线〕 2026-11-11
   - 做什么：按 IMPLEMENTATION_SPEC 第 2、3 节在 `ow_domain` 中补全全部类型和接口（已存在的不动）。加入 `decimal` 依赖。实现 `Chains` 内置链表、`AddressCodec` 的格式判断部分、`Account.backupLevel`。
   - 验收：`Chains.all` 恰好 9 条且与规格表一致；`backupLevel` 对 R34、R35 的每种组合有测试；`AddressCodec.detectFamily` 对每个家族的合法与非法样例有测试。
 
@@ -85,6 +85,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 - [ ] **M1-02** 地址校验和与 EVM 地址编解码 〔离线〕
   - 做什么：`ow_chains` 实现 `AddressChecksum`（EIP-55、Base58Check、Bech32 与 Bech32m），接入 `AddressCodec`。
   - 依据：PRD R4。
+  - 另外两项（M0-09 审查时发现）：一、给 `AddressCodec` 增加实例方法 `detect(input)`：按 EVM、Tron、Bitcoin、Solana 的顺序，返回第一个**格式与校验和都通过**的家族，用来消除 `T`、`1`、`3` 开头的 Solana 地址被误判的歧义；界面一律用它而不是静态的 `detectFamily`。二、Bitcoin 的 bech32 地址接受全大写形式（BIP173 允许），`normalize` 把它转为小写；大小写混用的拒绝。
   - 验收：EIP-55 用 EIP 文档中的测试地址；全小写 EVM 地址被接受；校验和错误的各类地址被拒绝；Bitcoin 四种前缀、Solana、Tron 各有合法与非法样例。
 
 - [ ] **M1-03** 内置币种映射表与 `AssetCatalog` 〔离线〕
