@@ -82,7 +82,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 依赖：M0-09。
   - 验收：仓储测试用内存数据库，覆盖：地址唯一约束（R2）；删除账户的级联（R6）；`replaceForAccount` 的事务性（中途失败不留下半截数据）；金额以字符串往返后精度不变。
 
-- [ ] **M1-02** 地址校验和与 EVM 地址编解码 〔离线〕
+- [x] **M1-02** 地址校验和与 EVM 地址编解码 〔离线〕 2026-11-11
   - 做什么：`ow_chains` 实现 `AddressChecksum`（EIP-55、Base58Check、Bech32 与 Bech32m），接入 `AddressCodec`。
   - 依据：PRD R4。
   - 另外两项（M0-09 审查时发现）：一、给 `AddressCodec` 增加实例方法 `detect(input)`：按 EVM、Tron、Bitcoin、Solana 的顺序，返回第一个**格式与校验和都通过**的家族，用来消除 `T`、`1`、`3` 开头的 Solana 地址被误判的歧义；界面一律用它而不是静态的 `detectFamily`。二、Bitcoin 的 bech32 地址接受全大写形式（BIP173 允许），`normalize` 把它转为小写；大小写混用的拒绝。
@@ -102,7 +102,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 做什么：在一个新的纯 Dart 包 `ow_net` 中提供 HTTP 客户端工厂（超时、仅 HTTPS、脱敏日志拦截器）、`RateLimiter`、统一的 HTTP 状态到 `Failure` 的映射。把 `ow_net` 加入工作区和 `check_deps.dart` 的规则（`ow_chains`、`ow_exchanges`、`ow_pricing` 可依赖它；`ow_vault` 不可）。同步更新 TECH_DESIGN 3.2、3.3 与 DEV_GUIDELINES 第 2 节的表。
   - 验收：日志拦截器测试断言输出中不含完整 API Key、签名、Secret；`http://` 地址被拒绝。
 
-- [ ] **M1-06** EVM 链适配器 〔离线〕＋〔用户〕冒烟
+- [x] **M1-06** EVM 链适配器 〔离线〕＋〔用户〕冒烟 2026-11-11（接口未对照官方文档核对，见 EXTERNAL_APIS.md 与真机测试清单）
   - 做什么：`ow_chains` 实现 EVM 的 `ChainAdapter`：原生币余额、代币余额与元数据。先支持 `ethereum`，再用配置扩到其余 5 条链。数据服务按 TECH_DESIGN 6.2 的建议，Key 从 `DataSourceConfig` 读取。
   - 依赖：M1-05。
   - 验收：录制样本测试覆盖：正常、零余额、大量代币、十六进制大数换算为 `Decimal`、缺 Key 时返回明确的失败；`tools/smoke/evm.dart <地址>` 可手动运行并打印持仓。

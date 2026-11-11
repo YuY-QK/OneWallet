@@ -1,2 +1,5 @@
-/// OneWallet 链适配器。M0 仅建立包骨架，内容在后续里程碑加入。
+/// OneWallet 链适配器：地址校验和与各链余额读取。
 library;
+
+export 'src/address_checksum.dart';
+export 'src/evm_chain_adapter.dart';

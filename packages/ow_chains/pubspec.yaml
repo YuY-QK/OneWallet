@@ -8,9 +8,14 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  blockchain_utils: 7.1.0
+  decimal: 3.2.6
   ow_domain:
     path: ../ow_domain
+  ow_net:
+    path: ../ow_net
 
 dev_dependencies:
+  dio: 5.11.1
   lints: ^6.0.0
   test: ^1.25.0
