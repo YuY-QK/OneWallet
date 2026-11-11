@@ -16,6 +16,14 @@ void main() {
     const ClockSkewFailure(): l10n.failureClockSkew,
     const ServiceDownFailure(): l10n.failureServiceDown,
     const ValidationFailure(): l10n.failureValidation,
+    const DuplicateAddressFailure(
+      shortAddress: '0x12ab…9f3c',
+      existingAccountName: '主钱包',
+    ): l10n.failureDuplicateAddress(
+      'existing',
+      '0x12ab…9f3c',
+      '主钱包',
+    ),
     const WrongPasswordFailure(): l10n.failureWrongPassword,
     const UnsupportedFailure(): l10n.failureUnsupported,
     const UnknownFailure(): l10n.failureUnknown,
@@ -32,6 +40,27 @@ void main() {
   test('failureText_每种失败的文案互不相同', () {
     final texts = cases.keys.map((f) => failureText(l10n, f)).toSet();
     expect(texts.length, cases.length);
+  });
+
+  test('failureText_重复地址有所属账户_文案含缩略地址与账户名', () {
+    final text = failureText(
+      l10n,
+      const DuplicateAddressFailure(
+        shortAddress: '0x12ab…9f3c',
+        existingAccountName: '主钱包',
+      ),
+    );
+    expect(text, contains('0x12ab…9f3c'));
+    expect(text, contains('主钱包'));
+  });
+
+  test('failureText_重复地址在本次输入内_文案说明输入内重复', () {
+    final text = failureText(
+      l10n,
+      const DuplicateAddressFailure(shortAddress: '0x12ab…9f3c'),
+    );
+    expect(text, contains('0x12ab…9f3c'));
+    expect(text, contains('本次输入'));
   });
 
   test('failureText_带detail_不把原始信息显示给用户', () {

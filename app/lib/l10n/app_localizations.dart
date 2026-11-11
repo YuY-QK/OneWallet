@@ -255,6 +255,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。'**
   String get failureUnknown;
+
+  /// No description provided for @failureDuplicateAddress.
+  ///
+  /// In zh, this message translates to:
+  /// **'{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}'**
+  String failureDuplicateAddress(String kind, String address, String account);
 }
 
 class _AppLocalizationsDelegate

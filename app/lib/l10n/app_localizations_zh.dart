@@ -91,4 +91,13 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get failureUnknown => '出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。';
+
+  @override
+  String failureDuplicateAddress(String kind, String address, String account) {
+    String _temp0 = intl.Intl.selectLogic(kind, {
+      'existing': '地址 $address 已在账户「$account」中，同一地址不能重复添加。',
+      'other': '地址 $address 在本次输入中出现了不止一次，请删除重复的一项。',
+    });
+    return '$_temp0';
+  }
 }

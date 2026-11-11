@@ -44,6 +44,27 @@ final class ValidationFailure extends Failure {
   const ValidationFailure([super.detail]);
 }
 
+/// 添加的地址与已有地址重复（PRD R2），或在同一次输入中重复。
+///
+/// 界面据此提示"该地址已属于某某账户"或"本次输入中重复"。
+/// 字段只含缩略地址与账户名，不含任何密钥类数据。
+final class DuplicateAddressFailure extends Failure {
+  const DuplicateAddressFailure({
+    required this.shortAddress,
+    this.existingAccountName,
+    String? detail,
+  }) : super(detail);
+
+  /// 重复地址的缩略形式（见 `AddressCodec.shorten`）。
+  final String shortAddress;
+
+  /// 该地址已属于的账户名；为 null 表示是本次输入内部的重复。
+  final String? existingAccountName;
+
+  /// 是否为本次输入内部的重复。
+  bool get isWithinInput => existingAccountName == null;
+}
+
 /// 密码或 PIN 错误。
 final class WrongPasswordFailure extends Failure {
   const WrongPasswordFailure([super.detail]);
