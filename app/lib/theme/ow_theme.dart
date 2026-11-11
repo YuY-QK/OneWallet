@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'ow_colors.dart';
+import 'ow_text_styles.dart';
 
 /// 由设计令牌生成 Material 主题。组件代码只通过主题和 [OwColors] 取色。
 ThemeData buildOwTheme(Brightness brightness) {
@@ -22,6 +23,8 @@ ThemeData buildOwTheme(Brightness brightness) {
   return ThemeData(
     useMaterial3: true,
     brightness: brightness,
+    fontFamily: OwFonts.sans,
+    fontFamilyFallback: OwFonts.fallback,
     colorScheme: scheme,
     scaffoldBackgroundColor: c.bg,
     extensions: [c],
@@ -31,11 +34,7 @@ ThemeData buildOwTheme(Brightness brightness) {
       elevation: 0,
       scrolledUnderElevation: 0,
       centerTitle: false,
-      titleTextStyle: TextStyle(
-        color: c.ink,
-        fontSize: 17,
-        fontWeight: FontWeight.w600,
-      ),
+      titleTextStyle: OwTextStyles.title.copyWith(color: c.ink),
     ),
     cardTheme: CardThemeData(
       color: c.surface,
@@ -51,7 +50,7 @@ ThemeData buildOwTheme(Brightness brightness) {
       style: FilledButton.styleFrom(
         minimumSize: const Size(0, 46),
         shape: const RoundedRectangleBorder(borderRadius: radius),
-        textStyle: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+        textStyle: OwTextStyles.body.copyWith(fontWeight: FontWeight.w600),
       ),
     ),
     navigationBarTheme: NavigationBarThemeData(
@@ -65,11 +64,11 @@ ThemeData buildOwTheme(Brightness brightness) {
       indicatorColor: c.brandSoft,
       selectedIconTheme: IconThemeData(color: c.brand),
       unselectedIconTheme: IconThemeData(color: c.muted),
-      selectedLabelTextStyle: TextStyle(
+      selectedLabelTextStyle: OwTextStyles.body.copyWith(
         color: c.brand,
         fontWeight: FontWeight.w600,
       ),
-      unselectedLabelTextStyle: TextStyle(color: c.muted),
+      unselectedLabelTextStyle: OwTextStyles.body.copyWith(color: c.muted),
     ),
   );
 }

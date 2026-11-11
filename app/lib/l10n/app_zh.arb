@@ -14,5 +14,24 @@
   "vaultIntroBody": "保险库把助记词和私钥加密保存在这台设备上，不会联网。",
   "vaultIntroAction": "启用保险库",
   "settingsPlaceholder": "设置项将在后续里程碑加入。",
-  "notAvailableYet": "此功能尚未实现"
+  "notAvailableYet": "此功能尚未实现",
+  "timeJustNow": "刚刚",
+  "timeMinutesAgo": "{minutes} 分钟前",
+  "@timeMinutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "failureNetwork": "网络不可用或请求超时。请检查网络连接后重试。",
+  "failureRateLimited": "请求太频繁，被数据服务暂时限制了。请等一两分钟再刷新。",
+  "failureUnauthorized": "API Key 或 Secret 不正确，服务商拒绝了请求。请检查后重新填写。",
+  "failureKeyExpired": "API Key 已失效，请到交易所重新创建并更换。",
+  "failureClockSkew": "设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。",
+  "failureServiceDown": "数据服务暂时出了问题。请稍后重试，已有的数据不受影响。",
+  "failureValidation": "输入的内容格式不正确。请检查后重新输入。",
+  "failureWrongPassword": "密码不正确。请重新输入。",
+  "failureUnsupported": "当前设备不支持这个功能。",
+  "failureUnknown": "出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。"
 }

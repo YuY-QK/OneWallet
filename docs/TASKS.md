@@ -37,12 +37,12 @@
 - [x] **M0-05** 颜色令牌与浅深主题 〔离线〕 2026-11-10
 - [x] **M0-06** 技术验证一：地址派生（ADR_004） 〔离线〕 2026-11-10
 
-- [ ] **M0-07** 打包字体 〔离线〕
+- [x] **M0-07** 打包字体 〔离线〕 2026-11-11
   - 做什么：把 IBM Plex Sans（400、500、600）和 IBM Plex Mono（400、500、600）放入 `app/assets/fonts/`，在 `pubspec.yaml` 注册；主题中正文用 Plex Sans 并以系统中文字体为后备，新增 `OwTextStyles.mono`（等宽数字）。
   - 依据：UI_DESIGN_SYSTEM 第 3 节。字体为 SIL OFL 许可，把许可文件一并放入。
   - 验收：组件测试断言 `OwAmountText` 使用等宽字体族。
 
-- [ ] **M0-08** 通用组件库 〔离线〕
+- [x] **M0-08** 通用组件库 〔离线〕 2026-11-11
   - 做什么：实现 IMPLEMENTATION_SPEC 7.2 列出的 `Ow*` 组件（`OwMnemonicGrid`、`OwVeil`、`OwNetWorthChart` 除外，分别留到 M4 和 M3），以及 `formatters.dart`、`failure_text.dart`。
   - 依据：UI_DESIGN_SYSTEM 第 4、5 节；`docs/prototype.html`；IMPLEMENTATION_SPEC 7.3、7.4。
   - 验收：每个组件有浅色和深色下的组件测试；`formatters` 的单元测试覆盖 7.3 表中每一行，包括极小值、零、隐藏金额。

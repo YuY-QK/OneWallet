@@ -524,6 +524,17 @@ app/lib/features/<feature>/
 
 格式化函数集中在 `app/lib/widgets/formatters.dart`，带单元测试。
 
+已实现的函数与细则（M0-08）：
+
+| 函数 | 细则 |
+|---|---|
+| `formatFiat` | 负号在货币符号前：`-$12.50` |
+| `formatQuantity` | 超出 8 位有效数字的部分**截断**（向零取整），不四舍五入，避免把持仓显示得比实际多；不加千分位；小于 1 的数前导零不算有效数字 |
+| `formatPercent` | 入参是已乘 100 的数值（`1.234` 表示 1.234%）；四舍五入后为零时显示不带符号的 `0.00%` |
+| `shortenAddress` | 前 6 位加 `…` 加后 4 位 |
+| `maskIfHidden` | 隐藏金额时返回 `****`；各格式化函数也有 `hidden` 参数 |
+| `formatRelativeTime` | "现在"由参数传入；"当天"按本地时区判断 |
+
 ### 7.4 失败到文案
 
 每种 `Failure` 在 ARB 中有一条 `failure<类型>` 文案，由 `app/lib/widgets/failure_text.dart` 统一映射。页面不得自己拼错误信息。
