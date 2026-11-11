@@ -192,6 +192,8 @@ SyncRecord         accountId, startedAt, finishedAt, status, errorCode?
 
 ### 5.1 适配器接口
 
+> 下面的代码块是设计阶段的示意。**实际签名以 `IMPLEMENTATION_SPEC_v1.0.md` 3.2 节和 `packages/ow_domain/lib/src/adapter/adapters.dart` 为准**（方法返回 `Result`，地址校验移到了 `AddressCodec`）。
+
 ```dart
 abstract interface class ChainAdapter {
   ChainFamily get family;

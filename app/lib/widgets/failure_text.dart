@@ -16,6 +16,12 @@ String failureText(AppLocalizations l10n, Failure failure) {
     ClockSkewFailure() => l10n.failureClockSkew,
     ServiceDownFailure() => l10n.failureServiceDown,
     ValidationFailure() => l10n.failureValidation,
+    DuplicateAddressFailure(:final shortAddress, :final existingAccountName) =>
+      l10n.failureDuplicateAddress(
+        existingAccountName == null ? 'withinInput' : 'existing',
+        shortAddress,
+        existingAccountName ?? '',
+      ),
     WrongPasswordFailure() => l10n.failureWrongPassword,
     UnsupportedFailure() => l10n.failureUnsupported,
     UnknownFailure() => l10n.failureUnknown,

@@ -412,7 +412,14 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 
 ## 4. 应用层用例（`packages/ow_application/lib/src/`）
 
-每个用例一个类，一个公开方法 `call(...)`，构造函数注入依赖，返回 `Future<Result<T>>`。
+每个用例一个类，一个公开方法 `call(...)`，构造函数注入依赖。有可预期失败的用例返回 `Future<Result<T>>`；两个例外：`SyncAllAccounts` 没有整体失败的路径，返回 `Future<SyncAllResult>`（各账户的失败在结果对象里）；`Watch*` 用例返回 `Stream`。
+
+同步的约定（M1-07）：
+- 取消不算失败：被取消的账户返回 `Ok(SyncAccountOutcome.cancelled())`，不写持仓、不写同步记录；取消后不拉价格。
+- 一个账户内的"地址 × 链"逐个查询，任一失败则整个账户失败并保留旧数据。
+- 每个账户每次同步只在结束时写一条 `SyncRecord`；`failureType` 用 `failureTypeName(Failure)` 生成稳定的名称（不用 `runtimeType`，混淆后会变）。
+- `AddWalletAccount`、`AddAddressesToAccount` 不触发同步，由调用它们的控制器在成功后调用 `SyncAccount`。
+- 装配时给 `SyncAccount`、`SyncAllAccounts` 传入默认的 `RetryPolicy()`（真实等待）；测试传入假延时。
 
 | 里程碑 | 用例 | 对应 |
 |---|---|---|
