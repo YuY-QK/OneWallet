@@ -8,6 +8,7 @@ environment:
   sdk: ^3.13.0
 
 dependencies:
+  decimal: 3.2.6
   ow_domain:
     path: ../ow_domain
 
