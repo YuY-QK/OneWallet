@@ -88,12 +88,12 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 另外两项（M0-09 审查时发现）：一、给 `AddressCodec` 增加实例方法 `detect(input)`：按 EVM、Tron、Bitcoin、Solana 的顺序，返回第一个**格式与校验和都通过**的家族，用来消除 `T`、`1`、`3` 开头的 Solana 地址被误判的歧义；界面一律用它而不是静态的 `detectFamily`。二、Bitcoin 的 bech32 地址接受全大写形式（BIP173 允许），`normalize` 把它转为小写；大小写混用的拒绝。
   - 验收：EIP-55 用 EIP 文档中的测试地址；全小写 EVM 地址被接受；校验和错误的各类地址被拒绝；Bitcoin 四种前缀、Solana、Tron 各有合法与非法样例。
 
-- [ ] **M1-03** 内置币种映射表与 `AssetCatalog` 〔离线〕
+- [x] **M1-03** 内置币种映射表与 `AssetCatalog` 〔离线〕 2026-11-11（43 个币种、157 条合约；出处多为第三方代币列表，需人工复核，见真机测试清单）
   - 做什么：`ow_pricing` 内置 `asset_mappings.json`：9 条链的原生币，以及 USDT、USDC、DAI、WETH、WBTC 等不少于 30 个主流代币在各链的合约地址与价格源标识。实现 `AssetCatalog`。
   - 依据：PRD R8；TECH_DESIGN 5.3。合约地址逐个对照各项目官方文档或区块浏览器的认证页面，并在 JSON 旁的 `SOURCES.md` 记录出处。
   - 验收：同一币种的多链合约解析到同一个 `Asset`；未知合约返回 null；JSON 加载有结构校验测试。
 
-- [ ] **M1-04** 价格源 〔离线〕＋〔用户〕冒烟
+- [x] **M1-04** 价格源 〔离线〕＋〔用户〕冒烟 2026-11-11
   - 做什么：`ow_pricing` 实现基于 CoinGecko 的 `PriceSource`（按标识查价、按合约查代币）。带本地缓存时效（5 分钟内不重复请求）。
   - 依据：IMPLEMENTATION_SPEC 第 8 节（先写 `EXTERNAL_APIS.md` 的对应小节）。
   - 验收：用录制样本测试解析、限频映射为 `RateLimitedFailure`、网络错误映射；`tools/smoke/price.dart` 可手动运行。

@@ -26,3 +26,12 @@
 - [ ] 确认 Alchemy 是否支持 BNB Chain 以及代币接口在该链是否可用；不支持时从 `EvmChainAdapter.alchemyHosts` 删除该条目
 - [ ] 用自己的 Key 运行冒烟脚本：在 `packages/ow_chains` 目录执行 `OW_ALCHEMY_KEY=<Key> dart run tool/smoke_evm.dart <地址> [链id]`，六条链各试一次
 - [ ] 脚本输出的余额与区块浏览器一致
+
+## 2. 币种映射与价格（任务 M1-03、M1-04）
+
+合约地址主要取自 Uniswap 维护的代币列表（第三方），没有逐个对照发行方文档；合约地址错了会把假币当真币估值。
+
+- [ ] 复核 `packages/ow_pricing/SOURCES.md`：至少 USDT、USDC、DAI、WETH、WBTC 在各链的全部合约，对照发行方官方文档或区块浏览器的认证页
+- [ ] 运行 `cd packages/ow_pricing && dart run tool/smoke_price.dart`，能打印 BTC、ETH、USDT 的价格
+- [ ] 运行 `dart run tool/smoke_price.dart --catalog`，映射表中每个币种都能取到价格（重点看 POL、SNX、COMP）
+- [ ] 对照 CoinGecko 官方文档复核 `docs/EXTERNAL_APIS.md` 的"CoinGecko（价格）"一节中标"未核对"的项

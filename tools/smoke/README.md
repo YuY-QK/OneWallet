@@ -13,3 +13,17 @@
 | `packages/ow_chains/tool/smoke_evm.dart` | 用 Alchemy 查询 EVM 地址的持仓（M1-06） | 在 `packages/ow_chains` 目录：`OW_ALCHEMY_KEY=<Key> dart run tool/smoke_evm.dart <地址> [链id]` |
 
 脚本放在各自的包内（`tool/` 目录），因为 `dart run` 需要解析该包的依赖；本目录只做索引。
+
+## 价格源（CoinGecko）
+
+脚本在 `packages/ow_pricing/tool/smoke_price.dart`（需要 `ow_pricing` 的依赖，所以放在包内；`tools/` 属于不带依赖的根工作区，无法直接导入）。
+
+```
+cd packages/ow_pricing
+dart run tool/smoke_price.dart             # 打印 BTC、ETH、USDT 的 USD 价格与 24 小时涨跌
+dart run tool/smoke_price.dart --catalog   # 核对内置映射表里每个 priceId 是否都查得到价格
+```
+
+- Key 从环境变量 `OW_COINGECKO_KEY` 读取，可缺省：`OW_COINGECKO_KEY=你的Key dart run tool/smoke_price.dart`。
+- 无 Key 时免费档限频很严，遇到 `RateLimitedFailure` 稍等一分钟再试。
+- `--catalog` 在上线前至少运行一次：映射表中的 priceId 来自既有知识，未能对照 CoinGecko 官方清单核对，这一步用真实接口验证。

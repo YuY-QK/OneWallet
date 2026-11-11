@@ -1,0 +1,17 @@
+{
+  "bitcoin": {
+    "usd": 67187.3358936566,
+    "usd_24h_change": 3.63727894677354,
+    "last_updated_at": 1711356300
+  },
+  "ethereum": {
+    "usd": 3518.0,
+    "usd_24h_change": -1.25,
+    "last_updated_at": 1711356301
+  },
+  "tether": {
+    "usd": 0.999877,
+    "usd_24h_change": 0,
+    "last_updated_at": 1711356302
+  }
+}
