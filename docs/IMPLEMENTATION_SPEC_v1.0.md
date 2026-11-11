@@ -365,7 +365,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 | M4 | `CreateVault`、`ImportVaultItem`、`RevealVaultItem`、`DeleteVaultItem`、`DeriveAddresses`、`AttachDerivedAddresses`、`ChangeMasterPassword`、`SetVaultBiometrics` | P12–P16、R22–R33 |
 | M5 | `ExportBackup`、`PreviewBackup`、`RestoreBackup` | P17、R39–R43 |
 
-`SyncAllAccounts` 的并发、重试、限速规则见 TECH_DESIGN 5.2；重试与限速实现为可复用的 `RetryPolicy` 和 `RateLimiter`（`ow_application/lib/src/sync/`）。
+`SyncAllAccounts` 的并发、重试、限速规则见 TECH_DESIGN 5.2；重试与限速实现为可复用的 `RetryPolicy` 和 `RateLimiter`：`RetryPolicy` 在 `ow_application/lib/src/sync/`，`RateLimiter` 在 `ow_net`。
 
 ## 5. 数据库（`packages/ow_data`）
 

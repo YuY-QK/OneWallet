@@ -56,14 +56,18 @@
 │ ow_chains     │ 备份格式       │ 文件导出、扫码               │
 │ ow_exchanges  │ （禁止联网）    │ （每个平台一份实现）          │
 │ ow_pricing    │               │                            │
-└───────────────┴───────────────┴────────────────────────────┘
+├───────────────┘               │                            │
+│ 网络层 packages/ow_net         │                            │
+│ 仅 HTTPS 客户端、脱敏日志、     │                            │
+│ 限速器、失败映射（纯 Dart）     │                            │
+└───────────────────────────────┴────────────────────────────┘
 ```
 
-**依赖方向**：上层依赖下层的接口，接口都定义在 `ow_domain`。`ow_data`、`ow_vault`、`ow_platform` 互不依赖。
+**依赖方向**：上层依赖下层的接口，接口都定义在 `ow_domain`。`ow_data`、`ow_vault`、`ow_platform` 互不依赖。`ow_net` 只依赖 `ow_domain`，仅供 `ow_chains`、`ow_exchanges`、`ow_pricing` 使用；`ow_vault` 及其他包不得依赖它。
 
 **多端扩展的三条保证**
 
-1. **业务逻辑与平台无关**：`ow_domain`、`ow_application`、`ow_vault`、`ow_chains`、`ow_exchanges`、`ow_pricing` 都是纯 Dart 包，不引用 Flutter，也不引用 `dart:io` 之外的平台 API。它们在任何 Flutter 支持的平台上都能直接运行，将来做命令行工具也能复用。
+1. **业务逻辑与平台无关**：`ow_domain`、`ow_application`、`ow_vault`、`ow_net`、`ow_chains`、`ow_exchanges`、`ow_pricing` 都是纯 Dart 包，不引用 Flutter，也不引用 `dart:io` 之外的平台 API。它们在任何 Flutter 支持的平台上都能直接运行，将来做命令行工具也能复用。
 2. **平台能力走接口加能力声明**：所有平台差异收敛到 `ow_platform`。每项能力有一个接口和一个"是否支持"的查询，界面根据查询结果降级（PRD 7.3）。
 
 ```dart
@@ -133,6 +137,7 @@ OneWallet/
 │  ├─ ow_data/                   # Drift 数据库、仓储实现
 │  ├─ ow_chains/                 # 各链适配器
 │  ├─ ow_exchanges/              # 各交易所适配器
+│  ├─ ow_net/                    # 网络基础设施（纯 Dart，仅 HTTPS）
 │  ├─ ow_pricing/                # 价格与币种映射
 │  ├─ ow_vault/                  # 保险库核心（禁止网络依赖）
 │  └─ ow_platform/               # 平台适配（Flutter 插件，含 Swift、Kotlin）
@@ -272,9 +277,11 @@ iOS 上对数据库和保险库文件设置"排除出 iCloud 与 iTunes 备份"�
 
 ### 6.3 网络层
 
-- 统一的 HTTP 客户端工厂，按服务商配置基础地址、超时、限速器、重试。
+- 统一的 HTTP 客户端工厂（`ow_net` 的 `OwHttpClientFactory`），按服务商配置基础地址、超时（默认各 15 秒）、默认请求头；限速器 `RateLimiter` 同在 `ow_net`，重试由 `ow_application` 的 `RetryPolicy` 负责。
+- 失败统一映射：`mapHttpFailure` 把连接失败与超时转为 `NetworkFailure`，429 → `RateLimitedFailure`，401/403 → `UnauthorizedFailure`，5xx → `ServiceDownFailure`，其余 → `UnknownFailure`；`detail` 只含状态码和主机。
 - 日志拦截器对请求头和参数做脱敏：API Key 只保留前 4 位，签名与 Secret 完全不记录。
-- 只允许 HTTPS。
+- 只允许 HTTPS：`baseUrl` 与任何实际请求的 URL 都必须是 https；重定向逐跳检查，指向非 https 的不跟随并按失败处理；跨主机重定向时剥离敏感请求头。
+- 日志拦截器只在传入日志回调时启用，不记录请求体与响应体。
 - `ow_vault` 包不依赖任何网络库；`ow_platform` 中的保险库相关代码同样不联网。
 
 ## 7. 安全与隐私

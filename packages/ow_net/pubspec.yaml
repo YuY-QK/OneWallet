@@ -1,0 +1,17 @@
+name: ow_net
+description: 网络基础设施：仅 HTTPS 的客户端工厂、脱敏日志、失败映射与限速器。
+publish_to: none
+version: 0.1.0
+resolution: workspace
+
+environment:
+  sdk: ^3.13.0
+
+dependencies:
+  dio: 5.11.1
+  ow_domain:
+    path: ../ow_domain
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.0

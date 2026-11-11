@@ -13,6 +13,7 @@ workspace:
   - packages/ow_chains
   - packages/ow_exchanges
   - packages/ow_pricing
+  - packages/ow_net
   - packages/ow_vault
   - packages/ow_platform
 
