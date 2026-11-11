@@ -3,7 +3,7 @@ import 'package:decimal/decimal.dart';
 import '../asset/holding.dart';
 import '../core/equality.dart';
 
-// 本文件只定义类型；计算（PortfolioCalculator）在 M1-08 实现。
+// 本文件只定义类型；计算见 portfolio_calculator.dart。
 
 /// 一笔持仓及其估值。
 final class ValuedHolding {

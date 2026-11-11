@@ -112,7 +112,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 依据：PRD R13、R15、R17；TECH_DESIGN 5.2。
   - 验收：用假的适配器测试：部分账户失败时其余正常且失败者保留旧数据并写 `SyncRecord`；限频时按 1、2、4 秒退避最多 3 次（用假时钟）；并发不超过 4；未识别代币 `assetId` 为空。
 
-- [ ] **M1-08** `PortfolioCalculator` 〔离线〕
+- [x] **M1-08** `PortfolioCalculator` 〔离线〕 2026-11-11
   - 依据：PRD R7–R12；IMPLEMENTATION_SPEC 2.4。
   - 验收：单元测试覆盖：多链同币合并；无价格的币不计入总额并计数；小额隐藏开关；手动隐藏；按账户与按类型汇总之和等于总额；空输入。
 
@@ -139,6 +139,11 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 - [ ] **M1-15** 目录接入页面 〔离线〕
   - 做什么：`Account.walletSource` 从固定枚举改为目录中的钱包 id（字符串，可为空表示"其他"）；P05 的来源钱包改为从目录选择（可搜索）；P06 的"如何创建只读 Key"、P08、P11 的无助记词钱包建议、P20 的服务商、P22 各处显示对应链接。新增通用组件 `OwExternalLink`（显示域名，点击后先确认再用系统浏览器打开）。同步更新 PRD 的 R5、P05、P06、P11、P20。
   - 依赖：M1-14，以及 M1-09 至 M1-12 的页面。
+
+- [ ] **M1-16** 补齐 ow_domain 的测试覆盖率 〔离线〕
+  - 来由：M1-08 审查时测得 ow_domain 整包行覆盖率 69%，低于 90% 的门槛。缺口在 M0-09 的值类型（asset、holding、price、snapshot、sync_record、vault_item_meta、exchange_credentials、failure、derivation_scheme、chain_info）。
+  - 做什么：为这些类型补构造、相等、哈希、copyWith、toString 的测试。只加测试，不改实现；发现实现有缺陷时记录并报告。
+  - 验收：ow_domain 行覆盖率不低于 90%。
 
 - [ ] **M1-13** M1 集成测试与验收 〔设备〕〔用户〕
   - 做什么：`integration_test` 走通"添加 EVM 地址 → 总览显示资产"（用假适配器）；用户用真实地址和自己的 Key 试用，核对余额与区块浏览器一致。
