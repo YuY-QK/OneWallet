@@ -32,3 +32,6 @@ coverage/
 **/ios/.symlinks/
 **/android/.gradle/
 **/android/local.properties
+
+# 并行任务的临时工作副本
+.claude/worktrees/
