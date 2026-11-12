@@ -12,6 +12,7 @@ import '../../../router/route_names.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
 import '../../../widgets/empty_state.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/formatters.dart';
 import '../../../widgets/ow_amount_text.dart';
 import '../../../widgets/ow_avatar.dart';
@@ -154,10 +155,7 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
   }
 
   Widget _failureNotice(AppLocalizations l, WalletDetailView v, DateTime now) {
-    final reason = syncFailureText(
-      l,
-      failureFromTypeName(v.failure!.failureType),
-    );
+    final reason = failureText(l, failureFromTypeName(v.failure!.failureType));
     final last = v.lastSuccessAt;
     final lastText = last == null
         ? l.walletDetailNeverSucceeded

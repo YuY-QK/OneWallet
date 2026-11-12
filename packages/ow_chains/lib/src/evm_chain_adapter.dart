@@ -147,7 +147,7 @@ final class EvmChainAdapter implements ChainAdapter {
 
   Future<Result<_Target>> _resolve(ChainInfo chain) async {
     if (chain.family != ChainFamily.evm) {
-      return Err(UnsupportedFailure('非 EVM 链 chain=${chain.id}'));
+      return Err(UnsupportedFailure.notIntegrated('非 EVM 链 chain=${chain.id}'));
     }
     final custom = await config.customEndpoint(chain.id);
     if (custom != null) {
@@ -161,7 +161,9 @@ final class EvmChainAdapter implements ChainAdapter {
     }
     final host = alchemyHosts[chain.id];
     if (host == null) {
-      return Err(UnsupportedFailure('Alchemy 不支持该链 chain=${chain.id}'));
+      return Err(
+        UnsupportedFailure.notIntegrated('Alchemy 不支持该链 chain=${chain.id}'),
+      );
     }
     final key = await config.apiKey(providerId);
     if (key == null || key.isEmpty) {
@@ -228,7 +230,7 @@ final class EvmChainAdapter implements ChainAdapter {
     final detail = 'JSON-RPC error method=$method code=$code';
     if (code == 429) return RateLimitedFailure(detail);
     if (code == 401 || code == 403) return UnauthorizedFailure(detail);
-    if (code == -32601) return UnsupportedFailure(detail);
+    if (code == -32601) return UnsupportedFailure.notIntegrated(detail);
     if (code is int && (code == -32603 || (code <= -32000 && code >= -32099))) {
       return ServiceDownFailure(detail);
     }

@@ -114,7 +114,7 @@ void main() {
       rig.record(
         b.id,
         success: false,
-        failureType: 'UnsupportedFailure',
+        failureType: 'UnsupportedFailure.notIntegrated',
         at: DateTime.utc(2026, 11, 12, 11, 58),
       );
       await pumpApp(tester, rig);

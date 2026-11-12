@@ -195,5 +195,25 @@ void main() {
       await repos.tokenVisibility.setHidden('ethereum:0xscam', false);
       expect(await repos.tokenVisibility.hidden(), {'bsc:0xother'});
     });
+
+    test('watchHidden 先推送当前集合，修改显隐后推送新集合', () async {
+      final expectation = expectLater(
+        repos.tokenVisibility.watchHidden(),
+        emitsInOrder([
+          isEmpty,
+          {'ethereum:0xscam'},
+          {'ethereum:0xscam', 'bsc:0xother'},
+          {'bsc:0xother'},
+        ]),
+      );
+      await Future<void>.delayed(Duration.zero);
+      // Drift 会合并紧挨着的多次写入通知，每次写入后让出事件循环。
+      await repos.tokenVisibility.setHidden('ethereum:0xscam', true);
+      await pumpEventQueue();
+      await repos.tokenVisibility.setHidden('bsc:0xother', true);
+      await pumpEventQueue();
+      await repos.tokenVisibility.setHidden('ethereum:0xscam', false);
+      await expectation;
+    });
   });
 }

@@ -146,7 +146,7 @@ final class SyncAccount {
   Future<Result<List<LocatedRawHolding>>> _fetchExchange(
     Account account,
     SyncCancellation? cancellation,
-  ) async => const Err(UnsupportedFailure('交易所同步在 M2-10 接入'));
+  ) async => const Err(UnsupportedFailure.notIntegrated('交易所同步在 M2-10 接入'));
 
   Future<void> _record(
     String accountId,

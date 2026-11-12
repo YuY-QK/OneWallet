@@ -82,7 +82,9 @@ final class BitcoinChainAdapter implements ChainAdapter {
     ChainInfo chain,
   ) async {
     if (chain.family != ChainFamily.bitcoin) {
-      return Err(UnsupportedFailure('非 Bitcoin 链 chain=${chain.id}'));
+      return Err(
+        UnsupportedFailure.notIntegrated('非 Bitcoin 链 chain=${chain.id}'),
+      );
     }
     if (!isPathSafeAddress(address)) {
       return const Err(ValidationFailure('地址包含非法字符'));

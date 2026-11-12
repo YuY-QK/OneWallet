@@ -40,6 +40,10 @@ final class ValueFeed<T> {
 }
 
 final class FakeAccountRepository implements AccountRepository {
+  FakeAccountRepository(this.addressRepo);
+
+  /// 与之共用存储的地址仓储，`insertWithAddresses` 写入地址用。
+  final FakeAddressRepository addressRepo;
   final feed = ValueFeed<List<Account>>([]);
 
   @override
@@ -60,6 +64,17 @@ final class FakeAccountRepository implements AccountRepository {
         if (a.id != account.id) a,
       account,
     ];
+  }
+
+  @override
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> addresses,
+  ) async {
+    await upsert(account);
+    for (final a in addresses) {
+      await addressRepo.upsert(a);
+    }
   }
 
   @override
@@ -178,6 +193,9 @@ final class FakeSettingsRepository implements SettingsRepository {
 final class FakeTokenVisibilityRepository implements TokenVisibilityRepository {
   @override
   Future<Set<String>> hidden() async => {};
+
+  @override
+  Stream<Set<String>> watchHidden() => Stream.value(const {});
 
   @override
   Future<void> setHidden(String tokenKey, bool hidden) async {}
@@ -303,7 +321,7 @@ final class TestRig {
   TestRig({DateTime? now})
     : clock = FixedClock(now ?? DateTime.utc(2026, 11, 12, 12));
 
-  final accounts = FakeAccountRepository();
+  late final accounts = FakeAccountRepository(addresses);
   final addresses = FakeAddressRepository();
   final holdings = FakeHoldingRepository();
   final prices = FakePriceRepository();

@@ -152,7 +152,9 @@ final class SolanaChainAdapter implements ChainAdapter {
 
   Future<Result<_Target>> _resolve(String address, ChainInfo chain) async {
     if (chain.family != ChainFamily.solana) {
-      return Err(UnsupportedFailure('非 Solana 链 chain=${chain.id}'));
+      return Err(
+        UnsupportedFailure.notIntegrated('非 Solana 链 chain=${chain.id}'),
+      );
     }
     if (!isPathSafeAddress(address)) {
       return const Err(ValidationFailure('地址包含非法字符'));
@@ -242,7 +244,7 @@ final class SolanaChainAdapter implements ChainAdapter {
     final detail = 'JSON-RPC error method=$method code=$code';
     if (code == 429) return RateLimitedFailure(detail);
     if (code == 401 || code == 403) return UnauthorizedFailure(detail);
-    if (code == -32601) return UnsupportedFailure(detail);
+    if (code == -32601) return UnsupportedFailure.notIntegrated(detail);
     if (code == -32602) return ValidationFailure(detail);
     if (code == -32005 && message is String) {
       final m = message.toLowerCase();

@@ -160,7 +160,8 @@ class AddWalletController extends Notifier<AddWalletState> {
         final owner = await accounts.byId(found.accountId);
         result[e.key] = DuplicateAddressFailure(
           shortAddress: short,
-          existingAccountName: owner?.name ?? '',
+          existingAccountName: owner?.name,
+          ownerMissing: owner == null,
         );
       }
     }

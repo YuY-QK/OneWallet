@@ -138,6 +138,13 @@ final class DriftTokenVisibilityRepository
   }
 
   @override
+  Stream<Set<String>> watchHidden() {
+    final query = _db.select(_db.tokenVisibility)
+      ..where((t) => t.hidden.equals(true));
+    return query.watch().map((rows) => {for (final r in rows) r.tokenKey});
+  }
+
+  @override
   Future<void> setHidden(String tokenKey, bool hidden) async {
     final companion = TokenVisibilityCompanion.insert(
       tokenKey: tokenKey,

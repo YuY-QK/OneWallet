@@ -4,6 +4,7 @@ import 'package:ow_domain/ow_domain.dart';
 import '../../../../l10n/app_localizations.dart';
 import '../../../../theme/ow_colors.dart';
 import '../../../../theme/ow_text_styles.dart';
+import '../../../../widgets/failure_text.dart';
 import '../../../../widgets/ow_list_group.dart';
 import '../../../shared/sync_failure.dart';
 
@@ -43,10 +44,7 @@ Future<void> showSyncFailureSheet(
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            syncFailureText(
-                              l,
-                              failureFromTypeName(r.failureType),
-                            ),
+                            failureText(l, failureFromTypeName(r.failureType)),
                             style: OwTextStyles.caption.copyWith(
                               color: context.ow.muted,
                             ),

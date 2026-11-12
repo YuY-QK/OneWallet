@@ -280,6 +280,12 @@ abstract class AppLocalizations {
   /// **'当前设备不支持这个功能。'**
   String get failureUnsupported;
 
+  /// No description provided for @failureUnsupportedNotIntegrated.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。'**
+  String get failureUnsupportedNotIntegrated;
+
   /// No description provided for @failureUnknown.
   ///
   /// In zh, this message translates to:
@@ -289,7 +295,7 @@ abstract class AppLocalizations {
   /// No description provided for @failureDuplicateAddress.
   ///
   /// In zh, this message translates to:
-  /// **'{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}'**
+  /// **'{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} ownerMissing{该地址已存在于本应用中。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}'**
   String failureDuplicateAddress(String kind, String address, String account);
 
   /// No description provided for @walletSourceUniswap.
@@ -405,12 +411,6 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'未备份'**
   String get backupStatusNone;
-
-  /// No description provided for @syncFailureUnsupported.
-  ///
-  /// In zh, this message translates to:
-  /// **'暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。'**
-  String get syncFailureUnsupported;
 
   /// No description provided for @comingSoonTitle.
   ///

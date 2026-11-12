@@ -70,5 +70,44 @@ void main() {
       expect(f.detail, isNull);
       expect(f.toString(), 'DuplicateAddressFailure');
     });
+
+    test('DuplicateAddressFailure_所属账户缺失_既不是输入内重复也没有账户名', () {
+      const f = DuplicateAddressFailure(
+        shortAddress: '0x12ab…9f3c',
+        ownerMissing: true,
+      );
+      expect(f.kind, DuplicateAddressKind.ownerMissing);
+      expect(f.isWithinInput, isFalse);
+      expect(f.existingAccountName, isNull);
+    });
+
+    test('DuplicateAddressFailure_kind_三种情形各自对应', () {
+      expect(
+        const DuplicateAddressFailure(
+          shortAddress: 'a',
+          existingAccountName: '主钱包',
+        ).kind,
+        DuplicateAddressKind.existing,
+      );
+      expect(
+        const DuplicateAddressFailure(shortAddress: 'a').kind,
+        DuplicateAddressKind.withinInput,
+      );
+    });
+  });
+
+  group('UnsupportedFailure', () {
+    test('UnsupportedFailure_默认原因为platform', () {
+      const f = UnsupportedFailure('x');
+      expect(f.reason, UnsupportedReason.platform);
+      expect(f.detail, 'x');
+    });
+
+    test('UnsupportedFailure_notIntegrated构造_原因为notIntegrated', () {
+      const f = UnsupportedFailure.notIntegrated('尚未接入');
+      expect(f.reason, UnsupportedReason.notIntegrated);
+      expect(f.detail, '尚未接入');
+      expect(f, isA<UnsupportedFailure>());
+    });
   });
 }

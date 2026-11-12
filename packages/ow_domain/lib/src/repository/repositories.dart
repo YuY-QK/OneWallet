@@ -23,6 +23,16 @@ abstract interface class AccountRepository {
   /// 按 id 新增或整体替换。
   Future<void> upsert(Account account);
 
+  /// 在单个事务中新增 [account] 及其全部 [addresses]（添加钱包，P05）。
+  ///
+  /// 任一地址违反 (family, address) 唯一约束（或任何一步失败）时整体回滚：
+  /// 异常抛出，账户与已写入的地址都不会留下。调用方应先用
+  /// `AddressRepository.find` 检查；本方法是并发或数据异常时的最后一道保护。
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> addresses,
+  );
+
   /// 删除账户，并级联删除其地址、持仓、同步记录（R6）。
   /// 不删除保险库条目；不存在时什么也不做。
   Future<void> delete(String id);
@@ -107,6 +117,9 @@ abstract interface class SettingsRepository {
 abstract interface class TokenVisibilityRepository {
   /// 被设为隐藏的代币键。
   Future<Set<String>> hidden();
+
+  /// 被设为隐藏的代币键；订阅时先推送当前集合，任何显隐修改后推送新集合。
+  Stream<Set<String>> watchHidden();
 
   Future<void> setHidden(String tokenKey, bool hidden);
 }

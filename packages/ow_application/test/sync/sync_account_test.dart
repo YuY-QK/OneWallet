@@ -126,7 +126,10 @@ void main() {
       result.when(ok: (_) => null, err: (e) => e),
       isA<UnsupportedFailure>(),
     );
-    expect(f.syncRecords.records.single.failureType, 'UnsupportedFailure');
+    expect(
+      f.syncRecords.records.single.failureType,
+      'UnsupportedFailure.notIntegrated',
+    );
   });
 
   test('SyncAccount_账户不存在_返回校验失败且不写记录', () async {
@@ -173,5 +176,10 @@ void main() {
       'WrongPasswordFailure',
     );
     expect(failureTypeName(const UnknownFailure()), 'UnknownFailure');
+    expect(failureTypeName(const UnsupportedFailure()), 'UnsupportedFailure');
+    expect(
+      failureTypeName(const UnsupportedFailure.notIntegrated()),
+      'UnsupportedFailure.notIntegrated',
+    );
   });
 }

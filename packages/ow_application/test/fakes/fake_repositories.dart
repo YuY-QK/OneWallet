@@ -31,6 +31,11 @@ final class Watchable<T> {
 }
 
 final class InMemoryAccountRepository implements AccountRepository {
+  /// [addresses] 是与之共用同一份存储的地址仓储，`insertWithAddresses` 需要它
+  /// 才能模拟单事务写入；不用该方法的测试可以不传。
+  InMemoryAccountRepository({this.addresses});
+
+  final InMemoryAddressRepository? addresses;
   final store = Watchable<List<Account>>(const []);
 
   @override
@@ -51,6 +56,27 @@ final class InMemoryAccountRepository implements AccountRepository {
         if (a.id != account.id) a,
       account,
     ];
+  }
+
+  @override
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> newAddresses,
+  ) async {
+    final repo = addresses ?? (throw StateError('未传入共用的地址仓储'));
+    // 单事务：先检查全部地址的唯一约束，任一冲突就什么也不写。
+    final seen = <(ChainFamily, String)>{};
+    for (final a in newAddresses) {
+      final clash = await repo.find(a.family, a.address);
+      if ((clash != null && clash.id != a.id) ||
+          !seen.add((a.family, a.address))) {
+        throw StateError('违反 (family, address) 唯一约束');
+      }
+    }
+    await upsert(account);
+    for (final a in newAddresses) {
+      await repo.upsert(a);
+    }
   }
 
   @override
@@ -194,13 +220,20 @@ final class InMemorySettingsRepository implements SettingsRepository {
 
 final class InMemoryTokenVisibilityRepository
     implements TokenVisibilityRepository {
-  final hiddenKeys = <String>{};
+  final _hidden = Watchable<Set<String>>(const {});
+
+  Set<String> get hiddenKeys => _hidden.value;
 
   @override
-  Future<Set<String>> hidden() async => Set.of(hiddenKeys);
+  Future<Set<String>> hidden() async => Set.of(_hidden.value);
+
+  @override
+  Stream<Set<String>> watchHidden() => _hidden.watch();
 
   @override
   Future<void> setHidden(String tokenKey, bool hidden) async {
-    hidden ? hiddenKeys.add(tokenKey) : hiddenKeys.remove(tokenKey);
+    final next = Set.of(_hidden.value);
+    hidden ? next.add(tokenKey) : next.remove(tokenKey);
+    _hidden.value = next;
   }
 }

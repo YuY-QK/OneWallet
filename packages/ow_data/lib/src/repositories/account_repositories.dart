@@ -39,6 +39,25 @@ final class DriftAccountRepository implements AccountRepository {
         );
   }
 
+  /// 单事务写入账户及其全部地址；任一地址违反唯一约束时整体回滚，
+  /// 账户与已写入的地址都不会留下（异常继续抛出）。
+  @override
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> addresses,
+  ) => _db.transaction(() async {
+    await upsert(account);
+    for (final address in addresses) {
+      final companion = addressToCompanion(address);
+      await _db
+          .into(_db.addresses)
+          .insert(
+            companion,
+            onConflict: DoUpdate((_) => companion, target: [_db.addresses.id]),
+          );
+    }
+  });
+
   /// 删除账户，级联删除其地址、持仓、同步记录（R6），
   /// 并删除快照明细中该账户的那一行（`kind=account` 且 `key=id`）。
   @override

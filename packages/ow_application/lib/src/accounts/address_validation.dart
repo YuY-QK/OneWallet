@@ -55,8 +55,10 @@ final class AddressValidation {
         return Err(
           DuplicateAddressFailure(
             shortAddress: AddressCodec.shorten(v.address),
-            // 地址存在而账户不存在属于数据异常；仍按"已在库中"提示，账户名留空。
-            existingAccountName: owner?.name ?? '',
+            // 地址存在而账户不存在属于数据异常：不带账户名，标记所属账户缺失，
+            // 界面提示"该地址已存在于本应用中"。
+            existingAccountName: owner?.name,
+            ownerMissing: owner == null,
           ),
         );
       }

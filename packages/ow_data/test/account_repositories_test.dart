@@ -36,6 +36,32 @@ void main() {
       expect(await repos.addresses.byAccount('a1'), hasLength(1));
     });
 
+    test('insertWithAddresses 一并写入账户与全部地址', () async {
+      await repos.accounts.insertWithAddresses(makeAccount('a1'), [
+        makeAddress('ad1', 'a1'),
+        makeAddress('ad2', 'a1', address: '0xdef'),
+      ]);
+      expect(await repos.accounts.byId('a1'), isNotNull);
+      expect(await repos.addresses.byAccount('a1'), hasLength(2));
+    });
+
+    test('insertWithAddresses 第二个地址冲突：整体回滚，账户和第一个地址都不留下', () async {
+      await repos.accounts.upsert(makeAccount('a0'));
+      await repos.addresses.upsert(makeAddress('ad0', 'a0', address: '0xdef'));
+
+      await expectLater(
+        repos.accounts.insertWithAddresses(makeAccount('a1'), [
+          makeAddress('ad1', 'a1'),
+          makeAddress('ad2', 'a1', address: '0xdef'),
+        ]),
+        throwsA(anything),
+      );
+
+      expect(await repos.accounts.byId('a1'), isNull);
+      expect(await repos.addresses.find(ChainFamily.evm, '0xabc'), isNull);
+      expect(await repos.addresses.byAccount('a0'), hasLength(1));
+    });
+
     test('watchAll 随写入发出新列表', () async {
       final stream = repos.accounts.watchAll();
       final expectation = expectLater(

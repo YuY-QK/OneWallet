@@ -90,7 +90,11 @@ void main() {
       final rig = TestRig();
       final a = rig.addWallet('a1', 'Uni 钱包');
       rig.addAddress('d1', a.id, _btc, family: ChainFamily.bitcoin);
-      rig.record(a.id, success: false, failureType: 'UnsupportedFailure');
+      rig.record(
+        a.id,
+        success: false,
+        failureType: 'UnsupportedFailure.notIntegrated',
+      );
       await pumpApp(tester, rig, location: '/accounts/wallet/a1');
       expect(find.textContaining('暂不支持'), findsOneWidget);
       expect(find.textContaining('还没有成功同步过'), findsOneWidget);

@@ -1,5 +1,19 @@
 import 'dart:async';
 
+/// 两个流各自至少发出一个值后，任一流再发出新值时，用两者的最新值调用 [combine]
+/// 并发出结果。其余行为同 [combineLatest3]。
+Stream<R> combineLatest2<A, B, R>(
+  Stream<A> a,
+  Stream<B> b,
+  R Function(A a, B b) combine,
+) => combineLatest3<A, B, int, R>(
+  a,
+  b,
+  // 第三路只是占位：一个立即结束的流，不影响其余两路的合并与结束。
+  Stream.value(0),
+  (x, y, _) => combine(x, y),
+);
+
 /// 三个流各自至少发出一个值后，任一流再发出新值时，用三者的最新值调用 [combine]
 /// 并发出结果。
 ///

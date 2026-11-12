@@ -38,8 +38,9 @@
   "failureValidation": "输入的内容格式不正确。请检查后重新输入。",
   "failureWrongPassword": "密码不正确。请重新输入。",
   "failureUnsupported": "当前设备不支持这个功能。",
+  "failureUnsupportedNotIntegrated": "暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。",
   "failureUnknown": "出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。",
-  "failureDuplicateAddress": "{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}",
+  "failureDuplicateAddress": "{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} ownerMissing{该地址已存在于本应用中。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}",
   "@failureDuplicateAddress": {
     "placeholders": {
       "kind": {
@@ -72,7 +73,6 @@
   "backupStatusInVaultAndOffline": "已入库并离线备份",
   "backupStatusKeyless": "无助记词钱包",
   "backupStatusNone": "未备份",
-  "syncFailureUnsupported": "暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。",
   "comingSoonTitle": "即将推出",
   "comingSoonBody": "此功能将在后续版本提供。",
   "accountAddTitle": "添加账户",

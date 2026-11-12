@@ -14,7 +14,11 @@ TestRig _rig() {
   rig.addHolding(a.id, d.id, amount: '2');
   rig.record(a.id);
   rig.addExchange('x1', 'Binance 主账户', ExchangeId.binance);
-  rig.record('x1', success: false, failureType: 'UnsupportedFailure');
+  rig.record(
+    'x1',
+    success: false,
+    failureType: 'UnsupportedFailure.notIntegrated',
+  );
   return rig;
 }
 

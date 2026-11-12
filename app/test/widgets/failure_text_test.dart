@@ -26,6 +26,16 @@ void main() {
     ),
     const WrongPasswordFailure(): l10n.failureWrongPassword,
     const UnsupportedFailure(): l10n.failureUnsupported,
+    const UnsupportedFailure.notIntegrated():
+        l10n.failureUnsupportedNotIntegrated,
+    const DuplicateAddressFailure(
+      shortAddress: '0x12ab…9f3c',
+      ownerMissing: true,
+    ): l10n.failureDuplicateAddress(
+      'ownerMissing',
+      '0x12ab…9f3c',
+      '',
+    ),
     const UnknownFailure(): l10n.failureUnknown,
   };
 
@@ -61,6 +71,26 @@ void main() {
     );
     expect(text, contains('0x12ab…9f3c'));
     expect(text, contains('本次输入'));
+  });
+
+  test('failureText_重复地址所属账户缺失_固定文案且不含空书名号', () {
+    final text = failureText(
+      l10n,
+      const DuplicateAddressFailure(
+        shortAddress: '0x12ab…9f3c',
+        ownerMissing: true,
+      ),
+    );
+    expect(text, '该地址已存在于本应用中。');
+    expect(text, isNot(contains('「')));
+  });
+
+  test('failureText_不支持_按原因给出两种文案', () {
+    expect(failureText(l10n, const UnsupportedFailure()), '当前设备不支持这个功能。');
+    expect(
+      failureText(l10n, const UnsupportedFailure.notIntegrated()),
+      contains('暂不支持这条链或这家交易所'),
+    );
   });
 
   test('failureText_带detail_不把原始信息显示给用户', () {

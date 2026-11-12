@@ -19,6 +19,32 @@ final class _RejectingChecksum implements AddressChecksum {
   String toEip55(String normalizedEvmAddress) => normalizedEvmAddress;
 }
 
+/// 查重永远查不到已有地址：模拟"校验通过之后、写入之前另一处写入了同一地址"。
+final class _StaleAddressRepository implements AddressRepository {
+  _StaleAddressRepository(this._inner);
+
+  final InMemoryAddressRepository _inner;
+
+  @override
+  Future<WatchAddress?> find(
+    ChainFamily family,
+    String normalizedAddress,
+  ) async => null;
+
+  @override
+  Stream<List<WatchAddress>> watchAll() => _inner.watchAll();
+
+  @override
+  Future<List<WatchAddress>> byAccount(String accountId) =>
+      _inner.byAccount(accountId);
+
+  @override
+  Future<void> upsert(WatchAddress address) => _inner.upsert(address);
+
+  @override
+  Future<void> delete(String id) => _inner.delete(id);
+}
+
 void main() {
   late InMemoryAccountRepository accounts;
   late InMemoryAddressRepository addresses;
@@ -35,8 +61,8 @@ void main() {
       );
 
   setUp(() {
-    accounts = InMemoryAccountRepository();
     addresses = InMemoryAddressRepository();
+    accounts = InMemoryAccountRepository(addresses: addresses);
     clock = FakeClock();
     add = build();
   });
@@ -231,5 +257,74 @@ void main() {
       addresses: [AddressInput(raw: TestAddresses.evmC)],
     );
     expect(failureOf(bad), isA<ValidationFailure>());
+  });
+
+  test('AddWalletAccount_第二个地址写入时冲突_整体回滚不留下账户和任何地址', () async {
+    // 已有地址 B 属于另一个账户；查重被绕过（模拟并发写入），写入时第二个地址冲突。
+    await accounts.insertWithAddresses(
+      Account(
+        id: 'other',
+        type: AccountType.wallet,
+        name: '别的钱包',
+        colorIndex: 0,
+        createdAt: clock.nowUtc(),
+      ),
+      [
+        WatchAddress(
+          id: 'other-addr',
+          accountId: 'other',
+          family: ChainFamily.evm,
+          address: TestAddresses.evmB.toLowerCase(),
+          enabledChainIds: {'ethereum'},
+        ),
+      ],
+    );
+    final racing = AddWalletAccount(
+      accounts: accounts,
+      addresses: _StaleAddressRepository(addresses),
+      codec: const AddressCodec(),
+      ids: SequentialIds(),
+      clock: clock,
+    );
+
+    await expectLater(
+      racing(
+        name: '新钱包',
+        addresses: [
+          AddressInput(raw: TestAddresses.evmA),
+          AddressInput(raw: TestAddresses.evmB),
+        ],
+      ),
+      throwsStateError,
+    );
+
+    expect(accounts.store.value.map((a) => a.id), ['other']);
+    expect(addresses.store.value.map((a) => a.id), ['other-addr']);
+  });
+
+  test('AddWalletAccount_地址存在而所属账户不存在_返回所属账户缺失的重复失败', () async {
+    await addresses.upsert(
+      WatchAddress(
+        id: 'orphan',
+        accountId: 'ghost',
+        family: ChainFamily.evm,
+        address: TestAddresses.evmC.toLowerCase(),
+        enabledChainIds: {'ethereum'},
+      ),
+    );
+
+    final r = await add(
+      name: 'a',
+      addresses: [AddressInput(raw: TestAddresses.evmC)],
+    );
+
+    final f = failureOf(r);
+    expect(f, isA<DuplicateAddressFailure>());
+    if (f is DuplicateAddressFailure) {
+      expect(f.kind, DuplicateAddressKind.ownerMissing);
+      expect(f.existingAccountName, isNull);
+      expect(f.isWithinInput, isFalse);
+    }
+    expect(accounts.store.value, isEmpty);
   });
 }
