@@ -318,7 +318,7 @@ iOS 上对数据库和保险库文件设置"排除出 iCloud 与 iTunes 备份"�
 | T3 | EVM 数据服务 | 默认 Alchemy；在任务 M1-06 中核对并记入 EXTERNAL_APIS.md。适配器面向接口，可在 P20 更换 |
 | T4 | 桌面端保险库的硬件支持 | v1.0 不涉及 |
 | T5 | 独立解密工具的语言 | Python 单文件脚本；在任务 M5-02 中完成 |
-| T6 | SQLCipher 的接入包 | 在任务 M0-13 中确认并写 ADR_006 |
+| T6 | SQLCipher 的接入包 | 已决定，见 ADR_006（`sqlite3` 3.x 构建钩子 `source: sqlcipher`） |
 | T7 | libsodium 的接入方式 | 在任务 M0-12 中确认并写 ADR_005 |
 
 类型名、接口签名、路由、表结构的具体约定见 `IMPLEMENTATION_SPEC_v1.0.md`；逐条任务见 `TASKS.md`。

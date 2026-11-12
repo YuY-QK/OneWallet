@@ -585,6 +585,45 @@ app/lib/features/<feature>/
 
 每种 `Failure` 在 ARB 中有一条 `failure<类型>` 文案，由 `app/lib/widgets/failure_text.dart` 统一映射。页面不得自己拼错误信息。
 
+### 7.5 依赖装配（M0-13）
+
+装配代码在 `app/lib/bootstrap/`，统一入口 `providers.dart`（Riverpod）。**全部 provider 都可以在测试中 override。**
+
+启动流程 `bootstrapApp`（`app_bootstrap.dart`）：数据库文件不存在 -> 清除安全存储中全部 `ow.` 条目（SECURITY_DESIGN 第 11 节 S4）并生成 32 字节随机密钥（`Random.secure()`，64 位十六进制）-> 存入 `ow.db.key`；文件存在 -> 读取密钥，读不到则失败（`databaseKeyMissing`），**不重建**。随后用 SQLCipher 打开数据库并执行一条语句确认可读，失败返回 `BootstrapFailure`（`secureStorageFailed`、`databaseKeyMissing`、`databaseOpenFailed`），由 `BootstrapHost` 显示错误页和"重试"。成功后用 `databaseProvider`、`secretStoreProvider` 的 override 进入 `OneWalletApp`。
+
+| 分组 | provider | 类型 / 说明 |
+|---|---|---|
+| 平台 | `secretStoreProvider` | `ClearableSecretStore`（`SecureSecretStore`；在 `SecretStore` 之上多一个 `clearAll()`，只清 `ow.` 前缀） |
+| | `platformCapabilitiesProvider` | `PlatformCapabilities`（`DevicePlatformCapabilities`，M0-13 为保守的静态值） |
+| 基础 | `loggerProvider` | `OwLogger`（debug、info、warn、error；发布构建不输出 debug；不使用 `print`） |
+| | `clockProvider` | `Clock`（`SystemClock`，UTC） |
+| | `idGeneratorProvider` | `IdGenerator`（UUID v4） |
+| 数据 | `databaseProvider` | `OwDatabase`。**必须由启动流程 override**，否则读取抛 `UnimplementedError` |
+| | `repositoriesProvider` | `OwRepositories` |
+| | `accountRepositoryProvider`、`addressRepositoryProvider`、`holdingRepositoryProvider`、`priceRepositoryProvider`、`snapshotRepositoryProvider`、`syncRecordRepositoryProvider`、`vaultMetaRepositoryProvider`、`settingsRepositoryProvider`、`tokenVisibilityRepositoryProvider` | 各仓储接口 |
+| 配置 | `dataSourceConfigProvider` | `SecretStoreDataSourceConfig`：实现 `DataSourceConfig`，另有 `setApiKey`、`clearApiKey`、`setCustomEndpoint`、`clearCustomEndpoint`（返回 `Result<void>`；自定义端点只接受 https 且不含用户名密码） |
+| | `netLogSinkProvider` | `OwLogSink?`：调试构建把 `ow_net` 已脱敏的日志接到 `OwLogger`，发布构建为 null |
+| 适配器 | `addressChecksumProvider`、`addressCodecProvider` | `ChainAddressChecksum`、`AddressCodec` |
+| | `builtInAssetCatalogProvider`、`assetCatalogProvider` | `BuiltInAssetCatalog`；后者为 `AssetCatalog` 接口（M1-18 换成"内置表加数据库"的组合） |
+| | `priceSourceProvider` | `CoinGeckoPriceSource` |
+| | `adapterRegistryProvider` | `AppAdapterRegistry`：EVM 用 `EvmChainAdapter`；其余家族与全部交易所是占位适配器，所有方法返回 `UnsupportedFailure`。TODO(M2-01..03)、TODO(M2-06..09) |
+| 用例 | `retryPolicyProvider`、`holdingNormalizerProvider`、`syncAccountProvider`、`syncAllAccountsProvider`、`addWalletAccountProvider`、`addAddressesToAccountProvider`、`watchPortfolioProvider` | `syncAccount`、`syncAllAccounts` 持有在途状态，全应用各一个实例 |
+| 读模型 | `portfolioSummaryProvider` | `StreamProvider<PortfolioSummary>` |
+| | `settingsProvider` | `StreamProvider<AppSettings>` |
+| | `themeModeProvider` | `ThemePreference`：跟随 `AppSettings.theme`，设置未就绪时为 `system` |
+
+Riverpod 3 对没有监听者的 provider 会暂停：测试里读取 `StreamProvider` 的 `.future` 之前要先 `container.listen`。
+
+**`SecretStore` 键名约定**：全部以 `ow.` 开头（`SecureSecretStore` 对不带前缀的键抛 `ArgumentError`）；标识（服务商 id、链 id）只能含小写字母、数字、下划线、连字符。
+
+| 键 | 内容 |
+|---|---|
+| `ow.db.key` | 数据库密钥，64 位十六进制 |
+| `ow.datasource.<providerId>.key` | 数据源 API Key，如 `ow.datasource.alchemy.key`、`ow.datasource.coingecko.key` |
+| `ow.datasource.<chainId>.endpoint` | 链的自定义端点（https） |
+
+后续任务的键（交易所凭据、PIN 校验值、错误计数与锁定截止时间等）按同样的 `ow.<域>.<标识>.<用途>` 形式追加到本表。
+
 ## 8. 外部接口的核对规则
 
 各数据服务和交易所的接口路径、参数、限频、返回结构**必须在实现该适配器时对照官方文档核对**，并把核对结果写进 `docs/EXTERNAL_APIS.md`（每个适配器一节：文档链接、用到的接口、鉴权方式、限频、字段映射、核对日期）。没有这份记录的适配器不得合并。
