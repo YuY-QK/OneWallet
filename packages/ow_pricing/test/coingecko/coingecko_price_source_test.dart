@@ -40,7 +40,7 @@ void main() {
     FakeAdapter adapter, {
     int maxIds = 100,
     int maxLookups = 20,
-    BuiltInAssetCatalog? catalog,
+    AssetCatalog? catalog,
   }) => CoinGeckoPriceSource(
     config: config,
     clock: clock,
@@ -529,6 +529,23 @@ void main() {
       expect(asset.priceId, 'fake-tether-token');
     });
 
+    test('catalog 只需实现 AssetCatalog 接口：按 byPriceId 合并、按 byId 判断符号冲突', () async {
+      final known = const Asset(
+        id: 'USDC',
+        symbol: 'USDC',
+        name: '已知的 USDC',
+        priceId: 'usd-coin',
+      );
+      final adapter = FakeAdapter(
+        (_) => jsonBody(fixture('contract_usdc.json')),
+      );
+      final result = await build(
+        adapter,
+        catalog: _MapCatalog({'usd-coin': known}),
+      ).lookupContracts({usdc});
+      expect((result as Ok<Map<ContractToken, Asset>>).value[usdc], known);
+    });
+
     test('CoinGecko 认定为内置币种时合并到内置币种', () async {
       final adapter = FakeAdapter(
         (_) => jsonBody(fixture('contract_usdc.json')),
@@ -554,4 +571,21 @@ String _encode(Map<String, Object?> body) {
     return '"${e.key}":{$inner}';
   });
   return '{${entries.join(',')}}';
+}
+
+/// 只含若干 priceId -> 币种的最小目录，用来证明价格源只依赖接口。
+final class _MapCatalog implements AssetCatalog {
+  _MapCatalog(this._byPriceId);
+
+  final Map<String, Asset> _byPriceId;
+
+  @override
+  Asset? byPriceId(String priceId) => _byPriceId[priceId];
+
+  @override
+  Asset? byId(String assetId) =>
+      _byPriceId.values.where((a) => a.id == assetId).firstOrNull;
+
+  @override
+  Asset? resolve(TokenRef token) => null;
 }

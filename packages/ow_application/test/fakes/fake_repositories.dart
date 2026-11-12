@@ -196,10 +196,26 @@ final class InMemorySyncRecordRepository implements SyncRecordRepository {
   Stream<List<SyncRecord>> watchLatestPerAccount() =>
       _store.watch().map(_latest);
 
+  final _lastSuccess = Watchable<Map<String, DateTime>>(const {});
+
+  @override
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount() =>
+      _lastSuccess.watch();
+
   @override
   Future<void> add(SyncRecord record) async {
     final all = [..._store.value, record];
     _store.value = all.length > 50 ? all.sublist(all.length - 50) : all;
+    final finished = record.finishedAt;
+    if (record.status == SyncStatus.success && finished != null) {
+      final prev = _lastSuccess.value[record.accountId];
+      if (prev == null || finished.isAfter(prev)) {
+        _lastSuccess.value = {
+          ..._lastSuccess.value,
+          record.accountId: finished,
+        };
+      }
+    }
   }
 }
 
@@ -236,4 +252,35 @@ final class InMemoryTokenVisibilityRepository
     hidden ? next.add(tokenKey) : next.remove(tokenKey);
     _hidden.value = next;
   }
+}
+
+final class InMemoryAssetRepository implements AssetRepository {
+  final assets = <String, Asset>{};
+  final contractMap = <ContractToken, String>{};
+  int upsertCalls = 0;
+
+  @override
+  Future<void> upsertAll(List<Asset> list, {required DateTime now}) async {
+    upsertCalls++;
+    for (final a in list) {
+      assets[a.id] = a;
+    }
+  }
+
+  @override
+  Future<List<Asset>> all() async => assets.values.toList();
+
+  @override
+  Future<Asset?> byId(String id) async => assets[id];
+
+  @override
+  Future<void> upsertContracts(Map<ContractToken, String> m) async {
+    for (final id in m.values) {
+      if (!assets.containsKey(id)) throw StateError('币种不存在：$id');
+    }
+    contractMap.addAll(m);
+  }
+
+  @override
+  Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
 }

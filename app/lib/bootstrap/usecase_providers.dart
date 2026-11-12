@@ -13,6 +13,7 @@ final holdingNormalizerProvider = Provider<HoldingNormalizer>(
   (ref) => HoldingNormalizer(
     catalog: ref.watch(assetCatalogProvider),
     priceSource: ref.watch(priceSourceProvider),
+    recorder: ref.watch(assetCatalogProvider),
   ),
 );
 
@@ -63,6 +64,10 @@ final addAddressesToAccountProvider = Provider<AddAddressesToAccount>(
     codec: ref.watch(addressCodecProvider),
     ids: ref.watch(idGeneratorProvider),
   ),
+);
+
+final deleteAddressProvider = Provider<DeleteAddress>(
+  (ref) => DeleteAddress(addresses: ref.watch(addressRepositoryProvider)),
 );
 
 final watchPortfolioProvider = Provider<WatchPortfolio>(

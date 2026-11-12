@@ -1,6 +1,8 @@
 import 'package:decimal/decimal.dart';
 import 'package:ow_domain/ow_domain.dart';
 
+import 'persistent_asset_catalog.dart';
+
 /// 一笔待归一化的原始余额及其位置。
 typedef LocatedRawHolding = ({HoldingLocation location, RawHolding raw});
 
@@ -25,13 +27,22 @@ final class NormalizedHoldings {
 
 /// `RawHolding` → `Holding` 的归一化（PRD R8、TECH_DESIGN 5.3）。
 ///
-/// 查找顺序：内置映射表 [AssetCatalog.resolve] → 对仍未识别的合约代币批量调用
-/// [PriceSource.lookupContracts] → 未识别（`assetId` 为 null）。
+/// 查找顺序：币种目录 [AssetCatalog.resolve]（内置表，装配了 `PersistentAssetCatalog`
+/// 时还包括库中已存的）→ 对仍未识别的合约代币批量调用 [PriceSource.lookupContracts]
+/// → 未识别（`assetId` 为 null）。
+///
+/// 传入 [recorder] 时，查到的币种与"合约 → 币种"对应会被记住（存库），
+/// 之后同一合约由目录直接识别，不再向价格源查询。
 final class HoldingNormalizer {
-  const HoldingNormalizer({required this._catalog, required this._priceSource});
+  const HoldingNormalizer({
+    required this._catalog,
+    required this._priceSource,
+    this._recorder,
+  });
 
   final AssetCatalog _catalog;
   final PriceSource _priceSource;
+  final ContractAssetRecorder? _recorder;
 
   /// 把 [raw] 归一化为 [accountId] 名下、更新时间为 [updatedAt] 的持仓。
   ///
@@ -76,7 +87,13 @@ final class HoldingNormalizer {
   Future<Map<ContractToken, Asset>> _lookup(Set<ContractToken> tokens) async {
     if (tokens.isEmpty) return const {};
     final result = await _priceSource.lookupContracts(tokens);
-    return result.when(ok: (found) => found, err: (_) => const {});
+    final found = result.when<Map<ContractToken, Asset>>(
+      ok: (found) => found,
+      err: (_) => const {},
+    );
+    final recorder = _recorder;
+    if (found.isEmpty || recorder == null) return found;
+    return recorder.remember(found);
   }
 
   static String _fallbackSymbol(RawHolding raw) {

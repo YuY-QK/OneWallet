@@ -69,3 +69,7 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
 final tokenVisibilityRepositoryProvider = Provider<TokenVisibilityRepository>(
   (ref) => ref.watch(repositoriesProvider).tokenVisibility,
 );
+
+final assetRepositoryProvider = Provider<AssetRepository>(
+  (ref) => ref.watch(repositoriesProvider).assets,
+);

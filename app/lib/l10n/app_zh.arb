@@ -200,6 +200,7 @@
   "accountsGroupWallet": "钱包",
   "accountsGroupExchange": "交易所",
   "accountsSyncFailed": "同步失败",
+  "accountsSyncing": "同步中",
   "accountsLoadFailed": "无法读取账户列表。请重启应用后重试。",
   "accountsSelectHint": "选择一个账户查看详情。",
   "walletDetailTotal": "账户总估值",

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ow_application/ow_application.dart';
 import 'package:ow_chains/ow_chains.dart';
 import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_net/ow_net.dart';
@@ -33,21 +34,28 @@ final addressCodecProvider = Provider<AddressCodec>(
   (ref) => AddressCodec(checksum: ref.watch(addressChecksumProvider)),
 );
 
-/// 内置币种映射表。价格源需要它的具体类型（读取价格源标识与链平台映射）。
+/// 内置币种映射表。
 final builtInAssetCatalogProvider = Provider<BuiltInAssetCatalog>(
   (ref) => BuiltInAssetCatalog(),
 );
 
-/// 币种目录。M1-18 加入"已查到币种的持久化"后，这里换成"内置表加数据库"的组合实现。
-final assetCatalogProvider = Provider<AssetCatalog>(
-  (ref) => ref.watch(builtInAssetCatalogProvider),
+/// 币种目录：内置表加数据库中已存的价格源币种（M1-18）。
+///
+/// 启动时须先 `load()`（`AssetCatalogGate` 负责），之后同步查到的新币种经
+/// `remember` 同步更新内存与数据库。同一个对象也是 `HoldingNormalizer` 的记录器。
+final assetCatalogProvider = Provider<PersistentAssetCatalog>(
+  (ref) => PersistentAssetCatalog(
+    builtIn: ref.watch(builtInAssetCatalogProvider),
+    repository: ref.watch(assetRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
 );
 
 final priceSourceProvider = Provider<PriceSource>(
   (ref) => CoinGeckoPriceSource(
     config: ref.watch(dataSourceConfigProvider),
     clock: ref.watch(clockProvider),
-    catalog: ref.watch(builtInAssetCatalogProvider),
+    catalog: ref.watch(assetCatalogProvider),
     onLog: ref.watch(netLogSinkProvider),
   ),
 );

@@ -143,11 +143,11 @@ void main() {
 
     testWidgets('离线_全部失败都是网络失败_显示缓存和离线提示', (tester) async {
       final rig = _richRig();
-      rig.record('a1', at: DateTime.utc(2026, 11, 12, 10)); // 过期，进入时同步
+      rig.record('a1', at: DateTime.utc(2026, 11, 12, 11, 50)); // 过期，进入时同步
       rig.registry[ChainFamily.evm].failure = const NetworkFailure();
       await pumpApp(tester, rig);
       expect(find.textContaining('当前离线，显示的是'), findsOneWidget);
-      expect(find.textContaining('3 分钟前'), findsWidgets);
+      expect(find.textContaining('10 分钟前'), findsWidgets);
       expect(find.text(r'$4,000.00'), findsWidgets);
       expect(find.textContaining('个账户同步失败'), findsNothing);
     });

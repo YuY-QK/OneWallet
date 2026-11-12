@@ -12,6 +12,7 @@ final class AccountRowData {
     required this.account,
     required this.value,
     required this.syncFailed,
+    required this.syncing,
   });
 
   final Account account;
@@ -21,6 +22,9 @@ final class AccountRowData {
 
   /// 最近一次同步失败。
   final bool syncFailed;
+
+  /// 正在同步。
+  final bool syncing;
 }
 
 /// P03 的分组数据：钱包与交易所各一组，组内按估值降序（同值按名称）。
@@ -40,7 +44,13 @@ final accountsListProvider = Provider.autoDispose<AsyncValue<AccountsListData>>(
     final accounts = ref.watch(accountsProvider);
     final summary = ref.watch(portfolioSummaryProvider);
     final records = ref.watch(latestSyncRecordsProvider);
-    for (final v in <AsyncValue<Object?>>[accounts, summary, records]) {
+    final syncing = ref.watch(syncingAccountIdsProvider);
+    for (final v in <AsyncValue<Object?>>[
+      accounts,
+      summary,
+      records,
+      syncing,
+    ]) {
       if (v case AsyncError(:final error, :final stackTrace)) {
         return AsyncError(error, stackTrace);
       }
@@ -48,7 +58,10 @@ final accountsListProvider = Provider.autoDispose<AsyncValue<AccountsListData>>(
     final a = accounts.value;
     final s = summary.value;
     final r = records.value;
-    if (a == null || s == null || r == null) return const AsyncLoading();
+    final y = syncing.value;
+    if (a == null || s == null || r == null || y == null) {
+      return const AsyncLoading();
+    }
     final values = {for (final x in s.byAccount) x.accountId: x.value};
     final failed = {
       for (final x in r)
@@ -62,6 +75,7 @@ final accountsListProvider = Provider.autoDispose<AsyncValue<AccountsListData>>(
                 account: x,
                 value: values[x.id] ?? Decimal.zero,
                 syncFailed: failed.contains(x.id),
+                syncing: y.contains(x.id),
               ),
         ]..sort((p, q) {
           final c = q.value.compareTo(p.value);

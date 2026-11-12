@@ -18,7 +18,7 @@ enum OverviewStatus {
   content,
 }
 
-/// 总览页的视图模型：由账户、同步记录、持仓和同步进度推出，不含金额汇总
+/// 总览页的视图模型：由账户、同步记录、各账户最近成功时间和同步进度推出，不含金额汇总
 /// （金额汇总来自 `PortfolioSummary`）。
 @immutable
 final class OverviewView {
@@ -52,7 +52,7 @@ final class OverviewView {
 OverviewView buildOverviewView({
   required List<Account> accounts,
   required List<SyncRecord> records,
-  required List<Holding> holdings,
+  required Map<String, DateTime> lastSuccess,
   required bool syncing,
 }) {
   if (accounts.isEmpty) return const OverviewView(status: OverviewStatus.empty);
@@ -65,7 +65,7 @@ OverviewView buildOverviewView({
     for (final r in mine)
       if (r.status == SyncStatus.failed) r,
   ];
-  final lastSynced = _lastSynced(mine, holdings, ids);
+  final lastSynced = _lastSynced(lastSuccess, ids);
   final hasCache = lastSynced != null;
   if (!hasCache) {
     final status = (!syncing && failed.isNotEmpty)
@@ -91,23 +91,18 @@ bool _allNetwork(List<SyncRecord> failed) =>
     failed.isNotEmpty &&
     failed.every((r) => r.failureType == networkFailureTypeName);
 
-/// 最近一次成功的时间：取成功记录里最晚的；没有成功记录（例如最新记录全是失败）
-/// 时退回持仓里最晚的更新时间——失败的账户保留着上次成功时的持仓（R15）。
+/// 最近一次成功的时间：各账户"最近一次成功时间"里最晚的。
+///
+/// 该时间单独持久化（不受同步记录只保留 50 条的影响）；失败的账户保留着上次
+/// 成功时的持仓（R15），它的成功时间同样计入。
 DateTime? _lastSynced(
-  List<SyncRecord> records,
-  List<Holding> holdings,
+  Map<String, DateTime> lastSuccess,
   Set<String> accountIds,
 ) {
   DateTime? latest;
-  for (final r in records) {
-    if (r.status != SyncStatus.success) continue;
-    final at = r.finishedAt ?? r.startedAt;
-    if (latest == null || at.isAfter(latest)) latest = at;
-  }
-  if (latest != null) return latest;
-  for (final h in holdings) {
-    if (!accountIds.contains(h.accountId)) continue;
-    if (latest == null || h.updatedAt.isAfter(latest)) latest = h.updatedAt;
+  for (final e in lastSuccess.entries) {
+    if (!accountIds.contains(e.key)) continue;
+    if (latest == null || e.value.isAfter(latest)) latest = e.value;
   }
   return latest;
 }

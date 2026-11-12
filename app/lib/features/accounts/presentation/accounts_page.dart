@@ -167,7 +167,15 @@ class _AccountRow extends StatelessWidget {
             formatFiat(data.value, symbol: fiatSymbol(quote)),
             hidden: hidden,
           ),
-          if (data.syncFailed)
+          if (data.syncing)
+            Padding(
+              padding: const EdgeInsets.only(top: 2),
+              child: Text(
+                l.accountsSyncing,
+                style: OwTextStyles.caption.copyWith(color: context.ow.muted),
+              ),
+            )
+          else if (data.syncFailed)
             Padding(
               padding: const EdgeInsets.only(top: 2),
               child: OwPill(label: l.accountsSyncFailed, tone: OwPillTone.red),

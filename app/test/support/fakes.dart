@@ -164,18 +164,52 @@ final class FakePriceRepository implements PriceRepository {
 
 final class FakeSyncRecordRepository implements SyncRecordRepository {
   final feed = ValueFeed<List<SyncRecord>>([]);
+  final lastSuccess = ValueFeed<Map<String, DateTime>>({});
 
   @override
   Stream<List<SyncRecord>> watchLatestPerAccount() => feed.stream();
 
   @override
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount() =>
+      lastSuccess.stream();
+
+  @override
   Future<void> add(SyncRecord record) async {
+    final finished = record.finishedAt;
+    if (record.status == SyncStatus.success && finished != null) {
+      lastSuccess.value = {...lastSuccess.value, record.accountId: finished};
+    }
     feed.value = [
       for (final r in feed.value)
         if (r.accountId != record.accountId) r,
       record,
     ];
   }
+}
+
+final class FakeAssetRepository implements AssetRepository {
+  final assets = <String, Asset>{};
+  final contractMap = <ContractToken, String>{};
+
+  @override
+  Future<void> upsertAll(List<Asset> list, {required DateTime now}) async {
+    for (final a in list) {
+      assets[a.id] = a;
+    }
+  }
+
+  @override
+  Future<List<Asset>> all() async => assets.values.toList();
+
+  @override
+  Future<Asset?> byId(String id) async => assets[id];
+
+  @override
+  Future<void> upsertContracts(Map<ContractToken, String> m) async =>
+      contractMap.addAll(m);
+
+  @override
+  Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
 }
 
 final class FakeSettingsRepository implements SettingsRepository {
@@ -327,6 +361,7 @@ final class TestRig {
   final prices = FakePriceRepository();
   final syncRecords = FakeSyncRecordRepository();
   final settings = FakeSettingsRepository();
+  final assetRepo = FakeAssetRepository();
   final registry = FakeAdapterRegistry();
   final priceSource = FakePriceSource();
   final secrets = FakeSecretStore();
@@ -352,6 +387,7 @@ final class TestRig {
     priceRepositoryProvider.overrideWithValue(prices),
     syncRecordRepositoryProvider.overrideWithValue(syncRecords),
     settingsRepositoryProvider.overrideWithValue(settings),
+    assetRepositoryProvider.overrideWithValue(assetRepo),
     tokenVisibilityRepositoryProvider.overrideWithValue(
       FakeTokenVisibilityRepository(),
     ),
@@ -466,6 +502,12 @@ final class TestRig {
     DateTime? at,
   }) {
     final t = at ?? DateTime.utc(2026, 11, 12, 11, 57);
+    if (success) {
+      syncRecords.lastSuccess.value = {
+        ...syncRecords.lastSuccess.value,
+        accountId: t,
+      };
+    }
     syncRecords.feed.value = [
       for (final r in syncRecords.feed.value)
         if (r.accountId != accountId) r,

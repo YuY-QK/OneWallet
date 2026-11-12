@@ -796,6 +796,12 @@ abstract class AppLocalizations {
   /// **'同步失败'**
   String get accountsSyncFailed;
 
+  /// No description provided for @accountsSyncing.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步中'**
+  String get accountsSyncing;
+
   /// No description provided for @accountsLoadFailed.
   ///
   /// In zh, this message translates to:

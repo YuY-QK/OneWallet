@@ -52,6 +52,27 @@ final class SyncAccount {
   final Clock _clock;
 
   final Map<String, Future<Result<SyncAccountOutcome>>> _inFlight = {};
+  final StreamController<Set<String>> _syncingChanges =
+      StreamController<Set<String>>.broadcast(sync: true);
+
+  Set<String> get _syncingNow => Set.unmodifiable(_inFlight.keys.toSet());
+
+  /// 正在同步的账户 id 集合。订阅时先推送当前集合，之后每次开始或结束同步推送一次。
+  ///
+  /// 以真正进行中的调用为准（包括被合并的重复调用对应的那一次）；被取消的同步
+  /// 结束时同样会移出集合。页面据此显示"同步中"，不必靠"没有同步记录"推断。
+  Stream<Set<String>> watchSyncingAccountIds() {
+    late final StreamController<Set<String>> out;
+    StreamSubscription<Set<String>>? sub;
+    out = StreamController<Set<String>>(
+      onListen: () {
+        out.add(_syncingNow);
+        sub = _syncingChanges.stream.listen(out.add);
+      },
+      onCancel: () => sub?.cancel(),
+    );
+    return out.stream;
+  }
 
   /// 同步 [accountId]。
   ///
@@ -69,8 +90,10 @@ final class SyncAccount {
     // whenComplete 会等待它，即自己等待自己而永不完成。
     final future = _run(accountId, cancellation).whenComplete(() {
       _inFlight.remove(accountId);
+      _syncingChanges.add(_syncingNow);
     });
     _inFlight[accountId] = future;
+    _syncingChanges.add(_syncingNow);
     return future;
   }
 

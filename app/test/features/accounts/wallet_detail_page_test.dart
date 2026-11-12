@@ -86,6 +86,15 @@ void main() {
       expect(find.text('ETH'), findsWidgets);
     });
 
+    testWidgets('同步失败_上次成功时间取账户级记录而不是持仓的更新时间', (tester) async {
+      final rig = _rig();
+      // 持仓更新于 11:57；账户级最近成功时间是 11:40（20 分钟前）。
+      rig.record('a1', at: DateTime.utc(2026, 11, 12, 11, 40));
+      rig.record('a1', success: false, failureType: 'NetworkFailure');
+      await pumpApp(tester, rig, location: '/accounts/wallet/a1');
+      expect(find.textContaining('上次成功同步：20 分钟前'), findsOneWidget);
+    });
+
     testWidgets('同步失败_从未成功过_说明没有缓存', (tester) async {
       final rig = TestRig();
       final a = rig.addWallet('a1', 'Uni 钱包');

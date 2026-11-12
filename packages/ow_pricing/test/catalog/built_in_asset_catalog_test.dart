@@ -165,6 +165,13 @@ void main() {
     });
   });
 
+  group('byPriceId', () {
+    test('按价格源标识反查内置币种；未知返回 null', () {
+      expect(catalog.byPriceId('usd-coin')?.id, 'USDC');
+      expect(catalog.byPriceId('no-such-coin'), isNull);
+    });
+  });
+
   group('byId', () {
     test('存在与不存在', () {
       expect(catalog.byId('USDC')?.priceId, 'usd-coin');

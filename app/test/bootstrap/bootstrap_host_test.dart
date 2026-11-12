@@ -41,6 +41,11 @@ void main() {
 
     await tester.tap(find.text('重试'));
     await tester.pump();
+    // 进入应用前要读取数据库里的币种目录（真实的异步 IO）。
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
     await tester.pump(const Duration(milliseconds: 100));
     expect(calls, 2);
     expect(find.text('无法打开本地数据'), findsNothing);

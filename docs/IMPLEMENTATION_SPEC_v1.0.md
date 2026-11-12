@@ -261,6 +261,9 @@ final class Snapshot {
 }
 
 enum SyncStatus { success, failed, running }
+// 说明（M1-18）：账户的"最近一次成功同步时间"不在 Account 实体里，只存于 accounts 表的
+// last_synced_at 列，经 SyncRecordRepository.watchLastSuccessPerAccount 读取。理由：它是同步
+// 的派生状态，不是用户编辑的账户属性；放进实体会让 AccountRepository.upsert 的整体替换覆盖它。
 final class SyncRecord {
   final String accountId;
   final DateTime startedAt;
@@ -312,6 +315,7 @@ abstract interface class AccountRepository {
   Stream<List<Account>> watchAll();
   Future<Account?> byId(String id);
   Future<void> upsert(Account account);
+  Future<void> insertWithAddresses(Account account, List<WatchAddress> addresses); // 单事务；任一地址违反唯一约束则整体回滚
   Future<void> delete(String id);          // 级联删除地址、持仓、同步记录（R6）
 }
 abstract interface class AddressRepository {
@@ -335,7 +339,16 @@ abstract interface class SnapshotRepository {
 }
 abstract interface class SyncRecordRepository {
   Stream<List<SyncRecord>> watchLatestPerAccount();
-  Future<void> add(SyncRecord record);                                      // 只保留最近 50 条
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount();               // 账户 id → 最近一次成功的结束时间；读 accounts.last_synced_at
+  Future<void> add(SyncRecord record);                                      // 只保留最近 50 条；成功记录同时把 last_synced_at 推进到 finishedAt
+}
+// 价格源查到的币种与"合约 → 币种"对应（M1-18）
+abstract interface class AssetRepository {
+  Future<void> upsertAll(List<Asset> assets, {required DateTime now});      // 以 id 为键；now 只在新增时记为创建时间
+  Future<List<Asset>> all();
+  Future<Asset?> byId(String id);
+  Future<void> upsertContracts(Map<ContractToken, String> assetIdByContract); // 币种须已存在
+  Future<Map<ContractToken, String>> contracts();
 }
 abstract interface class VaultMetaRepository {
   Stream<List<VaultItemMeta>> watchAll();
@@ -351,6 +364,7 @@ abstract interface class SettingsRepository {
 // 交易所币种 "<exchange 枚举名>:<符号大写>"。由 TokenRef 的扩展 getter `tokenKey` 统一生成。
 abstract interface class TokenVisibilityRepository {                        // R10
   Future<Set<String>> hidden();
+  Stream<Set<String>> watchHidden();                                        // 先推送当前集合，修改后推送新集合
   Future<void> setHidden(String tokenKey, bool hidden);
 }
 abstract interface class CredentialRepository {                             // 基于 SecretStore
@@ -382,12 +396,15 @@ abstract interface class PriceSource {
 abstract interface class AssetCatalog {                                     // 内置映射表
   Asset? resolve(TokenRef token);
   Asset? byId(String assetId);
+  Asset? byPriceId(String priceId);                                         // 按价格源标识（CoinGecko id）反查
 }
 abstract interface class AdapterRegistry {
   ChainAdapter chain(ChainFamily family);
   ExchangeAdapter exchange(ExchangeId id);
 }
 ```
+
+`AssetCatalog` 的实现：`BuiltInAssetCatalog`（`ow_pricing`，内置表）；`PersistentAssetCatalog`（`ow_application`，内置表加 `AssetRepository` 中已存的币种）。后者放在 `ow_application` 而不是 `ow_data`：它只组合 `ow_domain` 的两个接口，`ow_data` 不得知道内置表，`ow_pricing` 又不能被应用层依赖。因为 `resolve`、`byId`、`byPriceId` 是同步方法，启动时先 `load()` 把库中的币种与合约对应读入内存（app 的 `AssetCatalogGate` 在进入应用前完成）；`remember(Map<ContractToken, Asset>)` 先写库、成功后再更新内存，并返回最终采用的币种（币种 id 与另一价格源标识的已存币种冲突时改名为 `<符号>-<价格源标识大写>`）。`HoldingNormalizer` 的可选参数 `recorder`（`ContractAssetRecorder`，由 `PersistentAssetCatalog` 实现）在 `lookupContracts` 查到新币种后调用 `remember`；之后同一合约由目录直接识别，不再向价格源查询。`CoinGeckoPriceSource` 的 `catalog` 参数是 `AssetCatalog` 接口（用 `byPriceId`、`byId`）。
 
 ### 3.3 其他
 
@@ -419,11 +436,15 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - 一个账户内的"地址 × 链"逐个查询，任一失败则整个账户失败并保留旧数据。
 - 每个账户每次同步只在结束时写一条 `SyncRecord`；`failureType` 用 `failureTypeName(Failure)` 生成稳定的名称（不用 `runtimeType`，混淆后会变）。
 - `AddWalletAccount`、`AddAddressesToAccount` 不触发同步，由调用它们的控制器在成功后调用 `SyncAccount`。
+- `AddWalletAccount` 经 `AccountRepository.insertWithAddresses` 在一个事务里写入账户与地址；`DeleteAddress` 保证账户至少保留一个地址（否则 `ValidationFailure`），删除地址时同事务清掉它的持仓，不触发同步（P07 的控制器随后重新同步该账户）。
+- `SyncAccount.watchSyncingAccountIds()` 推送正在同步的账户 id 集合（订阅时先推送当前集合）；页面用它显示"同步中"。成功的同步记录写入时，仓储同时更新账户的最近成功时间。
+- `DuplicateAddressFailure.kind`：`existing`（带账户名）、`withinInput`（本次输入内重复）、`ownerMissing`（地址在库中但所属账户不存在，数据异常，界面提示"该地址已存在于本应用中"）。
+- `UnsupportedFailure.reason`：`platform`（当前设备不支持，默认）、`notIntegrated`（该链或交易所尚未接入，构造函数 `UnsupportedFailure.notIntegrated`）。`failureTypeName` 对后者返回 `UnsupportedFailure.notIntegrated`，使同步记录能还原原因。
 - 装配时给 `SyncAccount`、`SyncAllAccounts` 传入默认的 `RetryPolicy()`（真实等待）；测试传入假延时。
 
 | 里程碑 | 用例 | 对应 |
 |---|---|---|
-| M1 | `AddWalletAccount`、`AddAddressesToAccount`、`SyncAccount`、`SyncAllAccounts`、`WatchPortfolio`（返回 `Stream<PortfolioSummary>`） | P05、P02、R13–R17 |
+| M1 | `AddWalletAccount`、`AddAddressesToAccount`、`DeleteAddress`、`SyncAccount`、`SyncAllAccounts`、`WatchPortfolio`（返回 `Stream<PortfolioSummary>`） | P05、P02、P07、R13–R17 |
 | M2 | `AddExchangeAccount`、`ReplaceExchangeCredentials`、`WatchAssetDistribution` | P06、P08、P09 |
 | M3 | `SetUpPin`、`VerifyPin`、`ChangePin`、`RenameAccount`、`DeleteAccount`、`UpdateBackupStatus`、`WatchBackupChecklist`、`SearchAddresses`、`RecordDailySnapshot`、`WipeAllData` | P00、P01、P03、P10、P11、R18–R21、R34–R38 |
 | M4 | `CreateVault`、`ImportVaultItem`、`RevealVaultItem`、`DeleteVaultItem`、`DeriveAddresses`、`AttachDerivedAddresses`、`ChangeMasterPassword`、`SetVaultBiometrics` | P12–P16、R22–R33 |
@@ -437,7 +458,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 
 | 表 | 列（主键加粗） |
 |---|---|
-| `accounts` | **id**, type, name, color_index, note, wallet_source, exchange, vault_item_id, offline_backed_up, offline_verified_at, keyless, created_at |
+| `accounts` | **id**, type, name, color_index, note, wallet_source, exchange, vault_item_id, offline_backed_up, offline_verified_at, keyless, created_at, last_synced_at（v2；最近一次成功同步的结束时间，可空；`Account` 实体不含） |
 | `addresses` | **id**, account_id→accounts, family, address, enabled_chain_ids（JSON 数组）, scheme, derivation_index, note；唯一索引 (family, address) |
 | `holdings` | **id**（自增）, account_id→accounts, location_kind, chain_id, address_id, exchange_sub, token_kind, token_chain_id, token_contract, token_symbol, asset_id, display_symbol, amount（文本）, updated_at |
 | `prices` | **asset_id**, **quote**, price（文本）, change_24h_percent（文本）, updated_at |
@@ -447,6 +468,8 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 | `sync_records` | **id**（自增）, account_id, started_at, finished_at, status, failure_type |
 | `settings` | **key**, value（文本） |
 | `token_visibility` | **token_key**, hidden |
+| `assets`（v2） | **id**, symbol, name, price_id（可空）, created_at；价格源查到的币种，内置表里的不入此表 |
+| `asset_contracts`（v2） | **chain_id**, **contract**（规范化形式）, asset_id→assets（级联）；使同一合约不再重复向价格源查询 |
 
 - 外键开启级联删除：`addresses.account_id`、`holdings.account_id`、`sync_records.account_id` 都指向 `accounts` 并级联。`holdings.address_id` 不设外键，删除地址时由仓储在同一事务内删除它的持仓；删除账户时由仓储清理 `snapshot_items` 中该账户的明细。
 - 交易所币种（`token_kind` 为 exchange）的交易所 id 存在 `token_chain_id` 列，符号存在 `token_symbol` 列。
@@ -456,6 +479,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - `sync_records` 全表只保留最近 50 条。每次全量同步会为每个账户各写一条，所以每个账户最近一次的状态始终在内。
 - 生成的 `ow_database.g.dart` 纳入版本控制；改表后运行 `cd packages/ow_data && dart run build_runner build`。
 - 数据库 `schemaVersion` 从 1 开始；每次改表都写迁移并加迁移测试。
+- 版本 2（M1-18）：新建 `assets`、`asset_contracts`，`accounts` 加 `last_synced_at`。迁移 1 → 2 只做这三件事，旧数据保持不变，`last_synced_at` 为空，下一次成功同步后写入。`last_synced_at` 由 `SyncRecordRepository.add` 在写入成功记录的同一事务内更新（只前进不后退），因此不受 `sync_records` 只保留 50 条的影响；`AccountRepository.upsert` 不触碰该列。
 - 文件名 `onewallet.db`，位于应用支持目录。
 
 ## 6. 保险库（`packages/ow_vault`）
@@ -583,7 +607,7 @@ app/lib/features/<feature>/
 
 ### 7.4 失败到文案
 
-每种 `Failure` 在 ARB 中有一条 `failure<类型>` 文案，由 `app/lib/widgets/failure_text.dart` 统一映射。页面不得自己拼错误信息。
+每种 `Failure` 在 ARB 中有一条 `failure<类型>` 文案，由 `app/lib/widgets/failure_text.dart` 统一映射。页面不得自己拼错误信息。两个按细分情形给出不同文案：`UnsupportedFailure` 按 `reason`（`failureUnsupported`「当前设备不支持这个功能」、`failureUnsupportedNotIntegrated`「暂不支持这条链或这家交易所…」）；`DuplicateAddressFailure` 按 `kind`（含 `ownerMissing`：「该地址已存在于本应用中。」，不显示空的书名号）。同步记录里的 `failureType` 经 `failureFromTypeName` 还原后同样走 `failureText`。
 
 ### 7.5 依赖装配（M0-13）
 
@@ -600,16 +624,18 @@ app/lib/features/<feature>/
 | | `idGeneratorProvider` | `IdGenerator`（UUID v4） |
 | 数据 | `databaseProvider` | `OwDatabase`。**必须由启动流程 override**，否则读取抛 `UnimplementedError` |
 | | `repositoriesProvider` | `OwRepositories` |
+| | `assetRepositoryProvider` | `AssetRepository` |
 | | `accountRepositoryProvider`、`addressRepositoryProvider`、`holdingRepositoryProvider`、`priceRepositoryProvider`、`snapshotRepositoryProvider`、`syncRecordRepositoryProvider`、`vaultMetaRepositoryProvider`、`settingsRepositoryProvider`、`tokenVisibilityRepositoryProvider` | 各仓储接口 |
 | 配置 | `dataSourceConfigProvider` | `SecretStoreDataSourceConfig`：实现 `DataSourceConfig`，另有 `setApiKey`、`clearApiKey`、`setCustomEndpoint`、`clearCustomEndpoint`（返回 `Result<void>`；自定义端点只接受 https 且不含用户名密码） |
 | | `netLogSinkProvider` | `OwLogSink?`：调试构建把 `ow_net` 已脱敏的日志接到 `OwLogger`，发布构建为 null |
 | 适配器 | `addressChecksumProvider`、`addressCodecProvider` | `ChainAddressChecksum`、`AddressCodec` |
-| | `builtInAssetCatalogProvider`、`assetCatalogProvider` | `BuiltInAssetCatalog`；后者为 `AssetCatalog` 接口（M1-18 换成"内置表加数据库"的组合） |
-| | `priceSourceProvider` | `CoinGeckoPriceSource` |
+| | `builtInAssetCatalogProvider`、`assetCatalogProvider` | `BuiltInAssetCatalog`；后者为 `PersistentAssetCatalog`（内置表加 `assets` 表，同时是 `HoldingNormalizer` 的记录器）。进入应用前由 `AssetCatalogGate` 调用 `load()` |
+| | `priceSourceProvider` | `CoinGeckoPriceSource`（`catalog` 用 `assetCatalogProvider`） |
 | | `adapterRegistryProvider` | `AppAdapterRegistry`：EVM 用 `EvmChainAdapter`；其余家族与全部交易所是占位适配器，所有方法返回 `UnsupportedFailure`。TODO(M2-01..03)、TODO(M2-06..09) |
-| 用例 | `retryPolicyProvider`、`holdingNormalizerProvider`、`syncAccountProvider`、`syncAllAccountsProvider`、`addWalletAccountProvider`、`addAddressesToAccountProvider`、`watchPortfolioProvider` | `syncAccount`、`syncAllAccounts` 持有在途状态，全应用各一个实例 |
+| 用例 | `retryPolicyProvider`、`holdingNormalizerProvider`、`syncAccountProvider`、`syncAllAccountsProvider`、`addWalletAccountProvider`、`addAddressesToAccountProvider`、`deleteAddressProvider`、`watchPortfolioProvider` | `syncAccount`、`syncAllAccounts` 持有在途状态，全应用各一个实例 |
 | 读模型 | `portfolioSummaryProvider` | `StreamProvider<PortfolioSummary>` |
 | | `settingsProvider` | `StreamProvider<AppSettings>` |
+| | `lastSuccessPerAccountProvider`、`syncingAccountIdsProvider` | `StreamProvider<Map<String, DateTime>>`（账户最近成功同步时间，P02「上次同步」与 P07 失败提示用）、`StreamProvider<Set<String>>`（正在同步的账户，P03、P07 的「同步中」用） |
 | | `themeModeProvider` | `ThemePreference`：跟随 `AppSettings.theme`，设置未就绪时为 `system` |
 
 Riverpod 3 对没有监听者的 provider 会暂停：测试里读取 `StreamProvider` 的 `.future` 之前要先 `container.listen`。

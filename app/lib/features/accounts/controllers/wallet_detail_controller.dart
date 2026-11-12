@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ow_domain/ow_domain.dart';
 
 import '../../../bootstrap/providers.dart';
 import 'wallet_detail_view.dart';
@@ -13,12 +14,16 @@ final walletDetailViewProvider = Provider.autoDispose
       final holdings = ref.watch(holdingsProvider);
       final prices = ref.watch(quotePricesProvider);
       final records = ref.watch(latestSyncRecordsProvider);
+      final lastSuccess = ref.watch(lastSuccessPerAccountProvider);
+      final syncing = ref.watch(syncingAccountIdsProvider);
       for (final v in <AsyncValue<Object?>>[
         accounts,
         addresses,
         holdings,
         prices,
         records,
+        lastSuccess,
+        syncing,
       ]) {
         if (v case AsyncError(:final error, :final stackTrace)) {
           return AsyncError(error, stackTrace);
@@ -29,7 +34,15 @@ final walletDetailViewProvider = Provider.autoDispose
       final h = holdings.value;
       final p = prices.value;
       final r = records.value;
-      if (a == null || d == null || h == null || p == null || r == null) {
+      final l = lastSuccess.value;
+      final y = syncing.value;
+      if (a == null ||
+          d == null ||
+          h == null ||
+          p == null ||
+          r == null ||
+          l == null ||
+          y == null) {
         return const AsyncLoading();
       }
       final account = a.where((x) => x.id == accountId).firstOrNull;
@@ -44,6 +57,8 @@ final walletDetailViewProvider = Provider.autoDispose
           holdings: h,
           prices: p,
           record: r.where((x) => x.accountId == accountId).firstOrNull,
+          lastSuccessAt: l[accountId],
+          syncing: y.contains(accountId),
         ),
       );
     });
@@ -83,10 +98,8 @@ class WalletDetailActions {
   /// 删除一个地址（账户至少保留一个）。成功返回 true 并重新同步该账户，
   /// 让已删除地址的余额缓存被清掉；账户只剩一个地址时返回 false，不删除。
   Future<bool> deleteAddress(String addressId) async {
-    final repo = _ref.read(addressRepositoryProvider);
-    final all = await repo.byAccount(accountId);
-    if (all.length <= 1 || !all.any((a) => a.id == addressId)) return false;
-    await repo.delete(addressId);
+    final result = await _ref.read(deleteAddressProvider)(addressId);
+    if (result is Err) return false;
     unawaited(refresh());
     return true;
   }

@@ -392,6 +392,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get accountsSyncFailed => '同步失败';
 
   @override
+  String get accountsSyncing => '同步中';
+
+  @override
   String get accountsLoadFailed => '无法读取账户列表。请重启应用后重试。';
 
   @override
