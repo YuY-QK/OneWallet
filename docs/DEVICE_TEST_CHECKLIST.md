@@ -62,3 +62,18 @@
 - [ ] 地址有未确认的转入或转出时，本应用只显示已确认部分（这是有意的口径，与浏览器网页的"含未确认"总额可能不同）
 - [ ] 公共实例的限频具体数值文档未给：连续同步十几个地址，确认不会频繁出现"请求过于频繁"
 - [ ] 配置一个自建的 mempool 或 Esplora 兼容实例作为自定义节点（含路径前缀的情形），余额能取到
+
+### 5.2 Solana（Helius 与官方公共节点）
+
+接口参数与返回结构已对照 Helius 文档核对；**Solana 官方文档（solana.com）当时对非浏览器客户端返回 429，未能读取**。详见 `docs/EXTERNAL_APIS.md`"Solana RPC"。
+
+冒烟脚本：在 `packages/ow_chains` 目录执行 `OW_HELIUS_KEY=<Key> dart run tool/smoke_sol.dart <地址>`；不设 `OW_HELIUS_KEY` 时走官方公共 RPC（Key 可缺省）。
+
+- [ ] 用一个持有 SOL、USDC、至少一种其他代币的地址跑一次，余额与 Solscan 一致（代币只显示缩略 mint，符号由币种目录识别）
+- [ ] 用一个同一代币有多个代币账户的地址，确认数量是各账户之和
+- [ ] 用一个持有 Token-2022 代币（如 PYUSD）的地址，确认能取到
+- [ ] 用一个持有 NFT 的地址，确认 NFT 不出现在结果里
+- [ ] **官方公共节点（未能核对）**：不设 Key 直接跑一次，确认主机名 `api.mainnet-beta.solana.com` 可用；记录它对 `getTokenAccountsByOwner` 的限频与使用限制，反复运行几次观察是否被限频或拒绝
+- [ ] **Helius**：设 Key 跑一次，确认 Key 放在 `api-key` 查询参数可用；运行时打开日志，确认日志中 Key 只保留前 4 位
+- [ ] 一个代币账户数量上千的大钱包，确认响应没有超时（v1 不分页，`getTokenAccountsByOwnerV2` 未使用）
+- [ ] 质押在验证者上的 SOL 不计入余额（有意的口径），与 Solscan 的"总价值"对照时留意这一差异

@@ -143,3 +143,44 @@
 - 备注：
   - 测试样本 `packages/ow_chains/test/fixtures/btc_*.json` 中 `p2pkh_doc`（官方文档示例地址 `1wiz18…`）、`p2sh`、`bech32`、`bech32m`、`bech32_big` 是 2026-11-12 从公共接口取得的真实响应（公开的知名地址，随时间会变化，测试只依赖固定副本）；`new_address`、`mempool_only`、`pending_spend` 是按同一结构手工构造的边界样本。
   - 冒烟脚本 `packages/ow_chains/tool/smoke_btc.dart` 见 `tools/smoke/README.md`；开发时已用该脚本对真实接口查询 `1wiz18…`，返回结构与解析一致。
+
+## Solana RPC（Helius 与官方公共节点）
+
+- 官方文档：
+  - **Solana 官方 RPC 文档（<https://solana.com/docs/rpc>）2026-11-12 未能读取**：`solana.com` 对非浏览器客户端返回 HTTP 429 与 Vercel 安全检查页（`llms.txt`、页面 `.md` 后缀、`sitemap.xml` 都一样），因此**官方公共节点的主机名、限频、使用限制全部未能核对**。
+  - 改读 Helius 文档（2026-11-12 通过 <https://docs.helius.dev/llms-full.txt> 直读原文，Helius 复述了标准 RPC 方法的参数与返回结构，不等同于 Solana 基金会文档）：
+    - `getBalance`：<https://www.helius.dev/docs/api-reference/rpc/http/getbalance> 与指南 <https://www.helius.dev/docs/rpc/guides/getbalance>
+    - `getTokenAccountsByOwner`：<https://www.helius.dev/docs/api-reference/rpc/http/gettokenaccountsbyowner> 与指南 <https://www.helius.dev/docs/rpc/guides/gettokenaccountsbyowner>
+    - `getSignaturesForAddress`：<https://www.helius.dev/docs/rpc/guides/getsignaturesforaddress>
+    - 限频与错误：<https://www.helius.dev/docs/billing/rate-limits>、<https://www.helius.dev/docs/faqs/error-codes>
+- 核对日期：2026-11-12。**仍需用真实 Key 跑冒烟脚本**（本环境访问不到任何 Solana RPC 主机）。
+- 端点与鉴权：
+  - 自定义节点（`DataSourceConfig.customEndpoint('solana')`，必须 https）：优先级最高，查询串原样保留，其中的**所有查询参数名**都按敏感信息脱敏（`OwHttpConfig.extraSensitiveNames`）；路径里的不透明长段由 `ow_net` 的路径脱敏处理。
+  - 配置了 `apiKey('helius')`：`POST https://mainnet.helius-rpc.com/?api-key=<Key>`（已核对：DAS 概览与各方法示例；错误码页写明 Key 以 `?api-key=` 传递）。Helius 文档另说 WebSocket 与 Parsed Streams 可用 `x-api-key` 请求头，**RPC 是否接受该头未能核对**，故用查询参数。`ow_net` 的敏感名称规则含 `key`，`api-key` 已被脱敏（只保留前 4 位），已有测试覆盖，无需 `extraSensitiveNames`；用户自定义端点的参数名则逐个加入 `extraSensitiveNames`。
+  - 都没有配置：`POST https://api.mainnet-beta.solana.com/`（**主机名来自既有知识，未能核对**）。
+- 限频：
+  - Helius（已核对，rate-limits 页）：免费档 RPC 10 次/秒（月 100 万 credits），Developer 50、Business 200、Professional 500；超限 HTTP 429。限频对所有 RPC 方法合计，不是按方法分别计。`getProgramAccounts` 另有更严限制（本适配器不用）。各方法的 credit 消耗**未能核对**。适配器默认 `RateLimiter` 每秒 5 次（低于免费档的 10）。官方建议 429、503、5xx 退避重试（首次约 1 秒，翻倍，上限 30 秒）；适配器不自动重试，由上层决定。`Retry-After` 响应头在文档示例里被读取，但文档未保证存在，不依赖。
+  - 官方公共节点：限频与"仅限开发/测试、不得用于生产"之类的使用限制**未能核对**。可以预期它对 `getTokenAccountsByOwner` 这类较重的方法限制更严；只在用户没有配置 Helius Key 时作为后备，界面应提示"公共节点可能限频，建议配置自己的 Key"。
+
+| 用途 | 方法 | 参数（本适配器实际发送） | 返回中用到的字段 |
+|---|---|---|---|
+| SOL 余额 | `getBalance` | `[地址, {"commitment": "finalized"}]`（文档：commitment 取 `processed`/`confirmed`/`finalized`；`getBalance` 默认 finalized） | `result.value`：lamports，无符号 64 位整数（已核对）。账户不存在时通常返回 0（已核对） |
+| 代币账户 | `getTokenAccountsByOwner` | `[地址, {"programId": <程序>}, {"encoding": "jsonParsed", "commitment": "finalized"}]`，对两个程序各发一次（文档：filter 必须给 `mint` 或 `programId` 之一） | `result.value[]`：`account.data.parsed.info.mint`、`info.tokenAmount.amount`（整数字符串）、`info.tokenAmount.decimals`（数字）；另有 `uiAmount`（浮点，**不使用**）、`uiAmountString`、`state`、`isNative`（均已核对） |
+| 是否有交易 | `getSignaturesForAddress` | `[地址, {"limit": 1, "commitment": "finalized"}]`（文档：limit 默认与上限 1000；commitment 仅支持 `finalized`、`confirmed`） | `result[]` 是否非空；每项含 `signature`、`slot`、`err`、`memo`、`blockTime`、`confirmationStatus`（已核对） |
+
+- 两个代币程序的地址（已核对，Helius 指南原文："SPL Token Program: `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`；Token-2022 Program: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`"）。**未能对照 Solana 官方文档**。
+- 字段到领域模型的映射：
+  - SOL → `RawHolding(NativeToken('solana'))`，`symbolHint`=`SOL`、`nameHint`=`Solana`；lamports ÷ 10^9，`Decimal` 整数移位；余额为 0 不返回。
+  - 代币 → `RawHolding(ContractToken('solana', mint))`（mint 为 Base58，区分大小写，原样保留）。**`symbolHint`/`nameHint` 为空**：RPC 不返回元数据，由币种目录与价格源识别。数量 = `amount`（整数字符串，用 `BigInt` 解析）÷ 10^`decimals`；**不使用 `uiAmount`**。
+  - **同一 mint 多个代币账户合并求和**（一个钱包可持有同一代币的多个账户）。
+  - **NFT 过滤规则**：合并后 `decimals == 0` 且数量恰为 1 的 mint 视为 NFT，不返回。代价：恰好持有 1 个最小单位的 0 位小数同质化代币会被误滤，v1 接受；压缩 NFT（cNFT）不是代币账户，本来就不会出现。
+  - 数量为 0 的账户、`amount` 不是非负整数串或 `decimals` 越界的账户被跳过（单个坏条目不使整次查询失败）。包装 SOL（wSOL）的代币账户按普通代币返回，由上层映射表决定是否归并到 SOL。
+- 错误到 Failure 的映射：HTTP 429 → `RateLimitedFailure`；401/403 → `UnauthorizedFailure`；5xx → `ServiceDownFailure`；网络/超时 → `NetworkFailure`（`ow_net`）。JSON-RPC `error`：`detail` 只含方法名与错误码，不含 message。`-32005`：Helius 文档的限频响应形式是 `{"error": {"code": -32005, "message": "Too many requests"}}`（已核对，rate-limits 页），而 Solana 节点自身用 `-32005` 表示 `Node is unhealthy`（来自既有知识，**未能核对**），所以按 message 区分（含 `too many` 或 `rate` → `RateLimitedFailure`，否则 `ServiceDownFailure`）；`429` → 限频；`401/403` → `UnauthorizedFailure`；`-32601` → `UnsupportedFailure`；`-32602`（Helius 文档：非法公钥、未知字段、不支持的 commitment）→ `ValidationFailure`；`-32603` 与其余 `-32000..-32099` → `ServiceDownFailure`；其他 → `UnknownFailure`。
+- 取不到的内容：
+  - 代币的符号、名称（RPC 不返回），无法识别的代币在界面上只能显示缩略的 mint；
+  - NFT 与 cNFT（按规则过滤，不计价）；
+  - 质押在验证者上的 SOL（质押账户是独立账户，不在钱包地址的 `getBalance` 里）——**v1 未包含**，界面应明示；
+  - 未领取的奖励、DeFi 协议里的头寸。
+- 备注：
+  - 一次 `fetchHoldings` 发 3 个请求（`getBalance` 加两个 programId）。代币很多的钱包响应体可能很大；Helius 提供支持分页的 `getTokenAccountsByOwnerV2`（上限每页 1 万个账户），本适配器 v1 不用，**超大钱包的实际表现未能核对**。
+  - 测试样本 `packages/ow_chains/test/fixtures/sol_token_accounts_*.json` 按 Helius 指南描述的结构手工整理（含 `rentEpoch` 为 2^64−1 的真实形态，用来验证大整数不会破坏解析）；地址与代币账户是假数据，其中 USDC、USDT、PYUSD 的 mint 是真实地址，其余 mint 为假。数值是示意，不是真实响应。
