@@ -184,3 +184,46 @@
 - 备注：
   - 一次 `fetchHoldings` 发 3 个请求（`getBalance` 加两个 programId）。代币很多的钱包响应体可能很大；Helius 提供支持分页的 `getTokenAccountsByOwnerV2`（上限每页 1 万个账户），本适配器 v1 不用，**超大钱包的实际表现未能核对**。
   - 测试样本 `packages/ow_chains/test/fixtures/sol_token_accounts_*.json` 按 Helius 指南描述的结构手工整理（含 `rentEpoch` 为 2^64−1 的真实形态，用来验证大整数不会破坏解析）；地址与代币账户是假数据，其中 USDC、USDT、PYUSD 的 mint 是真实地址，其余 mint 为假。数值是示意，不是真实响应。
+
+## TronGrid（Tron）
+
+- 官方文档（2026-11-12 通过 <https://developers.tron.network/llms.txt> 的索引与各页面 `.md` 后缀直读原文，含完整 OpenAPI 定义）：
+  - 获取账户信息：<https://developers.tron.network/reference/get-account-info-by-address>
+  - 获取 TRC-20 余额：<https://developers.tron.network/reference/get-trc20-token-balances-by-address>
+  - 获取 TRC-20 合约信息：<https://developers.tron.network/reference/get-trc-20-token-information>
+  - API Key：<https://developers.tron.network/reference/select-network>；限频：<https://developers.tron.network/reference/rate-limits>
+  - 委托资源（Stake 2.0）：<https://developers.tron.network/docs/delegation>；全节点 `GetAccount`：<https://developers.tron.network/reference/account-getaccount>
+- 核对日期：2026-11-12。除标注"未能核对"的条目外均已对照官方原文。**本环境访问不到 `api.trongrid.io`，未做真实接口调用，仍需用冒烟脚本确认。**
+- 主机（已核对）：主网 `https://api.trongrid.io`（另有 Shasta、Nile 测试网，不用）。
+- 鉴权（已核对）：请求头 `TRON-PRO-API-KEY: <Key>`（Key 可在 TronGrid 控制台创建）。**无 Key 是否可用**：文档只说"无 Key 的请求可能被严格限频或拒绝"，没有给出确切行为，**未能核对**；适配器无 Key 时照常请求，不带该头。Key 通过 `DataSourceConfig.apiKey('trongrid')` 读取；`ow_net` 的敏感名称规则含 `key`，请求头 `TRON-PRO-API-KEY` 被脱敏（保留前 4 位），有测试覆盖。**Key 只发往默认主机**，自定义节点（`customEndpoint('tron')`，必须 https，路径前缀保留）不会收到。
+- 限频（部分核对）：官方明确"不要把固定限额写进业务逻辑，以控制台和实时响应为准"；限频维度有 API Key、账户、IP、接口类型，每秒/每分钟/每天窗口并存；超限返回 429，"异常高频轮询"可能被临时封禁并返回 403；建议指数退避并缓存。**具体数值未能核对**（文档未给）。适配器默认 `RateLimiter` 每秒 3 次；一次同步最少 2 个请求（账户、TRC-20 余额），每多一页或每多 20 个未知合约再加 1 个。429 响应体形如 `{"success": false, "error": "The key exceeds the frequency limit", "statusCode": 429}`（已核对）。
+
+| 用途 | 方法与路径 | 关键参数 | 返回中用到的字段 |
+|---|---|---|---|
+| TRX 与质押 | GET `/v1/accounts/{地址}` | 地址为 Base58 或 Hex（用 Base58）；另有 `only_confirmed`、`only_unconfirmed`（不用，默认两者都含） | `data[]`（未激活地址为空数组，见下）：`balance`（整数，sun，1 TRX = 10^6 sun，"可用余额"）；`frozenV2[].amount`（Stake 2.0 质押，sun，**条目可能省略 `amount` 或 `type`**）；`delegated_frozenV2_balance_for_bandwidth`、`account_resource.delegated_frozenV2_balance_for_energy`（本账户质押后委托给他人的 TRX，sun）；`unfrozenV2[].unfreeze_amount`（已申请解锁、等待提取的 TRX，仅在有时返回）。示例响应（官方）：`{"data":[{"address":"41…","balance":1000000,"frozenV2":[{},{"type":"ENERGY"},{"type":"TRON_POWER"}],…}],"success":true,"meta":{"at":…,"page_size":1}}` |
+| TRC-20 余额（分页） | GET `/v1/accounts/{地址}/trc20/balance` | `limit`（默认 20，最大 200，本实现用 200）、`fingerprint`（取上一页 `meta.fingerprint`）、`contract_address`（不用） | `data[]`：每项是 **{合约 Base58 地址: 最小单位余额字符串}**，零余额的代币被省略，**不含 decimals、name、symbol**（已核对）；`meta.fingerprint` 存在表示还有下一页（`meta.links.next` 同理）。示例（官方，Nile）：`{"data":[{"TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf":"4999997900"}],"success":true,…}`；无余额时 `data` 为 `[]` |
+| TRC-20 合约信息 | GET `/v1/trc20/info` | `contract_list`：逗号分隔的合约地址，**最多 20 个**（已核对） | `data[]`：`contract_address`、`symbol`、`name`、`decimals`（**字符串**，如 `"6"`）、`type`、`total_supply`（整数串）。是只读的 GET 查询 |
+
+- **decimals 的获取方式（自行决定）**：任务提示可用 `triggerconstantcontract` 调合约的 `decimals()`，但读文档发现 TronGrid 有专门的只读 GET 接口 `/v1/trc20/info`（批量、带符号与名称），故**不使用 `triggerconstantcontract`**（它是 POST，且属于“模拟合约调用”，语义上更接近交易构造；`tools/ci/check_deps.dart` 只扫描 `ow_exchanges`，不会拦截，但没有必要引入）。适配器顺序：构造参数 `knownDecimals`（合约 → decimals，由装配层传入）→ `/v1/trc20/info`（带内存缓存，只缓存查到的）→ 仍查不到则**跳过该代币**。注意：内置映射表 `asset_mappings.json` 目前**没有 decimals 字段**，装配层需要自行提供（见汇报的建议）；不提供时全部走 `/v1/trc20/info`，只是多几个请求。
+- 为什么不用 `/v1/accounts/{地址}` 返回的 `trc20` 数组：文档只写"TRC-20 balance held by this account"，没有给出元素形态与分页方式；专用的 `/trc20/balance` 接口有明确的分页和示例。
+- 字段到领域模型的映射：
+  - TRX → `RawHolding(NativeToken('tron'))`，`symbolHint`=`TRX`、`nameHint`=`Tron`；数量 = (可用 + 质押口径) ÷ 10^6，`Decimal` 整数移位。
+  - **TRX 口径（自行决定）**：可用 `balance` + Stake 2.0 的 `frozenV2[].amount` + 已委托出去的 `delegated_frozenV2_balance_for_bandwidth`/`…_for_energy` + 解锁等待中的 `unfrozenV2[].unfreeze_amount`。理由：这些 TRX 仍归用户所有。**不计**：Stake 1.0 的旧字段（`frozen`、`account_resource.frozen_balance_for_energy`、`delegated_frozen_balance_for_*`；已弃用，且文档没有说明 1.0 下委托部分是否与 `frozen` 重复，为避免重复计入而不加）；`allowance`（未领取的投票奖励）；他人委托给本账户的资源（`acquired_delegated_*`，不是本账户的资产）。
+  - **未能核对**：`frozenV2[].amount` 是否已扣除委托出去的部分。文档只说委托后"原始质押的 TRX 仍在你名下"；本实现按 java-tron 的实现印象（委托时从 `frozenV2` 转入 `delegated_frozenV2_*`）把两者相加。若实际 `frozenV2` 已包含委托部分，会重复计入，请按真机清单用有委托的账户核对。
+  - TRC-20 → `RawHolding(ContractToken('tron', Base58合约地址))`，原样保留大小写；`knownDecimals` 命中的合约不带符号/名称提示（交给币种目录），否则取 `/v1/trc20/info` 的 `symbol`/`name`；余额为 0、`decimals` 查不到的代币不返回。
+  - **未激活的地址**：`data` 为空数组，视为零 TRX、`hasActivity=false`，不是错误（任务约定；官方示例文档未给出该情形的响应样例，**未能核对**空数组之外是否还有其他形式，如 404）。因为未激活地址理论上也可能被转入 TRC-20，适配器仍会查询 TRC-20 余额。
+- 错误到 Failure 的映射：HTTP 429 → `RateLimitedFailure`；401/403 → `UnauthorizedFailure`（官方说 403 也可能是临时封禁或安全设置拦截，界面无法区分，v1 接受）；5xx → `ServiceDownFailure`；网络/超时 → `NetworkFailure`（`ow_net`）。400 的响应体形如 `{"success":false,"error":"A valid account address is required.","statusCode":400}` → `ow_net` 映射为 `UnknownFailure('HTTP 400 …')`（不含地址与响应体）。另外对 **HTTP 200 但 `success` 为 `false`** 的响应按 `statusCode` 再映射一次（429/401/403/≥500），其余 `UnknownFailure`（官方没有说明会不会出现，防御性处理）。合约信息接口的普通错误（`UnknownFailure`）只跳过该批，限频/凭据/网络/服务故障使整次查询失败。
+- 取不到的内容：TRC-10 资产（`assetV2`）、TRC-721/1155（v1 不含）；Stake 1.0 的质押；未领取的投票奖励；他人委托给本账户的资源；能量/带宽（不是资产）。
+- 备注：测试样本 `packages/ow_chains/test/fixtures/tron_*.json`：`tron_account_doc.json` 是官方文档的示例响应（原样），`tron_trc20_*` 按官方示例的结构整理（`TXYZ…` 合约与 `"4999997900"` 取自文档），其余为手工构造的假数据；USDT 主网合约 `TR7NHq…Lj6t` 在官方文档 <https://developers.tron.network/docs/get-trc20-transaction-history> 中出现（见"币种映射核对"）。
+
+### 内置映射表中 Solana、Tron 合约的核对（M2-02、M2-03，2026-11-12，未修改映射表）
+
+| 资产 | 链 | 映射表中的地址 | 官方来源核对 |
+|---|---|---|---|
+| USDT | Tron | `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t` | 一致。TRON 官方开发者文档 <https://developers.tron.network/docs/get-trc20-transaction-history> 写明"USDT (`TR7NHq…Lj6t`)" |
+| USDC | Solana | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | 一致。Helius 文档多处示例标注为 USDC mint（第三方文档，非 Circle 官方） |
+| USDT | Solana | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` | 一致。Helius 文档代码示例注释为 USDT（第三方文档，非 Tether 官方） |
+| PYUSD | Solana | `2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo` | **未能核对**：可读的文档中未出现 |
+| EURC | Solana | `HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr` | **未能核对**：同上 |
+
+另：映射表 `asset_mappings.json` 没有 decimals 字段，`TronChainAdapter.knownDecimals` 需要装配层另行提供（Solana 的 decimals 由 RPC 返回，不需要）。
