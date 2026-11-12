@@ -66,6 +66,7 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 | 修改 ARB 文案后重新生成本地化代码 | `flutter pub get` 会自动生成 `app/lib/l10n/app_localizations*.dart` |
 | 修改数据库表结构后重新生成（生成的 `*.g.dart` 需提交） | `cd packages/ow_data && dart run build_runner build` |
 | 修改第三方目录后重新生成 | `cd packages/ow_directory && dart run tool/embed.dart` |
+| 重新生成页面截图 | `cd app && flutter test --update-goldens --run-skipped -t screenshots test/screenshots/` |
 
 ## 目录
 

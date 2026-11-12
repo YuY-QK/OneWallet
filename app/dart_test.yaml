@@ -1,0 +1,5 @@
+# 页面截图测试（test/screenshots/）不进常规检查：不同机器的字形渲染有细微差异。
+# 仅手动运行：见 docs/screenshots/README.md。
+tags:
+  screenshots:
+    skip: "仅手动运行：flutter test --update-goldens --run-skipped -t screenshots test/screenshots/"
