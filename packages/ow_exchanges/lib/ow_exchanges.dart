@@ -10,3 +10,5 @@ export 'src/common/exchange_client.dart';
 export 'src/common/holdings.dart';
 export 'src/common/response_judges.dart';
 export 'src/common/signing.dart';
+export 'src/okx/okx_adapter.dart' show OkxAdapter;
+export 'src/okx/okx_paths.dart' show OkxPaths, okxReadOnlyPaths;

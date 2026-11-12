@@ -1,0 +1,48 @@
+{
+  "code": "0",
+  "msg": "",
+  "data": [
+    {
+      "adjEq": "55415.624719833286",
+      "availEq": "55415.624719833286",
+      "borrowFroz": "0",
+      "details": [
+        {
+          "availBal": "4834.317093622894",
+          "availEq": "4834.3170936228935",
+          "cashBal": "4850.435693622894",
+          "ccy": "USDT",
+          "eq": "4992.890093622894",
+          "eqUsd": "4991.542013297616",
+          "frozenBal": "158.573",
+          "ordFrozen": "0",
+          "upl": "-7.545600000000006"
+        },
+        {
+          "availBal": "0.5",
+          "availEq": "0.5",
+          "cashBal": "0.7",
+          "ccy": "BTC",
+          "eq": "0.7",
+          "eqUsd": "70000",
+          "frozenBal": "0.2",
+          "ordFrozen": "0.2",
+          "upl": "0"
+        },
+        {
+          "availBal": "0",
+          "availEq": "0",
+          "cashBal": "0",
+          "ccy": "ETH",
+          "eq": "0",
+          "eqUsd": "0",
+          "frozenBal": "0",
+          "ordFrozen": "0",
+          "upl": "0"
+        }
+      ],
+      "totalEq": "55837.43556134779",
+      "uTime": "1705449605015"
+    }
+  ]
+}

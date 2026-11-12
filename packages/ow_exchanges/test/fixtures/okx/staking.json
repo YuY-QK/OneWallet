@@ -1,0 +1,52 @@
+{
+  "code": "0",
+  "msg": "",
+  "data": [
+    {
+      "ordId": "2413499",
+      "ccy": "DOT",
+      "productId": "101",
+      "state": "1",
+      "protocol": "Polkadot",
+      "protocolType": "defi",
+      "apy": "0.1014",
+      "investData": [
+        {
+          "ccy": "DOT",
+          "amt": "2"
+        }
+      ],
+      "earningData": [
+        {
+          "ccy": "DOT",
+          "earningType": "0",
+          "earnings": "0.10615025"
+        }
+      ],
+      "purchasedTime": "1729839328000"
+    },
+    {
+      "ordId": "2213257",
+      "ccy": "USDT",
+      "productId": "4005",
+      "state": "1",
+      "protocol": "On-Chain Defi",
+      "protocolType": "defi",
+      "apy": "0.0323",
+      "investData": [
+        {
+          "ccy": "USDT",
+          "amt": "1"
+        }
+      ],
+      "earningData": [
+        {
+          "ccy": "USDT",
+          "earningType": "0",
+          "earnings": "0.02886582"
+        }
+      ],
+      "purchasedTime": "1725345790000"
+    }
+  ]
+}

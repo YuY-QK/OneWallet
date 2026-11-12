@@ -56,6 +56,16 @@ const readOnlyPathAllowlist = <String>{
   // 同上，见 clients/wallet 的 GetApiKeyPermissionResponse。
   // 记录于 docs/EXTERNAL_APIS.md 的"Binance"一节。
   "'enableWithdrawals'",
+  // OKX：链上赚币进行中订单查询（GET /api/v5/finance/staking-defi/orders-active）。
+  // 路径中的 "orders" 命中 `/order`，但这是只读查询，返回持有的质押本金（investData）。
+  // 出处：https://www.okx.com/docs-v5/en/（Financial Product - On-chain Earn，GET Active orders）
+  // 记录于 docs/EXTERNAL_APIS.md 的"OKX"一节。
+  "'/api/v5/finance/staking-defi/orders-active'",
+  // OKX：API Key 权限字段的取值 `withdraw`（GET /api/v5/account/config 的 perm），
+  // 只用来判断 Key 是否带提现权限（verify），不调用任何提现接口。
+  // 出处：https://www.okx.com/docs-v5/en/（Trading Account - GET Account configuration）
+  // 记录于 docs/EXTERNAL_APIS.md 的"OKX"一节。
+  "'withdraw'",
 };
 
 /// 平台名称判断只允许出现在 ow_platform 和 app/lib/bootstrap。
