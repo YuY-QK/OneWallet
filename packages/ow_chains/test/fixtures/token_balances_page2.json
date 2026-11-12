@@ -16,7 +16,7 @@
       },
       {
         "contractAddress": "0xaaaa000000000000000000000000000000000005",
-        "tokenBalance": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "tokenBalance": null,
         "error": "execution reverted"
       },
       {
