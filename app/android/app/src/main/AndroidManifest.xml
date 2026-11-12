@@ -1,7 +1,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 直连第三方数据服务；调试清单中已有，发布清单需要自己声明。 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- 备份：数据库、保险库文件与安全存储都不进入系统备份与设备迁移
+         （TECH_DESIGN 6.1）。allowBackup 与 fullBackupContent 管 Android 11 及以下，
+         dataExtractionRules 管 Android 12 及以上。 -->
     <application
         android:label="onewallet"
         android:name="${applicationName}"
+        android:allowBackup="false"
+        android:fullBackupContent="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:usesCleartextTraffic="false"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"

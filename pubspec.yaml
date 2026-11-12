@@ -19,3 +19,9 @@ workspace:
 
 dev_dependencies:
   lints: ^6.0.0
+
+# 本地数据库使用 SQLCipher 构建的 SQLite（见 docs/ADR_006_SQLCipher接入.md）。
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlcipher
