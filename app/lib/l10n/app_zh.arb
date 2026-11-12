@@ -201,5 +201,68 @@
   "accountsGroupWallet": "钱包",
   "accountsGroupExchange": "交易所",
   "accountsSyncFailed": "同步失败",
-  "accountsLoadFailed": "无法读取账户列表。请重启应用后重试。"
+  "accountsLoadFailed": "无法读取账户列表。请重启应用后重试。",
+  "accountsSelectHint": "选择一个账户查看详情。",
+  "walletDetailTotal": "账户总估值",
+  "walletDetailTabAssets": "资产",
+  "walletDetailTabAddresses": "地址",
+  "walletDetailNoAssets": "该钱包目前没有可显示的资产",
+  "walletDetailNotFound": "找不到这个账户，它可能已被删除。",
+  "walletDetailFailedTitle": "同步失败",
+  "walletDetailLastSuccess": "上次成功同步：{time}",
+  "@walletDetailLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "walletDetailNeverSucceeded": "还没有成功同步过，下面没有缓存数据。",
+  "walletDetailUnpriced": "{count} 个未识别或无估值的币种",
+  "@walletDetailUnpriced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailAddAddress": "添加地址",
+  "walletDetailAddressesHint": "点击地址可查看二维码、复制、在浏览器中打开",
+  "walletDetailChainCount": "{count} 条链",
+  "@walletDetailChainCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addressSheetTitle": "{family} 地址",
+  "@addressSheetTitle": {
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "addressSheetCopy": "复制地址",
+  "addressSheetCopied": "已复制",
+  "addressSheetExplorerHeader": "在区块浏览器中打开",
+  "addressSheetExplorerRow": "{chain} · {host}",
+  "@addressSheetExplorerRow": {
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      },
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "addressSheetExplorerNote": "将用系统浏览器打开所示网站，请确认域名无误。",
+  "addressSheetOpenFailed": "无法打开系统浏览器。",
+  "addressSheetDelete": "删除地址",
+  "addressSheetDeleteLast": "账户至少要保留一个地址，所以不能删除最后一个地址。",
+  "addressSheetDeleteTitle": "删除这个地址？",
+  "addressSheetDeleteBody": "删除后，这个地址的余额缓存也会清除；链上资产不受影响，之后可以重新添加。",
+  "addressSheetCancel": "取消"
 }

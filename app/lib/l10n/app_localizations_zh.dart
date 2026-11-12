@@ -394,4 +394,89 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accountsLoadFailed => '无法读取账户列表。请重启应用后重试。';
+
+  @override
+  String get accountsSelectHint => '选择一个账户查看详情。';
+
+  @override
+  String get walletDetailTotal => '账户总估值';
+
+  @override
+  String get walletDetailTabAssets => '资产';
+
+  @override
+  String get walletDetailTabAddresses => '地址';
+
+  @override
+  String get walletDetailNoAssets => '该钱包目前没有可显示的资产';
+
+  @override
+  String get walletDetailNotFound => '找不到这个账户，它可能已被删除。';
+
+  @override
+  String get walletDetailFailedTitle => '同步失败';
+
+  @override
+  String walletDetailLastSuccess(String time) {
+    return '上次成功同步：$time';
+  }
+
+  @override
+  String get walletDetailNeverSucceeded => '还没有成功同步过，下面没有缓存数据。';
+
+  @override
+  String walletDetailUnpriced(int count) {
+    return '$count 个未识别或无估值的币种';
+  }
+
+  @override
+  String get walletDetailAddAddress => '添加地址';
+
+  @override
+  String get walletDetailAddressesHint => '点击地址可查看二维码、复制、在浏览器中打开';
+
+  @override
+  String walletDetailChainCount(int count) {
+    return '$count 条链';
+  }
+
+  @override
+  String addressSheetTitle(String family) {
+    return '$family 地址';
+  }
+
+  @override
+  String get addressSheetCopy => '复制地址';
+
+  @override
+  String get addressSheetCopied => '已复制';
+
+  @override
+  String get addressSheetExplorerHeader => '在区块浏览器中打开';
+
+  @override
+  String addressSheetExplorerRow(String chain, String host) {
+    return '$chain · $host';
+  }
+
+  @override
+  String get addressSheetExplorerNote => '将用系统浏览器打开所示网站，请确认域名无误。';
+
+  @override
+  String get addressSheetOpenFailed => '无法打开系统浏览器。';
+
+  @override
+  String get addressSheetDelete => '删除地址';
+
+  @override
+  String get addressSheetDeleteLast => '账户至少要保留一个地址，所以不能删除最后一个地址。';
+
+  @override
+  String get addressSheetDeleteTitle => '删除这个地址？';
+
+  @override
+  String get addressSheetDeleteBody => '删除后，这个地址的余额缓存也会清除；链上资产不受影响，之后可以重新添加。';
+
+  @override
+  String get addressSheetCancel => '取消';
 }

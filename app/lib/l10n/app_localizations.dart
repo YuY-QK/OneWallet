@@ -807,6 +807,156 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'无法读取账户列表。请重启应用后重试。'**
   String get accountsLoadFailed;
+
+  /// No description provided for @accountsSelectHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择一个账户查看详情。'**
+  String get accountsSelectHint;
+
+  /// No description provided for @walletDetailTotal.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户总估值'**
+  String get walletDetailTotal;
+
+  /// No description provided for @walletDetailTabAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'资产'**
+  String get walletDetailTabAssets;
+
+  /// No description provided for @walletDetailTabAddresses.
+  ///
+  /// In zh, this message translates to:
+  /// **'地址'**
+  String get walletDetailTabAddresses;
+
+  /// No description provided for @walletDetailNoAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'该钱包目前没有可显示的资产'**
+  String get walletDetailNoAssets;
+
+  /// No description provided for @walletDetailNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到这个账户，它可能已被删除。'**
+  String get walletDetailNotFound;
+
+  /// No description provided for @walletDetailFailedTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步失败'**
+  String get walletDetailFailedTitle;
+
+  /// No description provided for @walletDetailLastSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次成功同步：{time}'**
+  String walletDetailLastSuccess(String time);
+
+  /// No description provided for @walletDetailNeverSucceeded.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有成功同步过，下面没有缓存数据。'**
+  String get walletDetailNeverSucceeded;
+
+  /// No description provided for @walletDetailUnpriced.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个未识别或无估值的币种'**
+  String walletDetailUnpriced(int count);
+
+  /// No description provided for @walletDetailAddAddress.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加地址'**
+  String get walletDetailAddAddress;
+
+  /// No description provided for @walletDetailAddressesHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击地址可查看二维码、复制、在浏览器中打开'**
+  String get walletDetailAddressesHint;
+
+  /// No description provided for @walletDetailChainCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 条链'**
+  String walletDetailChainCount(int count);
+
+  /// No description provided for @addressSheetTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'{family} 地址'**
+  String addressSheetTitle(String family);
+
+  /// No description provided for @addressSheetCopy.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制地址'**
+  String get addressSheetCopy;
+
+  /// No description provided for @addressSheetCopied.
+  ///
+  /// In zh, this message translates to:
+  /// **'已复制'**
+  String get addressSheetCopied;
+
+  /// No description provided for @addressSheetExplorerHeader.
+  ///
+  /// In zh, this message translates to:
+  /// **'在区块浏览器中打开'**
+  String get addressSheetExplorerHeader;
+
+  /// No description provided for @addressSheetExplorerRow.
+  ///
+  /// In zh, this message translates to:
+  /// **'{chain} · {host}'**
+  String addressSheetExplorerRow(String chain, String host);
+
+  /// No description provided for @addressSheetExplorerNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'将用系统浏览器打开所示网站，请确认域名无误。'**
+  String get addressSheetExplorerNote;
+
+  /// No description provided for @addressSheetOpenFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法打开系统浏览器。'**
+  String get addressSheetOpenFailed;
+
+  /// No description provided for @addressSheetDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除地址'**
+  String get addressSheetDelete;
+
+  /// No description provided for @addressSheetDeleteLast.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户至少要保留一个地址，所以不能删除最后一个地址。'**
+  String get addressSheetDeleteLast;
+
+  /// No description provided for @addressSheetDeleteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除这个地址？'**
+  String get addressSheetDeleteTitle;
+
+  /// No description provided for @addressSheetDeleteBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除后，这个地址的余额缓存也会清除；链上资产不受影响，之后可以重新添加。'**
+  String get addressSheetDeleteBody;
+
+  /// No description provided for @addressSheetCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get addressSheetCancel;
 }
 
 class _AppLocalizationsDelegate

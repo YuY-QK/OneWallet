@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:onewallet/features/overview/presentation/widgets/overview_skeleton.dart';
+import 'package:onewallet/widgets/ow_skeleton.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../support/fakes.dart';
@@ -77,13 +77,13 @@ void main() {
       await pumpApp(tester, rig, settle: false);
       await tester.pump();
       await tester.pump();
-      expect(find.byType(OverviewSkeleton), findsOneWidget);
+      expect(find.byType(OwSkeleton), findsOneWidget);
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
       expect(find.text('总资产（USD）'), findsNothing);
 
       gate.complete();
       await tester.pumpAndSettle();
-      expect(find.byType(OverviewSkeleton), findsNothing);
+      expect(find.byType(OwSkeleton), findsNothing);
       expect(find.byType(LinearProgressIndicator), findsNothing);
       expect(find.text(r'$4,000.00'), findsWidgets);
     });
@@ -99,7 +99,7 @@ void main() {
       }
       expect(find.byType(LinearProgressIndicator), findsOneWidget);
       expect(find.text(r'$4,000.00'), findsWidgets);
-      expect(find.byType(OverviewSkeleton), findsNothing);
+      expect(find.byType(OwSkeleton), findsNothing);
     });
 
     testWidgets('部分失败_提醒条_点击列出失败账户', (tester) async {

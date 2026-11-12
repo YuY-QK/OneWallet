@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../../../theme/ow_colors.dart';
-import '../../../../theme/ow_metrics.dart';
+import '../theme/ow_colors.dart';
+import '../theme/ow_metrics.dart';
 
-/// 总览的骨架屏：与正常布局相近的灰色块（静态，不做动画）。
-class OverviewSkeleton extends StatelessWidget {
-  const OverviewSkeleton({super.key});
+/// 骨架屏：与正常布局相近的灰色块（静态，不做动画）。
+class OwSkeleton extends StatelessWidget {
+  const OwSkeleton({super.key});
 
   @override
   Widget build(BuildContext context) {

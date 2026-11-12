@@ -12,11 +12,11 @@ import '../../../widgets/empty_state.dart';
 import '../../../widgets/failure_text.dart';
 import '../../../widgets/formatters.dart';
 import '../../../widgets/ow_notice.dart';
+import '../../../widgets/ow_skeleton.dart';
 import '../controllers/overview_controller.dart';
 import '../controllers/overview_view.dart';
 import 'widgets/distribution_section.dart';
 import 'widgets/failure_sheet.dart';
-import 'widgets/overview_skeleton.dart';
 import 'widgets/total_card.dart';
 
 /// P02 总览：总资产、分布、同步状态。
@@ -70,7 +70,7 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
       body: switch (view) {
         AsyncData(:final value) => _body(context, l, value, hidden),
         AsyncError() => _failed(l, failureText(l, const UnknownFailure())),
-        _ => const OverviewSkeleton(),
+        _ => const OwSkeleton(),
       },
     );
   }
@@ -94,7 +94,7 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
         return Column(
           children: [
             if (view.syncing) const _SyncBar(),
-            const Expanded(child: OverviewSkeleton()),
+            const Expanded(child: OwSkeleton()),
           ],
         );
       case OverviewStatus.allFailed:
@@ -133,7 +133,7 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
     final quote = ref.watch(quoteProvider);
     final now = ref.watch(clockProvider).nowUtc();
     final data = summary.value;
-    if (data == null) return const OverviewSkeleton();
+    if (data == null) return const OwSkeleton();
     final last = view.lastSyncedAt;
     return RefreshIndicator(
       onRefresh: _refresh,
