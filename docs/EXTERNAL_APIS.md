@@ -305,3 +305,46 @@
   - 上表"未映射的错误码"在 Key 无权限时的实际返回（`50030` 还是 `50120`）；
   - `staking-defi/orders-active` 是否分页（文档只列了筛选参数，未见 `limit` 与 `after` 之类的分页参数，适配器按单页读取）；
   - 充值地址接口是否新建地址。
+
+## Bybit
+
+- 官方文档与核对来源（均于 2026-11-12 核对）：V5 文档站 <https://bybit-exchange.github.io/docs/v5/intro>（Docusaurus 静态页面，原文直读，用 `curl` 取得后截取 `<article>` 正文核对）。逐页核对的页面：集成指南 <https://bybit-exchange.github.io/docs/v5/guide>（鉴权与签名、域名、时间戳规则）；服务器时间 <https://bybit-exchange.github.io/docs/v5/market/time>；统一账户余额 <https://bybit-exchange.github.io/docs/v5/account/wallet-balance>；资金账户余额 <https://bybit-exchange.github.io/docs/v5/asset/balance/all-balance>；API Key 信息 <https://bybit-exchange.github.io/docs/v5/user/apikey-info>；灵活储蓄与链上赚币持仓 <https://bybit-exchange.github.io/docs/v5/finance/earn/easy-onchain/position>；定期理财持仓 <https://bybit-exchange.github.io/docs/v5/finance/earn/fixed-saving/position>；错误码 <https://bybit-exchange.github.io/docs/v5/error>；限频规则 <https://bybit-exchange.github.io/docs/v5/rate-limit>。
+- 核对日期：2026-11-12。**仍需用真实只读 Key 跑冒烟脚本确认**；本环境无法访问 Bybit 的 API 主机，没有真实调用，响应结构依据文档示例。
+- 基础地址：`https://api.bybit.com`（主站，本版本使用）；文档同时列出 `https://api.bytick.com` 作为备用主机。**文档列出的其他地区域名（如欧区 `api.bybit.eu`、土耳其、阿联酋、印尼、日本、香港等）本版本未支持**，相应地区用户的 Key 会失败。
+- 鉴权与签名（已核对，集成指南）：请求头 `X-BAPI-API-KEY`、`X-BAPI-TIMESTAMP`（UTC 毫秒）、`X-BAPI-SIGN`、`X-BAPI-RECV-WINDOW`（毫秒，默认 5000）。时间戳须满足 `server_time - recv_window <= timestamp < server_time + 1000`。GET 请求的待签名串 = `timestamp + api_key + recv_window + queryString`；签名为 HMAC-SHA256 的小写十六进制。适配器的 `bybitPreHash` 与文档一致。
+- 签名测试：文档示例的签名由未公开的 Secret 生成，**无法复算**。`test/bybit/bybit_adapter_test.dart` 中的期望值用 Python 标准库对同样输入独立计算（非官方向量）。
+- 限频（已核对，限频规则页）：按 IP，默认每 5 秒 600 次；超限返回 HTTP 403（"access too frequent"，须至少等待 10 分钟）。按 UID 每秒计的业务限额：`/v5/asset/transfer/query-account-coins-balance` 每秒 5 次；`/v5/user/query-api` 每秒 10 次；`/v5/account/wallet-balance`（UNIFIED）每秒 50 次；`/v5/earn/fixed-term/position` 每秒 10 次。**`/v5/earn/position`（灵活储蓄与链上赚币）的限额在限频页未列出，未能核对。** 适配器的限速器对所有接口共用：每秒最多 2 次，即本适配器所用接口中最严的 5 次/秒的一半并向下取整。超限业务码为 `10006`与 `10018`、`10429`。
+
+| 用途 | 方法与路径 | 关键参数 | 返回中用到的字段 |
+|---|---|---|---|
+| 服务器时间（公开） | GET `/v5/market/time` | 无 | `result.timeNano`（纳秒，换算为毫秒） |
+| 权限（verify） | GET `/v5/user/query-api` | 签名 | `result.readOnly`（0 读写、1 只读）、`result.permissions.Wallet`（含 `Withdraw` 即能提现） |
+| 统一交易账户 | GET `/v5/account/wallet-balance` | `accountType=UNIFIED` | `result.list[].coin[].coin / walletBalance / spotBorrow` |
+| 资金账户 | GET `/v5/asset/transfer/query-account-coins-balance` | `accountType=FUND` | `result.balance[].coin / walletBalance` |
+| 灵活储蓄与链上赚币 | GET `/v5/earn/position` | `category=FlexibleSaving`，再 `category=OnChain` | `result.list[].coin / amount` |
+| 定期理财 | GET `/v5/earn/fixed-term/position` | 无 | `result.list[].coin / amount` |
+
+- 权限判断（`BybitAdapter.permissionFrom`）：`permissions.Wallet` 含 `Withdraw` -> `canWithdraw`；否则 `readOnly` 为 0 -> `canTrade`（读写 Key，内部划转等写类权限同样归为"能交易"，与 Binance 一致）；`readOnly` 为 1 -> `readOnly`；字段缺失 -> `unknown`。
+- 子账户对应与数量：
+  - 统一交易账户 -> `ExchangeSubAccount.spot`。数量 = `walletBalance - spotBorrow`。依据：文档 `Old walletBalance = New walletBalance - spotBorrow`，且 `equity = walletBalance - spotBorrow + unrealisedPnl + ...`（即 `walletBalance` 为含借入的总额）。负数（借入未持有的币种）保留。合约未实现盈亏与衍生品仓位不另行拆出（统一账户中同一币种余额池共用）。
+  - 资金账户 -> `funding`。数量 = `walletBalance`（`transferBalance` 为其中可划转部分，不另加；不请求 `withBonus`，奖励金不计入）。
+  - 灵活储蓄、链上赚币、定期理财 -> `earn`。数量 = `amount`（总持仓量）。灵活储蓄文档说明"全部赎回的仓位也会返回"，金额为 0 时由累加器丢弃；链上赚币只返回进行中的仓位。
+- 降级（适配器的 `optional(...)`）：统一账户与资金账户失败则整体失败；"灵活储蓄与链上赚币"与"定期理财"两组若返回 `UnauthorizedFailure`（如业务码 `10005` 权限不足），视为空，产品名记入 `BybitAdapter.lastSkipped`（每次 `fetchHoldings` 重置）。限频、网络、5xx、时间偏差校正后仍失败等其他失败仍使整体失败。
+- 错误码到 Failure 的映射（`common/error_mapping.dart` 的 `mapBybitError`，对照错误码页，已核对）：
+  - `10002` -> `ClockSkewFailure`；`10006`、`10018`、`10429` -> `RateLimitedFailure`；
+  - `10010` -> `UnauthorizedFailure`（detail 标 `ip`）；`10003`、`10004`、`10005`、`10007` -> `UnauthorizedFailure`；
+  - `33004`（衍生品 API Key 过期）-> `KeyExpiredFailure`；
+  - `10000`、`10016`、`10019` -> `ServiceDownFailure`；其余 -> `UnknownFailure`；
+  - HTTP 403 与 429 无业务码时 -> `RateLimitedFailure`（限频页说明 403 为 IP 访问过频；**集成指南也说明美国与中国大陆 IP 返回 403，二者在本映射中都会表现为限频，需真机区分**）。
+  - **文档中有、但公共层映射未覆盖的码**（当前落入 `UnknownFailure`，未改公共层）：`10001`（参数错误）、`10008`（账户模式受限）、`10009`（地区不可用）、`10028`（"API 只能由统一账户用户访问"）、`100028`、`110067`、`182200`（"请先升级统一账户"）。**其中 `10028` 等码意味着"账户未开通统一账户"，目前会作为 `UnknownFailure` 导致整体失败，而不是"未开通"降级。** 统一账户是必需步骤，所以非统一账户的用户会整体失败，但失败信息不够明确。
+- 未包含的产品（`BybitAdapter.notIncluded`，界面明示"未包含"）：双币理财（Dual Asset）、借贷（借币与质押借贷）、Launchpool 与 Spot-X 项目、Bybit 卡与 RWA 等其他理财产品、子账户（只读取本 Key 所属账户的余额）。另有动态的 `lastSkipped`：Key 无权访问时被跳过的"灵活储蓄与链上赚币""定期理财"。
+- 充值地址：`fetchDepositAddresses` 返回空列表，不发请求。Bybit 的充值地址接口按币种与链分别查询，文档未说明地址不存在时是否会新建（与"只读、不新建"冲突，**未能核对**）。
+- 未能核对的项：
+  - 没有真实 Key 的调用，所有响应结构只依据文档示例；
+  - `walletBalance` 是否已包含挂单占用的 `locked`：文档未直接说明，依据权益公式推断为包含，适配器不另加 `locked`；
+  - 统一账户的 `spotBorrow` 扣减是否与交易所界面的"总资产"一致，以及负数持仓在总资产中的处理；
+  - `/v5/earn/position` 的限额（限频页未列出）；
+  - 理财持仓接口是否分页（文档只列了筛选参数，适配器按单页读取）；
+  - 其他地区域名的差异；
+  - 上表"未映射的错误码"在非统一账户下的实际返回；
+  - `10019` 的说明原文为 WebSocket 交易服务重启，适配器沿用公共层的映射（`ServiceDownFailure`），未在 REST 场景中实测。

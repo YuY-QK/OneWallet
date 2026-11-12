@@ -1,0 +1,60 @@
+{
+  "retCode": 0,
+  "retMsg": "OK",
+  "result": {
+    "list": [
+      {
+        "accountType": "UNIFIED",
+        "accountIMRate": "0",
+        "accountMMRate": "0",
+        "totalEquity": "3.31216591",
+        "totalWalletBalance": "3.00326056",
+        "totalPerpUPL": "0",
+        "coin": [
+          {
+            "coin": "USDT",
+            "equity": "104.5",
+            "walletBalance": "104.5",
+            "locked": "4.5",
+            "spotBorrow": "0",
+            "borrowAmount": "0",
+            "unrealisedPnl": "0",
+            "usdValue": "104.5"
+          },
+          {
+            "coin": "BTC",
+            "equity": "0.7",
+            "walletBalance": "0.8",
+            "locked": "0.2",
+            "spotBorrow": "0.1",
+            "borrowAmount": "0.1",
+            "unrealisedPnl": "0",
+            "usdValue": "70000"
+          },
+          {
+            "coin": "ETH",
+            "equity": "0",
+            "walletBalance": "0",
+            "locked": "0",
+            "spotBorrow": "0",
+            "borrowAmount": "0",
+            "unrealisedPnl": "0",
+            "usdValue": "0"
+          },
+          {
+            "coin": "SOL",
+            "equity": "-2",
+            "walletBalance": "0",
+            "locked": "0",
+            "spotBorrow": "2",
+            "borrowAmount": "2",
+            "unrealisedPnl": "0",
+            "usdValue": "-300"
+          }
+        ]
+      }
+    ]
+  },
+  "retExtInfo": {},
+  "time": 1794441600000
+}

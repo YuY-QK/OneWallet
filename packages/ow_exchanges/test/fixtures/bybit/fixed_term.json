@@ -1,0 +1,26 @@
+{
+  "retCode": 0,
+  "retMsg": "",
+  "result": {
+    "list": [
+      {
+        "positionId": "4064",
+        "productId": "724",
+        "category": "FixedTermSaving",
+        "coin": "USDT",
+        "amount": "50",
+        "effectiveAmount": "50",
+        "duration": "30d",
+        "status": "Active",
+        "settlementTime": "1797033600000",
+        "createdAt": "1794441600000",
+        "orderId": "5001",
+        "allowAutoReinvest": true,
+        "autoReinvest": "Disable",
+        "interestCoinApyList": []
+      }
+    ]
+  },
+  "retExtInfo": {},
+  "time": 1794441600000
+}

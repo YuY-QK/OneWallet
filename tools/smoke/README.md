@@ -54,4 +54,14 @@ OW_OKX_KEY=<只读Key> OW_OKX_SECRET=<Secret> OW_OKX_PASSPHRASE=<Passphrase> dar
 - 只读 Key 只勾选 Read；建议绑定本机出口 IP。OKX 使用全球站域名 `openapi.okx.com`，美区、欧区账户本版本不支持。
 - 脚本打印的「因无权限被跳过」即 `OkxAdapter.lastSkipped`（余币宝、链上赚币）。
 
-Bybit（M2-08）、Bitget（M2-09）的命令在对应小节补充。
+Bybit（M2-08）：
+
+```
+cd packages/ow_exchanges
+OW_BYBIT_KEY=<只读Key> OW_BYBIT_SECRET=<Secret> dart run tool/smoke_exchange.dart bybit
+```
+
+- 只读 Key 只勾选读取权限；建议绑定本机出口 IP。Bybit 使用主站 `api.bybit.com`，其他地区域名本版本不支持。
+- 脚本打印的「因无权限被跳过」即 `BybitAdapter.lastSkipped`（灵活储蓄与链上赚币、定期理财）。
+
+Bitget（M2-09）的命令在对应小节补充。

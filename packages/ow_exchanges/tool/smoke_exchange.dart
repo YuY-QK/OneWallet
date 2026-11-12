@@ -5,10 +5,11 @@
 //
 // 环境变量：OW_<交易所大写>_KEY、OW_<交易所大写>_SECRET；OKX、Bitget 另需
 // OW_<交易所大写>_PASSPHRASE。脚本只打印权限判断与各子账户按币种的数量，
-// 不打印任何凭据。目前已实现 binance、okx。
+// 不打印任何凭据。目前已实现 binance、okx、bybit。
 //
 //   OW_OKX_KEY=<Key> OW_OKX_SECRET=<Secret> OW_OKX_PASSPHRASE=<Passphrase> \
 //     dart run tool/smoke_exchange.dart okx
+//   OW_BYBIT_KEY=<Key> OW_BYBIT_SECRET=<Secret> dart run tool/smoke_exchange.dart bybit
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -29,7 +30,7 @@ Sensitive? _env(String name) {
 
 Future<void> main(List<String> args) async {
   if (args.length != 1) {
-    stderr.writeln('用法：dart run tool/smoke_exchange.dart <binance|okx>');
+    stderr.writeln('用法：dart run tool/smoke_exchange.dart <binance|okx|bybit>');
     exitCode = 64;
     return;
   }
@@ -41,6 +42,8 @@ Future<void> main(List<String> args) async {
       adapter = BinanceAdapter(clock: _SystemClock());
     case 'okx':
       adapter = OkxAdapter(clock: _SystemClock());
+    case 'bybit':
+      adapter = BybitAdapter(clock: _SystemClock());
     default:
       stderr.writeln('尚未实现的交易所：$name');
       exitCode = 64;
@@ -87,6 +90,9 @@ Future<void> main(List<String> args) async {
         stdout.writeln('因无权限被跳过：${adapter.lastSkipped}');
       }
       if (adapter is OkxAdapter) {
+        stdout.writeln('因无权限被跳过：${adapter.lastSkipped}');
+      }
+      if (adapter is BybitAdapter) {
         stdout.writeln('因无权限被跳过：${adapter.lastSkipped}');
       }
   }

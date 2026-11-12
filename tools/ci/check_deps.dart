@@ -66,6 +66,16 @@ const readOnlyPathAllowlist = <String>{
   // 出处：https://www.okx.com/docs-v5/en/（Trading Account - GET Account configuration）
   // 记录于 docs/EXTERNAL_APIS.md 的"OKX"一节。
   "'withdraw'",
+  // Bybit：资金账户余额查询（GET /v5/asset/transfer/query-account-coins-balance，accountType=FUND）。
+  // 路径分组名含 "transfer"，但本接口只查询各币种余额，不发起划转。
+  // 出处：https://bybit-exchange.github.io/docs/v5/asset/balance/all-balance（Get All Coins Balance）
+  // 记录于 docs/EXTERNAL_APIS.md 的"Bybit"一节。
+  "'/v5/asset/transfer/query-account-coins-balance'",
+  // Bybit：API Key 权限字段值 `Withdraw`（GET /v5/user/query-api 的 permissions.Wallet），
+  // 只用来判断 Key 是否带提现权限（verify），不调用任何提现接口。
+  // 出处：https://bybit-exchange.github.io/docs/v5/user/apikey-info（Get API Key Information）
+  // 记录于 docs/EXTERNAL_APIS.md 的"Bybit"一节。
+  "'Withdraw'",
 };
 
 /// 平台名称判断只允许出现在 ow_platform 和 app/lib/bootstrap。
