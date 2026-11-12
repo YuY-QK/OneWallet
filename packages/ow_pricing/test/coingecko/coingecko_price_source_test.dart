@@ -93,6 +93,22 @@ void main() {
       expect(idsOf(req), ['bitcoin', 'ethereum', 'tether']);
       expect(req.queryParameters['vs_currencies'], 'usd');
       expect(req.queryParameters['include_24hr_change'], 'true');
+      expect(req.queryParameters['precision'], 'full');
+    });
+
+    test('官方文档示例响应：整数价格与带额外字段的结构可解析', () async {
+      // 响应取自 CoinGecko 官方 /simple/price 示例（含市值、成交量等本实现不用的字段）。
+      final adapter = FakeAdapter(
+        (_) => jsonBody(fixture('simple_price_doc.json')),
+      );
+      final result = await build(adapter).fetchPrices({_btc}, Quote.usd);
+      final p = (result as Ok<List<Price>>).value.single;
+      expect(p.price, Decimal.parse('76975'));
+      expect(p.change24hPercent, Decimal.parse('-1.4093297098441402'));
+      expect(
+        p.updatedAt,
+        DateTime.fromMillisecondsSinceEpoch(1779092258 * 1000, isUtc: true),
+      );
     });
 
     test('CNY 报价读取 cny 字段', () async {
@@ -364,6 +380,23 @@ void main() {
         adapter.requests.single.uri.path,
         '/api/v3/coins/ethereum/contract/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
       );
+    });
+
+    test('官方文档示例响应：id、symbol、name 在顶层，且不带多余查询参数', () async {
+      const weth = ContractToken(
+        'ethereum',
+        '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+      );
+      final adapter = FakeAdapter(
+        (_) => jsonBody(fixture('contract_weth_doc.json')),
+      );
+      final result = await build(adapter).lookupContracts({weth});
+      final asset = (result as Ok<Map<ContractToken, Asset>>).value[weth]!;
+      expect(asset.priceId, 'weth');
+      expect(asset.symbol, 'WETH');
+      expect(asset.name, 'WETH');
+      // 官方文档该接口没有列出任何查询参数。
+      expect(adapter.requests.single.queryParameters, isEmpty);
     });
 
     test('九条链的平台 id 映射', () {

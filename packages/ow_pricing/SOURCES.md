@@ -21,10 +21,22 @@
    - OP Optimism `0x4200…0042`：CoinGecko Optimism 页摘要。
 3. 未列入交叉印证的条目只有 Uniswap 列表一个来源。**发布前应由人工逐条对照发行方文档或区块浏览器认证页复核**（见文末"待人工复核"）。
 
+## priceId 核对（2026-11-12）
+
+`/coins/list` 在 `api.coingecko.com`，本环境不可达（代理拒绝连接），公开的币种列表（含官方 Google Sheet）同样不可达，
+因此**无法逐个验证**。能对照 `docs.coingecko.com` 全文（llms-full.txt）及页面示例确认的只有：
+
+- 文档示例中作为 coin id 出现：`bitcoin`、`ethereum`、`solana`、`weth`（contract 页示例响应 `id: weth`）、`uniswap`、`1inch`（示例 `id: "1inch"`）、`tether`（示例 `target_coin_id`）。
+- 文档中提到 `usd-coin`、`tron`、`arbitrum`、`optimism` 的位置是 GeckoTerminal 网络 id 或无关文字，不能证明它们是 coin id。
+- **未能确认**（文档不含）：`polygon-ecosystem-token`、`havven`、`compound-governance-token`、`matic-network`（本表未使用，POL 现用 `polygon-ecosystem-token`）以及其余全部 id。
+
+这几个容易过时的 id 的现状只能凭既有知识判断（POL 迁移后 CoinGecko 使用 `polygon-ecosystem-token`；Synthetix 的 id 为 `havven`；
+Compound 为 `compound-governance-token`），**不是核对结论**。上线前必须运行 `packages/ow_pricing/tool/smoke_price.dart --catalog` 用真实接口验证。
+
 ## 其他约定
 
 - EVM 合约地址统一小写；Solana、Tron 原样（Base58 区分大小写）。
-- `priceId`（CoinGecko coin id）同样**未能对照 CoinGecko 官方 `/coins/list` 核对**，来自既有知识；
+- `priceId`（CoinGecko coin id）核对结论见下一节"priceId 核对"；
   `tools/smoke/price.dart --catalog` 会用真实接口逐个验证所有 priceId 是否有价格，上线前请运行一次。
 - 原生币：ETH（ethereum、arbitrum、optimism、base）、BNB（bsc）、POL（polygon）、BTC（bitcoin）、SOL（solana）、TRX（tron），不涉及合约地址。
 - 桥接/包装类资产（如 BSC 上的 Binance-Peg 代币、Polygon PoS 桥接代币、Arbitrum 的 USDT0）按 1:1 锚定的同一标准币种收录，估值使用主币种价格。
