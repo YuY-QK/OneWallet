@@ -1,0 +1,34 @@
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "context": {"apiVersion": "2.0.15", "slot": 341197933},
+    "value": [
+      {
+        "pubkey": "AssociatedTokenAccountFixture00000000000011",
+        "account": {
+          "data": {
+            "program": "spl-token-2022",
+            "parsed": {
+              "info": {
+                "extensions": [{"extension": "immutableOwner"}],
+                "isNative": false,
+                "mint": "2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo",
+                "owner": "9xQeWvG816bUx9EPjHmaT23yvVM2ZWbrrpZb9PusVFin",
+                "state": "initialized",
+                "tokenAmount": {"amount": "5000000", "decimals": 6, "uiAmount": 5.0, "uiAmountString": "5"}
+              },
+              "type": "account"
+            },
+            "space": 170
+          },
+          "executable": false,
+          "lamports": 2074080,
+          "owner": "TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb",
+          "rentEpoch": 18446744073709551615,
+          "space": 170
+        }
+      }
+    ]
+  },
+  "id": 1
+}

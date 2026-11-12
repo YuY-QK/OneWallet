@@ -1,0 +1,1 @@
+{"address":"bc1qpendingspendfixture0000000000000000000","chain_stats":{"funded_txo_count":2,"funded_txo_sum":300000,"spent_txo_count":1,"spent_txo_sum":100000,"tx_count":3},"mempool_stats":{"funded_txo_count":0,"funded_txo_sum":0,"spent_txo_count":1,"spent_txo_sum":200000,"tx_count":1}}

@@ -1,0 +1,1 @@
+{"data":[{"address":"415cbdd86a2fa8dc4bddd8a8f69dba48572eec07fb","balance":1000000,"frozenV2":[{},{"type":"ENERGY"},{"type":"TRON_POWER"}],"owner_permission":{"keys":[{"address":"TRGsjk84qAKfs6zPTgAMEaWXqpBuYCXsws","weight":1}],"threshold":1,"permission_name":"owner"}}],"success":true,"meta":{"at":1792135825695,"page_size":1}}

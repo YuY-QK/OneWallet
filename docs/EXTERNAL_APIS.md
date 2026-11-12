@@ -123,3 +123,107 @@
   - 内置映射表 `priceId` 的核对结论见 `packages/ow_pricing/SOURCES.md`（`/coins/list` 不可达，仅少数 id 在官方文档示例中出现）；`packages/ow_pricing/tool/smoke_price.dart --catalog` 会用真实接口逐个验证（见 `tools/smoke/README.md`），上线前必须运行。
   - 测试样本在 `packages/ow_pricing/test/fixtures/`：`simple_price_doc.json`、`contract_weth_doc.json` 取自官方文档示例；其余按文档结构手工整理，数值为示意，不是真实响应。
   - 用户填写 Pro Key 的场景（需换主机与请求头名）v1 不支持，属于 PRD 之外，需要时另行加任务。
+
+## mempool.space（Bitcoin）
+
+- 官方文档：REST API <https://mempool.space/docs/api/rest>。该页是前端渲染的单页应用，`llms.txt`、`.md` 后缀、`sitemap.xml` 都只返回 SPA 外壳；**2026-11-12 改为读取站点前端的懒加载脚本**（`https://mempool.space/320.<hash>.js`，内含 API 文档页的全部文案、路径与示例响应）取得官方文档原文，并对 `mempool.space` 的真实接口发了只读请求核对字段（本节标"实测"）。
+- 核对日期：2026-11-12。除标注"未能核对"的条目外均已对照官方原文或实测。
+- 鉴权方式（已核对）：无需 Key。自定义实例（自建 mempool 或其他 Esplora 兼容服务）通过 `DataSourceConfig.customEndpoint('bitcoin')` 配置，必须 https，路径前缀保留。
+- 限频（部分核对）：文档页原文："Note that we enforce rate limits. If you exceed these limits, you will get an HTTP 429 error. If you repeatedly exceed the limits, you may be banned from accessing the service altogether."；定价页写明付费档有"更高的 REST API 限额（API Key 或 IP 白名单）"。**具体的每秒/每分钟数值未能核对**（文档未给）。适配器默认 `RateLimiter` 每秒 2 次，一次同步只发 1 个请求。被限频时 HTTP 429 → `RateLimitedFailure`；`Retry-After` 是否存在**未能核对**，不依赖。多个地址同步时由上层逐个调用，请保持在此速率内。
+- 免费额度：无（公共实例免费，受上述限频约束）。
+
+| 用途 | 方法与路径 | 关键参数 | 返回中用到的字段 |
+|---|---|---|---|
+| 地址余额与交易计数 | GET `/api/address/{地址}` | 路径参数：P2PKH（`1…`）、P2SH（`3…`）、bech32（`bc1q…`）、bech32m（`bc1p…`）均可（实测四种都返回 200） | 已核对（文档原文与实测一致）：`address`；`chain_stats`、`mempool_stats` 各含 `funded_txo_count`、`funded_txo_sum`、`spent_txo_count`、`spent_txo_sum`、`tx_count`。`chain_stats` 为已确认，`mempool_stats` 为内存池（未确认）。金额单位聪，整数 |
+
+- 字段到领域模型的映射：余额（聪）= `chain_stats.funded_txo_sum − chain_stats.spent_txo_sum`，除以 10^8 得 BTC（`Decimal` 整数移位，不经过浮点）→ `RawHolding(NativeToken('bitcoin'))`，`symbolHint`=`BTC`、`nameHint`=`Bitcoin`；余额为 0 时不返回。`hasActivity` = `chain_stats.tx_count + mempool_stats.tx_count > 0`。
+- **余额口径（自行决定）：只计已确认**。`mempool_stats`（未确认）不计入余额：未确认的收入可能被替换（RBF）或丢弃，未确认的支出也可能不被打包，看板只展示链上已落定的数量。区块浏览器网页默认显示的余额可能含未确认部分（其前端代码用"确认+内存池"计算总余额），与本应用有短暂差异属预期。`hasActivity` 则把未确认交易也算作活动。
+- 错误到 Failure 的映射：HTTP 429 → `RateLimitedFailure`；5xx → `ServiceDownFailure`；网络/超时 → `NetworkFailure`（均由 `ow_net` 统一映射）；非法地址：实测返回 HTTP 400 与纯文本 `Invalid Bitcoin address`，`ow_net` 对 400 一律映射为 `UnknownFailure('HTTP 400 host=…')`（不含地址与响应体）；响应不是 JSON 或缺少必需字段、字段不是整数、已确认支出大于收入 → `UnknownFailure`；地址含 `/`、`.`、`?` 等非字母数字字符 → `ValidationFailure`（不发请求）。
+- 取不到的内容：Bitcoin 没有代币，只有原生币；Ordinals/Runes/BRC-20 等铭文资产不在范围内（它们占用的聪仍计入余额）。
+- 备注：
+  - 测试样本 `packages/ow_chains/test/fixtures/btc_*.json` 中 `p2pkh_doc`（官方文档示例地址 `1wiz18…`）、`p2sh`、`bech32`、`bech32m`、`bech32_big` 是 2026-11-12 从公共接口取得的真实响应（公开的知名地址，随时间会变化，测试只依赖固定副本）；`new_address`、`mempool_only`、`pending_spend` 是按同一结构手工构造的边界样本。
+  - 冒烟脚本 `packages/ow_chains/tool/smoke_btc.dart` 见 `tools/smoke/README.md`；开发时已用该脚本对真实接口查询 `1wiz18…`，返回结构与解析一致。
+
+## Solana RPC（Helius 与官方公共节点）
+
+- 官方文档：
+  - **Solana 官方 RPC 文档（<https://solana.com/docs/rpc>）2026-11-12 未能读取**：`solana.com` 对非浏览器客户端返回 HTTP 429 与 Vercel 安全检查页（`llms.txt`、页面 `.md` 后缀、`sitemap.xml` 都一样），因此**官方公共节点的主机名、限频、使用限制全部未能核对**。
+  - 改读 Helius 文档（2026-11-12 通过 <https://docs.helius.dev/llms-full.txt> 直读原文，Helius 复述了标准 RPC 方法的参数与返回结构，不等同于 Solana 基金会文档）：
+    - `getBalance`：<https://www.helius.dev/docs/api-reference/rpc/http/getbalance> 与指南 <https://www.helius.dev/docs/rpc/guides/getbalance>
+    - `getTokenAccountsByOwner`：<https://www.helius.dev/docs/api-reference/rpc/http/gettokenaccountsbyowner> 与指南 <https://www.helius.dev/docs/rpc/guides/gettokenaccountsbyowner>
+    - `getSignaturesForAddress`：<https://www.helius.dev/docs/rpc/guides/getsignaturesforaddress>
+    - 限频与错误：<https://www.helius.dev/docs/billing/rate-limits>、<https://www.helius.dev/docs/faqs/error-codes>
+- 核对日期：2026-11-12。**仍需用真实 Key 跑冒烟脚本**（本环境访问不到任何 Solana RPC 主机）。
+- 端点与鉴权：
+  - 自定义节点（`DataSourceConfig.customEndpoint('solana')`，必须 https）：优先级最高，查询串原样保留，其中的**所有查询参数名**都按敏感信息脱敏（`OwHttpConfig.extraSensitiveNames`）；路径里的不透明长段由 `ow_net` 的路径脱敏处理。
+  - 配置了 `apiKey('helius')`：`POST https://mainnet.helius-rpc.com/?api-key=<Key>`（已核对：DAS 概览与各方法示例；错误码页写明 Key 以 `?api-key=` 传递）。Helius 文档另说 WebSocket 与 Parsed Streams 可用 `x-api-key` 请求头，**RPC 是否接受该头未能核对**，故用查询参数。`ow_net` 的敏感名称规则含 `key`，`api-key` 已被脱敏（只保留前 4 位），已有测试覆盖，无需 `extraSensitiveNames`；用户自定义端点的参数名则逐个加入 `extraSensitiveNames`。
+  - 都没有配置：`POST https://api.mainnet-beta.solana.com/`（**主机名来自既有知识，未能核对**）。
+- 限频：
+  - Helius（已核对，rate-limits 页）：免费档 RPC 10 次/秒（月 100 万 credits），Developer 50、Business 200、Professional 500；超限 HTTP 429。限频对所有 RPC 方法合计，不是按方法分别计。`getProgramAccounts` 另有更严限制（本适配器不用）。各方法的 credit 消耗**未能核对**。适配器默认 `RateLimiter` 每秒 5 次（低于免费档的 10）。官方建议 429、503、5xx 退避重试（首次约 1 秒，翻倍，上限 30 秒）；适配器不自动重试，由上层决定。`Retry-After` 响应头在文档示例里被读取，但文档未保证存在，不依赖。
+  - 官方公共节点：限频与"仅限开发/测试、不得用于生产"之类的使用限制**未能核对**。可以预期它对 `getTokenAccountsByOwner` 这类较重的方法限制更严；只在用户没有配置 Helius Key 时作为后备，界面应提示"公共节点可能限频，建议配置自己的 Key"。
+
+| 用途 | 方法 | 参数（本适配器实际发送） | 返回中用到的字段 |
+|---|---|---|---|
+| SOL 余额 | `getBalance` | `[地址, {"commitment": "finalized"}]`（文档：commitment 取 `processed`/`confirmed`/`finalized`；`getBalance` 默认 finalized） | `result.value`：lamports，无符号 64 位整数（已核对）。账户不存在时通常返回 0（已核对） |
+| 代币账户 | `getTokenAccountsByOwner` | `[地址, {"programId": <程序>}, {"encoding": "jsonParsed", "commitment": "finalized"}]`，对两个程序各发一次（文档：filter 必须给 `mint` 或 `programId` 之一） | `result.value[]`：`account.data.parsed.info.mint`、`info.tokenAmount.amount`（整数字符串）、`info.tokenAmount.decimals`（数字）；另有 `uiAmount`（浮点，**不使用**）、`uiAmountString`、`state`、`isNative`（均已核对） |
+| 是否有交易 | `getSignaturesForAddress` | `[地址, {"limit": 1, "commitment": "finalized"}]`（文档：limit 默认与上限 1000；commitment 仅支持 `finalized`、`confirmed`） | `result[]` 是否非空；每项含 `signature`、`slot`、`err`、`memo`、`blockTime`、`confirmationStatus`（已核对） |
+
+- 两个代币程序的地址（已核对，Helius 指南原文："SPL Token Program: `TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA`；Token-2022 Program: `TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb`"）。**未能对照 Solana 官方文档**。
+- 字段到领域模型的映射：
+  - SOL → `RawHolding(NativeToken('solana'))`，`symbolHint`=`SOL`、`nameHint`=`Solana`；lamports ÷ 10^9，`Decimal` 整数移位；余额为 0 不返回。
+  - 代币 → `RawHolding(ContractToken('solana', mint))`（mint 为 Base58，区分大小写，原样保留）。**`symbolHint`/`nameHint` 为空**：RPC 不返回元数据，由币种目录与价格源识别。数量 = `amount`（整数字符串，用 `BigInt` 解析）÷ 10^`decimals`；**不使用 `uiAmount`**。
+  - **同一 mint 多个代币账户合并求和**（一个钱包可持有同一代币的多个账户）。
+  - **NFT 过滤规则**：合并后 `decimals == 0` 且数量恰为 1 的 mint 视为 NFT，不返回。代价：恰好持有 1 个最小单位的 0 位小数同质化代币会被误滤，v1 接受；压缩 NFT（cNFT）不是代币账户，本来就不会出现。
+  - 数量为 0 的账户、`amount` 不是非负整数串或 `decimals` 越界的账户被跳过（单个坏条目不使整次查询失败）。包装 SOL（wSOL）的代币账户按普通代币返回，由上层映射表决定是否归并到 SOL。
+- 错误到 Failure 的映射：HTTP 429 → `RateLimitedFailure`；401/403 → `UnauthorizedFailure`；5xx → `ServiceDownFailure`；网络/超时 → `NetworkFailure`（`ow_net`）。JSON-RPC `error`：`detail` 只含方法名与错误码，不含 message。`-32005`：Helius 文档的限频响应形式是 `{"error": {"code": -32005, "message": "Too many requests"}}`（已核对，rate-limits 页），而 Solana 节点自身用 `-32005` 表示 `Node is unhealthy`（来自既有知识，**未能核对**），所以按 message 区分（含 `too many` 或 `rate` → `RateLimitedFailure`，否则 `ServiceDownFailure`）；`429` → 限频；`401/403` → `UnauthorizedFailure`；`-32601` → `UnsupportedFailure`；`-32602`（Helius 文档：非法公钥、未知字段、不支持的 commitment）→ `ValidationFailure`；`-32603` 与其余 `-32000..-32099` → `ServiceDownFailure`；其他 → `UnknownFailure`。
+- 取不到的内容：
+  - 代币的符号、名称（RPC 不返回），无法识别的代币在界面上只能显示缩略的 mint；
+  - NFT 与 cNFT（按规则过滤，不计价）；
+  - 质押在验证者上的 SOL（质押账户是独立账户，不在钱包地址的 `getBalance` 里）——**v1 未包含**，界面应明示；
+  - 未领取的奖励、DeFi 协议里的头寸。
+- 备注：
+  - 一次 `fetchHoldings` 发 3 个请求（`getBalance` 加两个 programId）。代币很多的钱包响应体可能很大；Helius 提供支持分页的 `getTokenAccountsByOwnerV2`（上限每页 1 万个账户），本适配器 v1 不用，**超大钱包的实际表现未能核对**。
+  - 测试样本 `packages/ow_chains/test/fixtures/sol_token_accounts_*.json` 按 Helius 指南描述的结构手工整理（含 `rentEpoch` 为 2^64−1 的真实形态，用来验证大整数不会破坏解析）；地址与代币账户是假数据，其中 USDC、USDT、PYUSD 的 mint 是真实地址，其余 mint 为假。数值是示意，不是真实响应。
+
+## TronGrid（Tron）
+
+- 官方文档（2026-11-12 通过 <https://developers.tron.network/llms.txt> 的索引与各页面 `.md` 后缀直读原文，含完整 OpenAPI 定义）：
+  - 获取账户信息：<https://developers.tron.network/reference/get-account-info-by-address>
+  - 获取 TRC-20 余额：<https://developers.tron.network/reference/get-trc20-token-balances-by-address>
+  - 获取 TRC-20 合约信息：<https://developers.tron.network/reference/get-trc-20-token-information>
+  - API Key：<https://developers.tron.network/reference/select-network>；限频：<https://developers.tron.network/reference/rate-limits>
+  - 委托资源（Stake 2.0）：<https://developers.tron.network/docs/delegation>；全节点 `GetAccount`：<https://developers.tron.network/reference/account-getaccount>
+- 核对日期：2026-11-12。除标注"未能核对"的条目外均已对照官方原文。**本环境访问不到 `api.trongrid.io`，未做真实接口调用，仍需用冒烟脚本确认。**
+- 主机（已核对）：主网 `https://api.trongrid.io`（另有 Shasta、Nile 测试网，不用）。
+- 鉴权（已核对）：请求头 `TRON-PRO-API-KEY: <Key>`（Key 可在 TronGrid 控制台创建）。**无 Key 是否可用**：文档只说"无 Key 的请求可能被严格限频或拒绝"，没有给出确切行为，**未能核对**；适配器无 Key 时照常请求，不带该头。Key 通过 `DataSourceConfig.apiKey('trongrid')` 读取；`ow_net` 的敏感名称规则含 `key`，请求头 `TRON-PRO-API-KEY` 被脱敏（保留前 4 位），有测试覆盖。**Key 只发往默认主机**，自定义节点（`customEndpoint('tron')`，必须 https，路径前缀保留）不会收到。
+- 限频（部分核对）：官方明确"不要把固定限额写进业务逻辑，以控制台和实时响应为准"；限频维度有 API Key、账户、IP、接口类型，每秒/每分钟/每天窗口并存；超限返回 429，"异常高频轮询"可能被临时封禁并返回 403；建议指数退避并缓存。**具体数值未能核对**（文档未给）。适配器默认 `RateLimiter` 每秒 3 次；一次同步最少 2 个请求（账户、TRC-20 余额），每多一页或每多 20 个未知合约再加 1 个。429 响应体形如 `{"success": false, "error": "The key exceeds the frequency limit", "statusCode": 429}`（已核对）。
+
+| 用途 | 方法与路径 | 关键参数 | 返回中用到的字段 |
+|---|---|---|---|
+| TRX 与质押 | GET `/v1/accounts/{地址}` | 地址为 Base58 或 Hex（用 Base58）；另有 `only_confirmed`、`only_unconfirmed`（不用，默认两者都含） | `data[]`（未激活地址为空数组，见下）：`balance`（整数，sun，1 TRX = 10^6 sun，"可用余额"）；`frozenV2[].amount`（Stake 2.0 质押，sun，**条目可能省略 `amount` 或 `type`**）；`delegated_frozenV2_balance_for_bandwidth`、`account_resource.delegated_frozenV2_balance_for_energy`（本账户质押后委托给他人的 TRX，sun）；`unfrozenV2[].unfreeze_amount`（已申请解锁、等待提取的 TRX，仅在有时返回）。示例响应（官方）：`{"data":[{"address":"41…","balance":1000000,"frozenV2":[{},{"type":"ENERGY"},{"type":"TRON_POWER"}],…}],"success":true,"meta":{"at":…,"page_size":1}}` |
+| TRC-20 余额（分页） | GET `/v1/accounts/{地址}/trc20/balance` | `limit`（默认 20，最大 200，本实现用 200）、`fingerprint`（取上一页 `meta.fingerprint`）、`contract_address`（不用） | `data[]`：每项是 **{合约 Base58 地址: 最小单位余额字符串}**，零余额的代币被省略，**不含 decimals、name、symbol**（已核对）；`meta.fingerprint` 存在表示还有下一页（`meta.links.next` 同理）。示例（官方，Nile）：`{"data":[{"TXYZopYRdj2D9XRtbG411XZZ3kM5VkAeBf":"4999997900"}],"success":true,…}`；无余额时 `data` 为 `[]` |
+| TRC-20 合约信息 | GET `/v1/trc20/info` | `contract_list`：逗号分隔的合约地址，**最多 20 个**（已核对） | `data[]`：`contract_address`、`symbol`、`name`、`decimals`（**字符串**，如 `"6"`）、`type`、`total_supply`（整数串）。是只读的 GET 查询 |
+
+- **decimals 的获取方式（自行决定）**：任务提示可用 `triggerconstantcontract` 调合约的 `decimals()`，但读文档发现 TronGrid 有专门的只读 GET 接口 `/v1/trc20/info`（批量、带符号与名称），故**不使用 `triggerconstantcontract`**（它是 POST，且属于“模拟合约调用”，语义上更接近交易构造；`tools/ci/check_deps.dart` 只扫描 `ow_exchanges`，不会拦截，但没有必要引入）。适配器顺序：构造参数 `knownDecimals`（合约 → decimals，由装配层传入）→ `/v1/trc20/info`（带内存缓存，只缓存查到的）→ 仍查不到则**跳过该代币**。注意：内置映射表 `asset_mappings.json` 目前**没有 decimals 字段**，装配层需要自行提供（见汇报的建议）；不提供时全部走 `/v1/trc20/info`，只是多几个请求。
+- 为什么不用 `/v1/accounts/{地址}` 返回的 `trc20` 数组：文档只写"TRC-20 balance held by this account"，没有给出元素形态与分页方式；专用的 `/trc20/balance` 接口有明确的分页和示例。
+- 字段到领域模型的映射：
+  - TRX → `RawHolding(NativeToken('tron'))`，`symbolHint`=`TRX`、`nameHint`=`Tron`；数量 = (可用 + 质押口径) ÷ 10^6，`Decimal` 整数移位。
+  - **TRX 口径（自行决定）**：可用 `balance` + Stake 2.0 的 `frozenV2[].amount` + 已委托出去的 `delegated_frozenV2_balance_for_bandwidth`/`…_for_energy` + 解锁等待中的 `unfrozenV2[].unfreeze_amount`。理由：这些 TRX 仍归用户所有。**不计**：Stake 1.0 的旧字段（`frozen`、`account_resource.frozen_balance_for_energy`、`delegated_frozen_balance_for_*`；已弃用，且文档没有说明 1.0 下委托部分是否与 `frozen` 重复，为避免重复计入而不加）；`allowance`（未领取的投票奖励）；他人委托给本账户的资源（`acquired_delegated_*`，不是本账户的资产）。
+  - **未能核对**：`frozenV2[].amount` 是否已扣除委托出去的部分。文档只说委托后"原始质押的 TRX 仍在你名下"；本实现按 java-tron 的实现印象（委托时从 `frozenV2` 转入 `delegated_frozenV2_*`）把两者相加。若实际 `frozenV2` 已包含委托部分，会重复计入，请按真机清单用有委托的账户核对。
+  - TRC-20 → `RawHolding(ContractToken('tron', Base58合约地址))`，原样保留大小写；`knownDecimals` 命中的合约不带符号/名称提示（交给币种目录），否则取 `/v1/trc20/info` 的 `symbol`/`name`；余额为 0、`decimals` 查不到的代币不返回。
+  - **未激活的地址**：`data` 为空数组，视为零 TRX、`hasActivity=false`，不是错误（任务约定；官方示例文档未给出该情形的响应样例，**未能核对**空数组之外是否还有其他形式，如 404）。因为未激活地址理论上也可能被转入 TRC-20，适配器仍会查询 TRC-20 余额。
+- 错误到 Failure 的映射：HTTP 429 → `RateLimitedFailure`；401/403 → `UnauthorizedFailure`（官方说 403 也可能是临时封禁或安全设置拦截，界面无法区分，v1 接受）；5xx → `ServiceDownFailure`；网络/超时 → `NetworkFailure`（`ow_net`）。400 的响应体形如 `{"success":false,"error":"A valid account address is required.","statusCode":400}` → `ow_net` 映射为 `UnknownFailure('HTTP 400 …')`（不含地址与响应体）。另外对 **HTTP 200 但 `success` 为 `false`** 的响应按 `statusCode` 再映射一次（429/401/403/≥500），其余 `UnknownFailure`（官方没有说明会不会出现，防御性处理）。合约信息接口的普通错误（`UnknownFailure`）只跳过该批，限频/凭据/网络/服务故障使整次查询失败。
+- 取不到的内容：TRC-10 资产（`assetV2`）、TRC-721/1155（v1 不含）；Stake 1.0 的质押；未领取的投票奖励；他人委托给本账户的资源；能量/带宽（不是资产）。
+- 备注：测试样本 `packages/ow_chains/test/fixtures/tron_*.json`：`tron_account_doc.json` 是官方文档的示例响应（原样），`tron_trc20_*` 按官方示例的结构整理（`TXYZ…` 合约与 `"4999997900"` 取自文档），其余为手工构造的假数据；USDT 主网合约 `TR7NHq…Lj6t` 在官方文档 <https://developers.tron.network/docs/get-trc20-transaction-history> 中出现（见"币种映射核对"）。
+
+### 内置映射表中 Solana、Tron 合约的核对（M2-02、M2-03，2026-11-12，未修改映射表）
+
+| 资产 | 链 | 映射表中的地址 | 官方来源核对 |
+|---|---|---|---|
+| USDT | Tron | `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t` | 一致。TRON 官方开发者文档 <https://developers.tron.network/docs/get-trc20-transaction-history> 写明"USDT (`TR7NHq…Lj6t`)" |
+| USDC | Solana | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` | 一致。Helius 文档多处示例标注为 USDC mint（第三方文档，非 Circle 官方） |
+| USDT | Solana | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` | 一致。Helius 文档代码示例注释为 USDT（第三方文档，非 Tether 官方） |
+| PYUSD | Solana | `2b1kV6DkPAnxd5ixfnxCpjxmKwqjjaYmCZfHsFu24GXo` | **未能核对**：可读的文档中未出现 |
+| EURC | Solana | `HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr` | **未能核对**：同上 |
+
+另：映射表 `asset_mappings.json` 没有 decimals 字段，`TronChainAdapter.knownDecimals` 需要装配层另行提供（Solana 的 decimals 由 RPC 返回，不需要）。
