@@ -1,0 +1,30 @@
+{
+  "retCode": 0,
+  "retMsg": "",
+  "result": {
+    "list": [
+      {
+        "coin": "USDT",
+        "productId": "8",
+        "amount": "100",
+        "totalPnl": "0.000027397260273973",
+        "claimableYield": "0.0001",
+        "autoReinvest": "enabled",
+        "availableAmount": "100",
+        "freezeDetails": []
+      },
+      {
+        "coin": "BTC",
+        "productId": "9",
+        "amount": "0",
+        "totalPnl": "0",
+        "claimableYield": "0",
+        "autoReinvest": "disabled",
+        "availableAmount": "0",
+        "freezeDetails": []
+      }
+    ]
+  },
+  "retExtInfo": {},
+  "time": 1794441600000
+}

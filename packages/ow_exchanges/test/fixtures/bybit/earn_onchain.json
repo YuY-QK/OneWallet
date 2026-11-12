@@ -1,0 +1,22 @@
+{
+  "retCode": 0,
+  "retMsg": "",
+  "result": {
+    "list": [
+      {
+        "coin": "ETH",
+        "productId": "21",
+        "amount": "0.5",
+        "totalPnl": "0.0001",
+        "id": "3001",
+        "status": "Active",
+        "orderId": "4001",
+        "autoReinvest": "disabled",
+        "availableAmount": "0.5",
+        "freezeDetails": []
+      }
+    ]
+  },
+  "retExtInfo": {},
+  "time": 1794441600000
+}

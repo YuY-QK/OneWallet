@@ -1,0 +1,24 @@
+{
+  "retCode": 0,
+  "retMsg": "",
+  "result": {
+    "id": "1000001",
+    "note": "test-key",
+    "apiKey": "TESTKEY",
+    "readOnly": 1,
+    "secret": "",
+    "permissions": {
+      "ContractTrade": [],
+      "Spot": [],
+      "Wallet": [],
+      "Options": [],
+      "Derivatives": [],
+      "Exchange": [],
+      "Earn": []
+    },
+    "ips": ["*"],
+    "type": 1
+  },
+  "retExtInfo": {},
+  "time": 1794441600000
+}
