@@ -297,6 +297,342 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}'**
   String failureDuplicateAddress(String kind, String address, String account);
+
+  /// No description provided for @walletSourceUniswap.
+  ///
+  /// In zh, this message translates to:
+  /// **'Uniswap Wallet'**
+  String get walletSourceUniswap;
+
+  /// No description provided for @walletSourceMetamask.
+  ///
+  /// In zh, this message translates to:
+  /// **'MetaMask'**
+  String get walletSourceMetamask;
+
+  /// No description provided for @walletSourceOkxWeb3.
+  ///
+  /// In zh, this message translates to:
+  /// **'OKX Web3'**
+  String get walletSourceOkxWeb3;
+
+  /// No description provided for @walletSourceBitgetWallet.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bitget Wallet'**
+  String get walletSourceBitgetWallet;
+
+  /// No description provided for @walletSourceTrustWallet.
+  ///
+  /// In zh, this message translates to:
+  /// **'Trust Wallet'**
+  String get walletSourceTrustWallet;
+
+  /// No description provided for @walletSourceOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get walletSourceOther;
+
+  /// No description provided for @exchangeBinance.
+  ///
+  /// In zh, this message translates to:
+  /// **'Binance'**
+  String get exchangeBinance;
+
+  /// No description provided for @exchangeOkx.
+  ///
+  /// In zh, this message translates to:
+  /// **'OKX'**
+  String get exchangeOkx;
+
+  /// No description provided for @exchangeBybit.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bybit'**
+  String get exchangeBybit;
+
+  /// No description provided for @exchangeBitget.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bitget'**
+  String get exchangeBitget;
+
+  /// No description provided for @chainFamilyEvm.
+  ///
+  /// In zh, this message translates to:
+  /// **'EVM'**
+  String get chainFamilyEvm;
+
+  /// No description provided for @chainFamilyBitcoin.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bitcoin'**
+  String get chainFamilyBitcoin;
+
+  /// No description provided for @chainFamilySolana.
+  ///
+  /// In zh, this message translates to:
+  /// **'Solana'**
+  String get chainFamilySolana;
+
+  /// No description provided for @chainFamilyTron.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tron'**
+  String get chainFamilyTron;
+
+  /// No description provided for @backupStatusInVault.
+  ///
+  /// In zh, this message translates to:
+  /// **'已入库'**
+  String get backupStatusInVault;
+
+  /// No description provided for @backupStatusOffline.
+  ///
+  /// In zh, this message translates to:
+  /// **'已离线备份'**
+  String get backupStatusOffline;
+
+  /// No description provided for @backupStatusInVaultAndOffline.
+  ///
+  /// In zh, this message translates to:
+  /// **'已入库并离线备份'**
+  String get backupStatusInVaultAndOffline;
+
+  /// No description provided for @backupStatusKeyless.
+  ///
+  /// In zh, this message translates to:
+  /// **'无助记词钱包'**
+  String get backupStatusKeyless;
+
+  /// No description provided for @backupStatusNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'未备份'**
+  String get backupStatusNone;
+
+  /// No description provided for @syncFailureUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。'**
+  String get syncFailureUnsupported;
+
+  /// No description provided for @comingSoonTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'即将推出'**
+  String get comingSoonTitle;
+
+  /// No description provided for @comingSoonBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'此功能将在后续版本提供。'**
+  String get comingSoonBody;
+
+  /// No description provided for @accountAddTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加账户'**
+  String get accountAddTitle;
+
+  /// No description provided for @accountAddWatchTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'观察链上地址'**
+  String get accountAddWatchTitle;
+
+  /// No description provided for @accountAddWatchBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'只需粘贴地址，不需要私钥'**
+  String get accountAddWatchBody;
+
+  /// No description provided for @accountAddExchangeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接交易所'**
+  String get accountAddExchangeTitle;
+
+  /// No description provided for @accountAddExchangeBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用只读 API Key'**
+  String get accountAddExchangeBody;
+
+  /// No description provided for @accountAddImportTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入助记词或私钥'**
+  String get accountAddImportTitle;
+
+  /// No description provided for @accountAddImportBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'存入加密保险库，并自动生成观察地址'**
+  String get accountAddImportBody;
+
+  /// No description provided for @walletAddTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'观察链上地址'**
+  String get walletAddTitle;
+
+  /// No description provided for @walletAddExtraTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加地址'**
+  String get walletAddExtraTitle;
+
+  /// No description provided for @walletAddName.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户名称'**
+  String get walletAddName;
+
+  /// No description provided for @walletAddNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如：主钱包'**
+  String get walletAddNameHint;
+
+  /// No description provided for @walletAddNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入账户名称，最多 30 个字。'**
+  String get walletAddNameRequired;
+
+  /// No description provided for @walletAddSource.
+  ///
+  /// In zh, this message translates to:
+  /// **'来源钱包'**
+  String get walletAddSource;
+
+  /// No description provided for @walletAddAddress.
+  ///
+  /// In zh, this message translates to:
+  /// **'地址'**
+  String get walletAddAddress;
+
+  /// No description provided for @walletAddAddressN.
+  ///
+  /// In zh, this message translates to:
+  /// **'地址 {n}'**
+  String walletAddAddressN(int n);
+
+  /// No description provided for @walletAddAddressHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴要观察的地址'**
+  String get walletAddAddressHint;
+
+  /// No description provided for @walletAddAddressRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入地址。'**
+  String get walletAddAddressRequired;
+
+  /// No description provided for @walletAddPaste.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴'**
+  String get walletAddPaste;
+
+  /// No description provided for @walletAddClipboardEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'剪贴板里没有文字。'**
+  String get walletAddClipboardEmpty;
+
+  /// No description provided for @walletAddRecognized.
+  ///
+  /// In zh, this message translates to:
+  /// **'识别为 {family} 地址'**
+  String walletAddRecognized(String family);
+
+  /// No description provided for @walletAddUnrecognized.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法识别的地址格式。请检查是否复制完整。'**
+  String get walletAddUnrecognized;
+
+  /// No description provided for @walletAddChains.
+  ///
+  /// In zh, this message translates to:
+  /// **'链（可多选）'**
+  String get walletAddChains;
+
+  /// No description provided for @walletAddChainAuto.
+  ///
+  /// In zh, this message translates to:
+  /// **'链：{chain}（自动确定）'**
+  String walletAddChainAuto(String chain);
+
+  /// No description provided for @walletAddChainRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'至少选择一条链。'**
+  String get walletAddChainRequired;
+
+  /// No description provided for @walletAddAnother.
+  ///
+  /// In zh, this message translates to:
+  /// **'再添加一个地址'**
+  String get walletAddAnother;
+
+  /// No description provided for @walletAddRemove.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除这个地址'**
+  String get walletAddRemove;
+
+  /// No description provided for @walletAddBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份状态'**
+  String get walletAddBackup;
+
+  /// No description provided for @walletAddBackupNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'未备份'**
+  String get walletAddBackupNone;
+
+  /// No description provided for @walletAddBackupOffline.
+  ///
+  /// In zh, this message translates to:
+  /// **'已离线备份'**
+  String get walletAddBackupOffline;
+
+  /// No description provided for @walletAddBackupKeyless.
+  ///
+  /// In zh, this message translates to:
+  /// **'无助记词钱包'**
+  String get walletAddBackupKeyless;
+
+  /// No description provided for @walletAddSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get walletAddSave;
+
+  /// No description provided for @walletAddSaving.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存中…'**
+  String get walletAddSaving;
+
+  /// No description provided for @walletAddAccountMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到这个账户，它可能已被删除。'**
+  String get walletAddAccountMissing;
+
+  /// No description provided for @walletAddKeyMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。'**
+  String get walletAddKeyMissing;
 }
 
 class _AppLocalizationsDelegate

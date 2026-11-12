@@ -120,4 +120,179 @@ class AppLocalizationsZh extends AppLocalizations {
     });
     return '$_temp0';
   }
+
+  @override
+  String get walletSourceUniswap => 'Uniswap Wallet';
+
+  @override
+  String get walletSourceMetamask => 'MetaMask';
+
+  @override
+  String get walletSourceOkxWeb3 => 'OKX Web3';
+
+  @override
+  String get walletSourceBitgetWallet => 'Bitget Wallet';
+
+  @override
+  String get walletSourceTrustWallet => 'Trust Wallet';
+
+  @override
+  String get walletSourceOther => '其他';
+
+  @override
+  String get exchangeBinance => 'Binance';
+
+  @override
+  String get exchangeOkx => 'OKX';
+
+  @override
+  String get exchangeBybit => 'Bybit';
+
+  @override
+  String get exchangeBitget => 'Bitget';
+
+  @override
+  String get chainFamilyEvm => 'EVM';
+
+  @override
+  String get chainFamilyBitcoin => 'Bitcoin';
+
+  @override
+  String get chainFamilySolana => 'Solana';
+
+  @override
+  String get chainFamilyTron => 'Tron';
+
+  @override
+  String get backupStatusInVault => '已入库';
+
+  @override
+  String get backupStatusOffline => '已离线备份';
+
+  @override
+  String get backupStatusInVaultAndOffline => '已入库并离线备份';
+
+  @override
+  String get backupStatusKeyless => '无助记词钱包';
+
+  @override
+  String get backupStatusNone => '未备份';
+
+  @override
+  String get syncFailureUnsupported => '暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。';
+
+  @override
+  String get comingSoonTitle => '即将推出';
+
+  @override
+  String get comingSoonBody => '此功能将在后续版本提供。';
+
+  @override
+  String get accountAddTitle => '添加账户';
+
+  @override
+  String get accountAddWatchTitle => '观察链上地址';
+
+  @override
+  String get accountAddWatchBody => '只需粘贴地址，不需要私钥';
+
+  @override
+  String get accountAddExchangeTitle => '连接交易所';
+
+  @override
+  String get accountAddExchangeBody => '使用只读 API Key';
+
+  @override
+  String get accountAddImportTitle => '导入助记词或私钥';
+
+  @override
+  String get accountAddImportBody => '存入加密保险库，并自动生成观察地址';
+
+  @override
+  String get walletAddTitle => '观察链上地址';
+
+  @override
+  String get walletAddExtraTitle => '添加地址';
+
+  @override
+  String get walletAddName => '账户名称';
+
+  @override
+  String get walletAddNameHint => '例如：主钱包';
+
+  @override
+  String get walletAddNameRequired => '请输入账户名称，最多 30 个字。';
+
+  @override
+  String get walletAddSource => '来源钱包';
+
+  @override
+  String get walletAddAddress => '地址';
+
+  @override
+  String walletAddAddressN(int n) {
+    return '地址 $n';
+  }
+
+  @override
+  String get walletAddAddressHint => '粘贴要观察的地址';
+
+  @override
+  String get walletAddAddressRequired => '请输入地址。';
+
+  @override
+  String get walletAddPaste => '粘贴';
+
+  @override
+  String get walletAddClipboardEmpty => '剪贴板里没有文字。';
+
+  @override
+  String walletAddRecognized(String family) {
+    return '识别为 $family 地址';
+  }
+
+  @override
+  String get walletAddUnrecognized => '无法识别的地址格式。请检查是否复制完整。';
+
+  @override
+  String get walletAddChains => '链（可多选）';
+
+  @override
+  String walletAddChainAuto(String chain) {
+    return '链：$chain（自动确定）';
+  }
+
+  @override
+  String get walletAddChainRequired => '至少选择一条链。';
+
+  @override
+  String get walletAddAnother => '再添加一个地址';
+
+  @override
+  String get walletAddRemove => '删除这个地址';
+
+  @override
+  String get walletAddBackup => '备份状态';
+
+  @override
+  String get walletAddBackupNone => '未备份';
+
+  @override
+  String get walletAddBackupOffline => '已离线备份';
+
+  @override
+  String get walletAddBackupKeyless => '无助记词钱包';
+
+  @override
+  String get walletAddSave => '保存';
+
+  @override
+  String get walletAddSaving => '保存中…';
+
+  @override
+  String get walletAddAccountMissing => '找不到这个账户，它可能已被删除。';
+
+  @override
+  String get walletAddKeyMissing =>
+      '尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。';
 }

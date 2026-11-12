@@ -53,5 +53,82 @@
         "type": "String"
       }
     }
-  }
+  },
+  "walletSourceUniswap": "Uniswap Wallet",
+  "walletSourceMetamask": "MetaMask",
+  "walletSourceOkxWeb3": "OKX Web3",
+  "walletSourceBitgetWallet": "Bitget Wallet",
+  "walletSourceTrustWallet": "Trust Wallet",
+  "walletSourceOther": "其他",
+  "exchangeBinance": "Binance",
+  "exchangeOkx": "OKX",
+  "exchangeBybit": "Bybit",
+  "exchangeBitget": "Bitget",
+  "chainFamilyEvm": "EVM",
+  "chainFamilyBitcoin": "Bitcoin",
+  "chainFamilySolana": "Solana",
+  "chainFamilyTron": "Tron",
+  "backupStatusInVault": "已入库",
+  "backupStatusOffline": "已离线备份",
+  "backupStatusInVaultAndOffline": "已入库并离线备份",
+  "backupStatusKeyless": "无助记词钱包",
+  "backupStatusNone": "未备份",
+  "syncFailureUnsupported": "暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。",
+  "comingSoonTitle": "即将推出",
+  "comingSoonBody": "此功能将在后续版本提供。",
+  "accountAddTitle": "添加账户",
+  "accountAddWatchTitle": "观察链上地址",
+  "accountAddWatchBody": "只需粘贴地址，不需要私钥",
+  "accountAddExchangeTitle": "连接交易所",
+  "accountAddExchangeBody": "使用只读 API Key",
+  "accountAddImportTitle": "导入助记词或私钥",
+  "accountAddImportBody": "存入加密保险库，并自动生成观察地址",
+  "walletAddTitle": "观察链上地址",
+  "walletAddExtraTitle": "添加地址",
+  "walletAddName": "账户名称",
+  "walletAddNameHint": "例如：主钱包",
+  "walletAddNameRequired": "请输入账户名称，最多 30 个字。",
+  "walletAddSource": "来源钱包",
+  "walletAddAddress": "地址",
+  "walletAddAddressN": "地址 {n}",
+  "@walletAddAddressN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAddAddressHint": "粘贴要观察的地址",
+  "walletAddAddressRequired": "请输入地址。",
+  "walletAddPaste": "粘贴",
+  "walletAddClipboardEmpty": "剪贴板里没有文字。",
+  "walletAddRecognized": "识别为 {family} 地址",
+  "@walletAddRecognized": {
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAddUnrecognized": "无法识别的地址格式。请检查是否复制完整。",
+  "walletAddChains": "链（可多选）",
+  "walletAddChainAuto": "链：{chain}（自动确定）",
+  "@walletAddChainAuto": {
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAddChainRequired": "至少选择一条链。",
+  "walletAddAnother": "再添加一个地址",
+  "walletAddRemove": "删除这个地址",
+  "walletAddBackup": "备份状态",
+  "walletAddBackupNone": "未备份",
+  "walletAddBackupOffline": "已离线备份",
+  "walletAddBackupKeyless": "无助记词钱包",
+  "walletAddSave": "保存",
+  "walletAddSaving": "保存中…",
+  "walletAddAccountMissing": "找不到这个账户，它可能已被删除。",
+  "walletAddKeyMissing": "尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。"
 }

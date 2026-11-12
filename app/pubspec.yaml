@@ -31,6 +31,8 @@ dependencies:
     path: ../packages/ow_platform
   ow_pricing:
     path: ../packages/ow_pricing
+  qr_flutter: 4.1.0
+  url_launcher: 6.3.3
   uuid: 4.6.0
 
 dev_dependencies:
