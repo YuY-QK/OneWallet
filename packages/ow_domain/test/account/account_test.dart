@@ -83,6 +83,69 @@ void main() {
     });
   });
 
+  group('Account 复制与相等的其余分支', () {
+    final exchange = Account(
+      id: 'acc-2',
+      type: AccountType.exchange,
+      name: '交易所账户',
+      colorIndex: 3,
+      createdAt: DateTime.utc(2026, 1, 5),
+      exchange: ExchangeId.binance,
+    );
+
+    test('copyWith_显式传null_清除钱包来源与交易所', () {
+      final a = wallet(vaultItemId: 'vault-1');
+      expect(a.copyWith(walletSource: null).walletSource, isNull);
+      expect(exchange.copyWith(exchange: null).exchange, isNull);
+    });
+
+    test('copyWith_替换钱包来源与备份状态', () {
+      final a = wallet();
+      final b = a.copyWith(
+        walletSource: WalletSource.uniswap,
+        backup: const BackupStatus(keyless: true),
+      );
+      expect(b.walletSource, WalletSource.uniswap);
+      expect(b.backup.keyless, isTrue);
+      expect(b.backupLevel, BackupLevel.keyless);
+    });
+
+    test('copyWith_不传可空字段_保留原值', () {
+      final a = wallet(vaultItemId: 'vault-1');
+      final b = a.copyWith(colorIndex: 5, note: '备注');
+      expect(b.colorIndex, 5);
+      expect(b.note, '备注');
+      expect(b.vaultItemId, 'vault-1');
+      expect(b.walletSource, WalletSource.metamask);
+      expect(b.createdAt, a.createdAt);
+      expect(b.type, AccountType.wallet);
+      expect(b.id, 'acc-1');
+    });
+
+    test('Account_任一字段不同_不相等', () {
+      final base = wallet(vaultItemId: 'vault-1');
+      expect(base.copyWith(colorIndex: 1), isNot(base));
+      expect(base.copyWith(note: '备注'), isNot(base));
+      expect(base.copyWith(walletSource: WalletSource.other), isNot(base));
+      expect(base.copyWith(vaultItemId: null), isNot(base));
+      expect(
+        base.copyWith(backup: const BackupStatus(keyless: true)),
+        isNot(base),
+      );
+      expect(exchange.copyWith(exchange: ExchangeId.okx), isNot(exchange));
+    });
+
+    test('Account_字段相同_相等且哈希相同', () {
+      expect(exchange, exchange.copyWith());
+      expect(exchange.hashCode, exchange.copyWith().hashCode);
+    });
+
+    test('toString_含id与账户类型', () {
+      expect(wallet().toString(), 'Account(acc-1, AccountType.wallet)');
+      expect(exchange.toString(), 'Account(acc-2, AccountType.exchange)');
+    });
+  });
+
   group('WatchAddress', () {
     WatchAddress address(Set<String> chains) => WatchAddress(
       id: 'addr-1',

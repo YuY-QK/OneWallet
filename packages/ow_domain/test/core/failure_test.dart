@@ -2,6 +2,56 @@ import 'package:ow_domain/ow_domain.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('Failure 子类', () {
+    test('Failure_各子类_detail原样保留且是Failure', () {
+      final failures = <Failure>[
+        const NetworkFailure('n'),
+        const RateLimitedFailure('r'),
+        const UnauthorizedFailure('u'),
+        const KeyExpiredFailure('k'),
+        const ClockSkewFailure('c'),
+        const ServiceDownFailure('s'),
+        const ValidationFailure('v'),
+        const WrongPasswordFailure('w'),
+        const UnsupportedFailure('p'),
+        const UnknownFailure('x'),
+      ];
+      expect(failures.map((f) => f.detail), [
+        'n',
+        'r',
+        'u',
+        'k',
+        'c',
+        's',
+        'v',
+        'w',
+        'p',
+        'x',
+      ]);
+    });
+
+    test('Failure_无detail_toString只输出类型名', () {
+      expect(const NetworkFailure().toString(), 'NetworkFailure');
+      expect(const UnknownFailure().detail, isNull);
+    });
+
+    test('Failure_有detail_toString附带detail', () {
+      expect(
+        const RateLimitedFailure('请稍后再试').toString(),
+        'RateLimitedFailure(请稍后再试)',
+      );
+    });
+
+    test('DuplicateAddressFailure_可携带detail', () {
+      const f = DuplicateAddressFailure(
+        shortAddress: '0x12ab…9f3c',
+        detail: '调试信息',
+      );
+      expect(f.detail, '调试信息');
+      expect(f.toString(), 'DuplicateAddressFailure(调试信息)');
+    });
+  });
+
   group('DuplicateAddressFailure', () {
     test('DuplicateAddressFailure_有所属账户名_不属于输入内重复', () {
       const f = DuplicateAddressFailure(

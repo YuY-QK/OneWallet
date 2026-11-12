@@ -1,6 +1,25 @@
 import 'package:ow_domain/ow_domain.dart';
 import 'package:test/test.dart';
 
+/// 以以太坊的字段为默认值构造 [ChainInfo]，供值相等测试逐字段替换。
+ChainInfo ethLike({
+  String id = 'ethereum',
+  ChainFamily family = ChainFamily.evm,
+  String name = 'Ethereum',
+  String nativeSymbol = 'ETH',
+  int nativeDecimals = 18,
+  int? evmChainId = 1,
+  String explorerAddressUrl = 'https://etherscan.io/address/{address}',
+}) => ChainInfo(
+  id: id,
+  family: family,
+  name: name,
+  nativeSymbol: nativeSymbol,
+  nativeDecimals: nativeDecimals,
+  evmChainId: evmChainId,
+  explorerAddressUrl: explorerAddressUrl,
+);
+
 void main() {
   // 与 IMPLEMENTATION_SPEC 2.1 的表逐行对应：id、家族、原生币、evmChainId。
   const expected = <(String, ChainFamily, String, int?)>[
@@ -63,6 +82,46 @@ void main() {
     test('tryById_未知id_返回null', () {
       expect(Chains.tryById('dogecoin'), isNull);
       expect(Chains.tryById('tron'), same(Chains.byId('tron')));
+    });
+  });
+
+  group('ChainInfo 值语义', () {
+    final base = ethLike();
+
+    test('ChainInfo_字段与内置链相同_相等且哈希相同', () {
+      const same = ChainInfo(
+        id: 'ethereum',
+        family: ChainFamily.evm,
+        name: 'Ethereum',
+        nativeSymbol: 'ETH',
+        nativeDecimals: 18,
+        evmChainId: 1,
+        explorerAddressUrl: 'https://etherscan.io/address/{address}',
+      );
+      expect(same, base);
+      expect(same, Chains.byId('ethereum'));
+      expect(same.hashCode, base.hashCode);
+    });
+
+    test('ChainInfo_任一字段不同_不相等', () {
+      expect(ethLike(id: 'base'), isNot(base));
+      expect(ethLike(family: ChainFamily.solana), isNot(base));
+      expect(ethLike(name: 'Ethereum Mainnet'), isNot(base));
+      expect(ethLike(nativeSymbol: 'WETH'), isNot(base));
+      expect(ethLike(nativeDecimals: 8), isNot(base));
+      expect(ethLike(evmChainId: null), isNot(base));
+      expect(
+        ethLike(explorerAddressUrl: 'https://x.test/{address}'),
+        isNot(base),
+      );
+    });
+
+    test('toString_含链id', () {
+      expect(base.toString(), 'ChainInfo(ethereum)');
+    });
+
+    test('Chains.all_列表不可修改', () {
+      expect(() => Chains.all.add(base), throwsUnsupportedError);
     });
   });
 

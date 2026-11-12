@@ -68,6 +68,27 @@ void main() {
     });
   });
 
+  group('TokenRef 文本表示', () {
+    test('toString_三种代币_分别输出类型与关键字段', () {
+      expect(const NativeToken('base').toString(), 'NativeToken(base)');
+      expect(
+        const ContractToken('ethereum', usdtEth).toString(),
+        'ContractToken(ethereum, $usdtEth)',
+      );
+      expect(
+        const ExchangeToken(ExchangeId.okx, 'BTC').toString(),
+        'ExchangeToken(okx, BTC)',
+      );
+    });
+
+    test('ExchangeToken_不同符号_不相等且哈希不同', () {
+      const a = ExchangeToken(ExchangeId.bitget, 'ETH');
+      const b = ExchangeToken(ExchangeId.bitget, 'BTC');
+      expect(a, isNot(b));
+      expect(a.hashCode, isNot(b.hashCode));
+    });
+  });
+
   group('HoldingLocation 相等', () {
     test('HoldingLocation_字段相同_相等', () {
       expect(

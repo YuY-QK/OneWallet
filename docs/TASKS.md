@@ -140,7 +140,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 做什么：`Account.walletSource` 从固定枚举改为目录中的钱包 id（字符串，可为空表示"其他"）；P05 的来源钱包改为从目录选择（可搜索）；P06 的"如何创建只读 Key"、P08、P11 的无助记词钱包建议、P20 的服务商、P22 各处显示对应链接。新增通用组件 `OwExternalLink`（显示域名，点击后先确认再用系统浏览器打开）。同步更新 PRD 的 R5、P05、P06、P11、P20。另外在 P20 的价格源一行和 P22 展示"价格数据来自 CoinGecko"的署名与链接（CoinGecko 对免费使用的要求）。
   - 依赖：M1-14，以及 M1-09 至 M1-12 的页面。
 
-- [ ] **M1-16** 补齐 ow_domain 的测试覆盖率 〔离线〕
+- [x] **M1-16** 补齐 ow_domain 的测试覆盖率 〔离线〕 2026-11-12（70% → 99.7%）
   - 来由：M1-08 审查时测得 ow_domain 整包行覆盖率 69%，低于 90% 的门槛。缺口在 M0-09 的值类型（asset、holding、price、snapshot、sync_record、vault_item_meta、exchange_credentials、failure、derivation_scheme、chain_info）。
   - 做什么：为这些类型补构造、相等、哈希、copyWith、toString 的测试。只加测试，不改实现；发现实现有缺陷时记录并报告。
   - 验收：ow_domain 行覆盖率不低于 90%。
