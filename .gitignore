@@ -20,6 +20,7 @@ build/
 *.g.dart
 # ow_data 的 Drift 生成代码强制入库（CI 不运行 build_runner）
 !packages/ow_data/lib/**/*.g.dart
+!packages/ow_directory/lib/**/*.g.dart
 *.freezed.dart
 coverage/
 

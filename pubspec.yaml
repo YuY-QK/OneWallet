@@ -14,6 +14,7 @@ workspace:
   - packages/ow_exchanges
   - packages/ow_pricing
   - packages/ow_net
+  - packages/ow_directory
   - packages/ow_vault
   - packages/ow_platform
 

@@ -608,3 +608,63 @@ app/lib/features/<feature>/
 - 只允许调用读取类接口。`tools/ci/check_deps.dart` 会扫描 `ow_exchanges` 中含有 `order`、`withdraw`、`transfer` 等字样的路径；确属只读但被误拦的接口，加入脚本中的 `readOnlyPathAllowlist` 并在旁边注释说明用途和文档链接。
 - 适配器的自动化测试只用录制样本（`test/fixtures/`），样本取自官方文档示例或脱敏后的真实响应。
 - 需要真实 Key 的冒烟测试放在 `tools/smoke/`，从环境变量读取 Key，由用户在自己的机器上手动运行。仓库和 CI 中不出现任何真实 Key。
+
+## 9. 第三方目录
+
+> 任务 M1-14（数据与校验）、M1-15（接入页面）。包：`packages/ow_directory`。
+
+### 9.1 选型：内置 JSON 配置文件，不用数据库
+
+第三方目录是**随应用发布的只读参考数据**，不是用户数据。放在仓库里的 JSON 文件中，可以被审阅、被 diff、被别的 AI 直接补充；数据库（`ow_data`）只存用户自己的数据。因此：
+
+- 权威数据文件：`packages/ow_directory/data/directory.json`。
+- 纯 Dart 包不能用 Flutter 资源，所以由脚本 `packages/ow_directory/tool/embed.dart` 把它生成为 `lib/src/directory_data.g.dart` 中的字符串常量（该文件入库，`.gitignore` 对它有例外）。测试断言两者一致：改了 JSON 没有重新生成，测试失败。
+- 修改后运行：`cd packages/ow_directory && dart run tool/embed.dart`。
+- 包只依赖 `ow_domain`，不联网，不导入 `dart:io`（`tool/` 下的脚本除外）。其他 `ow_*` 包都不依赖它，只有 `app/` 使用。
+
+### 9.2 文件结构
+
+顶层：`{ "schemaVersion": 1, "entries": [ … ] }`。每个条目的字段：
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `id` | string | 小写字母、数字、连字符；全局唯一；一经发布不改 |
+| `kind` | string | `exchange`、`wallet`、`dataProvider`、`explorer`、`hardwareWallet` |
+| `name` | string | 显示名，非空 |
+| `aliases` | string[] | 别名（含中文名），供搜索 |
+| `officialDomains` | string[] | 非空；小写域名，不带协议、路径、端口。该条目所有链接的主机名必须等于其中之一或是其子域 |
+| `links` | object | 可选；键只能取：`website`、`apiDocs`、`apiKeyGuide`（创建 API Key 的官方说明）、`apiKeyManagement`（登录后管理 API Key 的页面）、`exportKeyGuide`（钱包：导出助记词或私钥的官方说明）、`helpCenter`、`status`、`download`、`signup`（数据服务：注册获取 Key）、`pricing`（免费额度与价格） |
+| `integration` | string | `integrated`（本应用已接入）、`planned`、`none` |
+| `wallet` | object | 仅 `wallet`、`hardwareWallet`：`custody`（`selfCustody`、`mpc`、`custodial`）、`exportable`（能否导出助记词或私钥，不确定为 `null`）、`families`（`ChainFamily` 的名称，可为空数组） |
+| `exchange` | object | 仅交易所：`domainExchangeId`，对应 `ExchangeId` 的名称（仅已接入的四家） |
+| `explorer` | object | 仅 `explorer`（`dataProvider` 也可带，如 mempool.space）：`chainId`（`Chains` 中的链 id）、`addressUrlTemplate`（含 `{address}`） |
+| `verifiedAt` | string 或 null | 核对日期 `yyyy-MM-dd`；未核对为 `null` |
+| `sources` | string[] | 确认这些链接所依据的页面（https） |
+| `notes` | string | 备注；未核对的写明"待核对"；只依据搜索结果摘要的要写明 |
+
+### 9.3 代码接口（`lib/ow_directory.dart`）
+
+- 类型：`DirectoryEntry`、`WalletInfo`、`ExchangeInfo`、`ExplorerInfo`（不可变）；枚举 `DirectoryKind`、`LinkKind`、`IntegrationLevel`、`WalletCustody`。
+- `ThirdPartyDirectory.builtin()`：`all`、`byId`、`byKind`、`search(query)`（名称与别名，不区分大小写，空查询返回全部）、`forExchange(ExchangeId)`、`explorerFor(chainId)`（文件中排在最前的那个）、`explorersFor(chainId)`、`verifiedOnly`。
+- 向前兼容：解析时遇到未知的 `kind`，跳过该条目；遇到未知的 link 键，跳过该链接；未知的 `integration` 视为 `none`；`wallet.custody` 未知则丢弃 `wallet` 子结构。其余内容照常解析。
+- `DirectoryValidator.validateJson(text)` / `validate(decoded)`：检查原始 JSON，返回问题列表（空表示通过）。
+
+### 9.4 校验规则（`DirectoryValidator`）
+
+1. `id` 唯一且符合格式；`name` 非空；`kind`、`integration`、`custody` 取值合法。
+2. 所有链接必须是 https，不含用户名密码、非标准端口，不含推广或邀请参数（`ref=`、`referral`、`utm_`、`invite`、以 `aff` 开头的路径段或参数名）。**邀请返佣链接一律不收。**
+3. 每条链接的主机名等于某个 `officialDomains` 或是其子域；`officialDomains` 非空，每项是不带协议和路径的小写域名；`github.io`、`github.com`、`gitbook.io`、`notion.site` 等任何人都能建站的共享托管域名不得作为官方域名。
+4. `verifiedAt` 非空的条目必须有至少一个 `source`（https 地址）。
+5. `explorer` 类条目必须有 `explorer` 子结构；模板含 `{address}` 且主机名属于该条目的官方域名；`chainId` 在 `Chains` 中存在。
+6. `exchange.domainExchangeId` 是合法的 `ExchangeId`；`wallet.families` 取值是合法的 `ChainFamily`；子结构只出现在允许的 `kind` 上。
+
+测试还断言：内置数据零问题；`ExchangeId` 的每个值都能 `forExchange` 找到；`Chains` 的每条链都能 `explorerFor` 找到，且模板与 `Chains` 中的 `explorerAddressUrl` 一致；5 个来源钱包都在。
+
+### 9.5 app 使用规则
+
+- **只展示已核对的条目**（`verifiedOnly`）；未核对的条目只存在于数据文件中，等待核对。
+- 打开链接前先显示**完整域名**并让用户确认（通用组件 `OwExternalLink`，M1-15）。
+- **只用系统浏览器打开**，不在应用内嵌网页（WebView）。
+- 不收、不展示邀请返佣链接；目录里的链接不附加任何追踪参数。
+- 目录只提供链接，不代表对第三方的背书；界面不得把"已核对"表述成"安全"。
+- 补充条目的方法见 `docs/DIRECTORY_COLLECTION_GUIDE.md`。

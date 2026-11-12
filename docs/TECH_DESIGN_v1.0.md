@@ -139,6 +139,7 @@ OneWallet/
 │  ├─ ow_exchanges/              # 各交易所适配器
 │  ├─ ow_net/                    # 网络基础设施（纯 Dart，仅 HTTPS）
 │  ├─ ow_pricing/                # 价格与币种映射
+│  ├─ ow_directory/              # 第三方目录：内置官网与文档链接（纯 Dart，只读，不联网）
 │  ├─ ow_vault/                  # 保险库核心（禁止网络依赖）
 │  └─ ow_platform/               # 平台适配（Flutter 插件，含 Swift、Kotlin）
 ├─ tools/

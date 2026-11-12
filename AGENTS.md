@@ -26,6 +26,7 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 | 任何涉及密钥、加密、应用锁、备份文件的改动 | `docs/SECURITY_DESIGN_v1.0.md`（通读全文） |
 | 写代码的规范、提交格式、扩展步骤 | `docs/DEV_GUIDELINES_v1.0.md` |
 | 外部接口的核对记录 | `docs/EXTERNAL_APIS.md` |
+| 补充第三方官网与文档链接 | `docs/DIRECTORY_COLLECTION_GUIDE.md` |
 | 里程碑的背景与门禁 | `docs/DEVELOPMENT_PLAN_v1.0.md` |
 | 重要决定的来由 | `docs/ADR_*.md` |
 
@@ -64,6 +65,7 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 | 重新生成派生对照样本 | `pip install bip_utils && python3 packages/ow_vault/test/fixtures/generate_vectors.py` |
 | 修改 ARB 文案后重新生成本地化代码 | `flutter pub get` 会自动生成 `app/lib/l10n/app_localizations*.dart` |
 | 修改数据库表结构后重新生成（生成的 `*.g.dart` 需提交） | `cd packages/ow_data && dart run build_runner build` |
+| 修改第三方目录后重新生成 | `cd packages/ow_directory && dart run tool/embed.dart` |
 
 ## 目录
 
@@ -75,6 +77,7 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 | `packages/ow_data` | 数据库与仓储实现 |
 | `packages/ow_net` | 网络基础设施：仅 HTTPS 的客户端工厂、脱敏日志、失败映射、限速器（纯 Dart） |
 | `packages/ow_chains`、`ow_exchanges`、`ow_pricing` | 数据源适配器 |
+| `packages/ow_directory` | 第三方目录：内置的官网与文档链接（纯 Dart，只读） |
 | `packages/ow_vault` | 保险库核心（禁止联网） |
 | `packages/ow_platform` | 平台适配（含原生代码） |
 | `tools/` | 检查脚本、冒烟脚本、备份解密工具 |

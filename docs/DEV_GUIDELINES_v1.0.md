@@ -22,6 +22,7 @@
 | `ow_net` | `ow_domain`、`dio` | 其他 `ow_*` 包、Flutter、平台名称判断 |
 | `ow_data` | `ow_domain` | 彼此、`ow_vault`、`ow_net`、Flutter 界面库 |
 | `ow_chains`、`ow_exchanges`、`ow_pricing` | `ow_domain`、`ow_net` | 彼此、`ow_data`、`ow_vault`、Flutter 界面库 |
+| `ow_directory` | `ow_domain` | 其他 `ow_*` 包、Flutter、网络库、`dart:io`（`tool/` 脚本除外） |
 | `ow_vault` | `ow_domain`、白名单内的密码学库 | 任何网络库、其他 `ow_*` 包 |
 | `ow_platform` | `ow_domain`、Flutter 插件接口 | 业务包 |
 | `app` | 以上全部 | — |
