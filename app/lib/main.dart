@@ -1,8 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/widgets.dart';
+import 'package:ow_platform/ow_platform.dart';
 
-import 'app.dart';
+import 'bootstrap/app_bootstrap.dart';
+import 'bootstrap/bootstrap_host.dart';
 
 void main() {
-  runApp(const ProviderScope(child: OneWalletApp()));
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    BootstrapHost(
+      bootstrap: () => bootstrapApp(
+        secrets: SecureSecretStore(),
+        opener: SqlCipherDatabaseOpener(),
+      ),
+    ),
+  );
 }

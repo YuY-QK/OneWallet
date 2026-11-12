@@ -55,6 +55,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get notAvailableYet => '此功能尚未实现';
 
   @override
+  String get bootstrapLoading => '正在打开本地数据…';
+
+  @override
+  String get bootstrapErrorTitle => '无法打开本地数据';
+
+  @override
+  String get bootstrapErrorSecureStorage => '无法访问系统安全存储。请确认设备已解锁后重试。';
+
+  @override
+  String get bootstrapErrorKeyMissing =>
+      '本地数据库还在，但找不到它的密钥，可能是应用数据被清理或从备份恢复到了新设备。为避免丢失数据，应用不会自动重建数据库。';
+
+  @override
+  String get bootstrapErrorOpenFailed =>
+      '本地数据库无法打开，文件可能已损坏。应用不会自动删除或重建它。请重试；仍然失败请联系开发者。';
+
+  @override
+  String get bootstrapRetry => '重试';
+
+  @override
   String get timeJustNow => '刚刚';
 
   @override
