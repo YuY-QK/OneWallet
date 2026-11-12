@@ -28,31 +28,35 @@ final class WatchPortfolio {
 
   /// 返回汇总结果流。上游仓储的异常（程序缺陷）以流错误转发。
   ///
-  /// 手动隐藏的代币集合只能经 `TokenVisibilityRepository.hidden()` 读取、
-  /// 没有变化流，所以每次重新计算时重读一次：单独修改显隐不会立即触发新摘要，
-  /// 要等下一次任一上游变化。
+  /// 手动隐藏的代币集合经 `TokenVisibilityRepository.watchHidden()` 订阅：
+  /// 手动隐藏或显示代币后，总览立即发出新摘要。
   Stream<PortfolioSummary> call() {
     // 设置与价格成对推送：切换计价货币时，不会出现新设置配旧货币价格的组合。
     final settingsWithPrices = switchLatest(
       _settings.watch(),
       (AppSettings s) => _prices.watch(s.quote).map((p) => (s, p)),
     );
+    final settingsPricesHidden = combineLatest2(
+      settingsWithPrices,
+      _tokenVisibility.watchHidden(),
+      (sp, hidden) => (sp.$1, sp.$2, hidden),
+    );
     return combineLatest3(
       _accounts.watchAll(),
       _holdings.watchAll(),
-      settingsWithPrices,
-      (accounts, holdings, sp) => (accounts, holdings, sp.$1, sp.$2),
-    ).asyncMap((input) async {
-      final (accounts, holdings, settings, prices) = input;
-      return PortfolioCalculator.summarize(
-        accounts: accounts,
-        holdings: holdings,
-        prices: prices,
-        hideSmall: settings.hideSmall,
-        smallThreshold: smallThresholdFor(settings.quote, prices),
-        hiddenTokens: await _tokenVisibility.hidden(),
-      );
-    });
+      settingsPricesHidden,
+      (accounts, holdings, sph) {
+        final (settings, prices, hidden) = sph;
+        return PortfolioCalculator.summarize(
+          accounts: accounts,
+          holdings: holdings,
+          prices: prices,
+          hideSmall: settings.hideSmall,
+          smallThreshold: smallThresholdFor(settings.quote, prices),
+          hiddenTokens: hidden,
+        );
+      },
+    );
   }
 
   /// "1 USD 折合 [quote]" 的值，作为小额隐藏的阈值（R11）。

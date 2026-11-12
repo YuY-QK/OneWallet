@@ -107,12 +107,17 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failureUnsupported => '当前设备不支持这个功能。';
 
   @override
+  String get failureUnsupportedNotIntegrated =>
+      '暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。';
+
+  @override
   String get failureUnknown => '出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。';
 
   @override
   String failureDuplicateAddress(String kind, String address, String account) {
     String _temp0 = intl.Intl.selectLogic(kind, {
       'existing': '地址 $address 已在账户「$account」中，同一地址不能重复添加。',
+      'ownerMissing': '该地址已存在于本应用中。',
       'other': '地址 $address 在本次输入中出现了不止一次，请删除重复的一项。',
     });
     return '$_temp0';
@@ -174,9 +179,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupStatusNone => '未备份';
-
-  @override
-  String get syncFailureUnsupported => '暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。';
 
   @override
   String get comingSoonTitle => '即将推出';
@@ -388,6 +390,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accountsSyncFailed => '同步失败';
+
+  @override
+  String get accountsSyncing => '同步中';
 
   @override
   String get accountsLoadFailed => '无法读取账户列表。请重启应用后重试。';

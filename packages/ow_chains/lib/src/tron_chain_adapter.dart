@@ -232,7 +232,9 @@ final class TronChainAdapter implements ChainAdapter {
 
   Future<Result<_Target>> _resolve(String address, ChainInfo chain) async {
     if (chain.family != ChainFamily.tron) {
-      return Err(UnsupportedFailure('非 Tron 链 chain=${chain.id}'));
+      return Err(
+        UnsupportedFailure.notIntegrated('非 Tron 链 chain=${chain.id}'),
+      );
     }
     if (!isPathSafeAddress(address)) {
       return const Err(ValidationFailure('地址包含非法字符'));

@@ -12,8 +12,8 @@ void main() {
   late String walletId;
 
   setUp(() async {
-    accounts = InMemoryAccountRepository();
     addresses = InMemoryAddressRepository();
+    accounts = InMemoryAccountRepository(addresses: addresses);
     final ids = SequentialIds();
     final created =
         await AddWalletAccount(

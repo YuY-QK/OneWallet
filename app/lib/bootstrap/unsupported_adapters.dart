@@ -13,11 +13,11 @@ final class UnsupportedChainAdapter implements ChainAdapter {
   Future<Result<List<RawHolding>>> fetchHoldings(
     String address,
     ChainInfo chain,
-  ) async => Err(UnsupportedFailure('尚未支持的链家族：${family.name}'));
+  ) async => Err(UnsupportedFailure.notIntegrated('尚未支持的链家族：${family.name}'));
 
   @override
   Future<Result<bool>> hasActivity(String address, ChainInfo chain) async =>
-      Err(UnsupportedFailure('尚未支持的链家族：${family.name}'));
+      Err(UnsupportedFailure.notIntegrated('尚未支持的链家族：${family.name}'));
 }
 
 /// 尚未实现的交易所适配器：所有方法返回 [UnsupportedFailure]。
@@ -32,7 +32,8 @@ final class UnsupportedExchangeAdapter implements ExchangeAdapter {
   @override
   bool get needsPassphrase => id == ExchangeId.okx || id == ExchangeId.bitget;
 
-  UnsupportedFailure get _failure => UnsupportedFailure('尚未支持的交易所：${id.name}');
+  UnsupportedFailure get _failure =>
+      UnsupportedFailure.notIntegrated('尚未支持的交易所：${id.name}');
 
   @override
   Future<Result<CredentialCheck>> verify(ExchangeCredentials c) async =>

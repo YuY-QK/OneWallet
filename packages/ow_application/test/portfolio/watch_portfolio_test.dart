@@ -108,11 +108,21 @@ void main() {
     expect(emitted.last.total, Decimal.parse('42000'));
   });
 
-  test('WatchPortfolio_手动隐藏代币_在下一次上游变化时生效', () async {
+  test('WatchPortfolio_手动隐藏代币_立即发出新摘要', () async {
+    final before = emitted.length;
     await visibility.setHidden(const NativeToken('ethereum').tokenKey, true);
-    await settings.update((s) => s.copyWith(hideAmounts: true));
     await pumpEventQueue();
+    expect(emitted.length, before + 1);
     expect(emitted.last.total, Decimal.zero);
+  });
+
+  test('WatchPortfolio_取消隐藏代币_立即恢复计入', () async {
+    final key = const NativeToken('ethereum').tokenKey;
+    await visibility.setHidden(key, true);
+    await pumpEventQueue();
+    await visibility.setHidden(key, false);
+    await pumpEventQueue();
+    expect(emitted.last.total, Decimal.parse('6000'));
   });
 
   test('WatchPortfolio_小额隐藏开关_影响隐藏计数', () async {

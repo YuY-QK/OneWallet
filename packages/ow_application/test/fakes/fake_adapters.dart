@@ -93,6 +93,14 @@ final class FakeAssetCatalog implements AssetCatalog {
 
   @override
   Asset? byId(String assetId) => byAssetId[assetId];
+
+  @override
+  Asset? byPriceId(String priceId) {
+    for (final a in byAssetId.values) {
+      if (a.priceId == priceId) return a;
+    }
+    return null;
+  }
 }
 
 final class FakePriceSource implements PriceSource {

@@ -45,7 +45,7 @@ final class WalletAddressRow {
 
 /// P07 的页面状态。
 enum WalletDetailStatus {
-  /// 从未同步过：正在等待第一次同步结果。
+  /// 还没有成功同步过，正在等待第一次同步结果。
   loading,
 
   /// 有资产可显示。
@@ -83,7 +83,7 @@ final class WalletDetailView {
   /// 最近一次同步失败的记录；最近一次成功则为 null。
   final SyncRecord? failure;
 
-  /// 上次成功同步的时间（取持仓的更新时间；失败时持仓保留着上次成功的数据）。
+  /// 上次成功同步的时间（持久化的账户级记录，不受同步记录裁剪影响）；从未成功为 null。
   final DateTime? lastSuccessAt;
 }
 
@@ -94,6 +94,8 @@ WalletDetailView buildWalletDetail({
   required List<Holding> holdings,
   required Map<String, Price> prices,
   required SyncRecord? record,
+  required DateTime? lastSuccessAt,
+  required bool syncing,
 }) {
   final mine = [
     for (final h in holdings)
@@ -109,13 +111,10 @@ WalletDetailView buildWalletDetail({
       if (r.value == null) r,
   ];
   final total = priced.fold(Decimal.zero, (sum, r) => sum + r.value!);
-  DateTime? last;
-  for (final h in mine) {
-    if (last == null || h.updatedAt.isAfter(last)) last = h.updatedAt;
-  }
   final failed = record != null && record.status == SyncStatus.failed;
   final WalletDetailStatus status;
-  if (record == null && mine.isEmpty) {
+  // 加载中：还没成功过，且正在同步，或最近没有失败（即第一次同步尚未得出结果）。
+  if (lastSuccessAt == null && mine.isEmpty && (syncing || !failed)) {
     status = WalletDetailStatus.loading;
   } else if (priced.isEmpty && unpriced.isEmpty) {
     status = WalletDetailStatus.noAssets;
@@ -130,7 +129,7 @@ WalletDetailView buildWalletDetail({
     unpriced: unpriced,
     addresses: _addressRows(addresses, mine, prices),
     failure: failed ? record : null,
-    lastSuccessAt: last,
+    lastSuccessAt: lastSuccessAt,
   );
 }
 

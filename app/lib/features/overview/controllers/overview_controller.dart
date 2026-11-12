@@ -65,16 +65,21 @@ class OverviewSyncController extends Notifier<SyncUiState> {
 final overviewViewProvider = Provider<AsyncValue<OverviewView>>((ref) {
   final accounts = ref.watch(accountsProvider);
   final records = ref.watch(latestSyncRecordsProvider);
-  final holdings = ref.watch(holdingsProvider);
+  final lastSuccess = ref.watch(lastSuccessPerAccountProvider);
   final syncing = ref.watch(overviewSyncProvider.select((s) => s.running));
-  for (final v in [accounts, records, holdings]) {
+  for (final v in [accounts, records, lastSuccess]) {
     if (v is AsyncError) return AsyncError(v.error!, v.stackTrace!);
   }
   final a = accounts.value;
   final r = records.value;
-  final h = holdings.value;
-  if (a == null || r == null || h == null) return const AsyncLoading();
+  final l = lastSuccess.value;
+  if (a == null || r == null || l == null) return const AsyncLoading();
   return AsyncData(
-    buildOverviewView(accounts: a, records: r, holdings: h, syncing: syncing),
+    buildOverviewView(
+      accounts: a,
+      records: r,
+      lastSuccess: l,
+      syncing: syncing,
+    ),
   );
 });

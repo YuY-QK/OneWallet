@@ -31,6 +31,11 @@ final class Watchable<T> {
 }
 
 final class InMemoryAccountRepository implements AccountRepository {
+  /// [addresses] 是与之共用同一份存储的地址仓储，`insertWithAddresses` 需要它
+  /// 才能模拟单事务写入；不用该方法的测试可以不传。
+  InMemoryAccountRepository({this.addresses});
+
+  final InMemoryAddressRepository? addresses;
   final store = Watchable<List<Account>>(const []);
 
   @override
@@ -51,6 +56,27 @@ final class InMemoryAccountRepository implements AccountRepository {
         if (a.id != account.id) a,
       account,
     ];
+  }
+
+  @override
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> newAddresses,
+  ) async {
+    final repo = addresses ?? (throw StateError('未传入共用的地址仓储'));
+    // 单事务：先检查全部地址的唯一约束，任一冲突就什么也不写。
+    final seen = <(ChainFamily, String)>{};
+    for (final a in newAddresses) {
+      final clash = await repo.find(a.family, a.address);
+      if ((clash != null && clash.id != a.id) ||
+          !seen.add((a.family, a.address))) {
+        throw StateError('违反 (family, address) 唯一约束');
+      }
+    }
+    await upsert(account);
+    for (final a in newAddresses) {
+      await repo.upsert(a);
+    }
   }
 
   @override
@@ -170,10 +196,26 @@ final class InMemorySyncRecordRepository implements SyncRecordRepository {
   Stream<List<SyncRecord>> watchLatestPerAccount() =>
       _store.watch().map(_latest);
 
+  final _lastSuccess = Watchable<Map<String, DateTime>>(const {});
+
+  @override
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount() =>
+      _lastSuccess.watch();
+
   @override
   Future<void> add(SyncRecord record) async {
     final all = [..._store.value, record];
     _store.value = all.length > 50 ? all.sublist(all.length - 50) : all;
+    final finished = record.finishedAt;
+    if (record.status == SyncStatus.success && finished != null) {
+      final prev = _lastSuccess.value[record.accountId];
+      if (prev == null || finished.isAfter(prev)) {
+        _lastSuccess.value = {
+          ..._lastSuccess.value,
+          record.accountId: finished,
+        };
+      }
+    }
   }
 }
 
@@ -194,13 +236,51 @@ final class InMemorySettingsRepository implements SettingsRepository {
 
 final class InMemoryTokenVisibilityRepository
     implements TokenVisibilityRepository {
-  final hiddenKeys = <String>{};
+  final _hidden = Watchable<Set<String>>(const {});
+
+  Set<String> get hiddenKeys => _hidden.value;
 
   @override
-  Future<Set<String>> hidden() async => Set.of(hiddenKeys);
+  Future<Set<String>> hidden() async => Set.of(_hidden.value);
+
+  @override
+  Stream<Set<String>> watchHidden() => _hidden.watch();
 
   @override
   Future<void> setHidden(String tokenKey, bool hidden) async {
-    hidden ? hiddenKeys.add(tokenKey) : hiddenKeys.remove(tokenKey);
+    final next = Set.of(_hidden.value);
+    hidden ? next.add(tokenKey) : next.remove(tokenKey);
+    _hidden.value = next;
   }
+}
+
+final class InMemoryAssetRepository implements AssetRepository {
+  final assets = <String, Asset>{};
+  final contractMap = <ContractToken, String>{};
+  int upsertCalls = 0;
+
+  @override
+  Future<void> upsertAll(List<Asset> list, {required DateTime now}) async {
+    upsertCalls++;
+    for (final a in list) {
+      assets[a.id] = a;
+    }
+  }
+
+  @override
+  Future<List<Asset>> all() async => assets.values.toList();
+
+  @override
+  Future<Asset?> byId(String id) async => assets[id];
+
+  @override
+  Future<void> upsertContracts(Map<ContractToken, String> m) async {
+    for (final id in m.values) {
+      if (!assets.containsKey(id)) throw StateError('币种不存在：$id');
+    }
+    contractMap.addAll(m);
+  }
+
+  @override
+  Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
 }

@@ -3,7 +3,6 @@ import 'package:dio/dio.dart';
 import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_net/ow_net.dart';
 
-import '../catalog/built_in_asset_catalog.dart';
 import 'exact_json.dart';
 
 /// 基于 CoinGecko 免费（Demo）档的价格源。接口核对记录见 docs/EXTERNAL_APIS.md。
@@ -72,7 +71,7 @@ class CoinGeckoPriceSource implements PriceSource {
 
   final DataSourceConfig _config;
   final Clock _clock;
-  final BuiltInAssetCatalog? _catalog;
+  final AssetCatalog? _catalog;
   final OwHttpClient _client;
   final RateLimiter _limiter;
 
@@ -256,10 +255,9 @@ class CoinGeckoPriceSource implements PriceSource {
     }
     final catalog = _catalog;
     if (catalog != null) {
-      // CoinGecko 认为它就是内置币种（例如某链上的新部署）：合并到内置币种。
-      for (final known in catalog.assets) {
-        if (known.priceId == id) return known;
-      }
+      // CoinGecko 认为它就是已知币种（例如某链上的新部署）：合并到该币种。
+      final known = catalog.byPriceId(id);
+      if (known != null) return known;
     }
     final upper = symbol.toUpperCase();
     // 任何人都能发行同名代币。符号与内置币种相同但币种标识不同时加后缀，

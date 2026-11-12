@@ -33,6 +33,7 @@ class BuiltInAssetCatalog implements AssetCatalog {
         throw FormatException('币种 id 重复：${asset.id}');
       }
       _byId[asset.id] = asset;
+      _byPriceId.putIfAbsent(asset.priceId!, () => asset);
 
       for (final chainId in _list(item['native'] ?? const [], 'native')) {
         final chain = _chain(chainId, asset.id);
@@ -81,6 +82,7 @@ class BuiltInAssetCatalog implements AssetCatalog {
   }
 
   final Map<String, Asset> _byId = {};
+  final Map<String, Asset> _byPriceId = {};
   final Map<String, Asset> _native = {};
   final Map<String, Asset> _contracts = {};
   final List<CatalogContract> _contractList = [];
@@ -94,6 +96,9 @@ class BuiltInAssetCatalog implements AssetCatalog {
 
   @override
   Asset? byId(String assetId) => _byId[assetId];
+
+  @override
+  Asset? byPriceId(String priceId) => _byPriceId[priceId];
 
   @override
   Asset? resolve(TokenRef token) => switch (token) {

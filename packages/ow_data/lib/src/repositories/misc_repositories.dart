@@ -30,10 +30,31 @@ final class DriftSyncRecordRepository implements SyncRecordRepository {
     return query.watch().map((rows) => decodeRows(rows, syncRecordFromRow));
   }
 
+  /// 读 `accounts.last_synced_at`，不依赖会被裁剪的 `sync_records`。
+  @override
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount() {
+    final query = _db.select(_db.accounts)
+      ..where((t) => t.lastSyncedAt.isNotNull());
+    return query.watch().map(
+      (rows) => {for (final r in rows) r.id: r.lastSyncedAt!.toUtc()},
+    );
+  }
+
   /// 追加一条记录，并把全表裁剪到最近 [maxSyncRecords] 条（按写入顺序），同一事务内完成。
+  /// 成功记录同时把账户的 `last_synced_at` 推进到 `finishedAt`（不会后退）。
   @override
   Future<void> add(SyncRecord record) => _db.transaction(() async {
     await _db.into(_db.syncRecords).insert(syncRecordToCompanion(record));
+    final finished = record.finishedAt?.toUtc();
+    if (record.status == SyncStatus.success && finished != null) {
+      await (_db.update(_db.accounts)..where(
+            (t) =>
+                t.id.equals(record.accountId) &
+                (t.lastSyncedAt.isNull() |
+                    t.lastSyncedAt.isSmallerThanValue(finished)),
+          ))
+          .write(AccountsCompanion(lastSyncedAt: Value(finished)));
+    }
     await _db.customStatement(
       'DELETE FROM sync_records WHERE id NOT IN '
       '(SELECT id FROM sync_records ORDER BY id DESC LIMIT $maxSyncRecords)',
@@ -135,6 +156,13 @@ final class DriftTokenVisibilityRepository
       _db.tokenVisibility,
     )..where((t) => t.hidden.equals(true))).get();
     return {for (final r in rows) r.tokenKey};
+  }
+
+  @override
+  Stream<Set<String>> watchHidden() {
+    final query = _db.select(_db.tokenVisibility)
+      ..where((t) => t.hidden.equals(true));
+    return query.watch().map((rows) => {for (final r in rows) r.tokenKey});
   }
 
   @override

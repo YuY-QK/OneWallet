@@ -1,7 +1,9 @@
 import '../account/account.dart';
 import '../account/watch_address.dart';
+import '../asset/asset.dart';
 import '../asset/holding.dart';
 import '../asset/price.dart';
+import '../asset/token_ref.dart';
 import '../chain/chain_family.dart';
 import '../exchange/exchange_credentials.dart';
 import '../settings/app_settings.dart';
@@ -22,6 +24,16 @@ abstract interface class AccountRepository {
 
   /// 按 id 新增或整体替换。
   Future<void> upsert(Account account);
+
+  /// 在单个事务中新增 [account] 及其全部 [addresses]（添加钱包，P05）。
+  ///
+  /// 任一地址违反 (family, address) 唯一约束（或任何一步失败）时整体回滚：
+  /// 异常抛出，账户与已写入的地址都不会留下。调用方应先用
+  /// `AddressRepository.find` 检查；本方法是并发或数据异常时的最后一道保护。
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> addresses,
+  );
 
   /// 删除账户，并级联删除其地址、持仓、同步记录（R6）。
   /// 不删除保险库条目；不存在时什么也不做。
@@ -76,8 +88,34 @@ abstract interface class SyncRecordRepository {
   /// 每个账户最近的一条记录。
   Stream<List<SyncRecord>> watchLatestPerAccount();
 
-  /// 追加一条记录；总数只保留最近 50 条。
+  /// 每个账户最近一次**成功**同步的结束时间（账户 id → 时间，UTC）。
+  ///
+  /// 从未成功过的账户不在结果中。该时间单独持久化，不受 `sync_records` 只保留
+  /// 最近 50 条的影响；账户被删除后随之消失。订阅时先推送当前值。
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount();
+
+  /// 追加一条记录；总数只保留最近 50 条。成功记录（`finishedAt` 非空）同时把
+  /// 该账户的"最近一次成功时间"更新为 `finishedAt`（只前进不后退）。
   Future<void> add(SyncRecord record);
+}
+
+/// 价格源查到并持久化的币种，以及"合约 → 币种"的对应关系（M1-18）。
+abstract interface class AssetRepository {
+  /// 以 `id` 为键新增或更新币种；[now] 是新增时记录的创建时间（UTC），更新时保持原值。
+  Future<void> upsertAll(List<Asset> assets, {required DateTime now});
+
+  /// 全部已存币种。
+  Future<List<Asset>> all();
+
+  /// 不存在时返回 null。
+  Future<Asset?> byId(String id);
+
+  /// 记住合约对应的币种 id（值必须是已存在的币种，否则抛出异常）。
+  /// 以（链 id，合约）为键新增或替换。
+  Future<void> upsertContracts(Map<ContractToken, String> assetIdByContract);
+
+  /// 全部已记住的"合约 → 币种 id"。
+  Future<Map<ContractToken, String>> contracts();
 }
 
 /// 保险库条目元数据。
@@ -107,6 +145,9 @@ abstract interface class SettingsRepository {
 abstract interface class TokenVisibilityRepository {
   /// 被设为隐藏的代币键。
   Future<Set<String>> hidden();
+
+  /// 被设为隐藏的代币键；订阅时先推送当前集合，任何显隐修改后推送新集合。
+  Stream<Set<String>> watchHidden();
 
   Future<void> setHidden(String tokenKey, bool hidden);
 }

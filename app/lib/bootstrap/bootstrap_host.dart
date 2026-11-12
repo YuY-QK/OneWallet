@@ -8,6 +8,7 @@ import '../l10n/app_localizations.dart';
 import '../theme/ow_theme.dart';
 import '../widgets/empty_state.dart';
 import 'app_bootstrap.dart';
+import 'asset_catalog_gate.dart';
 import 'providers.dart';
 
 /// 启动流程的宿主：先跑 [bootstrap]，成功后进入应用，失败显示错误页。
@@ -56,7 +57,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
                 databaseProvider.overrideWithValue(result.database),
                 secretStoreProvider.overrideWithValue(result.secrets),
               ],
-              child: const OneWalletApp(),
+              child: const AssetCatalogGate(child: OneWalletApp()),
             );
           case BootstrapFailure(:final kind):
             return _BootstrapShell(

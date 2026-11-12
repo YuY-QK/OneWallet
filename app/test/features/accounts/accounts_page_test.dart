@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onewallet/bootstrap/providers.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../support/fakes.dart';
@@ -14,7 +18,11 @@ TestRig _rig() {
   rig.addHolding(a.id, d.id, amount: '2');
   rig.record(a.id);
   rig.addExchange('x1', 'Binance 主账户', ExchangeId.binance);
-  rig.record('x1', success: false, failureType: 'UnsupportedFailure');
+  rig.record(
+    'x1',
+    success: false,
+    failureType: 'UnsupportedFailure.notIntegrated',
+  );
   return rig;
 }
 
@@ -40,6 +48,27 @@ void main() {
       expect(find.text(r'$0.00'), findsOneWidget);
       // 只有交易所账户最近一次同步失败。
       expect(find.text('同步失败'), findsOneWidget);
+    });
+
+    testWidgets('账户正在同步_行上显示同步中，结束后恢复', (tester) async {
+      final rig = _rig();
+      final gate = Completer<void>();
+      rig.registry[ChainFamily.evm].gate = gate;
+      await pumpApp(tester, rig, location: '/accounts');
+      expect(find.text('同步中'), findsNothing);
+
+      final container = ProviderScope.containerOf(
+        tester.element(find.text('Uni 钱包')),
+      );
+      final running = container.read(syncAccountProvider)('a1');
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump(const Duration(milliseconds: 50));
+      expect(find.text('同步中'), findsOneWidget);
+
+      gate.complete();
+      await running;
+      await tester.pumpAndSettle();
+      expect(find.text('同步中'), findsNothing);
     });
 
     testWidgets('隐藏金额开启_估值显示星号', (tester) async {

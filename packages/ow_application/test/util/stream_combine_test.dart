@@ -4,6 +4,28 @@ import 'package:ow_application/src/util/stream_combine.dart';
 import 'package:test/test.dart';
 
 void main() {
+  group('combineLatest2', () {
+    test('combineLatest2_两者都有值之前_不发出；之后任一变化都发出', () async {
+      final a = StreamController<int>();
+      final b = StreamController<int>();
+      final out = <String>[];
+      final sub = combineLatest2(
+        a.stream,
+        b.stream,
+        (x, y) => '$x$y',
+      ).listen(out.add);
+
+      a.add(1);
+      await pumpEventQueue();
+      expect(out, isEmpty);
+      b.add(2);
+      a.add(3);
+      await pumpEventQueue();
+      expect(out, ['12', '32']);
+      await sub.cancel();
+    });
+  });
+
   group('combineLatest3', () {
     test('combineLatest3_三者都有值之前_不发出；之后任一变化都发出', () async {
       final a = StreamController<int>();

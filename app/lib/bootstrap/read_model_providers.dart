@@ -26,6 +26,16 @@ final latestSyncRecordsProvider = StreamProvider<List<SyncRecord>>(
   (ref) => ref.watch(syncRecordRepositoryProvider).watchLatestPerAccount(),
 );
 
+/// 每个账户最近一次成功同步的时间（账户 id → 时间）。
+final lastSuccessPerAccountProvider = StreamProvider<Map<String, DateTime>>(
+  (ref) => ref.watch(syncRecordRepositoryProvider).watchLastSuccessPerAccount(),
+);
+
+/// 正在同步的账户 id 集合。
+final syncingAccountIdsProvider = StreamProvider<Set<String>>(
+  (ref) => ref.watch(syncAccountProvider).watchSyncingAccountIds(),
+);
+
 /// 当前计价货币；设置未就绪时为 USD。
 final quoteProvider = Provider<Quote>(
   (ref) =>

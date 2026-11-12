@@ -67,6 +67,11 @@ abstract interface class AssetCatalog {
 
   /// 不存在时返回 null。
   Asset? byId(String assetId);
+
+  /// 按价格源标识（CoinGecko id）反查币种；不存在时返回 null。
+  ///
+  /// 价格源据此把"价格源认为是某个已知币种"的合约代币合并到该币种。
+  Asset? byPriceId(String priceId);
 }
 
 /// 按家族或交易所取适配器。

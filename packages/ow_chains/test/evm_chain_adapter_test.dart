@@ -401,7 +401,12 @@ void main() {
     test('不支持的链_UnsupportedFailure', () async {
       final (adapter, fake) = build();
       final r = await adapter.fetchHoldings(owner, Chains.byId('bitcoin'));
-      expect((r as Err<List<RawHolding>>).failure, isA<UnsupportedFailure>());
+      final failure = (r as Err<List<RawHolding>>).failure;
+      expect(failure, isA<UnsupportedFailure>());
+      expect(
+        (failure as UnsupportedFailure).reason,
+        UnsupportedReason.notIntegrated,
+      );
       expect(fake.requests, isEmpty);
     });
 

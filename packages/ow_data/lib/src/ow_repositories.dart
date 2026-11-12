@@ -1,5 +1,6 @@
 import 'database/ow_database.dart';
 import 'repositories/account_repositories.dart';
+import 'repositories/asset_repositories.dart';
 import 'repositories/market_repositories.dart';
 import 'repositories/misc_repositories.dart';
 
@@ -16,7 +17,8 @@ final class OwRepositories {
       syncRecords = DriftSyncRecordRepository(db),
       vaultMeta = DriftVaultMetaRepository(db),
       settings = DriftSettingsRepository(db),
-      tokenVisibility = DriftTokenVisibilityRepository(db);
+      tokenVisibility = DriftTokenVisibilityRepository(db),
+      assets = DriftAssetRepository(db);
 
   final DriftAccountRepository accounts;
   final DriftAddressRepository addresses;
@@ -27,4 +29,5 @@ final class OwRepositories {
   final DriftVaultMetaRepository vaultMeta;
   final DriftSettingsRepository settings;
   final DriftTokenVisibilityRepository tokenVisibility;
+  final DriftAssetRepository assets;
 }

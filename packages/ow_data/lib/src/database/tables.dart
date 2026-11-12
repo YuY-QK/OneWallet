@@ -21,6 +21,10 @@ class Accounts extends Table {
   BoolColumn get keyless => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
 
+  /// 最近一次同步成功的结束时间（schemaVersion 2 加入）；从未成功为 null。
+  /// 只由同步记录仓储在写入成功记录时更新，`Account` 实体不含此字段。
+  DateTimeColumn get lastSyncedAt => dateTime().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }
@@ -158,4 +162,30 @@ class TokenVisibility extends Table {
 
   @override
   Set<Column<Object>> get primaryKey => {tokenKey};
+}
+
+/// 价格源查到的币种（schemaVersion 2 加入）。内置映射表里的币种不入此表。
+@DataClassName('AssetRow')
+class Assets extends Table {
+  TextColumn get id => text()();
+  TextColumn get symbol => text()();
+  TextColumn get name => text()();
+  TextColumn get priceId => text().nullable()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column<Object>> get primaryKey => {id};
+}
+
+/// 合约到币种的对应（schemaVersion 2 加入）：同一合约不再重复向价格源查询。
+/// 随币种级联删除。
+@DataClassName('AssetContractRow')
+class AssetContracts extends Table {
+  TextColumn get chainId => text()();
+  TextColumn get contract => text()();
+  TextColumn get assetId =>
+      text().references(Assets, #id, onDelete: KeyAction.cascade)();
+
+  @override
+  Set<Column<Object>> get primaryKey => {chainId, contract};
 }

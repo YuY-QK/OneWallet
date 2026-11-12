@@ -38,7 +38,8 @@ final class AddWalletAccount {
   /// [name] 去首尾空白后须为 1–30 字；[colorIndex] 为 null 时按已有账户数轮换。
   /// 失败时：名称、颜色、地址不合法返回 [ValidationFailure]；地址重复返回
   /// [DuplicateAddressFailure]（带所属账户名，本次输入内重复时为 null）。
-  /// 失败时不写入任何数据。
+  /// 失败时不写入任何数据；校验之后写入时仍发生冲突（并发或数据异常），
+  /// 仓储抛出异常且整体回滚（见 `AccountRepository.insertWithAddresses`）。
   Future<Result<Account>> call({
     required String name,
     required List<AddressInput> addresses,
@@ -71,9 +72,9 @@ final class AddWalletAccount {
           backup: backup,
           createdAt: _clock.nowUtc(),
         );
-        await _accounts.upsert(account);
-        for (final v in value) {
-          await _addresses.upsert(
+        // 账户与地址在一个事务里写入：任一地址冲突整体回滚，不会留下没有地址的账户。
+        await _accounts.insertWithAddresses(account, [
+          for (final v in value)
             WatchAddress(
               id: _ids.newId(),
               accountId: account.id,
@@ -81,8 +82,7 @@ final class AddWalletAccount {
               address: v.address,
               enabledChainIds: v.chainIds,
             ),
-          );
-        }
+        ]);
         return Ok(account);
     }
   }

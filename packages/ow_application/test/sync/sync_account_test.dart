@@ -40,6 +40,70 @@ void main() {
     expect(record.failureType, isNull);
   });
 
+  test('SyncAccount_成功_记录账户最近成功时间；失败不更新', () async {
+    await f.addWallet('w1', a);
+    f.ethBalance(a, 'ethereum', '1');
+    await f.syncAccount('w1');
+    final first = f.clock.nowUtc();
+    expect(await f.syncRecords.watchLastSuccessPerAccount().first, {
+      'w1': first,
+    });
+
+    f.clock.advance(const Duration(minutes: 5));
+    f.adapters.evm.respond(a, 'ethereum', [const Err(NetworkFailure())]);
+    await f.syncAccount('w1');
+    expect(await f.syncRecords.watchLastSuccessPerAccount().first, {
+      'w1': first,
+    });
+  });
+
+  test('SyncAccount_watchSyncingAccountIds_同步期间含该账户，结束后移出', () async {
+    await f.addWallet('w1', a);
+    f.ethBalance(a, 'ethereum', '1');
+    f.adapters.evm.gate = Completer<void>();
+    final seen = <Set<String>>[];
+    final sub = f.syncAccount.watchSyncingAccountIds().listen(seen.add);
+
+    final running = f.syncAccount('w1');
+    final merged = f.syncAccount('w1');
+    await pumpEventQueue();
+    expect(seen, [
+      <String>{},
+      {'w1'},
+    ]);
+
+    f.adapters.evm.gate?.complete();
+    await Future.wait([running, merged]);
+    await pumpEventQueue();
+    expect(seen, [
+      <String>{},
+      {'w1'},
+      <String>{},
+    ]);
+    await sub.cancel();
+  });
+
+  test('SyncAccount_watchSyncingAccountIds_订阅时先推送当前集合；失败也会移出', () async {
+    await f.addWallet('w1', a);
+    f.adapters.evm.respond(a, 'ethereum', [const Err(ServiceDownFailure())]);
+    f.adapters.evm.gate = Completer<void>();
+    final running = f.syncAccount('w1');
+    await pumpEventQueue();
+
+    final seen = <Set<String>>[];
+    final sub = f.syncAccount.watchSyncingAccountIds().listen(seen.add);
+    await pumpEventQueue();
+    expect(seen, [
+      {'w1'},
+    ]);
+
+    f.adapters.evm.gate?.complete();
+    await running;
+    await pumpEventQueue();
+    expect(seen.last, isEmpty);
+    await sub.cancel();
+  });
+
   test('SyncAccount_某个地址乘链失败_整体失败且旧持仓不变', () async {
     await f.addWallet('w1', a, chainIds: {'ethereum', 'arbitrum', 'base'});
     final old = await f.seedOldHolding('w1');
@@ -126,7 +190,10 @@ void main() {
       result.when(ok: (_) => null, err: (e) => e),
       isA<UnsupportedFailure>(),
     );
-    expect(f.syncRecords.records.single.failureType, 'UnsupportedFailure');
+    expect(
+      f.syncRecords.records.single.failureType,
+      'UnsupportedFailure.notIntegrated',
+    );
   });
 
   test('SyncAccount_账户不存在_返回校验失败且不写记录', () async {
@@ -173,5 +240,10 @@ void main() {
       'WrongPasswordFailure',
     );
     expect(failureTypeName(const UnknownFailure()), 'UnknownFailure');
+    expect(failureTypeName(const UnsupportedFailure()), 'UnsupportedFailure');
+    expect(
+      failureTypeName(const UnsupportedFailure.notIntegrated()),
+      'UnsupportedFailure.notIntegrated',
+    );
   });
 }

@@ -16,14 +16,21 @@ String failureText(AppLocalizations l10n, Failure failure) {
     ClockSkewFailure() => l10n.failureClockSkew,
     ServiceDownFailure() => l10n.failureServiceDown,
     ValidationFailure() => l10n.failureValidation,
-    DuplicateAddressFailure(:final shortAddress, :final existingAccountName) =>
+    DuplicateAddressFailure(
+      :final kind,
+      :final shortAddress,
+      :final existingAccountName,
+    ) =>
       l10n.failureDuplicateAddress(
-        existingAccountName == null ? 'withinInput' : 'existing',
+        kind.name,
         shortAddress,
         existingAccountName ?? '',
       ),
     WrongPasswordFailure() => l10n.failureWrongPassword,
-    UnsupportedFailure() => l10n.failureUnsupported,
+    UnsupportedFailure(:final reason) => switch (reason) {
+      UnsupportedReason.platform => l10n.failureUnsupported,
+      UnsupportedReason.notIntegrated => l10n.failureUnsupportedNotIntegrated,
+    },
     UnknownFailure() => l10n.failureUnknown,
   };
 }

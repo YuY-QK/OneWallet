@@ -8,5 +8,6 @@ export 'src/database/ow_database.dart' show OwDatabase;
 export 'src/mapping/codec.dart' show RowDecodeException;
 export 'src/ow_repositories.dart';
 export 'src/repositories/account_repositories.dart';
+export 'src/repositories/asset_repositories.dart';
 export 'src/repositories/market_repositories.dart';
 export 'src/repositories/misc_repositories.dart';

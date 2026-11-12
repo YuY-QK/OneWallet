@@ -40,6 +40,10 @@ final class ValueFeed<T> {
 }
 
 final class FakeAccountRepository implements AccountRepository {
+  FakeAccountRepository(this.addressRepo);
+
+  /// 与之共用存储的地址仓储，`insertWithAddresses` 写入地址用。
+  final FakeAddressRepository addressRepo;
   final feed = ValueFeed<List<Account>>([]);
 
   @override
@@ -60,6 +64,17 @@ final class FakeAccountRepository implements AccountRepository {
         if (a.id != account.id) a,
       account,
     ];
+  }
+
+  @override
+  Future<void> insertWithAddresses(
+    Account account,
+    List<WatchAddress> addresses,
+  ) async {
+    await upsert(account);
+    for (final a in addresses) {
+      await addressRepo.upsert(a);
+    }
   }
 
   @override
@@ -149,18 +164,52 @@ final class FakePriceRepository implements PriceRepository {
 
 final class FakeSyncRecordRepository implements SyncRecordRepository {
   final feed = ValueFeed<List<SyncRecord>>([]);
+  final lastSuccess = ValueFeed<Map<String, DateTime>>({});
 
   @override
   Stream<List<SyncRecord>> watchLatestPerAccount() => feed.stream();
 
   @override
+  Stream<Map<String, DateTime>> watchLastSuccessPerAccount() =>
+      lastSuccess.stream();
+
+  @override
   Future<void> add(SyncRecord record) async {
+    final finished = record.finishedAt;
+    if (record.status == SyncStatus.success && finished != null) {
+      lastSuccess.value = {...lastSuccess.value, record.accountId: finished};
+    }
     feed.value = [
       for (final r in feed.value)
         if (r.accountId != record.accountId) r,
       record,
     ];
   }
+}
+
+final class FakeAssetRepository implements AssetRepository {
+  final assets = <String, Asset>{};
+  final contractMap = <ContractToken, String>{};
+
+  @override
+  Future<void> upsertAll(List<Asset> list, {required DateTime now}) async {
+    for (final a in list) {
+      assets[a.id] = a;
+    }
+  }
+
+  @override
+  Future<List<Asset>> all() async => assets.values.toList();
+
+  @override
+  Future<Asset?> byId(String id) async => assets[id];
+
+  @override
+  Future<void> upsertContracts(Map<ContractToken, String> m) async =>
+      contractMap.addAll(m);
+
+  @override
+  Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
 }
 
 final class FakeSettingsRepository implements SettingsRepository {
@@ -178,6 +227,9 @@ final class FakeSettingsRepository implements SettingsRepository {
 final class FakeTokenVisibilityRepository implements TokenVisibilityRepository {
   @override
   Future<Set<String>> hidden() async => {};
+
+  @override
+  Stream<Set<String>> watchHidden() => Stream.value(const {});
 
   @override
   Future<void> setHidden(String tokenKey, bool hidden) async {}
@@ -303,12 +355,13 @@ final class TestRig {
   TestRig({DateTime? now})
     : clock = FixedClock(now ?? DateTime.utc(2026, 11, 12, 12));
 
-  final accounts = FakeAccountRepository();
+  late final accounts = FakeAccountRepository(addresses);
   final addresses = FakeAddressRepository();
   final holdings = FakeHoldingRepository();
   final prices = FakePriceRepository();
   final syncRecords = FakeSyncRecordRepository();
   final settings = FakeSettingsRepository();
+  final assetRepo = FakeAssetRepository();
   final registry = FakeAdapterRegistry();
   final priceSource = FakePriceSource();
   final secrets = FakeSecretStore();
@@ -334,6 +387,7 @@ final class TestRig {
     priceRepositoryProvider.overrideWithValue(prices),
     syncRecordRepositoryProvider.overrideWithValue(syncRecords),
     settingsRepositoryProvider.overrideWithValue(settings),
+    assetRepositoryProvider.overrideWithValue(assetRepo),
     tokenVisibilityRepositoryProvider.overrideWithValue(
       FakeTokenVisibilityRepository(),
     ),
@@ -448,6 +502,12 @@ final class TestRig {
     DateTime? at,
   }) {
     final t = at ?? DateTime.utc(2026, 11, 12, 11, 57);
+    if (success) {
+      syncRecords.lastSuccess.value = {
+        ...syncRecords.lastSuccess.value,
+        accountId: t,
+      };
+    }
     syncRecords.feed.value = [
       for (final r in syncRecords.feed.value)
         if (r.accountId != accountId) r,
