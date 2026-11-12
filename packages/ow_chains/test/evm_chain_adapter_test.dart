@@ -147,6 +147,39 @@ void main() {
       expect(r.valueOrNull, isEmpty);
     });
 
+    test('官方文档示例响应_无error字段与完整元数据可解析', () async {
+      // 响应取自 Alchemy 官方文档 alchemy_getTokenBalances / getTokenMetadata
+      // 的示例：条目不含 error 字段；元数据含 logo。
+      final (adapter, fake) = build(
+        route: (o, b) => switch (b['method']) {
+          'eth_getBalance' => rpcResult('0x0'),
+          'alchemy_getTokenBalances' => jsonResponse(
+            fixture('doc_token_balances.json'),
+          ),
+          'alchemy_getTokenMetadata' => jsonResponse(
+            fixture('doc_token_metadata.json'),
+          ),
+          _ => rpcError(-32601, 'x'),
+        },
+      );
+      final r = await adapter.fetchHoldings(owner, eth);
+      final h = r.valueOrNull!.single;
+      expect(
+        h.token,
+        const ContractToken(
+          'ethereum',
+          '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+        ),
+      );
+      // 0x3c005f81ab00 = 65972300000000，按 6 位小数精确换算
+      expect(h.amount, Decimal.parse('65972300'));
+      expect(h.symbolHint, 'USDC');
+      expect(h.nameHint, 'USD Coin');
+      expect(fake.bodies.last['params'], [
+        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+      ]);
+    });
+
     test('十六进制大数_超过2的64次方时精确换算', () async {
       final (adapter, _) = build(
         route: (o, b) => switch (b['method']) {
@@ -333,6 +366,9 @@ void main() {
       expect(await failureFor(-32603), isA<ServiceDownFailure>());
       expect(await failureFor(-32000), isA<ServiceDownFailure>());
       expect(await failureFor(-32602), isA<UnknownFailure>());
+      // 官方错误参考：-32000..-32099 均为服务端错误，-32005 没有限频含义。
+      expect(await failureFor(-32005), isA<ServiceDownFailure>());
+      expect(await failureFor(403), isA<UnauthorizedFailure>());
       final f = await failureFor(-32602);
       expect(f.detail, isNot(contains(fakeKey)));
       expect(f.detail, contains('-32602'));

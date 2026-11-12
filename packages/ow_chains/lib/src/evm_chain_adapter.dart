@@ -31,8 +31,8 @@ final class EvmChainAdapter implements ChainAdapter {
   /// Alchemy 服务商标识，用于 [DataSourceConfig.apiKey]。
   static const providerId = 'alchemy';
 
-  /// 链 id 到 Alchemy 主机名。未核对官方文档，见 EXTERNAL_APIS.md；
-  /// 不在表中的链返回 [UnsupportedFailure]（自定义节点除外）。
+  /// 链 id 到 Alchemy 主机名。已对照官方文档核对（2026-11-12，见
+  /// EXTERNAL_APIS.md）；不在表中的链返回 [UnsupportedFailure]（自定义节点除外）。
   static const alchemyHosts = <String, String>{
     'ethereum': 'eth-mainnet.g.alchemy.com',
     'bsc': 'bnb-mainnet.g.alchemy.com',
@@ -220,10 +220,13 @@ final class EvmChainAdapter implements ChainAdapter {
 
   /// 把 JSON-RPC 的 error 对象映射为 [Failure]。`detail` 只含方法名和错误码，
   /// 不含 message（可能回显地址或 Key）。
+  ///
+  /// 依据 Alchemy 错误参考：429 为限频；401、403 为凭据或额度问题；-32601 方法不存在；
+  /// -32603 与 -32000..-32099 为服务端错误。文档没有 -32005 的特殊含义，不做限频处理。
   Failure _mapRpcError(Object error, String method) {
     final code = error is Map<String, Object?> ? error['code'] : null;
     final detail = 'JSON-RPC error method=$method code=$code';
-    if (code == 429 || code == -32005) return RateLimitedFailure(detail);
+    if (code == 429) return RateLimitedFailure(detail);
     if (code == 401 || code == 403) return UnauthorizedFailure(detail);
     if (code == -32601) return UnsupportedFailure(detail);
     if (code is int && (code == -32603 || (code <= -32000 && code >= -32099))) {
@@ -257,7 +260,8 @@ final class EvmChainAdapter implements ChainAdapter {
       for (final item in list) {
         if (item is! Map<String, Object?>) continue;
         final contract = item['contractAddress'];
-        // 单个代币带 error 时（如合约不规范）忽略该代币。
+        // 文档：tokenBalance 与 error 恰有一个非 null。带 error（如合约不规范）
+        // 时忽略该代币。
         if (contract is! String || item['error'] != null) continue;
         final amount = _parseHex(item['tokenBalance']);
         if (amount == null || amount == BigInt.zero) continue;

@@ -36,7 +36,7 @@ class CoinGeckoPriceSource implements PriceSource {
                onLog: onLog,
              ),
            ),
-       // Demo 档官方口径为每分钟 30 次（文档间有 30 与 100 两种说法，取小）。
+       // Demo 档官方口径为每分钟 100 次（errors-and-rate-limits）；这里取更保守的 30 次。
        _limiter =
            rateLimiter ??
            RateLimiter(maxRequests: 30, window: const Duration(minutes: 1));
@@ -124,6 +124,8 @@ class CoinGeckoPriceSource implements PriceSource {
         'vs_currencies': quote.name,
         'include_24hr_change': 'true',
         'include_last_updated_at': 'true',
+        // 官方文档：precision=full 返回完整小数位，避免低价币被截断。
+        'precision': 'full',
       });
       switch (response) {
         // 任一批失败则整体失败；已成功的批次已写入缓存，重试时不会重复请求。
@@ -224,14 +226,9 @@ class CoinGeckoPriceSource implements PriceSource {
 
       final response = await _getJson(
         '/coins/$platform/contract/${token.contract}',
-        const {
-          'localization': 'false',
-          'tickers': 'false',
-          'market_data': 'false',
-          'community_data': 'false',
-          'developer_data': 'false',
-          'sparkline': 'false',
-        },
+        // 官方文档（Demo 档 /coins/{id}/contract/{contract_address}）没有列出
+        // 任何查询参数，故不带。
+        const {},
         // 404：CoinGecko 不认识这个合约；403：该接口在当前档位不可用。
         // 两者都按"查不到"处理，其余错误（限频、网络、服务故障、401）照实返回。
         emptyOnStatus: const {403, 404},

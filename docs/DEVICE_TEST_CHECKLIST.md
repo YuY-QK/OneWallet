@@ -18,20 +18,26 @@
 
 （各任务在下面追加自己的小节。）
 
-## 1. EVM 链数据（任务 M1-06）
+## 1. EVM 链数据（任务 M1-06、M1-17）
 
-开发环境无法访问 Alchemy 官方文档，适配器是按记忆中的接口实现的，只经过了录制样本的自动化测试。
+接口已对照 Alchemy 官方文档核对（主机名、Key 位置、参数、返回字段、限频），详见 `docs/EXTERNAL_APIS.md`。以下几项文档里读不到，只能用真实 Key 确认。
 
-- [ ] 对照 Alchemy 官方文档核对 `docs/EXTERNAL_APIS.md` 的"Alchemy（EVM）"一节：六条链的主机名、Key 的传递方式、代币余额与元数据接口的参数和返回结构、免费档限频
-- [ ] 确认 Alchemy 是否支持 BNB Chain 以及代币接口在该链是否可用；不支持时从 `EvmChainAdapter.alchemyHosts` 删除该条目
-- [ ] 用自己的 Key 运行冒烟脚本：在 `packages/ow_chains` 目录执行 `OW_ALCHEMY_KEY=<Key> dart run tool/smoke_evm.dart <地址> [链id]`，六条链各试一次
+冒烟脚本：在 `packages/ow_chains` 目录执行 `OW_ALCHEMY_KEY=<Key> dart run tool/smoke_evm.dart <地址> [链id]`。
+
+- [ ] 六条链各跑一次，代币余额都能取到（确认代币接口在每条链都可用，尤其是 BNB Chain）
 - [ ] 脚本输出的余额与区块浏览器一致
+- [ ] 找一个代币超过 100 种的地址，确认能翻页取全（响应里的翻页字段名文档未写明）
+- [ ] 观察从未交互过的空投代币是否出现在结果里
+- [ ] 免费额度用尽时界面显示什么（目前会与"Key 无效"显示成同一种错误）
 
-## 2. 币种映射与价格（任务 M1-03、M1-04）
+## 2. 币种映射与价格（任务 M1-03、M1-04、M1-17）
 
-合约地址主要取自 Uniswap 维护的代币列表（第三方），没有逐个对照发行方文档；合约地址错了会把假币当真币估值。
+价格接口已对照 CoinGecko 官方文档核对。合约地址主要取自 Uniswap 维护的代币列表（第三方），没有逐个对照发行方文档；合约地址错了会把假币当真币估值。
+
+冒烟脚本：在 `packages/ow_pricing` 目录执行 `dart run tool/smoke_price.dart`（Key 可选，环境变量 `OW_COINGECKO_KEY`）。
 
 - [ ] 复核 `packages/ow_pricing/SOURCES.md`：至少 USDT、USDC、DAI、WETH、WBTC 在各链的全部合约，对照发行方官方文档或区块浏览器的认证页
-- [ ] 运行 `cd packages/ow_pricing && dart run tool/smoke_price.dart`，能打印 BTC、ETH、USDT 的价格
-- [ ] 运行 `dart run tool/smoke_price.dart --catalog`，映射表中每个币种都能取到价格（重点看 POL、SNX、COMP）
-- [ ] 对照 CoinGecko 官方文档复核 `docs/EXTERNAL_APIS.md` 的"CoinGecko（价格）"一节中标"未核对"的项
+- [ ] 脚本能打印 BTC、ETH、USDT 的价格（同时确认 `precision=full` 参数被接受）
+- [ ] 运行 `dart run tool/smoke_price.dart --catalog`，映射表中每个币种都能取到价格（重点看 POL、SNX、COMP；币种标识大部分未能核对）
+- [ ] 持有一个不在内置表里的 Arbitrum、Optimism、Base 代币时能识别并估值（这三条链在 CoinGecko 的平台标识未能核对）
+- [ ] 被限频时界面显示"请求过于频繁"而不是未知错误
