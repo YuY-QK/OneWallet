@@ -16,10 +16,22 @@ dependencies:
   decimal: 3.2.6
   flutter_riverpod: ^3.0.0
   go_router: ^17.0.0
+  drift: 2.35.4
+  ow_application:
+    path: ../packages/ow_application
+  ow_chains:
+    path: ../packages/ow_chains
+  ow_data:
+    path: ../packages/ow_data
   ow_domain:
     path: ../packages/ow_domain
+  ow_net:
+    path: ../packages/ow_net
   ow_platform:
     path: ../packages/ow_platform
+  ow_pricing:
+    path: ../packages/ow_pricing
+  uuid: 4.6.0
 
 dev_dependencies:
   flutter_test:

@@ -37,6 +37,44 @@
 冒烟脚本：在 `packages/ow_pricing` 目录执行 `dart run tool/smoke_price.dart`（Key 可选，环境变量 `OW_COINGECKO_KEY`）。
 
 - [ ] 复核 `packages/ow_pricing/SOURCES.md`：至少 USDT、USDC、DAI、WETH、WBTC 在各链的全部合约，对照发行方官方文档或区块浏览器的认证页
+- [ ] 运行 `cd packages/ow_pricing && dart run tool/smoke_price.dart`，能打印 BTC、ETH、USDT 的价格
+- [ ] 运行 `dart run tool/smoke_price.dart --catalog`，映射表中每个币种都能取到价格（重点看 POL、SNX、COMP）
+- [ ] 对照 CoinGecko 官方文档复核 `docs/EXTERNAL_APIS.md` 的"CoinGecko（价格）"一节中标"未核对"的项
+
+## 3. 存储与启动（任务 M0-13）
+
+开发环境没有模拟器和真机，无法构建 iOS 与 Android。下面各项只经过桌面（Linux）上的自动化测试：SQLCipher 的加密与重开、启动流程的各分支、安全存储的前缀逻辑。`SecureSecretStore`（钥匙串、Keystore）和 `SqlCipherDatabaseOpener` 的原生部分**只能在设备上验证**。选型与理由见 `docs/ADR_006_SQLCipher接入.md`。
+
+### 3.1 功能
+
+- [ ] Android 能构建并启动，进入四个 Tab（确认 SQLCipher 预编译库被取到并链接；构建机需要能访问 GitHub Releases）
+- [ ] iOS 能构建并启动，同上
+- [ ] 首次启动没有错误页；杀掉进程再启动，应用正常进入（密钥被复用）
+- [ ] 重启应用后数据仍在（M1 页面可用后：添加账户，杀进程，重启，账户还在）
+- [ ] 从设备导出 `onewallet.db`（Android 调试构建用 `adb exec-out run-as <应用标识> cat files/onewallet.db`；iOS 用 Xcode 的 Download Container），用普通 `sqlite3` 命令行打开，执行 `.tables` 报 "file is not a database"；用十六进制查看，头部不是 `SQLite format 3`
+- [ ] 卸载重装后旧数据不回来：重装后账户列表为空（Android 无残留；iOS 需确认首次启动清理了钥匙串中的 `ow.` 条目，并且数据库是新的）
+- [ ] 数据库文件在、安全存储里的 `ow.db.key` 不在的情形（可用调试构建临时删除该键构造）：显示"无法打开本地数据"错误页，点"重试"不会重建数据库，数据库文件字节不变
+- [ ] 设备重启后、首次解锁之前，若应用被后台唤起读取安全存储，不应崩溃；如果出现 `secureStorageFailed` 错误页，记下复现条件
+
+### 3.2 系统备份
+
+- [ ] Android：执行 `adb shell bmgr backupnow <应用标识>` 后检查，备份中不含应用数据；Android 12 及以上用设备迁移（"复制应用和数据"）验证 `dataExtractionRules` 的效果
+- [ ] iOS：做一次 iCloud 或电脑备份并恢复到另一台设备，应用数据为空（`isExcludedFromBackup` 尚未实现，见 3.3；在它实现之前，预期结果是恢复后出现"密钥缺失"错误页，而不是静默重建）
+- [ ] 钥匙串条目带 `ThisDeviceOnly`、不同步 iCloud 钥匙串：用另一台登录同一 Apple ID 的设备确认读不到
+
+### 3.3 未编译、未验证的原生配置（逐项审阅）
+
+这些改动没有经过任何一次 Android 或 iOS 构建：
+
+- [ ] `app/android/app/src/main/AndroidManifest.xml`：新增 `INTERNET` 权限、`allowBackup="false"`、`fullBackupContent="false"`、`dataExtractionRules`、`usesCleartextTraffic="false"`
+- [ ] `app/android/app/src/main/res/xml/data_extraction_rules.xml`：云备份与设备迁移的排除域是否全部有效（构建时 `aapt` 有无报错）
+- [ ] `flutter_secure_storage` 11.2.0 在 Android 上的 `minSdk` 要求与当前工程是否冲突；构建期有无需要手工改的 Gradle 配置
+- [ ] `flutter_secure_storage` 在 iOS 上的 `KeychainAccessibility.first_unlock_this_device` 与 `synchronizable: false` 实际写入的钥匙串属性（应为 `kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly`，`kSecAttrSynchronizable` 为否）
+- [ ] `AndroidOptions(resetOnError: false)`：确认出错时抛异常而不是清空；换新的屏幕锁、恢复出厂等情形下的表现
+- [ ] 根 `pubspec.yaml` 的 `hooks.user_defines.sqlite3.source: sqlcipher` 在 `flutter build apk`、`flutter build ios` 中生效（桌面的 `flutter test` 已确认生效）
+- [ ] iOS 的 `isExcludedFromBackup` **尚未实现**，待 M0-11 的原生插件一并完成：数据库文件（`onewallet.db` 及其 `-wal`、`-shm`）和将来的保险库文件都要设置。完成后在这里补验证项
+- [ ] `DevicePlatformCapabilities` 的静态值（`hardwareKeystore=false`、`biometrics=false`、`screenProtection`、`camera`）是占位，M0-11、M3-02 改为真实探测后复核
+
 - [ ] 脚本能打印 BTC、ETH、USDT 的价格（同时确认 `precision=full` 参数被接受）
 - [ ] 运行 `dart run tool/smoke_price.dart --catalog`，映射表中每个币种都能取到价格（重点看 POL、SNX、COMP；币种标识大部分未能核对）
 - [ ] 持有一个不在内置表里的 Arbitrum、Optimism、Base 代币时能识别并估值（这三条链在 CoinGecko 的平台标识未能核对）

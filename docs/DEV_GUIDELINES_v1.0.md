@@ -24,7 +24,7 @@
 | `ow_chains`、`ow_exchanges`、`ow_pricing` | `ow_domain`、`ow_net` | 彼此、`ow_data`、`ow_vault`、Flutter 界面库 |
 | `ow_directory` | `ow_domain` | 其他 `ow_*` 包、Flutter、网络库、`dart:io`（`tool/` 脚本除外） |
 | `ow_vault` | `ow_domain`、白名单内的密码学库 | 任何网络库、其他 `ow_*` 包 |
-| `ow_platform` | `ow_domain`、Flutter 插件接口 | 业务包 |
+| `ow_platform` | `ow_domain`、Flutter 插件接口、`drift` 与 `sqlite3`（仅用于打开加密数据库，见 ADR_006） | 业务包（`ow_data` 等） |
 | `app` | 以上全部 | — |
 
 - 这些规则由 `tools/ci/check_deps.dart` 在 CI 中检查。

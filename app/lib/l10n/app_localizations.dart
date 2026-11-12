@@ -184,6 +184,42 @@ abstract class AppLocalizations {
   /// **'此功能尚未实现'**
   String get notAvailableYet;
 
+  /// No description provided for @bootstrapLoading.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在打开本地数据…'**
+  String get bootstrapLoading;
+
+  /// No description provided for @bootstrapErrorTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法打开本地数据'**
+  String get bootstrapErrorTitle;
+
+  /// No description provided for @bootstrapErrorSecureStorage.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法访问系统安全存储。请确认设备已解锁后重试。'**
+  String get bootstrapErrorSecureStorage;
+
+  /// No description provided for @bootstrapErrorKeyMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地数据库还在，但找不到它的密钥，可能是应用数据被清理或从备份恢复到了新设备。为避免丢失数据，应用不会自动重建数据库。'**
+  String get bootstrapErrorKeyMissing;
+
+  /// No description provided for @bootstrapErrorOpenFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地数据库无法打开，文件可能已损坏。应用不会自动删除或重建它。请重试；仍然失败请联系开发者。'**
+  String get bootstrapErrorOpenFailed;
+
+  /// No description provided for @bootstrapRetry.
+  ///
+  /// In zh, this message translates to:
+  /// **'重试'**
+  String get bootstrapRetry;
+
   /// No description provided for @timeJustNow.
   ///
   /// In zh, this message translates to:
