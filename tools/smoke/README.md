@@ -30,3 +30,16 @@ dart run tool/smoke_price.dart --catalog   # 核对内置映射表里每个 pric
 - Key 从环境变量 `OW_COINGECKO_KEY` 读取，可缺省：`OW_COINGECKO_KEY=你的Key dart run tool/smoke_price.dart`。
 - 无 Key 时免费档限频很严，遇到 `RateLimitedFailure` 稍等一分钟再试。
 - `--catalog` 在上线前至少运行一次：映射表中的 priceId 来自既有知识，未能对照 CoinGecko 官方清单核对，这一步用真实接口验证。
+
+## 交易所（Binance 等）
+
+脚本在 `packages/ow_exchanges/tool/smoke_exchange.dart`（需要包内依赖，所以放在包内）。
+
+```
+cd packages/ow_exchanges
+OW_BINANCE_KEY=<只读Key> OW_BINANCE_SECRET=<Secret> dart run tool/smoke_exchange.dart binance
+```
+
+- 环境变量命名：`OW_<交易所大写>_KEY`、`OW_<交易所大写>_SECRET`；OKX、Bitget 另需 `OW_<交易所大写>_PASSPHRASE`。
+- 打印权限判断（`readOnly` / `canTrade` / `canWithdraw` / `unknown`）与各子账户按币种的数量，不打印任何凭据。
+- 目前只实现了 `binance`，其余交易所由后续任务加入。

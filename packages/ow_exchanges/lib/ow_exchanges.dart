@@ -1,2 +1,12 @@
-/// OneWallet 交易所适配器。M0 仅建立包骨架，内容在后续里程碑加入。
+/// OneWallet 交易所适配器：只实现读取类接口。
 library;
+
+export 'src/binance/binance_adapter.dart' show BinanceAdapter;
+export 'src/binance/binance_paths.dart' show BinancePaths, binanceReadOnlyPaths;
+export 'src/common/clock_sync.dart';
+export 'src/common/error_mapping.dart';
+export 'src/common/exact_json.dart';
+export 'src/common/exchange_client.dart';
+export 'src/common/holdings.dart';
+export 'src/common/response_judges.dart';
+export 'src/common/signing.dart';

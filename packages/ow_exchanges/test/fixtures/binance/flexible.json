@@ -1,0 +1,4 @@
+{"rows": [
+  {"totalAmount": "75.46000000", "asset": "USDT", "canRedeem": true, "productId": "USDT001"},
+  {"totalAmount": "0.5", "asset": "BTC", "productId": "BTC001"}
+], "total": 2}

@@ -1,0 +1,4 @@
+{"userAssets": [
+  {"asset": "BTC", "borrowed": "0", "free": "0.5", "interest": "0", "locked": "0.1", "netAsset": "0.6"},
+  {"asset": "USDT", "borrowed": "100", "free": "40", "interest": "0.1", "locked": "0", "netAsset": "-60.1"}
+]}

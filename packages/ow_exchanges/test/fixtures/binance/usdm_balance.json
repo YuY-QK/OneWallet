@@ -1,0 +1,5 @@
+[
+  {"accountAlias": "SgsR", "asset": "USDT", "balance": "122607.35137903", "crossWalletBalance": "23.72469206", "crossUnPnl": "0.00000000", "availableBalance": "23.72469206", "maxWithdrawAmount": "23.72469206", "marginAvailable": true, "updateTime": 1617939110373},
+  {"accountAlias": "SgsR", "asset": "BNB", "balance": "1", "crossWalletBalance": "1", "crossUnPnl": "-0.25", "availableBalance": "1", "updateTime": 1617939110373},
+  {"accountAlias": "SgsR", "asset": "ETH", "balance": "0", "crossWalletBalance": "0", "crossUnPnl": "0", "availableBalance": "0", "updateTime": 0}
+]

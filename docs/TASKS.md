@@ -174,10 +174,10 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 同时做装配：在 `app/lib/bootstrap/adapter_providers.dart` 把 Bitcoin、Solana、Tron 三个适配器接入 `AppAdapterRegistry`（数据服务标识：`helius`、`trongrid`；Bitcoin 只有自定义实例地址）；把内置币种表里 Tron 代币的小数位数传给 `TronChainAdapter(knownDecimals:)`（需要先给 `asset_mappings.json` 加 decimals 字段，或在装配层提供映射）。
   - 界面明示各链未包含的内容：Bitcoin 只含已确认余额；Solana 不含质押在验证者上的 SOL 和 NFT；Tron 不含 Stake 1.0 与未领取的奖励。放在 P07 的地址面板或 P20 的对应服务行。
   - `ow_net`：HTTP 400 改为映射到 `ValidationFailure`（目前是 `UnknownFailure`），使非法地址能给出准确提示。
-- [ ] **M2-05** 交易所签名与公共基础 〔离线〕
+- [x] **M2-05** 交易所签名与公共基础 〔离线〕 2026-11-12
   - 做什么：`ow_exchanges` 中实现四家的请求签名、时间同步（时间戳偏差时用服务器时间校正后重试一次，仍失败返回 `ClockSkewFailure`）、错误码映射。
   - 验收：每家的签名都用其官方文档中的示例输入输出验证。
-- [ ] **M2-06** Binance 适配器 〔离线〕＋〔用户〕核对
+- [x] **M2-06** Binance 适配器 〔离线〕＋〔用户〕核对 2026-11-12
 - [ ] **M2-07** OKX 适配器 〔离线〕＋〔用户〕核对
 - [ ] **M2-08** Bybit 适配器 〔离线〕＋〔用户〕核对
 - [ ] **M2-09** Bitget 适配器 〔离线〕＋〔用户〕核对

@@ -1,0 +1,8 @@
+{"assets": [
+  {"symbol": "BTCUSDT",
+   "baseAsset": {"asset": "BTC", "netAsset": "0.1", "free": "0.1"},
+   "quoteAsset": {"asset": "USDT", "netAsset": "10", "free": "10"}},
+  {"symbol": "ETHUSDT",
+   "baseAsset": {"asset": "ETH", "netAsset": "0", "free": "0"},
+   "quoteAsset": {"asset": "USDT", "netAsset": "5", "free": "5"}}
+], "totalAssetOfBtc": "0"}

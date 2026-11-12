@@ -227,3 +227,37 @@
 | EURC | Solana | `HzwqbKZw8HxMN6bF2yFZNrht3c2iXXzpKcFu7uBEDKtr` | **未能核对**：同上 |
 
 另：映射表 `asset_mappings.json` 没有 decimals 字段，`TronChainAdapter.knownDecimals` 需要装配层另行提供（Solana 的 decimals 由 RPC 返回，不需要）。
+
+## Binance
+
+- 官方文档与核对来源（均于 2026-11-12 核对）：
+  - 现货 REST（签名、时间、限频、HTTP 状态、`/api/v3/account`、`/api/v3/time`）：<https://github.com/binance/binance-spot-api-docs> 的 `rest-api.md`（官方文档仓库，原文直读）。
+  - 错误码：同仓库 `errors.md`（原文直读）。
+  - 钱包、杠杆、合约、理财接口：官方文档站 <https://developers.binance.com/docs/> 是前端渲染且对本环境返回空白，**未能直读**；改读官方 SDK 仓库 `binance/binance-connector-js` 的 `clients/wallet`、`clients/margin-trading`、`clients/derivatives-trading-usds-futures`、`clients/derivatives-trading-coin-futures`、`clients/simple-earn`（由官方 OpenAPI 生成：路径、方法、参数、权重、返回字段）。**没有读到这些接口的官方响应示例**，`test/fixtures/binance/` 里除现货账户外的样本是按字段定义构造的。
+- 核对日期：2026-11-12。**仍需用真实 Key 跑冒烟脚本确认。**
+- 基础地址：`https://api.binance.com`（现货与 SAPI）、`https://fapi.binance.com`（U 本位合约）、`https://dapi.binance.com`（币本位合约）。
+- 鉴权与签名方式（已核对，rest-api.md「SIGNED Endpoint security」）：HMAC-SHA256；待签名串 = 查询串 + 请求体（无分隔符；本应用参数全部放查询串、请求体为空）；结果为十六进制，作为 `signature` 参数追加在查询串末尾；Key 放请求头 `X-MBX-APIKEY`；每个签名请求带 `timestamp`（毫秒）与可选 `recvWindow`（默认 5000，最大 60000，适配器用 5000）。服务器规则：`timestamp < 服务器时间 + 1 秒` 且 `服务器时间 - timestamp <= recvWindow`。非 ASCII 参数须先百分号编码再签名（`buildQuery` 统一编码）。
+- 签名测试向量：取自官方文档的两个示例（secretKey `NhqPtmdSJYdKjVHjA7PZj4Mge3R5YNiP1e3UZjInClVN65XAbvqqM6A7H5fATj0j` 是文档公开的演示值），见 `test/common/signing_test.dart`。
+- 时间校正：`GET /api/v3/time` 返回 `serverTime`（毫秒）。遇到 -1021 时取服务器时间算偏移，重试一次，仍失败返回 `ClockSkewFailure`。
+- 限频（已核对）：按 IP 计权重，现货 `REQUEST_WEIGHT` 每分钟 6000（`exchangeInfo` 示例）；超限 HTTP 429，持续违规 HTTP 418（封 IP 2 分钟到 3 天），403 为 WAF 拦截（文档称可能是限频或安全拦截），均带 `Retry-After`（适配器不读）。各接口权重（SDK 注释）：`apiRestrictions` 1、`/api/v3/account` 20、`get-funding-asset` 1、杠杆账户 10、合约余额 5（fapi）/ 1（dapi）、理财持仓 150。适配器默认每分钟最多 20 次请求（最坏约 3000 权重，为上限的一半）。fapi、dapi 的限额是否与现货共用 IP 配额**未能核对**，保守地共用同一个限速器。
+
+| 用途 | 方法与路径 | 关键参数 | 返回中用到的字段 |
+|---|---|---|---|
+| 服务器时间（公开） | GET `/api/v3/time` | 无 | `serverTime` |
+| 权限（verify） | GET `/sapi/v1/account/apiRestrictions` | 签名 | `enableReading`、`enableWithdrawals`、`enableInternalTransfer`、`enableMargin`、`enableFutures`、`permitsUniversalTransfer`、`enableVanillaOptions`、`enableSpotAndMarginTrading`、`enablePortfolioMarginTrading` |
+| 现货 | GET `/api/v3/account` | 签名 | `balances[].asset/free/locked` |
+| 资金账户 | **POST** `/sapi/v1/asset/get-funding-asset`（只读，参数放查询串） | 签名 | `asset/free/locked/freeze/withdrawing` |
+| 全仓杠杆 | GET `/sapi/v1/margin/account` | 签名 | `userAssets[].asset/netAsset` |
+| 逐仓杠杆 | GET `/sapi/v1/margin/isolated/account` | 签名 | `assets[].baseAsset/quoteAsset` 的 `asset/netAsset` |
+| U 本位合约 | GET `fapi` `/fapi/v3/balance` | 签名 | `asset/balance/crossUnPnl` |
+| 币本位合约 | GET `dapi` `/dapi/v1/balance` | 签名 | `asset/balance/crossUnPnl` |
+| 理财活期 | GET `/sapi/v1/simple-earn/flexible/position` | `current`（从 1 起）、`size`=100 | `rows[].asset/totalAmount` |
+| 理财定期 | GET `/sapi/v1/simple-earn/locked/position` | 同上 | `rows[].asset/amount` |
+
+- 权限判断：`enableWithdrawals` 为真 -> `canWithdraw`；否则 `enableSpotAndMarginTrading`、`enableMargin`、`enableFutures`、`enableVanillaOptions`、`enablePortfolioMarginTrading`、`enableInternalTransfer`、`permitsUniversalTransfer` 任一为真 -> `canTrade`；否则 `readOnly`。内部划转、统一划转并不能把资金转出交易所，但属于写类权限，保守地算"带交易权限"。
+- 字段到领域模型的映射：子账户 spot / funding / margin / futures / earn；`ExchangeToken(binance, 大写符号)`；数量 = 总量：现货 `free+locked`；资金 `free+locked+freeze+withdrawing`（提现中的部分仍在交易所，是否已从 `free` 扣除文档未说明，**未能核对**，有重复计入的可能，量通常很小）；杠杆取净资产 `netAsset`（可为负，保留）；合约取账户权益 = `balance + crossUnPnl`（R12，以结算币种计，不展开持仓；逐仓仓位的未实现盈亏不含在 `crossUnPnl` 中，会有小偏差）；理财取持有量。同一子账户同一币种求和，合计为 0 的丢弃。
+- 杠杆与合约账户总是先尝试读取，不看 `apiRestrictions` 的开关（官方文档未能证明只读 Key 读不了，很多只读 Key 实际能读）。判定规则：现货请求已成功（凭据有效）后，这四个请求（全仓、逐仓、U 本位、币本位）若返回鉴权类失败（`UnauthorizedFailure`：-2015、HTTP 401 等，表示 Key 无权访问该产品），该子账户视为空，整体不失败，并把产品名（"杠杆账户""合约账户"）记入 `BinanceAdapter.lastSkipped`（每次 `fetchHoldings` 重置），P08 据此动态显示"未包含"；限频、网络、5xx、时间偏差校正后仍失败等其他失败仍使整体失败。这是各家通用的做法。
+- 错误码到 Failure 的映射（rest-api / errors.md 已核对；`detail` 只含 `code=<码>`）：-1021 -> `ClockSkewFailure`；-1003、HTTP 418/429/403 -> `RateLimitedFailure`；-1002、-1022、-2014、-2015 -> `UnauthorizedFailure`（**-2015 官方把「Key 无效、IP 不在白名单、权限不足」合并为一个码**，无法区分，故无法标 `ip`）；-1000、-1001、-1006、-1007、-1008、-1016、HTTP 5xx -> `ServiceDownFailure`；其余 -> `UnknownFailure`。Binance 没有区分「Key 过期/被删」的专用码（**未能核对**），不会产生 `KeyExpiredFailure`。-3003（未开通杠杆账户，视为空）出自记忆，**SAPI 错误码表未能核对**。
+- 取不到的内容（`BinanceAdapter.notIncluded`，界面明示「未包含」）：币安质押（ETH、SOL 等）、自动投资、双币投资、Launchpool 与 Megadrop、币安借贷、期权、组合保证金账户、交易机器人、跟单交易。另有动态的 `lastSkipped`：Key 无权访问时被跳过的"杠杆账户""合约账户"。静态清单中的部分产品另有只读接口，v1 未实现，不是接口取不到。
+- 充值地址：`fetchDepositAddresses` 返回空列表。`GET /sapi/v1/capital/deposit/address(/list)` 按币种、网络逐个查询，`/list` 的响应不含网络名（SDK 类型：`coin/address/tag/isDefault`），且文档未说明地址不存在时是否会新建（与「只读、不新建」冲突，**未能核对**）。
+- 未能核对的项：钱包、杠杆、合约、理财接口的官方文档页与响应示例；fapi/dapi 限额；-3003；资金账户 `withdrawing` 是否已含在 `free` 中；合约接口对未开通合约账户的返回；理财接口是否包含 BFUSD/RWUSD 等新产品。

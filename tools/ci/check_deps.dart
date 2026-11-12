@@ -45,7 +45,18 @@ final fundMovingPaths = RegExp(
 /// 被 [fundMovingPaths] 误拦、但确属只读的接口路径。
 ///
 /// 每加一条都要在旁边注明用途和官方文档链接，并在 docs/EXTERNAL_APIS.md 中记录。
-const readOnlyPathAllowlist = <String>{};
+const readOnlyPathAllowlist = <String>{
+  // Binance：资金账户返回字段 `withdrawing`（提现中的数量，只读字段，计入总量）。
+  // 出处：Binance Wallet REST API，Funding Wallet（POST /sapi/v1/asset/get-funding-asset）
+  // 文档站页面未能直读，字段取自官方 SDK binance-connector-js 的 clients/wallet（官方 OpenAPI 生成）。
+  // 记录于 docs/EXTERNAL_APIS.md 的"Binance"一节。带引号匹配，不会放过含该词的路径。
+  "'withdrawing'",
+  // Binance：API Key 权限查询（GET /sapi/v1/account/apiRestrictions）返回字段
+  // `enableWithdrawals`，只用来判断 Key 是否带提现权限（verify），不调用任何提现接口。
+  // 同上，见 clients/wallet 的 GetApiKeyPermissionResponse。
+  // 记录于 docs/EXTERNAL_APIS.md 的"Binance"一节。
+  "'enableWithdrawals'",
+};
 
 /// 平台名称判断只允许出现在 ow_platform 和 app/lib/bootstrap。
 final platformChecks = RegExp(

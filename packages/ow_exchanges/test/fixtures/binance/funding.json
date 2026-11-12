@@ -1,0 +1,4 @@
+[
+  {"asset": "USDT", "free": "100.5", "locked": "1", "freeze": "2", "withdrawing": "0.5", "btcValuation": "0.001"},
+  {"asset": "BNB", "free": "0", "locked": "0", "freeze": "0", "withdrawing": "0", "btcValuation": "0"}
+]
