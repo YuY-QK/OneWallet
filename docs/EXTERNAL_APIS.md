@@ -123,3 +123,23 @@
   - 内置映射表 `priceId` 的核对结论见 `packages/ow_pricing/SOURCES.md`（`/coins/list` 不可达，仅少数 id 在官方文档示例中出现）；`packages/ow_pricing/tool/smoke_price.dart --catalog` 会用真实接口逐个验证（见 `tools/smoke/README.md`），上线前必须运行。
   - 测试样本在 `packages/ow_pricing/test/fixtures/`：`simple_price_doc.json`、`contract_weth_doc.json` 取自官方文档示例；其余按文档结构手工整理，数值为示意，不是真实响应。
   - 用户填写 Pro Key 的场景（需换主机与请求头名）v1 不支持，属于 PRD 之外，需要时另行加任务。
+
+## mempool.space（Bitcoin）
+
+- 官方文档：REST API <https://mempool.space/docs/api/rest>。该页是前端渲染的单页应用，`llms.txt`、`.md` 后缀、`sitemap.xml` 都只返回 SPA 外壳；**2026-11-12 改为读取站点前端的懒加载脚本**（`https://mempool.space/320.<hash>.js`，内含 API 文档页的全部文案、路径与示例响应）取得官方文档原文，并对 `mempool.space` 的真实接口发了只读请求核对字段（本节标"实测"）。
+- 核对日期：2026-11-12。除标注"未能核对"的条目外均已对照官方原文或实测。
+- 鉴权方式（已核对）：无需 Key。自定义实例（自建 mempool 或其他 Esplora 兼容服务）通过 `DataSourceConfig.customEndpoint('bitcoin')` 配置，必须 https，路径前缀保留。
+- 限频（部分核对）：文档页原文："Note that we enforce rate limits. If you exceed these limits, you will get an HTTP 429 error. If you repeatedly exceed the limits, you may be banned from accessing the service altogether."；定价页写明付费档有"更高的 REST API 限额（API Key 或 IP 白名单）"。**具体的每秒/每分钟数值未能核对**（文档未给）。适配器默认 `RateLimiter` 每秒 2 次，一次同步只发 1 个请求。被限频时 HTTP 429 → `RateLimitedFailure`；`Retry-After` 是否存在**未能核对**，不依赖。多个地址同步时由上层逐个调用，请保持在此速率内。
+- 免费额度：无（公共实例免费，受上述限频约束）。
+
+| 用途 | 方法与路径 | 关键参数 | 返回中用到的字段 |
+|---|---|---|---|
+| 地址余额与交易计数 | GET `/api/address/{地址}` | 路径参数：P2PKH（`1…`）、P2SH（`3…`）、bech32（`bc1q…`）、bech32m（`bc1p…`）均可（实测四种都返回 200） | 已核对（文档原文与实测一致）：`address`；`chain_stats`、`mempool_stats` 各含 `funded_txo_count`、`funded_txo_sum`、`spent_txo_count`、`spent_txo_sum`、`tx_count`。`chain_stats` 为已确认，`mempool_stats` 为内存池（未确认）。金额单位聪，整数 |
+
+- 字段到领域模型的映射：余额（聪）= `chain_stats.funded_txo_sum − chain_stats.spent_txo_sum`，除以 10^8 得 BTC（`Decimal` 整数移位，不经过浮点）→ `RawHolding(NativeToken('bitcoin'))`，`symbolHint`=`BTC`、`nameHint`=`Bitcoin`；余额为 0 时不返回。`hasActivity` = `chain_stats.tx_count + mempool_stats.tx_count > 0`。
+- **余额口径（自行决定）：只计已确认**。`mempool_stats`（未确认）不计入余额：未确认的收入可能被替换（RBF）或丢弃，未确认的支出也可能不被打包，看板只展示链上已落定的数量。区块浏览器网页默认显示的余额可能含未确认部分（其前端代码用"确认+内存池"计算总余额），与本应用有短暂差异属预期。`hasActivity` 则把未确认交易也算作活动。
+- 错误到 Failure 的映射：HTTP 429 → `RateLimitedFailure`；5xx → `ServiceDownFailure`；网络/超时 → `NetworkFailure`（均由 `ow_net` 统一映射）；非法地址：实测返回 HTTP 400 与纯文本 `Invalid Bitcoin address`，`ow_net` 对 400 一律映射为 `UnknownFailure('HTTP 400 host=…')`（不含地址与响应体）；响应不是 JSON 或缺少必需字段、字段不是整数、已确认支出大于收入 → `UnknownFailure`；地址含 `/`、`.`、`?` 等非字母数字字符 → `ValidationFailure`（不发请求）。
+- 取不到的内容：Bitcoin 没有代币，只有原生币；Ordinals/Runes/BRC-20 等铭文资产不在范围内（它们占用的聪仍计入余额）。
+- 备注：
+  - 测试样本 `packages/ow_chains/test/fixtures/btc_*.json` 中 `p2pkh_doc`（官方文档示例地址 `1wiz18…`）、`p2sh`、`bech32`、`bech32m`、`bech32_big` 是 2026-11-12 从公共接口取得的真实响应（公开的知名地址，随时间会变化，测试只依赖固定副本）；`new_address`、`mempool_only`、`pending_spend` 是按同一结构手工构造的边界样本。
+  - 冒烟脚本 `packages/ow_chains/tool/smoke_btc.dart` 见 `tools/smoke/README.md`；开发时已用该脚本对真实接口查询 `1wiz18…`，返回结构与解析一致。

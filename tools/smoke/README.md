@@ -11,6 +11,7 @@
 | 脚本 | 用途 | 运行 |
 |---|---|---|
 | `packages/ow_chains/tool/smoke_evm.dart` | 用 Alchemy 查询 EVM 地址的持仓（M1-06） | 在 `packages/ow_chains` 目录：`OW_ALCHEMY_KEY=<Key> dart run tool/smoke_evm.dart <地址> [链id]` |
+| `packages/ow_chains/tool/smoke_btc.dart` | 用 mempool.space 查询 Bitcoin 地址的已确认余额（M2-01，无需 Key） | 在 `packages/ow_chains` 目录：`dart run tool/smoke_btc.dart <地址> [自定义实例]` |
 
 脚本放在各自的包内（`tool/` 目录），因为 `dart run` 需要解析该包的依赖；本目录只做索引。
 

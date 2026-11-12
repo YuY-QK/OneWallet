@@ -2,4 +2,5 @@
 library;
 
 export 'src/address_checksum.dart';
+export 'src/bitcoin_chain_adapter.dart';
 export 'src/evm_chain_adapter.dart';
