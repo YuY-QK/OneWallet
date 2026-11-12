@@ -49,9 +49,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get vaultIntroAction => '启用保险库';
 
   @override
-  String get settingsPlaceholder => '设置项将在后续里程碑加入。';
-
-  @override
   String get notAvailableYet => '此功能尚未实现';
 
   @override
@@ -479,4 +476,125 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addressSheetCancel => '取消';
+
+  @override
+  String get settingsSectionData => '数据';
+
+  @override
+  String get settingsSources => '数据源';
+
+  @override
+  String get settingsSourcesBody => '配置链上数据与价格服务的 API Key';
+
+  @override
+  String get sourcesTitle => '数据源';
+
+  @override
+  String get sourcesAlchemyName => 'Alchemy';
+
+  @override
+  String get sourcesAlchemyBody => 'EVM 六条链的余额';
+
+  @override
+  String get sourcesCoingeckoName => 'CoinGecko';
+
+  @override
+  String get sourcesCoingeckoBody => '价格（Key 可选）';
+
+  @override
+  String get sourcesComingSoon => '即将支持';
+
+  @override
+  String get sourcesConfigured => '已配置';
+
+  @override
+  String get sourcesNotConfigured => '未配置';
+
+  @override
+  String sourcesConfiguredPreview(String preview) {
+    return '已配置 · $preview';
+  }
+
+  @override
+  String get sourcesPrivacy => '查询余额时，你的地址和 IP 会被发送给所选的数据服务商。';
+
+  @override
+  String sourcesEditTitle(String name) {
+    return '$name 设置';
+  }
+
+  @override
+  String get sourcesKeyLabel => 'API Key';
+
+  @override
+  String get sourcesKeyHint => '粘贴 API Key';
+
+  @override
+  String get sourcesKeyHintReplace => '输入新的 Key 以替换已保存的';
+
+  @override
+  String get sourcesKeyShow => '显示';
+
+  @override
+  String get sourcesKeyHide => '隐藏';
+
+  @override
+  String get sourcesKeyEmpty => '请输入 API Key。';
+
+  @override
+  String get sourcesAlchemyRequired => '读取 EVM 余额需要 Alchemy 的 API Key。';
+
+  @override
+  String get sourcesCoingeckoOptional =>
+      'CoinGecko 的 Key 可不填，但免费额度较紧，价格刷新可能被限频。';
+
+  @override
+  String get sourcesSave => '保存';
+
+  @override
+  String get sourcesSaved => '已保存';
+
+  @override
+  String get sourcesClear => '清除 Key';
+
+  @override
+  String get sourcesTest => '测试连接';
+
+  @override
+  String get sourcesTesting => '正在测试…';
+
+  @override
+  String get sourcesTestSaveFirst => '输入的 Key 还没有保存。请先保存，再测试连接。';
+
+  @override
+  String get sourcesTestOk => '连接正常。';
+
+  @override
+  String get sourcesAdvanced => '高级：自定义 RPC 端点';
+
+  @override
+  String get sourcesEndpointNote => '自定义端点会收到你的地址与 IP，请只填写可信的服务。';
+
+  @override
+  String get sourcesEndpointHint => 'https://…';
+
+  @override
+  String get sourcesEndpointInvalid => '只接受 https 地址，且不能包含用户名或密码。';
+
+  @override
+  String sourcesEndpointSet(String host) {
+    return '已设置自定义端点：$host';
+  }
+
+  @override
+  String get sourcesEndpointDefault => '使用默认端点';
+
+  @override
+  String get sourcesEndpointSave => '保存端点';
+
+  @override
+  String get sourcesEndpointClear => '恢复默认';
+
+  @override
+  String get sourcesDone => '完成';
 }

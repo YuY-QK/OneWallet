@@ -172,12 +172,6 @@ abstract class AppLocalizations {
   /// **'启用保险库'**
   String get vaultIntroAction;
 
-  /// No description provided for @settingsPlaceholder.
-  ///
-  /// In zh, this message translates to:
-  /// **'设置项将在后续里程碑加入。'**
-  String get settingsPlaceholder;
-
   /// No description provided for @notAvailableYet.
   ///
   /// In zh, this message translates to:
@@ -957,6 +951,234 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'取消'**
   String get addressSheetCancel;
+
+  /// No description provided for @settingsSectionData.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据'**
+  String get settingsSectionData;
+
+  /// No description provided for @settingsSources.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据源'**
+  String get settingsSources;
+
+  /// No description provided for @settingsSourcesBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'配置链上数据与价格服务的 API Key'**
+  String get settingsSourcesBody;
+
+  /// No description provided for @sourcesTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'数据源'**
+  String get sourcesTitle;
+
+  /// No description provided for @sourcesAlchemyName.
+  ///
+  /// In zh, this message translates to:
+  /// **'Alchemy'**
+  String get sourcesAlchemyName;
+
+  /// No description provided for @sourcesAlchemyBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'EVM 六条链的余额'**
+  String get sourcesAlchemyBody;
+
+  /// No description provided for @sourcesCoingeckoName.
+  ///
+  /// In zh, this message translates to:
+  /// **'CoinGecko'**
+  String get sourcesCoingeckoName;
+
+  /// No description provided for @sourcesCoingeckoBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'价格（Key 可选）'**
+  String get sourcesCoingeckoBody;
+
+  /// No description provided for @sourcesComingSoon.
+  ///
+  /// In zh, this message translates to:
+  /// **'即将支持'**
+  String get sourcesComingSoon;
+
+  /// No description provided for @sourcesConfigured.
+  ///
+  /// In zh, this message translates to:
+  /// **'已配置'**
+  String get sourcesConfigured;
+
+  /// No description provided for @sourcesNotConfigured.
+  ///
+  /// In zh, this message translates to:
+  /// **'未配置'**
+  String get sourcesNotConfigured;
+
+  /// No description provided for @sourcesConfiguredPreview.
+  ///
+  /// In zh, this message translates to:
+  /// **'已配置 · {preview}'**
+  String sourcesConfiguredPreview(String preview);
+
+  /// No description provided for @sourcesPrivacy.
+  ///
+  /// In zh, this message translates to:
+  /// **'查询余额时，你的地址和 IP 会被发送给所选的数据服务商。'**
+  String get sourcesPrivacy;
+
+  /// No description provided for @sourcesEditTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'{name} 设置'**
+  String sourcesEditTitle(String name);
+
+  /// No description provided for @sourcesKeyLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key'**
+  String get sourcesKeyLabel;
+
+  /// No description provided for @sourcesKeyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴 API Key'**
+  String get sourcesKeyHint;
+
+  /// No description provided for @sourcesKeyHintReplace.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入新的 Key 以替换已保存的'**
+  String get sourcesKeyHintReplace;
+
+  /// No description provided for @sourcesKeyShow.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示'**
+  String get sourcesKeyShow;
+
+  /// No description provided for @sourcesKeyHide.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏'**
+  String get sourcesKeyHide;
+
+  /// No description provided for @sourcesKeyEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 API Key。'**
+  String get sourcesKeyEmpty;
+
+  /// No description provided for @sourcesAlchemyRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'读取 EVM 余额需要 Alchemy 的 API Key。'**
+  String get sourcesAlchemyRequired;
+
+  /// No description provided for @sourcesCoingeckoOptional.
+  ///
+  /// In zh, this message translates to:
+  /// **'CoinGecko 的 Key 可不填，但免费额度较紧，价格刷新可能被限频。'**
+  String get sourcesCoingeckoOptional;
+
+  /// No description provided for @sourcesSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get sourcesSave;
+
+  /// No description provided for @sourcesSaved.
+  ///
+  /// In zh, this message translates to:
+  /// **'已保存'**
+  String get sourcesSaved;
+
+  /// No description provided for @sourcesClear.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除 Key'**
+  String get sourcesClear;
+
+  /// No description provided for @sourcesTest.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试连接'**
+  String get sourcesTest;
+
+  /// No description provided for @sourcesTesting.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在测试…'**
+  String get sourcesTesting;
+
+  /// No description provided for @sourcesTestSaveFirst.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入的 Key 还没有保存。请先保存，再测试连接。'**
+  String get sourcesTestSaveFirst;
+
+  /// No description provided for @sourcesTestOk.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接正常。'**
+  String get sourcesTestOk;
+
+  /// No description provided for @sourcesAdvanced.
+  ///
+  /// In zh, this message translates to:
+  /// **'高级：自定义 RPC 端点'**
+  String get sourcesAdvanced;
+
+  /// No description provided for @sourcesEndpointNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'自定义端点会收到你的地址与 IP，请只填写可信的服务。'**
+  String get sourcesEndpointNote;
+
+  /// No description provided for @sourcesEndpointHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'https://…'**
+  String get sourcesEndpointHint;
+
+  /// No description provided for @sourcesEndpointInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'只接受 https 地址，且不能包含用户名或密码。'**
+  String get sourcesEndpointInvalid;
+
+  /// No description provided for @sourcesEndpointSet.
+  ///
+  /// In zh, this message translates to:
+  /// **'已设置自定义端点：{host}'**
+  String sourcesEndpointSet(String host);
+
+  /// No description provided for @sourcesEndpointDefault.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用默认端点'**
+  String get sourcesEndpointDefault;
+
+  /// No description provided for @sourcesEndpointSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存端点'**
+  String get sourcesEndpointSave;
+
+  /// No description provided for @sourcesEndpointClear.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复默认'**
+  String get sourcesEndpointClear;
+
+  /// No description provided for @sourcesDone.
+  ///
+  /// In zh, this message translates to:
+  /// **'完成'**
+  String get sourcesDone;
 }
 
 class _AppLocalizationsDelegate

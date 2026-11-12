@@ -13,7 +13,6 @@
   "vaultIntroTitle": "保险库尚未启用",
   "vaultIntroBody": "保险库把助记词和私钥加密保存在这台设备上，不会联网。",
   "vaultIntroAction": "启用保险库",
-  "settingsPlaceholder": "设置项将在后续里程碑加入。",
   "notAvailableYet": "此功能尚未实现",
   "bootstrapLoading": "正在打开本地数据…",
   "bootstrapErrorTitle": "无法打开本地数据",
@@ -264,5 +263,64 @@
   "addressSheetDeleteLast": "账户至少要保留一个地址，所以不能删除最后一个地址。",
   "addressSheetDeleteTitle": "删除这个地址？",
   "addressSheetDeleteBody": "删除后，这个地址的余额缓存也会清除；链上资产不受影响，之后可以重新添加。",
-  "addressSheetCancel": "取消"
+  "addressSheetCancel": "取消",
+  "settingsSectionData": "数据",
+  "settingsSources": "数据源",
+  "settingsSourcesBody": "配置链上数据与价格服务的 API Key",
+  "sourcesTitle": "数据源",
+  "sourcesAlchemyName": "Alchemy",
+  "sourcesAlchemyBody": "EVM 六条链的余额",
+  "sourcesCoingeckoName": "CoinGecko",
+  "sourcesCoingeckoBody": "价格（Key 可选）",
+  "sourcesComingSoon": "即将支持",
+  "sourcesConfigured": "已配置",
+  "sourcesNotConfigured": "未配置",
+  "sourcesConfiguredPreview": "已配置 · {preview}",
+  "@sourcesConfiguredPreview": {
+    "placeholders": {
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "sourcesPrivacy": "查询余额时，你的地址和 IP 会被发送给所选的数据服务商。",
+  "sourcesEditTitle": "{name} 设置",
+  "@sourcesEditTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sourcesKeyLabel": "API Key",
+  "sourcesKeyHint": "粘贴 API Key",
+  "sourcesKeyHintReplace": "输入新的 Key 以替换已保存的",
+  "sourcesKeyShow": "显示",
+  "sourcesKeyHide": "隐藏",
+  "sourcesKeyEmpty": "请输入 API Key。",
+  "sourcesAlchemyRequired": "读取 EVM 余额需要 Alchemy 的 API Key。",
+  "sourcesCoingeckoOptional": "CoinGecko 的 Key 可不填，但免费额度较紧，价格刷新可能被限频。",
+  "sourcesSave": "保存",
+  "sourcesSaved": "已保存",
+  "sourcesClear": "清除 Key",
+  "sourcesTest": "测试连接",
+  "sourcesTesting": "正在测试…",
+  "sourcesTestSaveFirst": "输入的 Key 还没有保存。请先保存，再测试连接。",
+  "sourcesTestOk": "连接正常。",
+  "sourcesAdvanced": "高级：自定义 RPC 端点",
+  "sourcesEndpointNote": "自定义端点会收到你的地址与 IP，请只填写可信的服务。",
+  "sourcesEndpointHint": "https://…",
+  "sourcesEndpointInvalid": "只接受 https 地址，且不能包含用户名或密码。",
+  "sourcesEndpointSet": "已设置自定义端点：{host}",
+  "@sourcesEndpointSet": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "sourcesEndpointDefault": "使用默认端点",
+  "sourcesEndpointSave": "保存端点",
+  "sourcesEndpointClear": "恢复默认",
+  "sourcesDone": "完成"
 }

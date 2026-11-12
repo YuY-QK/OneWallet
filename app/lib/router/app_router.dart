@@ -7,6 +7,7 @@ import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/common/presentation/coming_soon_page.dart';
 import '../features/overview/presentation/overview_page.dart';
+import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../l10n/app_localizations.dart';
@@ -104,7 +105,17 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
               ),
             ],
           ),
-          branch(AppRoutes.settings, const SettingsPage()),
+          branch(
+            AppRoutes.settings,
+            const SettingsPage(),
+            sub: [
+              GoRoute(
+                path: 'sources',
+                name: RouteNames.settingsSources,
+                builder: (_, _) => const DataSourcesPage(),
+              ),
+            ],
+          ),
         ],
       ),
     ],
