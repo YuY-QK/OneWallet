@@ -1,4 +1,5 @@
 import 'package:decimal/decimal.dart';
+import 'package:ow_domain/ow_domain.dart';
 
 import '../l10n/app_localizations.dart';
 
@@ -15,6 +16,18 @@ const String fiatSymbolUsd = r'$';
 
 /// 人民币符号。
 const String fiatSymbolCny = '¥';
+
+/// [quote] 对应的货币符号。
+String fiatSymbol(Quote quote) => switch (quote) {
+  Quote.usd => fiatSymbolUsd,
+  Quote.cny => fiatSymbolCny,
+};
+
+/// 计价货币的代码，如 `USD`。
+String quoteCode(Quote quote) => switch (quote) {
+  Quote.usd => 'USD',
+  Quote.cny => 'CNY',
+};
 
 /// 数量的有效数字上限。
 const int _quantitySignificantDigits = 8;

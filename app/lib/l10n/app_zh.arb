@@ -13,7 +13,6 @@
   "vaultIntroTitle": "保险库尚未启用",
   "vaultIntroBody": "保险库把助记词和私钥加密保存在这台设备上，不会联网。",
   "vaultIntroAction": "启用保险库",
-  "settingsPlaceholder": "设置项将在后续里程碑加入。",
   "notAvailableYet": "此功能尚未实现",
   "bootstrapLoading": "正在打开本地数据…",
   "bootstrapErrorTitle": "无法打开本地数据",
@@ -53,5 +52,275 @@
         "type": "String"
       }
     }
-  }
+  },
+  "walletSourceUniswap": "Uniswap Wallet",
+  "walletSourceMetamask": "MetaMask",
+  "walletSourceOkxWeb3": "OKX Web3",
+  "walletSourceBitgetWallet": "Bitget Wallet",
+  "walletSourceTrustWallet": "Trust Wallet",
+  "walletSourceOther": "其他",
+  "exchangeBinance": "Binance",
+  "exchangeOkx": "OKX",
+  "exchangeBybit": "Bybit",
+  "exchangeBitget": "Bitget",
+  "chainFamilyEvm": "EVM",
+  "chainFamilyBitcoin": "Bitcoin",
+  "chainFamilySolana": "Solana",
+  "chainFamilyTron": "Tron",
+  "backupStatusInVault": "已入库",
+  "backupStatusOffline": "已离线备份",
+  "backupStatusInVaultAndOffline": "已入库并离线备份",
+  "backupStatusKeyless": "无助记词钱包",
+  "backupStatusNone": "未备份",
+  "syncFailureUnsupported": "暂不支持：这类地址的余额读取将在后续版本提供，已有数据不受影响。",
+  "comingSoonTitle": "即将推出",
+  "comingSoonBody": "此功能将在后续版本提供。",
+  "accountAddTitle": "添加账户",
+  "accountAddWatchTitle": "观察链上地址",
+  "accountAddWatchBody": "只需粘贴地址，不需要私钥",
+  "accountAddExchangeTitle": "连接交易所",
+  "accountAddExchangeBody": "使用只读 API Key",
+  "accountAddImportTitle": "导入助记词或私钥",
+  "accountAddImportBody": "存入加密保险库，并自动生成观察地址",
+  "walletAddTitle": "观察链上地址",
+  "walletAddExtraTitle": "添加地址",
+  "walletAddName": "账户名称",
+  "walletAddNameHint": "例如：主钱包",
+  "walletAddNameRequired": "请输入账户名称，最多 30 个字。",
+  "walletAddSource": "来源钱包",
+  "walletAddAddress": "地址",
+  "walletAddAddressN": "地址 {n}",
+  "@walletAddAddressN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "walletAddAddressHint": "粘贴要观察的地址",
+  "walletAddAddressRequired": "请输入地址。",
+  "walletAddPaste": "粘贴",
+  "walletAddClipboardEmpty": "剪贴板里没有文字。",
+  "walletAddRecognized": "识别为 {family} 地址",
+  "@walletAddRecognized": {
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAddUnrecognized": "无法识别的地址格式。请检查是否复制完整。",
+  "walletAddChains": "链（可多选）",
+  "walletAddChainAuto": "链：{chain}（自动确定）",
+  "@walletAddChainAuto": {
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      }
+    }
+  },
+  "walletAddChainRequired": "至少选择一条链。",
+  "walletAddAnother": "再添加一个地址",
+  "walletAddRemove": "删除这个地址",
+  "walletAddBackup": "备份状态",
+  "walletAddBackupNone": "未备份",
+  "walletAddBackupOffline": "已离线备份",
+  "walletAddBackupKeyless": "无助记词钱包",
+  "walletAddSave": "保存",
+  "walletAddSaving": "保存中…",
+  "walletAddAccountMissing": "找不到这个账户，它可能已被删除。",
+  "walletAddKeyMissing": "尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。",
+  "overviewHideAmounts": "隐藏金额",
+  "overviewShowAmounts": "显示金额",
+  "overviewAddAccount": "添加账户",
+  "overviewTotalLabel": "总资产（{quote}）",
+  "@overviewTotalLabel": {
+    "placeholders": {
+      "quote": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewChange24h": "24 小时",
+  "overviewChangeUnknown": "24 小时变化 —",
+  "overviewLastSynced": "上次同步 {time}",
+  "@overviewLastSynced": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewNeverSynced": "尚未同步",
+  "overviewDistCoin": "按币种",
+  "overviewDistAccount": "按账户",
+  "overviewDistType": "按类型",
+  "overviewTypeOnChain": "链上钱包",
+  "overviewTypeExchange": "交易所",
+  "overviewDistEmpty": "暂时没有可显示的资产。",
+  "overviewFooterUnpriced": "{count} 个币种无估值",
+  "@overviewFooterUnpriced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewFooterHidden": "已隐藏 {count} 个小额币种",
+  "@overviewFooterHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewSyncingLabel": "正在同步",
+  "overviewPartialFailed": "{count} 个账户同步失败",
+  "@overviewPartialFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewOffline": "当前离线，显示的是 {time} 的数据",
+  "@overviewOffline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewAllFailedTitle": "同步失败",
+  "overviewAllFailedBody": "所有账户都没能同步，也没有可显示的缓存数据。请检查数据源设置后重试。",
+  "overviewRetry": "重试",
+  "overviewFailureListTitle": "同步失败的账户",
+  "overviewFailureClose": "关闭",
+  "accountsAdd": "添加账户",
+  "accountsGroupWallet": "钱包",
+  "accountsGroupExchange": "交易所",
+  "accountsSyncFailed": "同步失败",
+  "accountsLoadFailed": "无法读取账户列表。请重启应用后重试。",
+  "accountsSelectHint": "选择一个账户查看详情。",
+  "walletDetailTotal": "账户总估值",
+  "walletDetailTabAssets": "资产",
+  "walletDetailTabAddresses": "地址",
+  "walletDetailNoAssets": "该钱包目前没有可显示的资产",
+  "walletDetailNotFound": "找不到这个账户，它可能已被删除。",
+  "walletDetailFailedTitle": "同步失败",
+  "walletDetailLastSuccess": "上次成功同步：{time}",
+  "@walletDetailLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "walletDetailNeverSucceeded": "还没有成功同步过，下面没有缓存数据。",
+  "walletDetailUnpriced": "{count} 个未识别或无估值的币种",
+  "@walletDetailUnpriced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "walletDetailAddAddress": "添加地址",
+  "walletDetailAddressesHint": "点击地址可查看二维码、复制、在浏览器中打开",
+  "walletDetailChainCount": "{count} 条链",
+  "@walletDetailChainCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "addressSheetTitle": "{family} 地址",
+  "@addressSheetTitle": {
+    "placeholders": {
+      "family": {
+        "type": "String"
+      }
+    }
+  },
+  "addressSheetCopy": "复制地址",
+  "addressSheetCopied": "已复制",
+  "addressSheetExplorerHeader": "在区块浏览器中打开",
+  "addressSheetExplorerRow": "{chain} · {host}",
+  "@addressSheetExplorerRow": {
+    "placeholders": {
+      "chain": {
+        "type": "String"
+      },
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "addressSheetExplorerNote": "将用系统浏览器打开所示网站，请确认域名无误。",
+  "addressSheetOpenFailed": "无法打开系统浏览器。",
+  "addressSheetDelete": "删除地址",
+  "addressSheetDeleteLast": "账户至少要保留一个地址，所以不能删除最后一个地址。",
+  "addressSheetDeleteTitle": "删除这个地址？",
+  "addressSheetDeleteBody": "删除后，这个地址的余额缓存也会清除；链上资产不受影响，之后可以重新添加。",
+  "addressSheetCancel": "取消",
+  "settingsSectionData": "数据",
+  "settingsSources": "数据源",
+  "settingsSourcesBody": "配置链上数据与价格服务的 API Key",
+  "sourcesTitle": "数据源",
+  "sourcesAlchemyName": "Alchemy",
+  "sourcesAlchemyBody": "EVM 六条链的余额",
+  "sourcesCoingeckoName": "CoinGecko",
+  "sourcesCoingeckoBody": "价格（Key 可选）",
+  "sourcesComingSoon": "即将支持",
+  "sourcesConfigured": "已配置",
+  "sourcesNotConfigured": "未配置",
+  "sourcesConfiguredPreview": "已配置 · {preview}",
+  "@sourcesConfiguredPreview": {
+    "placeholders": {
+      "preview": {
+        "type": "String"
+      }
+    }
+  },
+  "sourcesPrivacy": "查询余额时，你的地址和 IP 会被发送给所选的数据服务商。",
+  "sourcesEditTitle": "{name} 设置",
+  "@sourcesEditTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "sourcesKeyLabel": "API Key",
+  "sourcesKeyHint": "粘贴 API Key",
+  "sourcesKeyHintReplace": "输入新的 Key 以替换已保存的",
+  "sourcesKeyShow": "显示",
+  "sourcesKeyHide": "隐藏",
+  "sourcesKeyEmpty": "请输入 API Key。",
+  "sourcesAlchemyRequired": "读取 EVM 余额需要 Alchemy 的 API Key。",
+  "sourcesCoingeckoOptional": "CoinGecko 的 Key 可不填，但免费额度较紧，价格刷新可能被限频。",
+  "sourcesSave": "保存",
+  "sourcesSaved": "已保存",
+  "sourcesClear": "清除 Key",
+  "sourcesTest": "测试连接",
+  "sourcesTesting": "正在测试…",
+  "sourcesTestSaveFirst": "输入的 Key 还没有保存。请先保存，再测试连接。",
+  "sourcesTestOk": "连接正常。",
+  "sourcesAdvanced": "高级：自定义 RPC 端点",
+  "sourcesEndpointNote": "自定义端点会收到你的地址与 IP，请只填写可信的服务。",
+  "sourcesEndpointHint": "https://…",
+  "sourcesEndpointInvalid": "只接受 https 地址，且不能包含用户名或密码。",
+  "sourcesEndpointSet": "已设置自定义端点：{host}",
+  "@sourcesEndpointSet": {
+    "placeholders": {
+      "host": {
+        "type": "String"
+      }
+    }
+  },
+  "sourcesEndpointDefault": "使用默认端点",
+  "sourcesEndpointSave": "保存端点",
+  "sourcesEndpointClear": "恢复默认",
+  "sourcesDone": "完成"
 }

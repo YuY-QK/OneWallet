@@ -3,4 +3,6 @@ library;
 
 export 'adapter_providers.dart';
 export 'foundation_providers.dart';
+export 'read_model_providers.dart';
+export 'ui_services.dart';
 export 'usecase_providers.dart';
