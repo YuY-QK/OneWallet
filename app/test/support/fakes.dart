@@ -196,6 +196,12 @@ final class FakeChainAdapter implements ChainAdapter {
   int fetchCount = 0;
   final fetched = <String>[];
 
+  /// 非空时，只有这条链返回 [holdings]，其余链返回空。
+  String? onlyChain;
+
+  /// 设置后，`fetchHoldings` 要等它完成才返回（用于停在"同步中"）。
+  Completer<void>? gate;
+
   @override
   Future<Result<List<RawHolding>>> fetchHoldings(
     String address,
@@ -203,8 +209,10 @@ final class FakeChainAdapter implements ChainAdapter {
   ) async {
     fetchCount++;
     fetched.add(address);
+    await gate?.future;
     final f = failure;
-    return f == null ? Ok(holdings) : Err(f);
+    if (f != null) return Err(f);
+    return Ok(onlyChain == null || onlyChain == chain.id ? holdings : const []);
   }
 
   @override

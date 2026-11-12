@@ -4,11 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:onewallet/app.dart';
 import 'package:onewallet/shell/breakpoints.dart';
 
+import 'support/fakes.dart';
+
 Future<void> pumpAt(WidgetTester tester, Size size) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
-  await tester.pumpWidget(const ProviderScope(child: OneWalletApp()));
+  await tester.pumpWidget(
+    ProviderScope(overrides: TestRig().overrides, child: const OneWalletApp()),
+  );
   await tester.pumpAndSettle();
 }
 

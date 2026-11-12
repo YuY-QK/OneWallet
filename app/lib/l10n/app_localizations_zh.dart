@@ -295,4 +295,103 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get walletAddKeyMissing =>
       '尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。';
+
+  @override
+  String get overviewHideAmounts => '隐藏金额';
+
+  @override
+  String get overviewShowAmounts => '显示金额';
+
+  @override
+  String get overviewAddAccount => '添加账户';
+
+  @override
+  String overviewTotalLabel(String quote) {
+    return '总资产（$quote）';
+  }
+
+  @override
+  String get overviewChange24h => '24 小时';
+
+  @override
+  String get overviewChangeUnknown => '24 小时变化 —';
+
+  @override
+  String overviewLastSynced(String time) {
+    return '上次同步 $time';
+  }
+
+  @override
+  String get overviewNeverSynced => '尚未同步';
+
+  @override
+  String get overviewDistCoin => '按币种';
+
+  @override
+  String get overviewDistAccount => '按账户';
+
+  @override
+  String get overviewDistType => '按类型';
+
+  @override
+  String get overviewTypeOnChain => '链上钱包';
+
+  @override
+  String get overviewTypeExchange => '交易所';
+
+  @override
+  String get overviewDistEmpty => '暂时没有可显示的资产。';
+
+  @override
+  String overviewFooterUnpriced(int count) {
+    return '$count 个币种无估值';
+  }
+
+  @override
+  String overviewFooterHidden(int count) {
+    return '已隐藏 $count 个小额币种';
+  }
+
+  @override
+  String get overviewSyncingLabel => '正在同步';
+
+  @override
+  String overviewPartialFailed(int count) {
+    return '$count 个账户同步失败';
+  }
+
+  @override
+  String overviewOffline(String time) {
+    return '当前离线，显示的是 $time 的数据';
+  }
+
+  @override
+  String get overviewAllFailedTitle => '同步失败';
+
+  @override
+  String get overviewAllFailedBody => '所有账户都没能同步，也没有可显示的缓存数据。请检查数据源设置后重试。';
+
+  @override
+  String get overviewRetry => '重试';
+
+  @override
+  String get overviewFailureListTitle => '同步失败的账户';
+
+  @override
+  String get overviewFailureClose => '关闭';
+
+  @override
+  String get accountsAdd => '添加账户';
+
+  @override
+  String get accountsGroupWallet => '钱包';
+
+  @override
+  String get accountsGroupExchange => '交易所';
+
+  @override
+  String get accountsSyncFailed => '同步失败';
+
+  @override
+  String get accountsLoadFailed => '无法读取账户列表。请重启应用后重试。';
 }

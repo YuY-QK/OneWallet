@@ -130,5 +130,76 @@
   "walletAddSave": "保存",
   "walletAddSaving": "保存中…",
   "walletAddAccountMissing": "找不到这个账户，它可能已被删除。",
-  "walletAddKeyMissing": "尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。"
+  "walletAddKeyMissing": "尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。",
+  "overviewHideAmounts": "隐藏金额",
+  "overviewShowAmounts": "显示金额",
+  "overviewAddAccount": "添加账户",
+  "overviewTotalLabel": "总资产（{quote}）",
+  "@overviewTotalLabel": {
+    "placeholders": {
+      "quote": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewChange24h": "24 小时",
+  "overviewChangeUnknown": "24 小时变化 —",
+  "overviewLastSynced": "上次同步 {time}",
+  "@overviewLastSynced": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewNeverSynced": "尚未同步",
+  "overviewDistCoin": "按币种",
+  "overviewDistAccount": "按账户",
+  "overviewDistType": "按类型",
+  "overviewTypeOnChain": "链上钱包",
+  "overviewTypeExchange": "交易所",
+  "overviewDistEmpty": "暂时没有可显示的资产。",
+  "overviewFooterUnpriced": "{count} 个币种无估值",
+  "@overviewFooterUnpriced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewFooterHidden": "已隐藏 {count} 个小额币种",
+  "@overviewFooterHidden": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewSyncingLabel": "正在同步",
+  "overviewPartialFailed": "{count} 个账户同步失败",
+  "@overviewPartialFailed": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewOffline": "当前离线，显示的是 {time} 的数据",
+  "@overviewOffline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "overviewAllFailedTitle": "同步失败",
+  "overviewAllFailedBody": "所有账户都没能同步，也没有可显示的缓存数据。请检查数据源设置后重试。",
+  "overviewRetry": "重试",
+  "overviewFailureListTitle": "同步失败的账户",
+  "overviewFailureClose": "关闭",
+  "accountsAdd": "添加账户",
+  "accountsGroupWallet": "钱包",
+  "accountsGroupExchange": "交易所",
+  "accountsSyncFailed": "同步失败",
+  "accountsLoadFailed": "无法读取账户列表。请重启应用后重试。"
 }

@@ -633,6 +633,180 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'尚未配置 Alchemy Key，EVM 地址的余额可能查不到。可在「设置 → 数据源」中填写。'**
   String get walletAddKeyMissing;
+
+  /// No description provided for @overviewHideAmounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏金额'**
+  String get overviewHideAmounts;
+
+  /// No description provided for @overviewShowAmounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示金额'**
+  String get overviewShowAmounts;
+
+  /// No description provided for @overviewAddAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加账户'**
+  String get overviewAddAccount;
+
+  /// No description provided for @overviewTotalLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'总资产（{quote}）'**
+  String overviewTotalLabel(String quote);
+
+  /// No description provided for @overviewChange24h.
+  ///
+  /// In zh, this message translates to:
+  /// **'24 小时'**
+  String get overviewChange24h;
+
+  /// No description provided for @overviewChangeUnknown.
+  ///
+  /// In zh, this message translates to:
+  /// **'24 小时变化 —'**
+  String get overviewChangeUnknown;
+
+  /// No description provided for @overviewLastSynced.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次同步 {time}'**
+  String overviewLastSynced(String time);
+
+  /// No description provided for @overviewNeverSynced.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未同步'**
+  String get overviewNeverSynced;
+
+  /// No description provided for @overviewDistCoin.
+  ///
+  /// In zh, this message translates to:
+  /// **'按币种'**
+  String get overviewDistCoin;
+
+  /// No description provided for @overviewDistAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'按账户'**
+  String get overviewDistAccount;
+
+  /// No description provided for @overviewDistType.
+  ///
+  /// In zh, this message translates to:
+  /// **'按类型'**
+  String get overviewDistType;
+
+  /// No description provided for @overviewTypeOnChain.
+  ///
+  /// In zh, this message translates to:
+  /// **'链上钱包'**
+  String get overviewTypeOnChain;
+
+  /// No description provided for @overviewTypeExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'交易所'**
+  String get overviewTypeExchange;
+
+  /// No description provided for @overviewDistEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂时没有可显示的资产。'**
+  String get overviewDistEmpty;
+
+  /// No description provided for @overviewFooterUnpriced.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个币种无估值'**
+  String overviewFooterUnpriced(int count);
+
+  /// No description provided for @overviewFooterHidden.
+  ///
+  /// In zh, this message translates to:
+  /// **'已隐藏 {count} 个小额币种'**
+  String overviewFooterHidden(int count);
+
+  /// No description provided for @overviewSyncingLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在同步'**
+  String get overviewSyncingLabel;
+
+  /// No description provided for @overviewPartialFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个账户同步失败'**
+  String overviewPartialFailed(int count);
+
+  /// No description provided for @overviewOffline.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前离线，显示的是 {time} 的数据'**
+  String overviewOffline(String time);
+
+  /// No description provided for @overviewAllFailedTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步失败'**
+  String get overviewAllFailedTitle;
+
+  /// No description provided for @overviewAllFailedBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'所有账户都没能同步，也没有可显示的缓存数据。请检查数据源设置后重试。'**
+  String get overviewAllFailedBody;
+
+  /// No description provided for @overviewRetry.
+  ///
+  /// In zh, this message translates to:
+  /// **'重试'**
+  String get overviewRetry;
+
+  /// No description provided for @overviewFailureListTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步失败的账户'**
+  String get overviewFailureListTitle;
+
+  /// No description provided for @overviewFailureClose.
+  ///
+  /// In zh, this message translates to:
+  /// **'关闭'**
+  String get overviewFailureClose;
+
+  /// No description provided for @accountsAdd.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加账户'**
+  String get accountsAdd;
+
+  /// No description provided for @accountsGroupWallet.
+  ///
+  /// In zh, this message translates to:
+  /// **'钱包'**
+  String get accountsGroupWallet;
+
+  /// No description provided for @accountsGroupExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'交易所'**
+  String get accountsGroupExchange;
+
+  /// No description provided for @accountsSyncFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步失败'**
+  String get accountsSyncFailed;
+
+  /// No description provided for @accountsLoadFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法读取账户列表。请重启应用后重试。'**
+  String get accountsLoadFailed;
 }
 
 class _AppLocalizationsDelegate
