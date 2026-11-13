@@ -108,6 +108,28 @@ final class VaultCorruptedFailure extends Failure {
   const VaultCorruptedFailure([super.detail]);
 }
 
+/// 保险库文件的格式版本高于本应用支持的版本（由更新版本的应用写入）。
+///
+/// 不修改文件；提示用户升级应用。
+final class VaultVersionUnsupportedFailure extends Failure {
+  const VaultVersionUnsupportedFailure([super.detail]);
+}
+
+/// 保险库文件不存在（解锁时）。
+final class VaultNotFoundFailure extends Failure {
+  const VaultNotFoundFailure([super.detail]);
+}
+
+/// 保险库文件已存在，拒绝再次创建（避免覆盖已有的密钥）。
+final class VaultAlreadyExistsFailure extends Failure {
+  const VaultAlreadyExistsFailure([super.detail]);
+}
+
+/// 保险库中没有该条目。
+final class VaultItemNotFoundFailure extends Failure {
+  const VaultItemNotFoundFailure([super.detail]);
+}
+
 /// [UnsupportedFailure] 的原因。
 enum UnsupportedReason {
   /// 当前设备或平台不支持该能力。

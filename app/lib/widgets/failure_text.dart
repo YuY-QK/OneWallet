@@ -28,6 +28,10 @@ String failureText(AppLocalizations l10n, Failure failure) {
       ),
     WrongPasswordFailure() => l10n.failureWrongPassword,
     VaultCorruptedFailure() => l10n.failureVaultCorrupted,
+    VaultVersionUnsupportedFailure() => l10n.failureVaultVersionUnsupported,
+    VaultNotFoundFailure() => l10n.failureVaultNotFound,
+    VaultAlreadyExistsFailure() => l10n.failureVaultAlreadyExists,
+    VaultItemNotFoundFailure() => l10n.failureVaultItemNotFound,
     UnsupportedFailure(:final reason) => switch (reason) {
       UnsupportedReason.platform => l10n.failureUnsupported,
       UnsupportedReason.notIntegrated => l10n.failureUnsupportedNotIntegrated,

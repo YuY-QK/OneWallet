@@ -26,6 +26,10 @@ void main() {
     ),
     const WrongPasswordFailure(): l10n.failureWrongPassword,
     const VaultCorruptedFailure(): l10n.failureVaultCorrupted,
+    const VaultVersionUnsupportedFailure(): l10n.failureVaultVersionUnsupported,
+    const VaultNotFoundFailure(): l10n.failureVaultNotFound,
+    const VaultAlreadyExistsFailure(): l10n.failureVaultAlreadyExists,
+    const VaultItemNotFoundFailure(): l10n.failureVaultItemNotFound,
     const UnsupportedFailure(): l10n.failureUnsupported,
     const UnsupportedFailure.notIntegrated():
         l10n.failureUnsupportedNotIntegrated,

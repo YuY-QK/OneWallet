@@ -84,10 +84,56 @@
 }
 ```
 
-- 条目明文是一段 JSON：助记词、可选 passphrase、或私钥与链类型。
+- 条目明文是一段 JSON：助记词、可选 passphrase、或私钥与链类型（精确编码见下文"条目明文"）。
 - 硬件包裹的 VMK 不在此文件内，由平台层保存（见 6.1）。
-- 写入采用"写临时文件、落盘、原子重命名"，并保留上一版本作为 `.bak`，写入失败不破坏原文件。
+- 写入采用"写临时文件、落盘、原子重命名"，并保留上一版本作为 `.bak`，写入失败不破坏原文件（实现见 `ow_platform` 的 `FileVaultStorage`）。
 - 条目名称、关联账户等元数据在主数据库中；保险库文件不含这些，也不含地址。
+
+**字段细则**（M4-02 实现，代码集中在 `packages/ow_vault/lib/src/vault/vault_format.dart` 与 `vault_file.dart`）
+
+- 文件是 UTF-8 编码的 JSON 对象，键名与层级如上，不允许出现其他键。`b64` 为带填充的标准 Base64，解析时要求重新编码后与原文完全一致。
+- `version` 为整数。高于本应用支持的版本时报"版本过新"（`VaultVersionUnsupportedFailure`），不修改文件；这一判断先于其余结构检查。`format` 不对、不是 JSON、结构或长度不合法时报"文件损坏"（`VaultCorruptedFailure`）。
+- `kdf`：`alg` 固定为 `"argon2id"`；`salt` 16 字节；`mem_kib`、`iters` 为整数，读取时只接受 8–1048576 与 1–32（文件头不受认证保护，限制取值防止被改成耗尽内存的参数）；`parallelism` 只能为 1（第 4 节）。
+- `wrapped_vmk_pw`：`nonce` 24 字节；`ct` 为 `XChaCha20-Poly1305(KEK_pw, nonce, VMK, AAD_vmk)`，即 32 字节密文加 16 字节标签，共 48 字节。
+- `items[]`：`id` 为 1–64 个 ASCII 字母、数字、`-`、`_`（UUID 符合），在文件内唯一；`kind` 为 `"mnemonic"` 或 `"private_key"`；`nonce` 24 字节；`ct` 为 `XChaCha20-Poly1305(K_item, nonce, 条目明文, AAD_item)`。
+- 子密钥：`K_item = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_items", VMK)`，`K_fp = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_fprnt", VMK)`。
+- 每次加密（包裹 VMK、加密条目）都由 `randombytes_buf` 生成新的 24 字节 nonce。
+
+**关联数据（AAD）的精确字节编码**
+
+记 `u16be(n)` 为 2 字节大端无符号整数，`lp(x) = u16be(x 的 UTF-8 字节数) ‖ x 的 UTF-8 字节`：
+
+```
+AAD_vmk  = lp("onewallet-vault") ‖ lp("wrapped_vmk_pw") ‖ u16be(version)
+AAD_item = lp("onewallet-vault") ‖ lp("item") ‖ u16be(version) ‖ lp(id) ‖ lp(kind)
+```
+
+- `version` 为写入该密文时文件的格式版本（当前为 1）；`id`、`kind` 与文件中对应字段的字符串完全相同。
+- 第二段（`"wrapped_vmk_pw"` 或 `"item"`）区分用途，防止一种密文被挪作另一种使用。
+- 示例（version 1）：`AAD_vmk` 的十六进制为 `000f6f6e6577616c6c65742d7661756c74 000e777261707065645f766d6b5f7077 0001`（空格只为易读）。测试 `vault_format_test.dart` 固定了这两个编码的字节。
+- 效果：两条密文互换、改动条目的 `id` 或 `kind`、把条目挪到不同版本的文件里，解密都会认证失败。
+
+**条目明文**
+
+固定字段顺序、无空白的 JSON（ASCII），全部密钥内容写成**原始字节的小写十六进制**：
+
+```
+{"v":1,"kind":"mnemonic","mnemonic":"<hex>","passphrase":null}
+{"v":1,"kind":"mnemonic","mnemonic":"<hex>","passphrase":"<hex>"}
+{"v":1,"kind":"private_key","family":"evm|bitcoin|solana|tron","key":"<hex>"}
+```
+
+- `mnemonic` 为助记词原文的字节（应用层约定为规范化后的 UTF-8：小写、单个空格分隔，由导入流程负责），保险库按字节原样保存；`passphrase` 为 `null` 表示没有附加密码，空字符串 `""` 表示附加密码为空字节串；`key` 为原始私钥字节。长度上限：助记词 1024 字节、附加密码 1024 字节、私钥 256 字节；助记词与私钥不得为空。
+- 用十六进制而不是 JSON 字符串，是为了编码、解码都能直接在字节上完成（不经过 Dart `String`，见 6.5），且不涉及转义与 UTF-8 合法性问题。
+- 只接受上述规范形式；任何偏差（多余空白、大写十六进制、未知字段）都视为损坏。明文中的 `kind` 必须与文件条目的 `kind` 一致。
+- **查重指纹** = `crypto_generichash(输出 16 字节, 消息 = 上述条目明文字节, 密钥 = K_fp)` 的小写十六进制（32 个字符）。同一保险库内同一内容（含附加密码与链家族）的指纹相同；不同保险库的 VMK 不同，指纹不能跨库关联。
+
+**解锁与修改**
+
+- 主密码解锁：`KEK_pw = Argon2id(主密码, salt, 文件头参数)`，解开 `wrapped_vmk_pw`。认证加密无法区分"密码错误"与"salt、参数或包裹被篡改"，两者都报告为密码错误。
+- 主密钥解锁（硬件解包之后）：文件中没有可直接校验 VMK 的字段，实现以"至少一个条目能用由它派生的 `K_item` 通过认证解密"来确认主密钥正确；**保险库里没有条目时无法校验，必须用主密码解锁**。这样，过期的硬件包裹（例如保险库被重建后）不会让新条目用错误的密钥写入。
+- 改主密码：生成新 salt，按当前默认参数重新派生 `KEK_pw`，用新 nonce 重新包裹同一个 VMK。VMK 不变，因此 `K_item`、`K_fp` 与全部条目密文、查重指纹都不变，无需重新加密。
+- 每次修改（创建、增删条目、改密码）都在内存中构造完整的新文件，整体交给 `VaultStorage.writeAtomic`；写入成功后才更新内存状态。同一个 `Vault` 实例上的写操作串行执行。
 
 ### 5.2 加密备份文件 `.owbak`
 
@@ -137,6 +183,7 @@
 - 解密、派生等操作在独立的 isolate 中进行，结束即销毁该 isolate。
 - **已知局限**：Dart 字符串不可变且由垃圾回收管理，显示助记词时必然会产生无法主动清除的字符串副本。应对：缩短明文的存活时间，页面销毁后不保留引用；不把明文放进任何状态管理对象、路由参数或缓存。
 - 明文不得作为参数传给日志、错误信息、异常对象。
+- 保险库的实现（M4-02）：条目明文的编码与解码直接在字节上完成，不产生 `String`；中间缓冲（编码结果、解密结果）用完即清零；会话持有的 VMK、`K_item`、`K_fp` 在 `close()` 时清零。传给 libsodium 的密钥在其安全内存中的副本于每次调用结束时释放并清零（ADR_005）。Argon2id 在独立 isolate 中计算；AEAD、KDF、BLAKE2b 为微秒级运算，在调用方的 isolate 中同步执行，"整个解密、派生流程放进独立 isolate"由应用层用例负责（如 M4-08 的派生）。
 
 ### 6.6 设备完整性
 

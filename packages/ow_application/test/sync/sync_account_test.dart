@@ -243,6 +243,22 @@ void main() {
       failureTypeName(const VaultCorruptedFailure()),
       'VaultCorruptedFailure',
     );
+    expect(
+      failureTypeName(const VaultVersionUnsupportedFailure()),
+      'VaultVersionUnsupportedFailure',
+    );
+    expect(
+      failureTypeName(const VaultNotFoundFailure()),
+      'VaultNotFoundFailure',
+    );
+    expect(
+      failureTypeName(const VaultAlreadyExistsFailure()),
+      'VaultAlreadyExistsFailure',
+    );
+    expect(
+      failureTypeName(const VaultItemNotFoundFailure()),
+      'VaultItemNotFoundFailure',
+    );
     expect(failureTypeName(const UnknownFailure()), 'UnknownFailure');
     expect(failureTypeName(const UnsupportedFailure()), 'UnsupportedFailure');
     expect(

@@ -107,6 +107,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failureVaultCorrupted => '保险库文件已损坏或被改动，无法读取。请不要删除它，可用加密备份恢复。';
 
   @override
+  String get failureVaultVersionUnsupported =>
+      '这个保险库文件来自更新版本的 OneWallet，当前版本无法读取。请先升级应用，文件未被改动。';
+
+  @override
+  String get failureVaultNotFound => '找不到保险库文件。如果之前创建过保险库，请用加密备份恢复。';
+
+  @override
+  String get failureVaultAlreadyExists => '保险库已经存在，不能重复创建。';
+
+  @override
+  String get failureVaultItemNotFound => '保险库中找不到这个密钥，它可能已被删除。';
+
+  @override
   String get failureUnsupported => '当前设备不支持这个功能。';
 
   @override

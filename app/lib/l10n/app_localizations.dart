@@ -280,6 +280,30 @@ abstract class AppLocalizations {
   /// **'保险库文件已损坏或被改动，无法读取。请不要删除它，可用加密备份恢复。'**
   String get failureVaultCorrupted;
 
+  /// No description provided for @failureVaultVersionUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'这个保险库文件来自更新版本的 OneWallet，当前版本无法读取。请先升级应用，文件未被改动。'**
+  String get failureVaultVersionUnsupported;
+
+  /// No description provided for @failureVaultNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到保险库文件。如果之前创建过保险库，请用加密备份恢复。'**
+  String get failureVaultNotFound;
+
+  /// No description provided for @failureVaultAlreadyExists.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库已经存在，不能重复创建。'**
+  String get failureVaultAlreadyExists;
+
+  /// No description provided for @failureVaultItemNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库中找不到这个密钥，它可能已被删除。'**
+  String get failureVaultItemNotFound;
+
   /// No description provided for @failureUnsupported.
   ///
   /// In zh, this message translates to:

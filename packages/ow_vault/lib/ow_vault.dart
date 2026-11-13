@@ -6,3 +6,6 @@ library;
 export 'src/crypto/sodium_crypto.dart' show SodiumVaultCrypto;
 export 'src/crypto/vault_crypto.dart';
 export 'src/derivation/address_deriver.dart';
+export 'src/vault/vault.dart';
+export 'src/vault/vault_item_secret.dart';
+export 'src/vault/vault_session.dart' show VaultSession;
