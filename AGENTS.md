@@ -7,15 +7,18 @@ Flutter，多端架构，第一版发布 iOS 与 Android。
 
 ## 开始任何工作前
 
-1. 读 `docs/EXECUTION_GUIDE.md`：工作流程、完成标准、禁止事项、何时必须停下来问用户。
-2. 读 `docs/progress.md` 和 `docs/TASKS.md`：现在做到哪了，下一个任务是什么。
-3. 按下表找到权威文档，先读再动手。
+1. 读 `docs/HANDOFF.md`：现状、已经形成且必须照做的做法与范本文件、剩余任务的顺序与注意点。
+2. 读 `docs/EXECUTION_GUIDE.md`：工作流程、完成标准、禁止事项、何时必须停下来问用户。
+3. 读 `docs/progress.md` 和 `docs/TASKS.md`：现在做到哪了，下一个任务是什么。
+4. 按下表找到权威文档和范本文件，先读再动手。
 
 ## 文档路由
 
 | 要做的事 | 先读 |
 |---|---|
+| 现状、范本文件、剩余任务的顺序 | `docs/HANDOFF.md` |
 | 怎么干活、什么算完成、什么不能做 | `docs/EXECUTION_GUIDE.md` |
+| 应用现在的界面 | `docs/screenshots/` |
 | 下一个任务及其验收 | `docs/TASKS.md` |
 | 类型名、接口签名、路由、表结构 | `docs/IMPLEMENTATION_SPEC_v1.0.md` |
 | 了解产品是什么、不做什么 | `docs/IDEA_BRIEF_v1.0.md` |

@@ -13,14 +13,14 @@
 | 文档、原型、设计规范 | 完成并定稿 |
 | 工程骨架、CI 配置、依赖边界检查、响应式外壳、主题、字体、通用组件 | 完成 |
 | 领域模型与接口（`ow_domain`） | 完成，测试覆盖率 99% |
-| 数据库（Drift + SQLCipher）、仓储、安全存储、应用启动与依赖装配 | 完成（手机上未验证） |
+| 数据库（Drift + SQLCipher，当前 schemaVersion 为 2）、仓储、安全存储、应用启动与依赖装配 | 完成（手机上未验证） |
 | 网络基础设施（`ow_net`） | 完成 |
 | 链适配器：EVM 六条链、Bitcoin、Solana、Tron | 完成（接口对照官方文档核对过；Bitcoin 之外没有真实调用过） |
 | 价格源、币种映射表、资产汇总计算 | 完成 |
-| 同步与添加钱包的用例 | 完成 |
+| 同步、添加钱包、删除地址的用例；查到的新币种会存库 | 完成 |
 | 第三方目录（`ow_directory`，79 个条目） | 完成，尚未接进页面 |
-| 交易所适配器 | 公共基础与 Binance 完成；OKX、Bybit、Bitget 见 `TASKS.md` 的状态 |
-| 页面 | P02 总览、P03 账户列表、P04、P05、P07、P20 的基础版完成；其余未做 |
+| 交易所适配器 | 公共基础、Binance、OKX、Bybit 完成，尚未接进应用；Bitget 未做（文档站读不到正文，见 M2-09 的条目） |
+| 页面 | P02 总览、P03 账户列表、P04、P05、P07、P20 的基础版完成，实际样子见 `docs/screenshots/`；其余未做 |
 | 应用锁、备份清单、净值曲线 | 未做（M3） |
 | 保险库 | 只有地址派生；加密、文件格式、页面都未做（M4） |
 | 加密备份 | 未做（M5） |
@@ -71,6 +71,7 @@
 - Riverpod 3 会暂停没有监听者的 provider：测试里读 `StreamProvider` 的 `.future` 之前要先 `container.listen`。
 - go_router 的 `push` 之后，路由器的当前地址不反映被 push 的页面；测试里断言页面内容，不要断言路径。
 - `sodium_libs` 包已停止维护，用 `sodium` 包本身。
+- 每做完一批页面，把新页面加进 `app/test/screenshots/screenshots_test.dart` 并重新生成截图（命令在 `docs/screenshots/README.md`），对照 `docs/prototype.html` 目视检查。截图测试默认被跳过，不进常规检查。
 - 生成文件要入库的有三处：`ow_data` 的 `*.g.dart`、`ow_directory` 的 `directory_data.g.dart`、`ow_pricing` 的 `asset_mappings_data.dart`，以及 `app/lib/l10n/app_localizations*.dart`。改了源头要重新生成。
 - `tools/ci/check_deps.dart` 会扫描 `ow_exchanges` 里含 `order`、`withdraw`、`transfer` 等字样的字符串。确属只读的查询路径或返回字段被拦时，加入 `readOnlyPathAllowlist`，每条写明用途和出处。不要用别的办法绕过。
 
@@ -84,18 +85,18 @@
 
 | 任务 | 档位 | 注意 |
 |---|---|---|
-| M2-07、M2-08、M2-09 中尚未完成的交易所适配器 | 省 | 严格照 `ADAPTER_TEMPLATE.md`。公共层已备好这三家的签名、错误码和判定函数，不要重写 |
-| M1-18 中尚未完成的小项 | 中 | 看 `TASKS.md` 该条目下的完成记录。涉及改表时遵守 2.2 第 7 条 |
+| M1-19 界面走查修正 | 省 | 两处小修：二级页面隐藏底部导航；`OwChip` 的勾选标记改用图标。做完重新生成截图 |
 | M2-04 四类链的接线 | 中 | 条目里已写明要做的四件事。Tron 适配器需要内置表里代币的小数位数：给 `asset_mappings.json` 加 `decimals` 字段并重新生成，数值要有出处 |
 | M1-15 目录接入页面 | 中做组件、省做填充 | 先做通用组件 `OwExternalLink`（显示域名、点击后确认、用系统浏览器打开）；再把各页面的链接填上。`Account.walletSource` 从枚举改成目录 id 要改表，遵守 2.2 第 7 条 |
+| M2-09 Bitget 适配器与另两家的遗留 | 中 | 先解决文档来源（条目里写了三种办法）。读不到文档就不要做 Bitget，只做 OKX、Bybit 的错误码降级那几项 |
 
 ### 第二批：交易所接进应用
 
-依赖第一批的交易所适配器。
+Binance、OKX、Bybit 三个适配器已完成，不必等 Bitget。
 
 | 任务 | 档位 | 注意 |
 |---|---|---|
-| M2-10 添加交易所账户（P06）与凭据存储 | 中 | **安全敏感**。`CredentialRepository` 基于 `SecretStore`，键名加 `ow.` 前缀。凭据只在保存那一刻从输入框读出，保存后清空输入框；不进任何状态对象。把 `SyncAccount` 里交易所账户的分支补上（现在返回 `UnsupportedFailure`），并把四个适配器接入 `AppAdapterRegistry`。权限为 `canTrade` 或 `canWithdraw` 时的警告流程按 PRD P06 |
+| M2-10 添加交易所账户（P06）与凭据存储 | 中 | **安全敏感**。`CredentialRepository` 基于 `SecretStore`，键名加 `ow.` 前缀。凭据只在保存那一刻从输入框读出，保存后清空输入框；不进任何状态对象。把 `SyncAccount` 里交易所账户的分支补上（现在返回 `UnsupportedFailure.notIntegrated`），并把已完成的适配器接入 `AppAdapterRegistry`；没完成的交易所在 P06 的选择里显示"即将支持"。权限为 `canTrade` 或 `canWithdraw` 时的警告流程按 PRD P06 |
 | M2-11 交易所账户详情（P08） | 省 | 照 P07 的页面写。显示各适配器的 `notIncluded` 和 `lastSkipped`（"未包含：…"） |
 | M2-12 币种详情（P09） | 省 | 数据来自 `PortfolioCalculator.distributionOf`，已实现。把总览里预留的说明页换成它 |
 | M2-13 同步状态（P21） | 省 | 照数据源设置页的列表写法 |
@@ -145,7 +146,7 @@ M3-01 先做，M3-02 依赖它；其余互不依赖。
 
 | 任务 | 档位 | 注意 |
 |---|---|---|
-| M1-13 集成测试 | 省 | `integration_test` 走通主流程（用假适配器） |
+| M1-13 集成测试 | 省 | `integration_test` 走通主流程（用假适配器）。每批页面做完后，把新页面加进截图测试并重新生成 |
 | M6-05 应用图标、启动页、版本号 | 省 | 图标需要用户提供或确认 |
 | 全仓库审查 | 强 | 对照 `DEV_GUIDELINES` 第 1 节红线和 `SECURITY_DESIGN` 第 8 节的静态检查部分通读一遍代码，列出问题 |
 

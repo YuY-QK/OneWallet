@@ -7,9 +7,9 @@
 - **只看不动**：不签名、不转账、不交易。
 - **不依赖任何人**：没有自有服务器；备份格式公开，可脱离 app 解密。
 
-状态：M0 进行中。见 [`docs/progress.md`](docs/progress.md)。
+状态：M1 基本完成，M2 进行中。见 [`docs/progress.md`](docs/progress.md)。
 
-**参与开发**：先读 [`AGENTS.md`](AGENTS.md) 和 [`docs/EXECUTION_GUIDE.md`](docs/EXECUTION_GUIDE.md)，任务在 [`docs/TASKS.md`](docs/TASKS.md)。交给 AI 执行时使用 [`docs/KICKOFF_PROMPT.md`](docs/KICKOFF_PROMPT.md) 中的指令。
+**参与开发**：先读 [`AGENTS.md`](AGENTS.md)、[`docs/HANDOFF.md`](docs/HANDOFF.md) 和 [`docs/EXECUTION_GUIDE.md`](docs/EXECUTION_GUIDE.md)，任务在 [`docs/TASKS.md`](docs/TASKS.md)。交给 AI 执行时使用 [`docs/KICKOFF_PROMPT.md`](docs/KICKOFF_PROMPT.md) 中的指令。
 
 ## 文档
 
