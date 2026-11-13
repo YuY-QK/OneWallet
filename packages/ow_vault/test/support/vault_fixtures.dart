@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_vault/ow_vault.dart';
+import 'package:ow_vault/src/vault/vault_file.dart';
 
 /// BIP39 官方测试向量里的公开助记词，不对应任何真实资产。
 const abandon =
@@ -81,3 +82,14 @@ T okValue<T>(Result<T> result) =>
 /// 取出 `Err` 的失败，不是 `Err` 时抛出（测试用）。
 Failure errOf<T>(Result<T> result) =>
     result.when(ok: (_) => throw StateError('期望 Err，实际为 Ok'), err: (f) => f);
+
+/// 用主密钥 [vmk] 为存储中（已被测试改动过的）文件重新计算整体校验值。
+///
+/// 模拟"攻击者知道 K_mac"的情形，用来单独验证 mac 之下的 AAD 与认证加密。
+void resign(MemoryVaultStorage storage, VaultCrypto crypto, Sensitive vmk) {
+  final file = okValue(VaultFile.decode(storage.bytes!));
+  final macKey = vmk.use((k) => crypto.deriveSubkey(k, 'ow_fmac_', 1));
+  storage.bytes = file
+      .withMac(crypto.keyedHash(macKey, file.macInput(), 32))
+      .encode();
+}

@@ -213,6 +213,13 @@ final class SodiumVaultCrypto implements VaultCrypto {
     );
   }
 
+  @override
+  bool constantTimeEquals(Uint8List a, Uint8List b) {
+    if (a.length != b.length) return false;
+    if (a.isEmpty) return true;
+    return _sodium.memcmp(a, b);
+  }
+
   /// 把 [key] 复制进安全内存执行 [action]，结束后立即释放（libsodium 释放前清零）。
   T _withKey<T>(Uint8List key, T Function(SecureKey key) action) {
     final secureKey = _sodium.secureCopy(key);

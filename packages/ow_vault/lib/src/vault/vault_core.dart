@@ -5,6 +5,7 @@ import 'package:ow_domain/ow_domain.dart';
 import '../crypto/vault_crypto.dart';
 import 'async_mutex.dart';
 import 'vault_file.dart';
+import 'vault_format.dart';
 
 /// `Vault` 与它打开的各个会话共享的内部状态（不导出）。
 ///
@@ -52,12 +53,21 @@ final class VaultCore {
     _currentBytes = bytes;
   }
 
-  /// 把 [next] 整体写入存储（必须在 [mutex] 内调用）。
+  /// [file] 的整体校验值是否与用 [macKey]（`K_mac`）算出的一致（常量时间比较）。
+  bool verifyMac(VaultFile file, Uint8List macKey) => crypto.constantTimeEquals(
+    crypto.keyedHash(macKey, file.macInput(), macLength),
+    file.mac,
+  );
+
+  /// 用 [macKey] 为 [next] 重新计算整体校验值，再整体写入存储（必须在 [mutex] 内调用）。
   ///
   /// 只有写入成功后才更新 [current]，因此失败时内存状态与存储保持一致。
   /// `writeAtomic` 抛出异常时再读一次存储：内容已是新文件（例如落盘后的
   /// 收尾步骤失败）则按成功处理；否则保持原状并返回 `UnknownFailure`。
-  Future<Result<void>> commit(VaultFile next) async {
+  Future<Result<void>> commit(VaultFile unsigned, Uint8List macKey) async {
+    final next = unsigned.withMac(
+      crypto.keyedHash(macKey, unsigned.macInput(), macLength),
+    );
     final bytes = next.encode();
     try {
       await storage.writeAtomic(bytes);

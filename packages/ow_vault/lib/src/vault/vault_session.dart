@@ -49,8 +49,8 @@ abstract interface class VaultSession {
   void close();
 }
 
-/// [VaultSession] 的实现（不导出）。持有 VMK、`K_item`、`K_fp` 三份 32 字节密钥，
-/// 由 [close] 清零。
+/// [VaultSession] 的实现（不导出）。持有 VMK、`K_item`、`K_fp`、`K_mac` 四份
+/// 32 字节密钥，由 [close] 清零。
 final class VaultSessionImpl implements VaultSession {
   /// 接管 [vmk] 的所有权，并派生两个子密钥。
   VaultSessionImpl(this._core, Uint8List vmk)
@@ -61,13 +61,15 @@ final class VaultSessionImpl implements VaultSession {
         vmk,
         fingerprintKeyContext,
         vaultSubkeyId,
-      );
+      ),
+      _macKey = _core.crypto.deriveSubkey(vmk, macKeyContext, vaultSubkeyId);
 
   final VaultCore _core;
   final int _epoch;
   final Uint8List _vmk;
   final Uint8List _itemKey;
   final Uint8List _fingerprintKey;
+  final Uint8List _macKey;
   var _closed = false;
 
   void _ensureOpen() {
@@ -149,7 +151,7 @@ final class VaultSessionImpl implements VaultSession {
       if (file.item(id) != null) {
         return const Err(ValidationFailure('duplicate_item_id'));
       }
-      final written = await _core.commit(file.withItem(item));
+      final written = await _core.commit(file.withItem(item), _macKey);
       return written.map((_) => fingerprint);
     });
   }
@@ -161,7 +163,7 @@ final class VaultSessionImpl implements VaultSession {
       _ensureOpen();
       final file = _core.current!;
       if (file.item(id) == null) return const Err(VaultItemNotFoundFailure());
-      return _core.commit(file.withoutItem(id));
+      return _core.commit(file.withoutItem(id), _macKey);
     });
   }
 
@@ -212,7 +214,7 @@ final class VaultSessionImpl implements VaultSession {
         wrapNonce: nonce,
         wrapCiphertext: wrapped,
       );
-      return _core.commit(next);
+      return _core.commit(next, _macKey);
     });
   }
 
@@ -223,5 +225,6 @@ final class VaultSessionImpl implements VaultSession {
     wipeBytes(_vmk);
     wipeBytes(_itemKey);
     wipeBytes(_fingerprintKey);
+    wipeBytes(_macKey);
   }
 }

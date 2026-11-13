@@ -274,6 +274,17 @@ void main() {
     });
   });
 
+  test('constantTimeEquals_内容相同为真_任一字节不同或长度不同为假', () {
+    final a = Uint8List.fromList(List.generate(32, (i) => i));
+    expect(crypto.constantTimeEquals(a, Uint8List.fromList(a)), isTrue);
+    for (final i in [0, 15, 31]) {
+      final b = Uint8List.fromList(a)..[i] ^= 1;
+      expect(crypto.constantTimeEquals(a, b), isFalse);
+    }
+    expect(crypto.constantTimeEquals(a, a.sublist(0, 31)), isFalse);
+    expect(crypto.constantTimeEquals(Uint8List(0), Uint8List(0)), isTrue);
+  });
+
   test('libraryVersion_为构建钩子编译的libsodium版本', () {
     expect(crypto.libraryVersion, '1.0.22');
   });

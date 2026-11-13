@@ -13,6 +13,7 @@ void main() {
   late SodiumVaultCrypto crypto;
   late MemoryVaultStorage storage;
   late Vault vault;
+  late Sensitive master;
   const password = 'fake-master-password';
 
   setUpAll(() async => crypto = await SodiumVaultCrypto.load());
@@ -24,6 +25,7 @@ void main() {
       await s.addItem('m1', mnemonicSecret(abandon, passphrase: 'TREZOR')),
     );
     okValue(await s.addItem('k1', privateKeySecret()));
+    master = s.exportMasterKey();
     s.close();
   });
 
@@ -34,6 +36,9 @@ void main() {
     defaultParams: fastParams,
   ).unlockWithPassword(sensitive(password));
 
+  /// 解锁失败的原因（期望整体校验值不符）。
+  Future<Failure> unlockFailure() async => errOf(await unlock());
+
   Future<Failure> readFailure(String id) async {
     final session = okValue(await unlock());
     try {
@@ -41,6 +46,12 @@ void main() {
     } finally {
       session.close();
     }
+  }
+
+  /// 重新签上 mac（模拟攻击者绕过整体校验）后读取 [id] 的失败原因。
+  Future<Failure> resignedReadFailure(String id) async {
+    resign(storage, crypto, master);
+    return readFailure(id);
   }
 
   group('AAD 生效', () {
@@ -54,7 +65,8 @@ void main() {
         b[field] = t;
       }
       storage.json = json;
-      expect(await readFailure('m1'), isA<VaultCorruptedFailure>());
+      expect(await unlockFailure(), isA<VaultCorruptedFailure>());
+      expect(await resignedReadFailure('m1'), isA<VaultCorruptedFailure>());
       expect(await readFailure('k1'), isA<VaultCorruptedFailure>());
     });
 
@@ -63,7 +75,8 @@ void main() {
       MemoryVaultStorage.itemOf(json, 0)['kind'] = 'private_key';
       MemoryVaultStorage.itemOf(json, 1)['kind'] = 'mnemonic';
       storage.json = json;
-      expect(await readFailure('m1'), isA<VaultCorruptedFailure>());
+      expect(await unlockFailure(), isA<VaultCorruptedFailure>());
+      expect(await resignedReadFailure('m1'), isA<VaultCorruptedFailure>());
       expect(await readFailure('k1'), isA<VaultCorruptedFailure>());
     });
 
@@ -71,7 +84,8 @@ void main() {
       final json = storage.json;
       MemoryVaultStorage.itemOf(json, 0)['id'] = 'm9';
       storage.json = json;
-      expect(await readFailure('m9'), isA<VaultCorruptedFailure>());
+      expect(await unlockFailure(), isA<VaultCorruptedFailure>());
+      expect(await resignedReadFailure('m9'), isA<VaultCorruptedFailure>());
       expect(await readFailure('m1'), isA<VaultItemNotFoundFailure>());
     });
   });
@@ -94,13 +108,18 @@ void main() {
       storage.bytes = original;
     }
 
-    test('条目密文或nonce的任一字节被改_读取返回VaultCorruptedFailure', () async {
+    test('条目密文或nonce的任一字节被改_解锁报损坏_绕过mac后读取也失败', () async {
       for (final field in ['ct', 'nonce']) {
         await flipEachByte(
           (j) => MemoryVaultStorage.itemOf(j, 1)[field]! as String,
           (j, v) => MemoryVaultStorage.itemOf(j, 1)[field] = v,
-          () async =>
-              expect(await readFailure('k1'), isA<VaultCorruptedFailure>()),
+          () async {
+            expect(await unlockFailure(), isA<VaultCorruptedFailure>());
+            expect(
+              await resignedReadFailure('k1'),
+              isA<VaultCorruptedFailure>(),
+            );
+          },
         );
       }
       // 另一条不受影响。
@@ -178,6 +197,9 @@ void main() {
         '版本为小数': (j) => j['version'] = 1.5,
         'format不对': (j) => j['format'] = 'onewallet-backup',
         'format缺失': (j) => j.remove('format'),
+        'mac缺失': (j) => j.remove('mac'),
+        'mac长度': (j) => j['mac'] = base64.encode(Uint8List(31)),
+        'mac不是字符串': (j) => j['mac'] = 1,
       };
       for (final MapEntry(key: name, value: mutate) in mutations.entries) {
         storage.bytes = Uint8List.fromList(original);
@@ -217,10 +239,7 @@ void main() {
       expect(storage.bytes, before);
     });
 
-    test('主密钥解锁_全部条目被篡改_无法校验返回WrongPasswordFailure', () async {
-      final s = okValue(await unlock());
-      final master = s.exportMasterKey();
-      s.close();
+    test('主密钥解锁_文件被改_返回WrongPasswordFailure_主密码解锁则报损坏', () async {
       final json = storage.json;
       for (final i in [0, 1]) {
         final item = MemoryVaultStorage.itemOf(json, i);
@@ -236,6 +255,8 @@ void main() {
       final f = errOf(await fresh.unlockWithMasterKey(master));
       expect(f, isA<WrongPasswordFailure>());
       expect(f.detail, 'master_key_mismatch');
+      // 无法区分"主密钥不对"与"文件被改"；退回主密码时才报告损坏。
+      expect(await unlockFailure(), isA<VaultCorruptedFailure>());
     });
   });
 

@@ -143,4 +143,9 @@ abstract interface class VaultCrypto {
   ///
   /// [key] 16–64 字节，[outputLength] 16–64，否则抛出 [ArgumentError]。
   Uint8List keyedHash(Uint8List key, Uint8List message, int outputLength);
+
+  /// 常量时间比较（libsodium `sodium_memcmp`）：耗时只取决于长度，不取决于内容。
+  ///
+  /// 长度不同时直接返回 false（长度不是秘密）。用于比较校验值等密钥材料。
+  bool constantTimeEquals(Uint8List a, Uint8List b);
 }

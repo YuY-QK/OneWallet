@@ -235,12 +235,48 @@ void main() {
       expect(short, isA<WrongPasswordFailure>());
     });
 
-    test('unlockWithMasterKey_空保险库无法校验_要求主密码', () async {
+    test('unlockWithMasterKey_空保险库_正确主密钥成功_错误主密钥失败', () async {
       final session = await created();
       final master = session.exportMasterKey();
-      final f = errOf(await vault.unlockWithMasterKey(master));
+      session.close();
+      final again = okValue(await vault.unlockWithMasterKey(master));
+      okValue(await again.addItem('k1', privateKeySecret()));
+      again.close();
+      // 用主密码仍能读到经主密钥会话写入的条目。
+      final viaPassword = okValue(
+        await vault.unlockWithPassword(sensitive('fake-master-password')),
+      );
+      expect(
+        okValue(await viaPassword.readItem('k1')).kind,
+        VaultItemKind.privateKey,
+      );
+      viaPassword.close();
+    });
+
+    test('unlockWithMasterKey_空保险库_错误主密钥失败', () async {
+      (await created()).close();
+      final f = errOf(
+        await vault.unlockWithMasterKey(Sensitive(Uint8List(32))),
+      );
       expect(f, isA<WrongPasswordFailure>());
-      expect(f.detail, 'master_key_unverifiable');
+      expect(f.detail, 'master_key_mismatch');
+    });
+
+    test('unlockWithMasterKey_过期主密钥（另一个保险库的VMK）_对空保险库失败', () async {
+      final old = await created();
+      final stale = old.exportMasterKey();
+      old.close();
+      // 保险库被删除后重建：新的 VMK，旧的硬件包裹已过期。
+      await storage.delete();
+      final rebuilt = Vault(
+        crypto: crypto,
+        storage: storage,
+        defaultParams: fastParams,
+      );
+      okValue(await rebuilt.create(sensitive('fake-master-password'))).close();
+      final f = errOf(await rebuilt.unlockWithMasterKey(stale));
+      expect(f, isA<WrongPasswordFailure>());
+      expect(storage.json['items'], isEmpty);
     });
 
     test('exportMasterKey_副本被调用方清零_不影响会话', () async {

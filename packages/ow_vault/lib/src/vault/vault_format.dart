@@ -18,6 +18,12 @@ const itemKeyContext = 'ow_items';
 /// 查重指纹子密钥 `K_fp` 的 `crypto_kdf` 上下文（8 字节）。
 const fingerprintKeyContext = 'ow_fprnt';
 
+/// 文件整体校验值子密钥 `K_mac` 的 `crypto_kdf` 上下文（8 字节）。
+const macKeyContext = 'ow_fmac_';
+
+/// 文件整体校验值 `mac` 的长度。
+const macLength = 32;
+
 /// 两个子密钥共用的 `crypto_kdf` 子密钥编号（上下文已经区分用途）。
 const vaultSubkeyId = 1;
 
@@ -69,15 +75,69 @@ Uint8List itemAad(int version, String id, VaultItemKind kind) => _concat([
   _lp(vaultItemKindName(kind)),
 ]);
 
-Uint8List _lp(String value) {
-  final bytes = utf8.encode(value);
-  if (bytes.length > 0xffff) throw ArgumentError('AAD 字段过长');
+/// 文件整体校验值的输入 M（SECURITY_DESIGN 5.1），不依赖 JSON 序列化细节：
+///
+/// ```text
+/// M = lp("onewallet-vault") ‖ lp("file_mac") ‖ u16be(version)
+///   ‖ lp("argon2id") ‖ u32be(mem_kib) ‖ u32be(iters) ‖ u32be(parallelism) ‖ lp(salt)
+///   ‖ lp(wrap_nonce) ‖ lp(wrap_ct)
+///   ‖ u32be(条目数)
+///   ‖ 按文件中的顺序，每个条目：lp(id) ‖ lp(kind) ‖ lp(nonce) ‖ lp(ct)
+/// ```
+///
+/// 字节串字段的 `lp(x)` 为 `u16be(字节数) ‖ x`；字符串取 UTF-8 字节。
+Uint8List fileMacInput({
+  required int version,
+  required int memKib,
+  required int iterations,
+  required int parallelism,
+  required Uint8List salt,
+  required Uint8List wrapNonce,
+  required Uint8List wrapCiphertext,
+  required List<(String id, VaultItemKind kind, Uint8List nonce, Uint8List ct)>
+  items,
+}) => _concat([
+  _lp(vaultFormatId),
+  _lp('file_mac'),
+  _u16(version),
+  _lp('argon2id'),
+  _u32(memKib),
+  _u32(iterations),
+  _u32(parallelism),
+  _lpBytes(salt),
+  _lpBytes(wrapNonce),
+  _lpBytes(wrapCiphertext),
+  _u32(items.length),
+  for (final (id, kind, nonce, ct) in items) ...[
+    _lp(id),
+    _lp(vaultItemKindName(kind)),
+    _lpBytes(nonce),
+    _lpBytes(ct),
+  ],
+]);
+
+Uint8List _lp(String value) => _lpBytes(utf8.encode(value));
+
+Uint8List _lpBytes(List<int> bytes) {
+  if (bytes.length > 0xffff) throw ArgumentError('字段过长');
   return _concat([_u16(bytes.length), bytes]);
 }
 
 Uint8List _u16(int value) {
   if (value < 0 || value > 0xffff) throw ArgumentError.value(value, 'value');
   return Uint8List.fromList([value >> 8, value & 0xff]);
+}
+
+Uint8List _u32(int value) {
+  if (value < 0 || value > 0xffffffff) {
+    throw ArgumentError.value(value, 'value');
+  }
+  return Uint8List.fromList([
+    value >> 24 & 0xff,
+    value >> 16 & 0xff,
+    value >> 8 & 0xff,
+    value & 0xff,
+  ]);
 }
 
 Uint8List _concat(List<List<int>> parts) {

@@ -23,7 +23,10 @@ final class VaultFileItem {
 
 /// 保险库文件 `vault.owv` 的内存模型（SECURITY_DESIGN 5.1）。不可变。
 ///
-/// 只包含公开数据与密文，所以可以用 `dart:convert` 的 JSON 编解码。
+/// 只包含公开数据、密文与校验值，所以可以用 `dart:convert` 的 JSON 编解码。
+///
+/// [mac] 是整体校验值（`keyedHash(K_mac, macInput(), 32)`）。`with…` 系列方法
+/// 返回的新文件 [mac] 为空，必须经 [withMac] 签上新值才能 [encode]。
 final class VaultFile {
   const VaultFile({
     required this.version,
@@ -32,6 +35,7 @@ final class VaultFile {
     required this.wrapNonce,
     required this.wrapCiphertext,
     required this.items,
+    required this.mac,
   });
 
   final int version;
@@ -40,6 +44,7 @@ final class VaultFile {
   final Uint8List wrapNonce;
   final Uint8List wrapCiphertext;
   final List<VaultFileItem> items;
+  final Uint8List mac;
 
   /// 合法条目 id：1–64 个 ASCII 字母、数字、`-`、`_`（UUID 符合）。
   static final itemIdPattern = RegExp(r'^[0-9A-Za-z_-]{1,64}$');
@@ -76,7 +81,33 @@ final class VaultFile {
     wrapNonce: wrapNonce,
     wrapCiphertext: wrapCiphertext,
     items: items,
+    mac: _unsigned,
   );
+
+  /// 签上整体校验值后的文件。
+  VaultFile withMac(Uint8List mac) => VaultFile(
+    version: version,
+    salt: salt,
+    kdfParams: kdfParams,
+    wrapNonce: wrapNonce,
+    wrapCiphertext: wrapCiphertext,
+    items: items,
+    mac: mac,
+  );
+
+  /// 整体校验值的输入 M（除 `mac` 外的全部内容，编码见 [fileMacInput]）。
+  Uint8List macInput() => fileMacInput(
+    version: version,
+    memKib: kdfParams.memKib,
+    iterations: kdfParams.iterations,
+    parallelism: kdfParams.parallelism,
+    salt: salt,
+    wrapNonce: wrapNonce,
+    wrapCiphertext: wrapCiphertext,
+    items: [for (final i in items) (i.id, i.kind, i.nonce, i.ciphertext)],
+  );
+
+  static final _unsigned = Uint8List(0);
 
   VaultFile _copy({required List<VaultFileItem> items}) => VaultFile(
     version: version,
@@ -85,35 +116,40 @@ final class VaultFile {
     wrapNonce: wrapNonce,
     wrapCiphertext: wrapCiphertext,
     items: List.unmodifiable(items),
+    mac: _unsigned,
   );
 
-  /// 序列化为 UTF-8 JSON，字段顺序固定。
-  Uint8List encode() => utf8.encode(
-    jsonEncode({
-      'format': vaultFormatId,
-      'version': version,
-      'kdf': {
-        'alg': 'argon2id',
-        'salt': base64.encode(salt),
-        'mem_kib': kdfParams.memKib,
-        'iters': kdfParams.iterations,
-        'parallelism': kdfParams.parallelism,
-      },
-      'wrapped_vmk_pw': {
-        'nonce': base64.encode(wrapNonce),
-        'ct': base64.encode(wrapCiphertext),
-      },
-      'items': [
-        for (final item in items)
-          {
-            'id': item.id,
-            'kind': vaultItemKindName(item.kind),
-            'nonce': base64.encode(item.nonce),
-            'ct': base64.encode(item.ciphertext),
-          },
-      ],
-    }),
-  );
+  /// 序列化为 UTF-8 JSON，字段顺序固定。尚未签上校验值时抛出 [StateError]。
+  Uint8List encode() {
+    if (mac.length != macLength) throw StateError('保险库文件尚未计算校验值');
+    return utf8.encode(_json());
+  }
+
+  String _json() => jsonEncode({
+    'format': vaultFormatId,
+    'version': version,
+    'kdf': {
+      'alg': 'argon2id',
+      'salt': base64.encode(salt),
+      'mem_kib': kdfParams.memKib,
+      'iters': kdfParams.iterations,
+      'parallelism': kdfParams.parallelism,
+    },
+    'wrapped_vmk_pw': {
+      'nonce': base64.encode(wrapNonce),
+      'ct': base64.encode(wrapCiphertext),
+    },
+    'items': [
+      for (final item in items)
+        {
+          'id': item.id,
+          'kind': vaultItemKindName(item.kind),
+          'nonce': base64.encode(item.nonce),
+          'ct': base64.encode(item.ciphertext),
+        },
+    ],
+    'mac': base64.encode(mac),
+  });
 
   /// 解析文件内容。
   ///
@@ -121,7 +157,7 @@ final class VaultFile {
   /// - `version` 高于 [vaultFormatVersion] → `VaultVersionUnsupportedFailure`
   ///   （在检查其余结构之前判断，因为新版本的结构可能不同）。
   ///
-  /// 只校验结构；密文是否被篡改由解密时的认证发现。`detail` 只含固定的原因标记。
+  /// 只校验结构；`mac` 要在取得 VMK 之后校验，密文由解密时的认证校验。`detail` 只含固定的原因标记。
   static Result<VaultFile> decode(Uint8List bytes) {
     final Object? json;
     try {
@@ -155,6 +191,7 @@ final class VaultFile {
       'kdf',
       'wrapped_vmk_pw',
       'items',
+      'mac',
     })) {
       return null;
     }
@@ -173,7 +210,11 @@ final class VaultFile {
     final wrapNonce = _b64(wrap['nonce'], nonceLength);
     final wrapCt = _b64(wrap['ct'], vmkLength + tagLength);
     final decodedItems = _decodeItems(items);
-    if (wrapNonce == null || wrapCt == null || decodedItems == null) {
+    final mac = _b64(json['mac'], macLength);
+    if (wrapNonce == null ||
+        wrapCt == null ||
+        decodedItems == null ||
+        mac == null) {
       return null;
     }
     return VaultFile(
@@ -183,6 +224,7 @@ final class VaultFile {
       wrapNonce: wrapNonce,
       wrapCiphertext: wrapCt,
       items: List.unmodifiable(decodedItems),
+      mac: mac,
     );
   }
 

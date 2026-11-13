@@ -20,6 +20,7 @@
 | A1 | 手机丢失或被盗（已锁屏） | 系统级加密；数据库加密；保险库密钥由硬件密钥和主密码保护 | 极低 |
 | A2 | 他人拿到已解锁的手机 | 应用锁；查看明文每次都要验证 | 生物识别被胁迫使用 |
 | A3 | 保险库文件或备份文件被拷走 | Argon2id 加 XChaCha20-Poly1305；强度取决于密码 | 弱密码可被离线暴力破解 |
+| A3b | 能写保险库文件的攻击者删改、调换、插入条目或改动文件头 | 每条密文带 AAD；文件整体校验值 `mac`（`K_mac` 计算，覆盖除 `mac` 外的全部内容），任何解锁都先校验 | 把文件**整体**回滚到本库的某个旧版本（含 `.bak`）无法检测：旧版本的 `mac` 同样有效 |
 | A4 | 同设备上的恶意 app | 系统沙盒；不使用剪贴板；Android 禁止截屏；敏感数据不放外部存储 | 已越狱或 root 的设备上沙盒失效 |
 | A5 | 恶意输入法记录输入 | iOS 上敏感输入框使用系统安全输入（禁用第三方键盘）；助记词输入提供应用内词表键盘 | Android 上私钥输入仍经过系统输入法（见 6.3） |
 | A6 | 录屏、投屏、截屏 | Android 设置禁止截屏标志；iOS 检测录屏时隐藏内容 | iOS 无法阻止单张截屏；无法防止他人偷看或拍摄屏幕 |
@@ -41,7 +42,8 @@
                                           ├─► 解开 ► VMK（保险库主密钥，32 字节随机数）
 硬件密钥（需生物识别）─────────────────────┘            │
                                                       ├─ KDF("ow_items") ► K_item  加密每个密钥条目
-                                                      └─ KDF("ow_fprnt") ► K_fp    计算查重指纹
+                                                      ├─ KDF("ow_fprnt") ► K_fp    计算查重指纹
+                                                      └─ KDF("ow_fmac_") ► K_mac   计算保险库文件的整体校验值
 ```
 
 - **VMK**：创建保险库时由系统安全随机数生成，永不以明文落盘。
@@ -80,7 +82,8 @@
   "wrapped_vmk_pw": { "nonce": b64, "ct": b64 },
   "items": [
     { "id": "uuid", "kind": "mnemonic|private_key", "nonce": b64, "ct": b64 }
-  ]
+  ],
+  "mac": b64
 }
 ```
 
@@ -96,7 +99,8 @@
 - `kdf`：`alg` 固定为 `"argon2id"`；`salt` 16 字节；`mem_kib`、`iters` 为整数，读取时只接受 8–1048576 与 1–32（文件头不受认证保护，限制取值防止被改成耗尽内存的参数）；`parallelism` 只能为 1（第 4 节）。
 - `wrapped_vmk_pw`：`nonce` 24 字节；`ct` 为 `XChaCha20-Poly1305(KEK_pw, nonce, VMK, AAD_vmk)`，即 32 字节密文加 16 字节标签，共 48 字节。
 - `items[]`：`id` 为 1–64 个 ASCII 字母、数字、`-`、`_`（UUID 符合），在文件内唯一；`kind` 为 `"mnemonic"` 或 `"private_key"`；`nonce` 24 字节；`ct` 为 `XChaCha20-Poly1305(K_item, nonce, 条目明文, AAD_item)`。
-- 子密钥：`K_item = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_items", VMK)`，`K_fp = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_fprnt", VMK)`。
+- `mac`：32 字节，`= crypto_generichash(输出 32 字节, 消息 = M, 密钥 = K_mac)`，M 的编码见下文"整体校验值"。字段缺失或长度不对视为损坏。
+- 子密钥：`K_item = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_items", VMK)`，`K_fp = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_fprnt", VMK)`，`K_mac = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_fmac_", VMK)`（上下文必须正好 8 字节，所以末尾补一个 `_`）。
 - 每次加密（包裹 VMK、加密条目）都由 `randombytes_buf` 生成新的 24 字节 nonce。
 
 **关联数据（AAD）的精确字节编码**
@@ -112,6 +116,27 @@ AAD_item = lp("onewallet-vault") ‖ lp("item") ‖ u16be(version) ‖ lp(id) �
 - 第二段（`"wrapped_vmk_pw"` 或 `"item"`）区分用途，防止一种密文被挪作另一种使用。
 - 示例（version 1）：`AAD_vmk` 的十六进制为 `000f6f6e6577616c6c65742d7661756c74 000e777261707065645f766d6b5f7077 0001`（空格只为易读）。测试 `vault_format_test.dart` 固定了这两个编码的字节。
 - 效果：两条密文互换、改动条目的 `id` 或 `kind`、把条目挪到不同版本的文件里，解密都会认证失败。
+
+**整体校验值 `mac`**
+
+M 是文件除 `mac` 外全部内容的规范编码，逐字段加长度前缀，不依赖 JSON 的序列化细节（键顺序、空白、Base64 写法）。记 `u32be(n)` 为 4 字节大端无符号整数，字节串的 `lp(x) = u16be(x 的字节数) ‖ x`（字符串取 UTF-8 字节，与 AAD 相同）：
+
+```
+M = lp("onewallet-vault") ‖ lp("file_mac") ‖ u16be(version)
+  ‖ lp("argon2id") ‖ u32be(mem_kib) ‖ u32be(iters) ‖ u32be(parallelism) ‖ lp(salt)
+  ‖ lp(wrapped_vmk_pw.nonce) ‖ lp(wrapped_vmk_pw.ct)
+  ‖ u32be(条目数)
+  ‖ 按文件中的顺序，对每个条目：lp(id) ‖ lp(kind) ‖ lp(nonce) ‖ lp(ct)
+```
+
+- 字节串字段（salt、nonce、ct）取 Base64 解码后的原始字节。
+- 校验在取得 VMK 之后、返回会话之前进行，用常量时间比较（`sodium_memcmp`）：
+  - 主密码解锁：包裹解不开 → 密码错误；包裹解开但 `mac` 不符 → 文件损坏；
+  - 主密钥解锁：`mac` 不符 → 报告为密码错误。此时无法区分"主密钥不对"（如过期的硬件包裹）与"文件被改"，对调用方而言都应退回主密码解锁；若确是文件被改，主密码解锁会报告损坏。空保险库同样可以用 `mac` 校验主密钥。
+- 每次写入（创建、增删条目、改密码）都重新计算。`mac` 是内容的确定性函数：内容回到旧值时 `mac` 也回到旧值。
+- 能检测：删除、调换顺序、插入（包括从其他保险库或本库旧版本复制来的合法条目）、改动任一头部字段或 `mac` 本身。不能检测：把整个文件回滚为本库旧版本（威胁 A3b 的残余风险）。
+- 修改 kdf 参数或 salt 而保留原包裹时，主密码解锁会先因包裹解不开而表现为密码错误，这一行为不变。
+- 示例与测试：`packages/ow_vault/test/vault/vault_mac_test.dart` 用固定输入钉死了 M 的十六进制字节与 `mac` 的值（期望值由 Python `hashlib.blake2b` 独立算出）。
 
 **条目明文**
 
@@ -130,8 +155,8 @@ AAD_item = lp("onewallet-vault") ‖ lp("item") ‖ u16be(version) ‖ lp(id) �
 
 **解锁与修改**
 
-- 主密码解锁：`KEK_pw = Argon2id(主密码, salt, 文件头参数)`，解开 `wrapped_vmk_pw`。认证加密无法区分"密码错误"与"salt、参数或包裹被篡改"，两者都报告为密码错误。
-- 主密钥解锁（硬件解包之后）：文件中没有可直接校验 VMK 的字段，实现以"至少一个条目能用由它派生的 `K_item` 通过认证解密"来确认主密钥正确；**保险库里没有条目时无法校验，必须用主密码解锁**。这样，过期的硬件包裹（例如保险库被重建后）不会让新条目用错误的密钥写入。
+- 主密码解锁：`KEK_pw = Argon2id(主密码, salt, 文件头参数)`，解开 `wrapped_vmk_pw`，再校验 `mac`。认证加密无法区分"密码错误"与"salt、参数或包裹被篡改"，两者都报告为密码错误。
+- 主密钥解锁（硬件解包之后）：以整体校验值 `mac` 判定主密钥是否正确（见上文），空保险库也能校验。这样，过期的硬件包裹（例如保险库被重建后）不会被接受，新条目不会用错误的密钥写入。
 - 改主密码：生成新 salt，按当前默认参数重新派生 `KEK_pw`，用新 nonce 重新包裹同一个 VMK。VMK 不变，因此 `K_item`、`K_fp` 与全部条目密文、查重指纹都不变，无需重新加密。
 - 每次修改（创建、增删条目、改密码）都在内存中构造完整的新文件，整体交给 `VaultStorage.writeAtomic`；写入成功后才更新内存状态。同一个 `Vault` 实例上的写操作串行执行。
 
@@ -183,7 +208,9 @@ AAD_item = lp("onewallet-vault") ‖ lp("item") ‖ u16be(version) ‖ lp(id) �
 - 解密、派生等操作在独立的 isolate 中进行，结束即销毁该 isolate。
 - **已知局限**：Dart 字符串不可变且由垃圾回收管理，显示助记词时必然会产生无法主动清除的字符串副本。应对：缩短明文的存活时间，页面销毁后不保留引用；不把明文放进任何状态管理对象、路由参数或缓存。
 - 明文不得作为参数传给日志、错误信息、异常对象。
-- 保险库的实现（M4-02）：条目明文的编码与解码直接在字节上完成，不产生 `String`；中间缓冲（编码结果、解密结果）用完即清零；会话持有的 VMK、`K_item`、`K_fp` 在 `close()` 时清零。传给 libsodium 的密钥在其安全内存中的副本于每次调用结束时释放并清零（ADR_005）。Argon2id 在独立 isolate 中计算；AEAD、KDF、BLAKE2b 为微秒级运算，在调用方的 isolate 中同步执行，"整个解密、派生流程放进独立 isolate"由应用层用例负责（如 M4-08 的派生）。
+- 保险库的实现（M4-02）：条目明文的编码与解码直接在字节上完成，不产生 `String`；中间缓冲（编码结果、解密结果）用完即清零；会话持有的 VMK、`K_item`、`K_fp`、`K_mac` 在 `close()` 时清零。传给 libsodium 的密钥在其安全内存中的副本于每次调用结束时释放并清零（ADR_005）。
+- **已知局限（isolate）**：只有 Argon2id 在独立 isolate 中计算；AEAD、KDF、BLAKE2b 为微秒级运算，在调用方的 isolate 中同步执行。"解密、派生等操作在独立 isolate 中进行"的要求由应用层用例负责把整段流程放进 isolate（如 M4-08 的派生）。
+- **已知局限（Dart 堆上的密钥副本）**：`VaultCrypto` 接口以 `Uint8List` 收发密钥，会话也以 `Uint8List` 持有 VMK 与子密钥。这些字节位于 Dart 堆，垃圾回收在移动或压缩对象时可能留下旧副本，`close()` 的清零覆盖不到它们。缓解：密钥只在会话期间存在、会话用完即关；进入 libsodium 的副本位于加锁的安全内存。彻底解决需要把接口改为直接传递 libsodium 的 `SecureKey`（改 IMPLEMENTATION_SPEC 的签名），列为后续可选改进。
 
 ### 6.6 设备完整性
 

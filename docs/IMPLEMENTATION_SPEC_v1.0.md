@@ -496,6 +496,7 @@ abstract interface class VaultCrypto {
   Result<Uint8List> aeadDecrypt(Uint8List key, Uint8List nonce, Uint8List ciphertext, Uint8List aad); // 认证失败 → Err(VaultCorruptedFailure)
   Uint8List deriveSubkey(Uint8List masterKey, String context8, int subkeyId); // crypto_kdf，输出 32 字节
   Uint8List keyedHash(Uint8List key, Uint8List message, int outputLength); // crypto_generichash（带密钥）
+  bool constantTimeEquals(Uint8List a, Uint8List b); // sodium_memcmp；长度不同返回 false
 }
 
 final class SodiumVaultCrypto implements VaultCrypto {
@@ -541,8 +542,10 @@ final class Vault {
   Future<bool> exists();
   Future<Result<VaultSession>> create(Sensitive password);             // 空密码 → ValidationFailure；已存在 → VaultAlreadyExistsFailure（不覆盖）
   Future<Result<VaultSession>> unlockWithPassword(Sensitive password); // 无文件 → VaultNotFoundFailure；损坏 → VaultCorruptedFailure；
-                                                                       // 版本过新 → VaultVersionUnsupportedFailure；密码错 → WrongPasswordFailure
-  Future<Result<VaultSession>> unlockWithMasterKey(Sensitive masterKey); // 硬件解包后调用；主密钥不对或保险库没有条目（无法校验）→ WrongPasswordFailure
+                                                                       // 版本过新 → VaultVersionUnsupportedFailure；密码错（包裹解不开）→ WrongPasswordFailure；
+                                                                       // 包裹解开但整体校验值 mac 不符 → VaultCorruptedFailure
+  Future<Result<VaultSession>> unlockWithMasterKey(Sensitive masterKey); // 硬件解包后调用；以 mac 判定主密钥：不符（主密钥不对或文件被改，
+                                                                         // 无法区分）→ WrongPasswordFailure，调用方退回主密码；空保险库也可校验
 }
 // 约定：一个保险库文件在进程内只由一个 Vault 实例管理。读写存储的 IO 异常 → UnknownFailure。
 // 传入的密码、主密钥、条目明文都不被清除，仍归调用方。

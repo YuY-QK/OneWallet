@@ -12,7 +12,9 @@ import 'vault_session.dart';
 ///
 /// 密钥层级：随机 32 字节 VMK；`KEK_pw = Argon2id(主密码, 16 字节 salt)`；用 `KEK_pw`
 /// 以 XChaCha20-Poly1305 包裹 VMK 存入文件头；`K_item = KDF(VMK, "ow_items")` 加密
-/// 条目，`K_fp = KDF(VMK, "ow_fprnt")` 计算查重指纹。硬件包裹不在本类中（应用层用
+/// 条目，`K_fp = KDF(VMK, "ow_fprnt")` 计算查重指纹，`K_mac = KDF(VMK, "ow_fmac_")`
+/// 计算文件整体校验值 `mac`（覆盖除 `mac` 外的全部内容）。任何解锁路径都在取得
+/// VMK 之后、返回会话之前校验 `mac`；每次写入都重新计算。硬件包裹不在本类中（应用层用
 /// [VaultSession.exportMasterKey] 与 [unlockWithMasterKey] 完成）。
 ///
 /// 并发约定：一个保险库文件在进程内只由一个 [Vault] 实例管理。本实例上的创建、
@@ -60,7 +62,13 @@ final class Vault {
       final vmk = _crypto.randomBytes(vmkLength);
       try {
         final file = await _newFile(vmk, password);
-        final written = await _core.commit(file);
+        final macKey = _macKey(vmk);
+        final Result<void> written;
+        try {
+          written = await _core.commit(file, macKey);
+        } finally {
+          wipeBytes(macKey);
+        }
         if (written case Err(:final failure)) {
           wipeBytes(vmk);
           return Err(failure);
@@ -92,9 +100,23 @@ final class Vault {
           vmkWrapAad(vaultFormatVersion),
         ),
         items: const [],
+        mac: Uint8List(0),
       );
     } finally {
       wipeBytes(kek);
+    }
+  }
+
+  Uint8List _macKey(Uint8List vmk) =>
+      _crypto.deriveSubkey(vmk, macKeyContext, vaultSubkeyId);
+
+  /// 用 [vmk] 校验 [file] 的整体校验值。
+  bool _macValid(VaultFile file, Uint8List vmk) {
+    final macKey = _macKey(vmk);
+    try {
+      return _core.verifyMac(file, macKey);
+    } finally {
+      wipeBytes(macKey);
     }
   }
 
@@ -102,8 +124,10 @@ final class Vault {
   ///
   /// 失败：文件不存在 → `VaultNotFoundFailure`；不是保险库文件或结构损坏 →
   /// `VaultCorruptedFailure`；版本过新 → `VaultVersionUnsupportedFailure`；
-  /// 密码错误 → `WrongPasswordFailure`。认证加密无法区分"密码错"与"文件头里的
-  /// salt、参数或包裹被篡改"，后者同样报告为 `WrongPasswordFailure`。
+  /// 密码错误（包裹解不开）→ `WrongPasswordFailure`；包裹解开但整体校验值
+  /// 不符（条目被删改、调换、插入，或 `mac` 被改）→ `VaultCorruptedFailure`。
+  /// 认证加密无法区分"密码错"与"文件头里的 salt、参数或包裹被篡改"——它们会
+  /// 先让包裹解不开——所以后者同样报告为 `WrongPasswordFailure`。
   /// 失败信息不含密码，也不透露密码"接近"与否。
   Future<Result<VaultSession>> unlockWithPassword(Sensitive password) async {
     if (password.use((b) => b.isEmpty)) {
@@ -131,6 +155,10 @@ final class Vault {
         wipeBytes(vmk);
         return const Err(VaultCorruptedFailure('vmk_length'));
       }
+      if (!_macValid(file, vmk)) {
+        wipeBytes(vmk);
+        return const Err(VaultCorruptedFailure('mac_mismatch'));
+      }
       _core.adopt(file, bytes);
       return Ok(VaultSessionImpl(_core, vmk));
     });
@@ -138,13 +166,10 @@ final class Vault {
 
   /// 用硬件解包得到的主密钥 [masterKey] 解锁（`HardwareKeyStore.unwrap` 之后调用）。
   ///
-  /// 保险库文件中没有可直接校验 VMK 的字段，所以用"至少一个条目能以它派生的
-  /// `K_item` 通过认证解密"来确认主密钥正确。因此：
-  /// - 长度不是 32 字节，或没有任何条目能解开 → `WrongPasswordFailure`
-  ///   （应用层据此改为要求主密码）；
-  /// - **保险库里一个条目都没有时无法校验，同样返回 `WrongPasswordFailure`**，
-  ///   必须用主密码解锁。否则一个过期的硬件包裹（例如保险库被重建后）会让
-  ///   新条目用错误的密钥写入，日后用主密码也读不出来。
+  /// 用文件的整体校验值 `mac` 判定主密钥是否正确（空保险库同样可以校验）。
+  /// 长度不是 32 字节或 `mac` 校验不通过 → `WrongPasswordFailure`：此时无法区分
+  /// "主密钥不对"（例如过期的硬件包裹）与"文件被改"，对调用方而言都应退回
+  /// 主密码解锁——若是文件被改，主密码解锁会报告 `VaultCorruptedFailure`。
   /// 其余失败与 [unlockWithPassword] 相同。[masterKey] 不被清除。
   Future<Result<VaultSession>> unlockWithMasterKey(Sensitive masterKey) async {
     final vmk = masterKey.use(Uint8List.fromList);
@@ -156,12 +181,7 @@ final class Vault {
       final loaded = await _load();
       if (loaded case Err(:final failure)) return Err<VaultSession>(failure);
       final (file, bytes) = loaded.valueOrNull!;
-      if (file.items.isEmpty) {
-        return const Err<VaultSession>(
-          WrongPasswordFailure('master_key_unverifiable'),
-        );
-      }
-      if (!_verifiesAnyItem(vmk, file)) {
+      if (!_macValid(file, vmk)) {
         return const Err<VaultSession>(
           WrongPasswordFailure('master_key_mismatch'),
         );
@@ -171,28 +191,6 @@ final class Vault {
     });
     if (!result.isOk) wipeBytes(vmk);
     return result;
-  }
-
-  bool _verifiesAnyItem(Uint8List vmk, VaultFile file) {
-    final itemKey = _crypto.deriveSubkey(vmk, itemKeyContext, vaultSubkeyId);
-    try {
-      for (final item in file.items) {
-        final opened = _crypto.aeadDecrypt(
-          itemKey,
-          item.nonce,
-          item.ciphertext,
-          itemAad(file.version, item.id, item.kind),
-        );
-        final plaintext = opened.valueOrNull;
-        if (plaintext != null) {
-          wipeBytes(plaintext);
-          return true;
-        }
-      }
-      return false;
-    } finally {
-      wipeBytes(itemKey);
-    }
   }
 
   /// 读取并解析文件（在互斥内调用）。
