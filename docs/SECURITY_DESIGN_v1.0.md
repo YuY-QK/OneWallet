@@ -54,7 +54,7 @@
 
 | 用途 | 算法 | 参数 |
 |---|---|---|
-| 密码派生 | Argon2id | 保险库：内存不低于 64 MiB，迭代 3，并行 1；备份文件：目标 256 MiB，迭代 3。M0 在真机上定标，参数写入文件头 |
+| 密码派生 | Argon2id（libsodium `crypto_pwhash`，算法 Argon2id13） | 保险库：内存不低于 64 MiB，迭代 3，并行 1；备份文件：目标 256 MiB，迭代 3。M0 在真机上定标，参数写入文件头。输出 32 字节，salt 16 字节。并行度：libsodium 把 lanes 固定为 1，与本表一致，因此实现只接受 1（ADR_005） |
 | 对称加密 | XChaCha20-Poly1305（IETF） | 256 位密钥，24 字节随机 nonce |
 | 子密钥派生 | libsodium `crypto_kdf` | 8 字节上下文标签 |
 | 查重指纹 | 带密钥的 BLAKE2b（`crypto_generichash`） | 输出截取 16 字节 |
@@ -175,7 +175,7 @@
 ## 9. 供应链
 
 - 所有依赖锁定到确切版本，锁文件入库。
-- `ow_vault` 的依赖白名单：`ow_domain`、派生库 `blockchain_utils`（ADR_004）、libsodium 的 Dart 绑定（接入时加入）、Dart 标准库。白名单写在 `tools/ci/check_deps.dart` 中，新增依赖需要写 ADR。
+- `ow_vault` 的依赖白名单：`ow_domain`、派生库 `blockchain_utils`（ADR_004）、libsodium 的 Dart 绑定 `sodium` 4.1.2+1（ADR_005；原生库由其构建钩子从随包分发的 libsodium 1.0.22 源码编译）、Dart 标准库。白名单写在 `tools/ci/check_deps.dart` 中，新增依赖需要写 ADR。CI 扫描白名单内各包及其全部传递依赖的源码，以及 `ow_vault` 的完整导入闭包，不得有联网迹象；经审阅的例外逐条登记在脚本与 ADR_005 中。
 - `ow_vault` 自身代码不得导入 `dart:io`：文件读写通过注入的存储接口完成，由 `ow_data` 或 `ow_platform` 提供实现。
 - 升级任何依赖前阅读其变更说明；升级 `ow_vault` 的依赖时还要审阅代码差异。
 - 不使用带统计、广告、远程配置功能的 SDK。
@@ -193,7 +193,7 @@
 
 | 编号 | 事项 | 处理 |
 |---|---|---|
-| S1 | Argon2id 参数的最终取值 | 任务 M0-12 在真机上定标后回填第 4 节。在此之前代码中的默认值为内存 64 MiB、迭代 3、并行 1 |
+| S1 | Argon2id 参数的最终取值 | 任务 M0-12 在真机上定标后回填第 4 节。在此之前代码中的默认值为内存 64 MiB、迭代 3、并行 1（`packages/ow_vault` 的 `KdfParams.vaultDefault`：`memKib: 65536, iterations: 3, parallelism: 1`）。读取文件头时只接受内存 8 KiB–1 GiB、迭代 1–32、并行 1，超出视为文件损坏（文件头参数不受认证保护，防止被改成耗尽内存的值） |
 | S2 | 带自动清空的复制功能 | 已决定：不提供 |
 | S3 | 主密码是否强制最低强度 | 已决定：强制至少 10 个字符；强度为"弱"时需额外确认一次，但不阻止（PRD P13） |
 | S4 | iOS 钥匙串条目卸载后残留的清理 | 任务 M0-11 验证实际行为后回填 6.1；默认方案：首次启动时若数据库不存在，则清除本应用的全部钥匙串条目 |

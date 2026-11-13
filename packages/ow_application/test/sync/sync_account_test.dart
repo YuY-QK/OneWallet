@@ -239,6 +239,10 @@ void main() {
       failureTypeName(const WrongPasswordFailure()),
       'WrongPasswordFailure',
     );
+    expect(
+      failureTypeName(const VaultCorruptedFailure()),
+      'VaultCorruptedFailure',
+    );
     expect(failureTypeName(const UnknownFailure()), 'UnknownFailure');
     expect(failureTypeName(const UnsupportedFailure()), 'UnsupportedFailure');
     expect(

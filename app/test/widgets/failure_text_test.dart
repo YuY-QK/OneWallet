@@ -25,6 +25,7 @@ void main() {
       '主钱包',
     ),
     const WrongPasswordFailure(): l10n.failureWrongPassword,
+    const VaultCorruptedFailure(): l10n.failureVaultCorrupted,
     const UnsupportedFailure(): l10n.failureUnsupported,
     const UnsupportedFailure.notIntegrated():
         l10n.failureUnsupportedNotIntegrated,

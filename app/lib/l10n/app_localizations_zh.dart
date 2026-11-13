@@ -104,6 +104,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failureWrongPassword => '密码不正确。请重新输入。';
 
   @override
+  String get failureVaultCorrupted => '保险库文件已损坏或被改动，无法读取。请不要删除它，可用加密备份恢复。';
+
+  @override
   String get failureUnsupported => '当前设备不支持这个功能。';
 
   @override

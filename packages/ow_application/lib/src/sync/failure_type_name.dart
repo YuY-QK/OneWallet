@@ -14,6 +14,7 @@ String failureTypeName(Failure failure) => switch (failure) {
   ValidationFailure() => 'ValidationFailure',
   DuplicateAddressFailure() => 'DuplicateAddressFailure',
   WrongPasswordFailure() => 'WrongPasswordFailure',
+  VaultCorruptedFailure() => 'VaultCorruptedFailure',
   UnsupportedFailure(:final reason) => switch (reason) {
     UnsupportedReason.platform => 'UnsupportedFailure',
     UnsupportedReason.notIntegrated => 'UnsupportedFailure.notIntegrated',

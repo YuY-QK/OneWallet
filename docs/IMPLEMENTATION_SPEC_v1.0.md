@@ -487,14 +487,20 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 格式与算法以 SECURITY_DESIGN 第 3–5 节为准。本包不导入 `dart:io`，文件读写和密码学原语都通过接口注入。
 
 ```dart
-/// 密码学原语。唯一实现基于 libsodium（`sodium` 包），放在本包 `src/crypto/sodium_crypto.dart`。
+/// 密码学原语（src/crypto/vault_crypto.dart）。唯一实现基于 libsodium（`sodium` 包，ADR_005），
+/// 放在本包 `src/crypto/sodium_crypto.dart`。长度不合法的密钥、nonce 等属于程序缺陷，抛 ArgumentError。
 abstract interface class VaultCrypto {
   Uint8List randomBytes(int length);
-  Future<Uint8List> argon2id(Sensitive password, Uint8List salt, KdfParams params); // 输出 32 字节
-  Uint8List aeadEncrypt(Uint8List key, Uint8List nonce, Uint8List plaintext, Uint8List aad);
-  Result<Uint8List> aeadDecrypt(Uint8List key, Uint8List nonce, Uint8List ciphertext, Uint8List aad);
-  Uint8List deriveSubkey(Uint8List masterKey, String context8, int subkeyId);
-  Uint8List keyedHash(Uint8List key, Uint8List message, int outputLength);
+  Future<Uint8List> argon2id(Sensitive password, Uint8List salt, KdfParams params); // 输出 32 字节；salt 16 字节；在独立 isolate 中计算
+  Uint8List aeadEncrypt(Uint8List key, Uint8List nonce, Uint8List plaintext, Uint8List aad); // XChaCha20-Poly1305-IETF，返回 密文‖16 字节标签
+  Result<Uint8List> aeadDecrypt(Uint8List key, Uint8List nonce, Uint8List ciphertext, Uint8List aad); // 认证失败 → Err(VaultCorruptedFailure)
+  Uint8List deriveSubkey(Uint8List masterKey, String context8, int subkeyId); // crypto_kdf，输出 32 字节
+  Uint8List keyedHash(Uint8List key, Uint8List message, int outputLength); // crypto_generichash（带密钥）
+}
+
+final class SodiumVaultCrypto implements VaultCrypto {
+  static Future<SodiumVaultCrypto> load();   // 初始化 libsodium（原生库由构建钩子编译并随应用打包）
+  String get libraryVersion;
 }
 
 abstract interface class VaultStorage {       // 由 app 提供基于文件的实现，含原子写入
@@ -503,7 +509,13 @@ abstract interface class VaultStorage {       // 由 app 提供基于文件的�
   Future<void> delete();
 }
 
-final class KdfParams { final int memKib; final int iterations; final int parallelism; }
+final class KdfParams {
+  KdfParams({required int memKib, required int iterations, int parallelism = 1}); // 超出范围抛 ArgumentError
+  static final KdfParams vaultDefault;        // 64 MiB、迭代 3、并行 1（SECURITY_DESIGN S1）
+  static bool isValid({required int memKib, required int iterations, required int parallelism});
+  // 允许范围：memKib 8–1048576（8 KiB–1 GiB），iterations 1–32，parallelism 只能为 1（libsodium 固定 lanes=1）
+  final int memKib; final int iterations; final int parallelism;
+}
 
 /// 已解锁的保险库会话。用完必须 [close]，会清除内存中的主密钥。
 abstract interface class VaultSession {

@@ -13,6 +13,7 @@ void main() {
         const ServiceDownFailure('s'),
         const ValidationFailure('v'),
         const WrongPasswordFailure('w'),
+        const VaultCorruptedFailure('vc'),
         const UnsupportedFailure('p'),
         const UnknownFailure('x'),
       ];
@@ -25,6 +26,7 @@ void main() {
         's',
         'v',
         'w',
+        'vc',
         'p',
         'x',
       ]);

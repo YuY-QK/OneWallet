@@ -100,6 +100,14 @@ final class WrongPasswordFailure extends Failure {
   const WrongPasswordFailure([super.detail]);
 }
 
+/// 保险库文件（或其中某条密文）损坏、被篡改，或不是保险库文件。
+///
+/// 认证加密校验失败、文件结构不合法、格式标识不对时返回。[detail] 只写固定的
+/// 原因标记（如 `aead_auth_failed`），不含任何文件内容。
+final class VaultCorruptedFailure extends Failure {
+  const VaultCorruptedFailure([super.detail]);
+}
+
 /// [UnsupportedFailure] 的原因。
 enum UnsupportedReason {
   /// 当前设备或平台不支持该能力。

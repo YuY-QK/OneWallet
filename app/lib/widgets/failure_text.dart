@@ -27,6 +27,7 @@ String failureText(AppLocalizations l10n, Failure failure) {
         existingAccountName ?? '',
       ),
     WrongPasswordFailure() => l10n.failureWrongPassword,
+    VaultCorruptedFailure() => l10n.failureVaultCorrupted,
     UnsupportedFailure(:final reason) => switch (reason) {
       UnsupportedReason.platform => l10n.failureUnsupported,
       UnsupportedReason.notIntegrated => l10n.failureUnsupportedNotIntegrated,

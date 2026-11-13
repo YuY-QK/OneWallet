@@ -37,6 +37,7 @@
   "failureServiceDown": "数据服务暂时出了问题。请稍后重试，已有的数据不受影响。",
   "failureValidation": "输入的内容格式不正确。请检查后重新输入。",
   "failureWrongPassword": "密码不正确。请重新输入。",
+  "failureVaultCorrupted": "保险库文件已损坏或被改动，无法读取。请不要删除它，可用加密备份恢复。",
   "failureUnsupported": "当前设备不支持这个功能。",
   "failureUnsupportedNotIntegrated": "暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。",
   "failureUnknown": "出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。",

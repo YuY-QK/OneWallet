@@ -220,3 +220,14 @@
 - [ ] CoinGecko"测试连接"（不填 Key）能查到 BTC 价格
 - [ ] 自定义 RPC 端点：填 `http://` 地址被拒绝并有说明；填 `https://` 地址保存后只显示域名，同步确实走该端点
 - [ ] 编辑面板在键盘弹出时按钮仍可点到
+
+## 8. 保险库核心（任务 M4-01 至 M4-03）
+
+依据：ADR_005、SECURITY_DESIGN 第 3–5 节。桌面环境（Linux x64）的自动化测试已覆盖算法、文件格式与原子写入；以下各项只能在设备上确认。
+
+### 8.1 libsodium（M4-01）
+
+- [ ] Android（armv7a、arm64、x86_64 模拟器）与 iOS（真机、模拟器）：`flutter build` 时 `sodium` 的构建钩子用对应工具链编出 libsodium，应用启动后 `SodiumVaultCrypto.load()` 成功，`libraryVersion` 为 `1.0.22`
+- [ ] Android 16 KB 页大小的设备（或模拟器镜像）上能加载 libsodium
+- [ ] Argon2id（默认参数 64 MiB、迭代 3）在设备上计算期间界面保持流畅（在独立 isolate 中运行）；记录两台真机的耗时，供 M0-12 定标
+- [ ] 记录接入 libsodium 后的安装包体积增量

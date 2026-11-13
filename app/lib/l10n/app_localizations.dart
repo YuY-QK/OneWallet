@@ -274,6 +274,12 @@ abstract class AppLocalizations {
   /// **'密码不正确。请重新输入。'**
   String get failureWrongPassword;
 
+  /// No description provided for @failureVaultCorrupted.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库文件已损坏或被改动，无法读取。请不要删除它，可用加密备份恢复。'**
+  String get failureVaultCorrupted;
+
   /// No description provided for @failureUnsupported.
   ///
   /// In zh, this message translates to:
