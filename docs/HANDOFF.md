@@ -75,6 +75,8 @@
 - 生成文件要入库的有三处：`ow_data` 的 `*.g.dart`、`ow_directory` 的 `directory_data.g.dart`、`ow_pricing` 的 `asset_mappings_data.dart`，以及 `app/lib/l10n/app_localizations*.dart`。改了源头要重新生成。
 - `tools/ci/check_deps.dart` 会扫描 `ow_exchanges` 里含 `order`、`withdraw`、`transfer` 等字样的字符串。确属只读的查询路径或返回字段被拦时，加入 `readOnlyPathAllowlist`，每条写明用途和出处。不要用别的办法绕过。
 
+> **正在进行、请勿重复的工作（2026-11-13）**：保险库核心（M4-01、M4-02、M4-03）与加密备份的格式和解密工具（M5-01、M5-02）已有人在做。不要改动 `packages/ow_vault`，不要另写 Argon2id、加解密或备份格式的代码。这几项在 `TASKS.md` 中标为 `[~]`，变成 `[x]` 后才可以依赖它们。
+
 ## 3. 剩余任务的顺序
 
 按批次做。同一批内的任务互不依赖，可以并行；下一批依赖上一批。每个任务的验收见 `TASKS.md`，这里只写顺序、建议的模型档位（原则见 `EXECUTION_GUIDE.md` 第 10 节）和额外注意点。
@@ -107,7 +109,7 @@ M3-01 先做，M3-02 依赖它；其余互不依赖。
 
 | 任务 | 档位 | 注意 |
 |---|---|---|
-| M3-01 应用锁核心 | 强 | 先通读 `SECURITY_DESIGN` 第 7 节。PIN 校验值的算法要用 Argon2id，依赖 M0-12/M4-01 的 `VaultCrypto`；如果它还没做，先把"口令哈希"抽象成接口并在本任务里一并实现 `VaultCrypto` 的 Argon2id 部分（见第四批 M4-01 的注意点），不要用别的哈希临时顶替。锁定时要关闭数据库连接、清空内存数据、路由重定向。错误次数和锁定截止时间存 `SecretStore`；防改时间绕过的规则在 PRD R20 和 SECURITY_DESIGN 第 7 节 |
+| M3-01 应用锁核心 | 强 | 先通读 `SECURITY_DESIGN` 第 7 节。PIN 校验值的算法要用 Argon2id，由 M4-01 的 `VaultCrypto` 提供（正在由别人实现）。**M4-01 在 `TASKS.md` 里还不是 `[x]` 时不要开始本任务**，先做第三批里的其他任务；不要自己实现或用别的哈希临时顶替。锁定时要关闭数据库连接、清空内存数据、路由重定向。错误次数和锁定截止时间存 `SecretStore`；防改时间绕过的规则在 PRD R20 和 SECURITY_DESIGN 第 7 节 |
 | M3-02 解锁页（P00）与首次引导（P01） | 中 | 生物识别用成熟插件 `local_auth`，不手写原生代码。后台超时重新锁定和任务切换器遮挡在 Dart 侧能做的部分做掉，其余记入真机清单 |
 | M3-03 账户列表完整版、M3-04 地址簿 | 省 | 照已有的 P03 扩展。长按菜单同时提供右键菜单和"更多"按钮（PRD 7.3） |
 | M3-05 每日快照与净值曲线 | 中 | `SyncAllAccounts` 已留了 `onFullSyncCompleted` 钩子。快照以 USD 计。图表自己用 `CustomPainter` 画，不引入图表库；样式见 `UI_DESIGN_SYSTEM` 第 5 节和 `prototype.html` |

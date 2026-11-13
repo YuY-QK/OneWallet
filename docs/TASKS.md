@@ -240,12 +240,14 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 
 前置：M0-11、M0-12、M3-01 的代码完成。开工前通读 SECURITY_DESIGN 全文。
 
-- [ ] **M4-01** `VaultCrypto` 的 libsodium 实现 〔离线〕
+> **2026-11-13：保险库核心（M4-01、M4-02、M4-03）与加密备份的格式和解密工具（M5-01、M5-02）已有人在做，状态为 `[~]`。其他执行者不要改动 `packages/ow_vault`，也不要另写 Argon2id、加解密或备份格式的代码。** 应用锁（M3-01）需要的口令哈希由 M4-01 的 `VaultCrypto` 提供；M3-01 开工时如果它还没合并进默认分支，先做 M3 的其他任务。
+
+- [~] **M4-01** `VaultCrypto` 的 libsodium 实现 〔离线〕
   - 验收：用 libsodium 或 RFC 的公开测试向量验证 Argon2id 与 XChaCha20-Poly1305；篡改密文、nonce、AAD 任一字节都解密失败。
-- [ ] **M4-02** 保险库文件格式与 `Vault`、`VaultSession` 〔离线〕
+- [~] **M4-02** 保险库文件格式与 `Vault`、`VaultSession` 〔离线〕
   - 依据：SECURITY_DESIGN 第 3、5.1 节；IMPLEMENTATION_SPEC 第 6 节。
   - 验收：创建、解锁、增删读、改密码的往返测试；错误密码返回 `WrongPasswordFailure`；把条目密文互换后解密失败（AAD 生效）；`close()` 之后任何操作抛出状态错误；文件中搜索不到明文片段；格式有版本号并有"读取未来版本时报错"的测试。
-- [ ] **M4-03** `VaultStorage` 的文件实现 〔离线〕：原子写入与 `.bak`；模拟写入中断后原文件完好。
+- [~] **M4-03** `VaultStorage` 的文件实现 〔离线〕：原子写入与 `.bak`；模拟写入中断后原文件完好。
 - [ ] **M4-04** 平台保护正式实现 〔真机〕：`ScreenGuard`（Android 禁止截屏、iOS 录屏检测与遮挡）、安全输入配置。SECURITY_DESIGN 第 8 节相关真机项。
 - [ ] **M4-05** 创建保险库（P13、P12） 〔离线〕＋〔真机〕：`CreateVault`、`SetVaultBiometrics`；硬件包裹的生成。
 - [ ] **M4-06** 导入密钥（P14） 〔离线〕＋〔真机〕
@@ -265,10 +267,10 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 
 ## M5 加密备份
 
-- [ ] **M5-01** `BackupCodec` 与格式文档 〔离线〕
+- [~] **M5-01** `BackupCodec` 与格式文档 〔离线〕
   - 依据：SECURITY_DESIGN 5.2；PRD R39。同时写 `tools/backup_decrypt/FORMAT.md`。
   - 验收：往返测试；错误密码；篡改任一字节失败且不输出内容；高于当前版本的文件报"请更新 app"。
-- [ ] **M5-02** 独立解密工具 〔离线〕
+- [~] **M5-02** 独立解密工具 〔离线〕
   - 做什么：`tools/backup_decrypt/` 下一个 Python 单文件脚本（只依赖 PyNaCl 或同等的 libsodium 绑定），输入文件与密码，输出 JSON。附使用说明。
   - 验收：CI 中的互操作测试——Dart 生成样本，Python 解密，逐字段比对。
 - [ ] **M5-03** 导出流程（P17） 〔离线〕＋〔设备〕：`ExportBackup`；`FileExporter` 的平台实现；"我已保存"后才更新导出时间（R41）。
