@@ -511,6 +511,10 @@ abstract interface class VaultStorage {
   Future<void> writeAtomic(Uint8List bytes);  // 原子替换；失败抛 IO 异常；并发调用串行
   Future<void> delete();                      // 连同 .bak 与临时文件
 }
+// ow_platform：final class FileVaultStorage implements VaultStorage {
+//   FileVaultStorage({Future<Directory> Function()? directoryProvider}); // 默认应用支持目录
+// }  文件 vault.owv；写入顺序 .tmp → flush → 原文件改名 .bak → .tmp 改名为正式文件；
+//    正式文件不存在而 .bak 存在时 read() 读 .bak（两次改名之间中断的残局）。
 
 final class KdfParams {
   KdfParams({required int memKib, required int iterations, int parallelism = 1}); // 超出范围抛 ArgumentError
