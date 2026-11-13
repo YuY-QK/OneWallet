@@ -484,49 +484,82 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 
 ## 6. 保险库（`packages/ow_vault`）
 
-格式与算法以 SECURITY_DESIGN 第 3–5 节为准。本包不导入 `dart:io`，文件读写和密码学原语都通过接口注入。
+格式与算法以 SECURITY_DESIGN 第 3–5 节为准。本包不导入 `dart:io`，文件读写和密码学原语都通过接口注入。保险库用到的新失败类型（`ow_domain` 的 `failure.dart`）：`VaultCorruptedFailure`、`VaultVersionUnsupportedFailure`、`VaultNotFoundFailure`、`VaultAlreadyExistsFailure`、`VaultItemNotFoundFailure`。
 
 ```dart
-/// 密码学原语。唯一实现基于 libsodium（`sodium` 包），放在本包 `src/crypto/sodium_crypto.dart`。
+/// 密码学原语（src/crypto/vault_crypto.dart）。唯一实现基于 libsodium（`sodium` 包，ADR_005），
+/// 放在本包 `src/crypto/sodium_crypto.dart`。长度不合法的密钥、nonce 等属于程序缺陷，抛 ArgumentError。
 abstract interface class VaultCrypto {
   Uint8List randomBytes(int length);
-  Future<Uint8List> argon2id(Sensitive password, Uint8List salt, KdfParams params); // 输出 32 字节
-  Uint8List aeadEncrypt(Uint8List key, Uint8List nonce, Uint8List plaintext, Uint8List aad);
-  Result<Uint8List> aeadDecrypt(Uint8List key, Uint8List nonce, Uint8List ciphertext, Uint8List aad);
-  Uint8List deriveSubkey(Uint8List masterKey, String context8, int subkeyId);
-  Uint8List keyedHash(Uint8List key, Uint8List message, int outputLength);
+  Future<Uint8List> argon2id(Sensitive password, Uint8List salt, KdfParams params); // 输出 32 字节；salt 16 字节；在独立 isolate 中计算
+  Uint8List aeadEncrypt(Uint8List key, Uint8List nonce, Uint8List plaintext, Uint8List aad); // XChaCha20-Poly1305-IETF，返回 密文‖16 字节标签
+  Result<Uint8List> aeadDecrypt(Uint8List key, Uint8List nonce, Uint8List ciphertext, Uint8List aad); // 认证失败 → Err(VaultCorruptedFailure)
+  Uint8List deriveSubkey(Uint8List masterKey, String context8, int subkeyId); // crypto_kdf，输出 32 字节
+  Uint8List keyedHash(Uint8List key, Uint8List message, int outputLength); // crypto_generichash（带密钥）
+  bool constantTimeEquals(Uint8List a, Uint8List b); // sodium_memcmp；长度不同返回 false
 }
 
-abstract interface class VaultStorage {       // 由 app 提供基于文件的实现，含原子写入
-  Future<Uint8List?> read();
-  Future<void> writeAtomic(Uint8List bytes);
-  Future<void> delete();
+final class SodiumVaultCrypto implements VaultCrypto {
+  static Future<SodiumVaultCrypto> load();   // 初始化 libsodium（原生库由构建钩子编译并随应用打包）
+  String get libraryVersion;
 }
 
-final class KdfParams { final int memKib; final int iterations; final int parallelism; }
+// VaultStorage 定义在 ow_domain（src/platform/vault_storage.dart），不在本包：
+// 它只涉及字节读写，属于平台能力接口；文件实现 FileVaultStorage 在 ow_platform，
+// 而 DEV_GUIDELINES 第 2 节不允许 ow_platform 依赖 ow_vault。（M4-03 调整）
+abstract interface class VaultStorage {
+  Future<Uint8List?> read();                  // 不存在返回 null
+  Future<void> writeAtomic(Uint8List bytes);  // 原子替换；失败抛 IO 异常；并发调用串行
+  Future<void> delete();                      // 连同 .bak 与临时文件
+}
+// ow_platform：final class FileVaultStorage implements VaultStorage {
+//   FileVaultStorage({Future<Directory> Function()? directoryProvider}); // 默认应用支持目录
+// }  文件 vault.owv；写入顺序 .tmp → flush → 原文件改名 .bak → .tmp 改名为正式文件；
+//    正式文件不存在而 .bak 存在时 read() 读 .bak（两次改名之间中断的残局）。
 
-/// 已解锁的保险库会话。用完必须 [close]，会清除内存中的主密钥。
+final class KdfParams {
+  KdfParams({required int memKib, required int iterations, int parallelism = 1}); // 超出范围抛 ArgumentError
+  static final KdfParams vaultDefault;        // 64 MiB、迭代 3、并行 1（SECURITY_DESIGN S1）
+  static bool isValid({required int memKib, required int iterations, required int parallelism});
+  // 允许范围：memKib 8–1048576（8 KiB–1 GiB），iterations 1–32，parallelism 只能为 1（libsodium 固定 lanes=1）
+  final int memKib; final int iterations; final int parallelism;
+}
+
+/// 已解锁的保险库会话。用完必须 [close]，会清除内存中的主密钥与子密钥；之后任何调用抛 StateError。
+/// 写操作在所属 Vault 上串行执行；只有写入成功后内存状态才改变。
 abstract interface class VaultSession {
-  Sensitive exportMasterKey();                // 仅用于生成硬件包裹
-  Future<Result<VaultItemSecret>> readItem(String id);
-  Future<Result<String>> addItem(String id, VaultItemSecret secret); // 返回指纹
-  Future<Result<void>> deleteItem(String id);
+  Sensitive exportMasterKey();                // 仅用于生成硬件包裹；返回副本，调用方 wipe
+  Future<Result<VaultItemSecret>> readItem(String id);  // 不存在 → VaultItemNotFoundFailure；认证失败 → VaultCorruptedFailure
+  Future<Result<String>> addItem(String id, VaultItemSecret secret); // 返回指纹（32 位小写十六进制）；id 不合法/重复、内容为空或过长 → ValidationFailure；写入失败 → UnknownFailure
+  Future<Result<void>> deleteItem(String id); // 不存在 → VaultItemNotFoundFailure
   String fingerprintOf(VaultItemSecret secret);
-  Future<Result<void>> changePassword(Sensitive newPassword);
+  Future<Result<void>> changePassword(Sensitive newPassword); // 新 salt、默认参数重新包裹 VMK；条目不重加密
   void close();
 }
 
 final class Vault {
   Vault({required VaultCrypto crypto, required VaultStorage storage, required KdfParams defaultParams});
   Future<bool> exists();
-  Future<Result<VaultSession>> create(Sensitive password);
-  Future<Result<VaultSession>> unlockWithPassword(Sensitive password);
-  Future<Result<VaultSession>> unlockWithMasterKey(Sensitive masterKey); // 硬件解包后调用
+  Future<Result<VaultSession>> create(Sensitive password);             // 空密码 → ValidationFailure；已存在 → VaultAlreadyExistsFailure（不覆盖）
+  Future<Result<VaultSession>> unlockWithPassword(Sensitive password); // 无文件 → VaultNotFoundFailure；损坏 → VaultCorruptedFailure；
+                                                                       // 版本过新 → VaultVersionUnsupportedFailure；密码错（包裹解不开）→ WrongPasswordFailure；
+                                                                       // 包裹解开但整体校验值 mac 不符 → VaultCorruptedFailure
+  Future<Result<VaultSession>> unlockWithMasterKey(Sensitive masterKey); // 硬件解包后调用；以 mac 判定主密钥：不符（主密钥不对或文件被改，
+                                                                         // 无法区分）→ WrongPasswordFailure，调用方退回主密码；空保险库也可校验
 }
+// 约定：一个保险库文件在进程内只由一个 Vault 实例管理。读写存储的 IO 异常 → UnknownFailure。
+// 传入的密码、主密钥、条目明文都不被清除，仍归调用方。
 
-sealed class VaultItemSecret {}
-final class MnemonicSecret extends VaultItemSecret { final Sensitive mnemonic; final Sensitive? passphrase; }
-final class PrivateKeySecret extends VaultItemSecret { final ChainFamily family; final Sensitive key; }
+sealed class VaultItemSecret { VaultItemKind get kind; void wipe(); }
+final class MnemonicSecret extends VaultItemSecret {
+  const MnemonicSecret({required Sensitive mnemonic, Sensitive? passphrase});
+  final Sensitive mnemonic; final Sensitive? passphrase;   // 字节原样保存，规范化由应用层负责
+}
+final class PrivateKeySecret extends VaultItemSecret {
+  const PrivateKeySecret({required ChainFamily family, required Sensitive key});
+  final ChainFamily family; final Sensitive key;
+}
+// 文件格式、AAD 与条目明文的精确编码见 SECURITY_DESIGN 5.1。
 
 /// 加密备份文件（.owbak）的编解码。
 abstract final class BackupCodec {

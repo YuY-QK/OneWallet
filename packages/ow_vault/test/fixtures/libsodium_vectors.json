@@ -1,0 +1,444 @@
+{
+  "_source": "libsodium-1.0.22-stable.tar.gz test/default/*.c \u4e0e *.exp\uff08libsodium \u5b98\u65b9\u6d4b\u8bd5\u5957\u4ef6\uff09",
+  "argon2id": [
+    {
+      "password_hex": "a347ae92bce9f80f6f595a4480fc9c2fe7e7d7148d371e9487d75f5c23008ffae065577a928febd9b1973a5a95073acdbeb6a030cfc0d79caa2dc5cd011cef02c08da232d76d52dfbca38ca8dcbd665b17d1665f7cf5fe59772ec909733b24de97d6f58d220b20c60d7c07ec1fd93c52c31020300c6c1facd77937a597c7a6",
+      "salt_hex": "5541fbc995d5c197ba290346d2c559de",
+      "outlen": 155,
+      "opslimit": 5,
+      "memlimit_bytes": 7256678,
+      "expected_hex": "18acec5d6507739f203d1f5d9f1d862f7c2cdac4f19d2bdff64487e60d969e3ced615337b9eec6ac4461c6ca07f0939741e57c24d0005c7ea171a0ee1e7348249d135b38f222e4dad7b9a033ed83f5ca27277393e316582033c74affe2566a2bea47f91f0fd9fe49ece7e1f79f3ad6e9b23e0277c8ecc4b313225748dd2a80f5679534a0700e246a79a49b3f74eb89ec6205fe1eeb941c73b1fcf1"
+    },
+    {
+      "password_hex": "e125cee61c8cb7778d9e5ad0a6f5d978ce9f84de213a8556d9ffe202020ab4a6ed9074a4eb3416f9b168f137510f3a30b70b96cbfa219ff99f6c6eaffb15c06b60e00cc2890277f0fd3c622115772f7048adaebed86e",
+      "salt_hex": "f1192dd5dc2368b9cd421338b2243345",
+      "outlen": 250,
+      "opslimit": 4,
+      "memlimit_bytes": 7849083,
+      "expected_hex": "26bab5f101560e48c711da4f05e81f5a3802b7a93d5155b9cab153069cc42b8e9f910bfead747652a0708d70e4de0bada37218bd203a1201c36b42f9a269b675b1f30cfc36f35a3030e9c7f57dfba0d341a974c1886f708c3e8297efbfe411bb9d51375264bd7c70d57a8a56fc9de2c1c97c08776803ec2cd0140bba8e61dc0f4ad3d3d1a89b4b710af81bfe35a0eea193e18a6da0f5ec05542c9eefc4584458e1da715611ba09617384748bd43b9bf1f3a6df4ecd091d0875e08d6e2fd8a5c7ce08904b5160cd38167b76ec76ef2d310049055a564da23d4ebd2b87e421cc33c401e12d5cd8d936c9baf75ebdfb557d342d2858fc781da31860"
+    },
+    {
+      "password_hex": "92263cbf6ac376499f68a4289d3bb59e5a22335eba63a32e6410249155b956b6a3b48d4a44906b18b897127300b375b8f834f1ceffc70880a885f47c33876717e392be57f7da3ae58da4fd1f43daa7e44bb82d3717af4319349c24cd31e46d295856b0441b6b289992a11ced1cc3bf3011604590244a3eb737ff221129215e4e4347f4915d41292b5173d196eb9add693be5319fdadc242906178bb6c0286c9b6ca6012746711f58c8c392016b2fdfc09c64f0f6b6ab7b",
+      "salt_hex": "3b840e20e9555e9fb031c4ba1f1747ce",
+      "outlen": 249,
+      "opslimit": 3,
+      "memlimit_bytes": 7994791,
+      "expected_hex": "6eb45e668582d63788ca8f6e930ca60b045a795fca987344f9a7a135aa3b5132b50a34a3864c26581f1f56dd0bcbfafbfa92cd9bff6b24a734cfe88f854aef4bda0a7983120f44936e8ff31d29728ac08ccce6f3f916b3c63962755c23a1fa9bb4e8823fc867bfd18f28980d94bc5874423ab7f96cc0ab78d8fa21fbd00cd3a1d96a73fa439ccc3fc4eab1590677b06cc78b0f674dfb680f23022fb902022dd8620803229c6ddf79a8156ccfce48bbd76c05ab670634f206e5b2e896230baa74a856964dbd8511acb71d75a1506766a125d8ce037f1db72086ebc3bccaefbd8cd9380167c2530386544ebfbeadbe237784d102bb92a10fd242"
+    },
+    {
+      "password_hex": "027b6d8e8c8c474e9b69c7d9ed4f9971e8e1ce2f6ba95048414c3970f0f09b70e3b6c5ae05872b3d8678705b7d381829c351a5a9c88c233569b35d6b0b809df44b6451a9c273f1150e2ef8a0b5437eb701e373474cd44b97ef0248ebce2ca0400e1b53f3d86221eca3f18eb45b702b9172440f774a82cbf1f6f525df30a6e293c873cce69bb078ed1f0d31e7f9b8062409f37f19f8550aae",
+      "salt_hex": "eb2a3056a09ad2d7d7f975bcd707598f",
+      "outlen": 5,
+      "opslimit": 4,
+      "memlimit_bytes": 1397645,
+      "expected_hex": null
+    },
+    {
+      "password_hex": "4a857e2ee8aa9b6056f2424e84d24a72473378906ee04a46cb05311502d5250b82ad86b83c8f20a23dbb74f6da60b0b6ecffd67134d45946ac8ebfb3064294bc097d43ced68642bfb8bbbdd0f50b30118f5e",
+      "salt_hex": "39d82eef32010b8b79cc5ba88ed539fb",
+      "outlen": 190,
+      "opslimit": 3,
+      "memlimit_bytes": 1432947,
+      "expected_hex": "08d8cd330c57e1b4643241d05bb468ba4ee4e932cd0858816be9ef15360b27bbd06a87130ee92222be267a29b81f5ae8fe8613324cfc4832dc49387fd0602f1c57b4d0f3855db94fb7e12eb05f9a484aed4a4307abf586cd3d55c809bc081541e00b682772fb2066504ff935b8ebc551a2083882f874bc0fae68e56848ae34c91097c3bf0cca8e75c0797eef3efde3f75e005815018db3cf7c109a812264c4de69dcb22322dbbcfa447f5b00ecd1b04a7be1569c8e556adb7bba48adf81d"
+    },
+    {
+      "password_hex": "c7b09aec680e7b42fedd7fc792e78b2f6c1bea8f4a884320b648f81e8cf515e8ba9dcfb11d43c4aae114c1734aa69ca82d44998365db9c93744fa28b63fd16000e8261cbbe083e7e2da1e5f696bde0834fe53146d7e0e35e7de9920d041f5a5621aabe02da3e2b09b405b77937efef3197bd5772e41fdb73fb5294478e45208063b5f58e089dbeb6d6342a909c1307b3fff5fe2cf4da56bdae50848f",
+      "salt_hex": "039c056d933b475032777edbaffac50f",
+      "outlen": 178,
+      "opslimit": 3,
+      "memlimit_bytes": 4886999,
+      "expected_hex": "d6e9d6cabd42fb9ba7162fe9b8e41d59d3c7034756cb460c9affe393308bd0225ce0371f2e6c3ca32aca2002bf2d3909c6b6e7dfc4a00e850ff4f570f8f749d4bb6f0091e554be67a9095ae1eefaa1a933316cbec3c2fd4a14a5b6941bda9b7eabd821d79abde2475a53af1a8571c7ee46460be415882e0b393f48c12f740a6a72cba9773000602e13b40d3dfa6ac1d4ec43a838b7e3e165fecad4b2498389e60a3ff9f0f8f4b9fca1126e64f49501e38690"
+    },
+    {
+      "password_hex": "b540beb016a5366524d4605156493f9874514a5aa58818cd0c6dfffaa9e90205f17b",
+      "salt_hex": "44071f6d181561670bda728d43fb79b4",
+      "outlen": 231,
+      "opslimit": 1,
+      "memlimit_bytes": 1631659,
+      "expected_hex": "7fb72409b0987f8190c3729710e98c3f80c5a8727d425fdcde7f3644d467fe973f5b5fee683bd3fce812cb9ae5e9921a2d06c2f1905e4e839692f2b934b682f11a2fe2b90482ea5dd234863516dba6f52dc0702d324ec77d860c2e181f84472bd7104fedce071ffa93c5309494ad51623d214447a7b2b1462dc7d5d55a1f6fd5b54ce024118d86f0c6489d16545aaa87b6689dad9f2fb47fda9894f8e12b87d978b483ccd4cc5fd9595cdc7a818452f915ce2f7df95ec12b1c72e3788d473441d884f9748eb14703c21b45d82fd667b85f5b2d98c13303b3fe76285531a826b6fc0fe8e3dddecf"
+    },
+    {
+      "password_hex": "a14975c26c088755a8b715ff2528d647cd343987fcf4aa25e7194a8417fb2b4b3f7268da9f3182b4cfb22d138b2749d673a47ecc7525dd15a0a3c66046971784bb63d7eae24cc84f2631712075a10e10a96b0e0ee67c43e01c423cb9c44e5371017e9c496956b632158da3fe12addecb88912e6759bc37f9af2f45af72c5cae3b179ffb676a697de6ebe45cd4c16d4a9d642d29ddc0186a0a48cb6cd62bfc3dd229d313b301560971e740e2cf1f99a9a090a5b283f35475057e96d7064e2e0fc81984591068d55a3b4169f22cccb0745a2689407ea1901a0a766eb99",
+      "salt_hex": "3d968b2752b8838431165059319f3ff8",
+      "outlen": 167,
+      "opslimit": 3,
+      "memlimit_bytes": 1784128,
+      "expected_hex": "4e702bc5f891df884c6ddaa243aa846ce3c087fe930fef0f36b3c2be34164ccc295db509254743f18f947159c813bcd5dd8d94a3aec93bbe57605d1fad1aef1112687c3d4ef1cb329d21f1632f626818d766915d886e8d819e4b0b9c9307f4b6afc081e13b0cf31db382ff1bf05a16aac7af696336d75e99f82163e0f371e1d25c4add808e215697ad3f779a51a462f8bf52610af21fc69dba6b072606f2dabca7d4ae1d91d919"
+    }
+  ],
+  "kdf": {
+    "context": "KDF test",
+    "master_key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+    "vectors": [
+      {
+        "subkey_id": 0,
+        "length": 64,
+        "expected_hex": "a0c724404728c8bb95e5433eb6a9716171144d61efb23e74b873fcbeda51d8071b5d70aae12066dfc94ce943f145aa176c055040c3dd73b0a15e36254d450614"
+      },
+      {
+        "subkey_id": 1,
+        "length": 64,
+        "expected_hex": "02507f144fa9bf19010bf7c70b235b4c2663cc00e074f929602a5e2c10a780757d2a3993d06debc378a90efdac196dd841817b977d67b786804f6d3cd585bab5"
+      },
+      {
+        "subkey_id": 2,
+        "length": 64,
+        "expected_hex": "1944da61ff18dc2028c3578ac85be904931b83860896598f62468f1cb5471c6a344c945dbc62c9aaf70feb62472d17775ea5db6ed5494c68b7a9a59761f39614"
+      },
+      {
+        "subkey_id": 3,
+        "length": 64,
+        "expected_hex": "131c0ca1633ed074986215b264f6e0474f362c52b029effc7b0f75977ee89cc95d85c3db87f7e399197a25411592beeeb7e5128a74646a460ecd6deb4994b71e"
+      },
+      {
+        "subkey_id": 4,
+        "length": 64,
+        "expected_hex": "a7023a0bf9be245d078aed26bcde0465ff0cc0961196a5482a0ff4ff8b4015971e13611f50529cb408f5776b14a90e7c3dd9160a22211db64ff4b5c0b9953680"
+      },
+      {
+        "subkey_id": 5,
+        "length": 64,
+        "expected_hex": "50f49313f3a05b2e565c13feedb44daa675cafd42c2b2cf9edbce9c949fbfc3f175dcb738671509ae2ea66fb85e552394d479afa7fa3affe8791744796b94176"
+      },
+      {
+        "subkey_id": 6,
+        "length": 64,
+        "expected_hex": "13b58d6d69780089293862cd59a1a8a4ef79bb850e3f3ba41fb22446a7dd1dc4da4667d37b33bf1225dcf8173c4c349a5d911c5bd2db9c5905ed70c11e809e3b"
+      },
+      {
+        "subkey_id": 7,
+        "length": 64,
+        "expected_hex": "15d44b4b44ffa006eeceeb508c98a970aaa573d65905687b9e15854dec6d49c612757e149f78268f727660dedf9abce22a9691feb20a01b0525f4b47a3cf19db"
+      },
+      {
+        "subkey_id": 8,
+        "length": 64,
+        "expected_hex": "9aebba11c5428ae8225716369e30a48943be39159a899f804e9963ef78822e186c21fe95bb0b85e60ef03a6f58d0b9d06e91f79d0ab998450b8810c73ca935b4"
+      },
+      {
+        "subkey_id": 9,
+        "length": 64,
+        "expected_hex": "70f9b83e463fb441e7a4c43275125cd5b19d8e2e4a5d179a39f5db10bbce745a199104563d308cf8d4c6b27bbb759ded232f5bdb7c367dd632a9677320dfe416"
+      },
+      {
+        "subkey_id": 16,
+        "length": 16,
+        "expected_hex": "a529216624ef9161e4cf117272aafff2"
+      },
+      {
+        "subkey_id": 17,
+        "length": 17,
+        "expected_hex": "068bd6940b80c6cc2530a68c31d9f4e323"
+      },
+      {
+        "subkey_id": 18,
+        "length": 18,
+        "expected_hex": "0acf4f6c74a590c8a1c0997ec9a1a3f48b2a"
+      },
+      {
+        "subkey_id": 19,
+        "length": 19,
+        "expected_hex": "ac17a37ce74c0efece75f9337de20795dbadcc"
+      },
+      {
+        "subkey_id": 20,
+        "length": 20,
+        "expected_hex": "268214dc9477a2e3c1022829f934ab992a5a3d84"
+      },
+      {
+        "subkey_id": 21,
+        "length": 21,
+        "expected_hex": "33b76197b4531665e494760909eda1cc570e7da9bb"
+      },
+      {
+        "subkey_id": 22,
+        "length": 22,
+        "expected_hex": "3d4efbc569ca7f858ad4f49c56b820986a406e6eebbc"
+      },
+      {
+        "subkey_id": 23,
+        "length": 23,
+        "expected_hex": "983fea27520f507c40231f9557908f07c095bdf4a4ce5d"
+      },
+      {
+        "subkey_id": 24,
+        "length": 24,
+        "expected_hex": "94d678717625e011995c7355f2092267dee47bf0722dd380"
+      },
+      {
+        "subkey_id": 25,
+        "length": 25,
+        "expected_hex": "198901896c4f51e74ffa8b2805415c6eaba5accfc85a6e6b34"
+      },
+      {
+        "subkey_id": 26,
+        "length": 26,
+        "expected_hex": "4ffabb81d49021f85ef5d2a713ab02ae86bc2e7d1522f5e077fe"
+      },
+      {
+        "subkey_id": 27,
+        "length": 27,
+        "expected_hex": "eebc3d55b3f4fc8b64d2474063254da7db98e7398dfdd510e28075"
+      },
+      {
+        "subkey_id": 28,
+        "length": 28,
+        "expected_hex": "22c134b9d664e1bdb14dc309a936bf1512b19e4f5175642efb1a0df7"
+      },
+      {
+        "subkey_id": 29,
+        "length": 29,
+        "expected_hex": "4b179762bfc8e27a9e575113faa76247b9c046d6f22d5a02e2910a299b"
+      },
+      {
+        "subkey_id": 30,
+        "length": 30,
+        "expected_hex": "abc45eb2b031307b8822c7e59a43f4108850c34a7445936bc848422251c4"
+      },
+      {
+        "subkey_id": 31,
+        "length": 31,
+        "expected_hex": "d6565bd3265b6373f4f6a6b6458e981006da5e9d532ce94ca4737e188995e9"
+      },
+      {
+        "subkey_id": 32,
+        "length": 32,
+        "expected_hex": "154b291f11196737f8b7f491e4ca11764e0227d34f94295408a869f007aa8618"
+      },
+      {
+        "subkey_id": 33,
+        "length": 33,
+        "expected_hex": "e9dd395570e09ebb523ffc6ba098a38b17bc4944f14bd3725bdd7edbd8bcff54fb"
+      },
+      {
+        "subkey_id": 34,
+        "length": 34,
+        "expected_hex": "7248294d37159e85bacde68c7762a673794c91b811e05f4e3b9e3ecc82bfcf63a2cd"
+      },
+      {
+        "subkey_id": 35,
+        "length": 35,
+        "expected_hex": "d060ee4d93f8de6d9ae60fca9596413455183a1f83c7a2381227cec8f7a217e4072f85"
+      },
+      {
+        "subkey_id": 36,
+        "length": 36,
+        "expected_hex": "20790290347b9b0f413a954f40e52e270b3b45417e96c8733161672188701c08dd76cc3d"
+      },
+      {
+        "subkey_id": 37,
+        "length": 37,
+        "expected_hex": "7674188112a1ab8d3926d468be8e51d788ce4144bb20ff842034e4d1ddab3929a4f1a13a74"
+      },
+      {
+        "subkey_id": 38,
+        "length": 38,
+        "expected_hex": "a2ab1f980a47472d8a539f20410cc9bf143d941331ab2259ea73684c0608939c5b23e9cbcb3d"
+      },
+      {
+        "subkey_id": 39,
+        "length": 39,
+        "expected_hex": "f4cfbe3050f15ebbaf8d2f3bf3a678c01fc21ee1f4be07d0744c7fbf4835ea9d9472a3d785c24c"
+      },
+      {
+        "subkey_id": 40,
+        "length": 40,
+        "expected_hex": "66efa5dfe3efd4cc8ca25f2d622c97a20a192d7add965f26b002b7eb81aae4203c0e5f07fd945845"
+      },
+      {
+        "subkey_id": 41,
+        "length": 41,
+        "expected_hex": "ad5d8031055c96dc9db10285206d7edc38d3af85736df8a3b5fdd30a318e80c28d9b26c95a60fa3e68"
+      },
+      {
+        "subkey_id": 42,
+        "length": 42,
+        "expected_hex": "9107c8a57a2c9ca40158f33ca0bfb64c095d2f21ca98bb7138477599330a36cdfc2ae5751e370d0e024e"
+      },
+      {
+        "subkey_id": 43,
+        "length": 43,
+        "expected_hex": "b0c190177358b955ebebc5e0b86ec91dde3b6f1982ea4d68ec5ec3bdd6527c362e5275600b263601c98452"
+      },
+      {
+        "subkey_id": 44,
+        "length": 44,
+        "expected_hex": "31bfaaad4adde0f87d87372e398c42cb7befe065ab2957ebb91ef9dc534b410783899b2e1e84221286f3bab4"
+      },
+      {
+        "subkey_id": 45,
+        "length": 45,
+        "expected_hex": "2258dd1f3e516cb8e3d1f6c45808573c365192f073698939721af8961a02a8bdd002a31fd239b9498663a01f27"
+      },
+      {
+        "subkey_id": 46,
+        "length": 46,
+        "expected_hex": "7c7a88016610493bb44a9432a88b50f97e2e94383972ff95da826692d96c52d82f86899b3561ec9c95a8b1bf3213"
+      },
+      {
+        "subkey_id": 47,
+        "length": 47,
+        "expected_hex": "3929dc7473be4c633be9e08801a8abd284dc0c6154c5c81a4c18259699dd86753c5e14fbd723be46ebb04f4ab3058c"
+      },
+      {
+        "subkey_id": 48,
+        "length": 48,
+        "expected_hex": "30b720220015fa60daa69c83f9754d772b1b2dd12ab6baaa2f4edab458d4d251c1cddb8c4a554f3eb13969316b890fbd"
+      },
+      {
+        "subkey_id": 49,
+        "length": 49,
+        "expected_hex": "33fa2412a5c3294d49e964419e96d043a2099a72b3351e3bed0f07e12255c95b509ea9bf2963a4c0fe9cc2314dbc44f673"
+      },
+      {
+        "subkey_id": 50,
+        "length": 50,
+        "expected_hex": "ca891d2c82a6a8f833dc1a05f190bab6de221307eab1dd2c88341d4d2537a2fc0056b0d04d8104fd3fe89e1ea20877893e81"
+      },
+      {
+        "subkey_id": 51,
+        "length": 51,
+        "expected_hex": "fd78ac89a64d03672ad99d663f2613d15277cda1636e334a1706b7211ff1f3a3b3d2e671e391c75e3d242c482ce7e1b8b427ed"
+      },
+      {
+        "subkey_id": 52,
+        "length": 52,
+        "expected_hex": "36a6072743d3aafd3ee89344b9ef92cb58a2853ae92b20283520439fcb55afffd3d4b5e4e8c92a85d3cf74497bdcf68bbf1fcf93"
+      },
+      {
+        "subkey_id": 53,
+        "length": 53,
+        "expected_hex": "a90afcfaffec1105ad05fdaa9473fb5daf1bf8fb376b7326db46ef4c120c553188c69131933371d409eb56d66d5adca618e1dac65b"
+      },
+      {
+        "subkey_id": 54,
+        "length": 54,
+        "expected_hex": "9b990d1fcddbdb5e5c7a48a6a2a666e02e7d4d4a814ece40660d99e1c02d5f023c56ae82526fc6dc8c933d0add92fc376efcddd55a42"
+      },
+      {
+        "subkey_id": 55,
+        "length": 55,
+        "expected_hex": "ec545dcf456d1b0907c07418a42bf2b3d668b4797ba6874bf0d563f5f429a820f02177dd4d05e639a06807c9619fee54ffe07712493543"
+      },
+      {
+        "subkey_id": 56,
+        "length": 56,
+        "expected_hex": "b0106957626894586682a275f69ed4533e2f94334cc0430394b68d82679aca00dd579e712bdd2d7f5bbce9a050269739bd8427b75b06027f"
+      },
+      {
+        "subkey_id": 57,
+        "length": 57,
+        "expected_hex": "05751bfeebb480c9bca0d25d8197e2673845f405d7fb9793e29169ac19956c525f6e637f3d5ea50597b04342afed4ca16f988b4f21a34f1902"
+      },
+      {
+        "subkey_id": 58,
+        "length": 58,
+        "expected_hex": "7b4e4294d3f64085b5c09be73548f1f5cb5c6f04e57ce6cdd3077e2fb37640bf1ca0c6393b87d48a6b7e3e42628bd30fca132ded03ce51f71d9d"
+      },
+      {
+        "subkey_id": 59,
+        "length": 59,
+        "expected_hex": "082d248862cbfd71a634769a4b1cf52a4af47ace5b9ea4d583ca52207efc7234a6d321788130cbdec122579ad03afe00bc68c9fb3f68dd0532a96f"
+      },
+      {
+        "subkey_id": 60,
+        "length": 60,
+        "expected_hex": "a2b39b4428d981013e8a9c0e41b3eed504983fc18dc4b60332b1ab28b9705228147bdb95cc17889d5f0f9cfb7fd16f9d414b1a829346a8922e945b40"
+      },
+      {
+        "subkey_id": 61,
+        "length": 61,
+        "expected_hex": "efbf0f8bda1b9ef24fe389f1cf0c0c8a08bca03fc95badabb79a487d8ce1351683f59183aa6229f880d69ad60114ac128f69b2be250109972ab1f3fc3b"
+      },
+      {
+        "subkey_id": 62,
+        "length": 62,
+        "expected_hex": "dfe0ba2a6de25fa06b47375e9d9cf6c6fa1493a8a2a81c28d6e09bc161057b445659db76e92e349ff44f34a2a9e3bcaa6b84b21bae56f1499c170ab81af0"
+      },
+      {
+        "subkey_id": 63,
+        "length": 63,
+        "expected_hex": "02f9cbdb10759314515b01379c474ad74a1b575137bd3949776dbcfc3e18060cb13ee1f6dcf86035768fc7be63e01de321cacbfade209900dd94273fd8e176"
+      },
+      {
+        "subkey_id": 64,
+        "length": 64,
+        "expected_hex": "06ae14308eeeda62a00cb6d5edf18d1707029515db98f472bbf0617419301b1d4f4f2ab65849446be46f87e1d31c6c74283897b9976f70d8a16253ac927e0d9f"
+      }
+    ]
+  },
+  "generichash_keyed": [
+    {
+      "in_hex": "",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "10ebb67700b1868efb4417987acf4690ae9d972fb7a590c2f02871799aaa4786b5e996e8f0f4eb981fc214b005f42d2ff4233499391653df7aefcbc13fc51568"
+    },
+    {
+      "in_hex": "00",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "961f6dd1e4dd30f63901690c512e78e4b45e4742ed197c3c5e45c549fd25f2e4187b0bc9fe30492b16b0d0bc4ef9b0f34c7003fac09a5ef1532e69430234cebd"
+    },
+    {
+      "in_hex": "0001",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "da2cfbe2d8409a0f38026113884f84b50156371ae304c4430173d08a99d9fb1b983164a3770706d537f49e0c916d9f32b95cc37a95b99d857436f0232c88a965"
+    },
+    {
+      "in_hex": "000102",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "33d0825dddf7ada99b0e7e307104ad07ca9cfd9692214f1561356315e784f3e5a17e364ae9dbb14cb2036df932b77f4b292761365fb328de7afdc6d8998f5fc1"
+    },
+    {
+      "in_hex": "00010203",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "beaa5a3d08f3807143cf621d95cd690514d0b49efff9c91d24b59241ec0eefa5f60196d407048bba8d2146828ebcb0488d8842fd56bb4f6df8e19c4b4daab8ac"
+    },
+    {
+      "in_hex": "0001020304",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "098084b51fd13deae5f4320de94a688ee07baea2800486689a8636117b46c1f4c1f6af7f74ae7c857600456a58a3af251dc4723a64cc7c0a5ab6d9cac91c20bb"
+    },
+    {
+      "in_hex": "000102030405",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "6044540d560853eb1c57df0077dd381094781cdb9073e5b1b3d3f6c7829e12066bbaca96d989a690de72ca3133a83652ba284a6d62942b271ffa2620c9e75b1f"
+    },
+    {
+      "in_hex": "00010203040506",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "7a8cfe9b90f75f7ecb3acc053aaed6193112b6f6a4aeeb3f65d3de541942deb9e2228152a3c4bbbe72fc3b12629528cfbb09fe630f0474339f54abf453e2ed52"
+    },
+    {
+      "in_hex": "0001020304050607",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "380beaf6ea7cc9365e270ef0e6f3a64fb902acae51dd5512f84259ad2c91f4bc4108db73192a5bbfb0cbcf71e46c3e21aee1c5e860dc96e8eb0b7b8426e6abe9"
+    },
+    {
+      "in_hex": "000102030405060708",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "60fe3c4535e1b59d9a61ea8500bfac41a69dffb1ceadd9aca323e9a625b64da5763bad7226da02b9c8c4f1a5de140ac5a6c1124e4f718ce0b28ea47393aa6637"
+    },
+    {
+      "in_hex": "00010203040506070809",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "4fe181f54ad63a2983feaaf77d1e7235c2beb17fa328b6d9505bda327df19fc37f02c4b6f0368ce23147313a8e5738b5fa2a95b29de1c7f8264eb77b69f585cd"
+    },
+    {
+      "in_hex": "000102030405060708090a",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "f228773ce3f3a42b5f144d63237a72d99693adb8837d0e112a8a0f8ffff2c362857ac49c11ec740d1500749dac9b1f4548108bf3155794dcc9e4082849e2b85b"
+    },
+    {
+      "in_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7c8c9cacbcccdcecfd0d1d2d3d4d5d6d7d8d9dadbdcdddedfe0e1e2e3e4e5e6e7e8e9eaebecedeeeff0f1f2f3f4f5f6f7f8f9fafbfcfdfe",
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f",
+      "out_hex": "142709d62e28fcccd0af97fad0f8465b971e82201dc51070faa0372aa43e92484be1c1e73ba10906d5d1853db6a4106e0a7bf9800d373d6dee2d46d62ef2a461"
+    }
+  ],
+  "aead_xchacha20poly1305_ietf": {
+    "key_hex": "808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9f",
+    "nonce_hex": "07000000404142434445464748494a4b4c4d4e4f50515253",
+    "ad_hex": "50515253c0c1c2c3c4c5c6c7",
+    "plaintext_hex": "4c616469657320616e642047656e746c656d656e206f662074686520636c617373206f66202739393a204966204920636f756c64206f6666657220796f75206f6e6c79206f6e652074697020666f7220746865206675747572652c2073756e73637265656e20776f756c642062652069742e",
+    "ciphertext_hex": "f8ebea4875044066fc162a0604e171feecfb3d20425248563bcfd5a155dcc47bbda70b86e5ab9b55002bd1274c02db35321acd7af8b2e2d25015e136b7679458e9f43243bf719d639badb5feac03f80a19a96ef10cb1d15333a837b90946ba3854ee74da3f2585efc7e1e170e17e15e563e77601f4f85cafa8e5877614e143e68420"
+  }
+}

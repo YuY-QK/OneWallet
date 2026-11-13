@@ -30,7 +30,7 @@
 | 状态管理 | Riverpod | 依赖注入与状态合一，便于替换平台实现和测试 |
 | 路由 | go_router | 声明式；支持嵌套导航，便于在窄屏与宽屏间切换导航外壳 |
 | 本地数据库 | Drift + SQLCipher | 类型安全的 SQL；整库加密；全平台可用 |
-| 密码学 | libsodium（经 Dart 绑定 `sodium`） | Argon2id、XChaCha20-Poly1305 的成熟实现；不自己实现算法。注意：旧的 `sodium_libs` 包已停止维护，原生库现由 `sodium` 自身的构建钩子提供，接入方式在技术验证三中确认 |
+| 密码学 | libsodium（经 Dart 绑定 `sodium`） | Argon2id、XChaCha20-Poly1305 的成熟实现；不自己实现算法。注意：旧的 `sodium_libs` 包已停止维护，原生库现由 `sodium` 自身的构建钩子提供，接入方式见 ADR_005 |
 | 密钥派生（BIP39/32/44、SLIP-0010） | `blockchain_utils`（纯 Dart，零依赖） | 已通过官方向量与独立实现对照，见 ADR_004 |
 | 网络 | dio | 拦截器便于统一做签名、限频、脱敏日志 |
 | 不可变模型 | freezed + json_serializable | 减少手写样板 |
@@ -320,6 +320,6 @@ iOS 上对数据库和保险库文件设置"排除出 iCloud 与 iTunes 备份"�
 | T4 | 桌面端保险库的硬件支持 | v1.0 不涉及 |
 | T5 | 独立解密工具的语言 | Python 单文件脚本；在任务 M5-02 中完成 |
 | T6 | SQLCipher 的接入包 | 已决定，见 ADR_006（`sqlite3` 3.x 构建钩子 `source: sqlcipher`） |
-| T7 | libsodium 的接入方式 | 在任务 M0-12 中确认并写 ADR_005 |
+| T7 | libsodium 的接入方式 | 已决定，见 ADR_005（`sodium` 4.1.2+1，构建钩子从随包源码编译 libsodium 1.0.22） |
 
 类型名、接口签名、路由、表结构的具体约定见 `IMPLEMENTATION_SPEC_v1.0.md`；逐条任务见 `TASKS.md`。

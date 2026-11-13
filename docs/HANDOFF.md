@@ -22,7 +22,7 @@
 | 交易所适配器 | 公共基础、Binance、OKX、Bybit 完成，尚未接进应用；Bitget 未做（文档站读不到正文，见 M2-09 的条目） |
 | 页面 | P02 总览、P03 账户列表、P04、P05、P07、P20 的基础版完成，实际样子见 `docs/screenshots/`；其余未做 |
 | 应用锁、备份清单、净值曲线 | 未做（M3） |
-| 保险库 | 只有地址派生；加密、文件格式、页面都未做（M4） |
+| 保险库 | 核心完成：libsodium 加密、文件格式（带整体校验值）、原子写入的文件存储、地址派生。用例、硬件密钥、页面未做 |
 | 加密备份 | 未做（M5） |
 | 原生代码（硬件密钥、防截屏、iOS 备份排除） | 未做 |
 
@@ -75,7 +75,7 @@
 - 生成文件要入库的有三处：`ow_data` 的 `*.g.dart`、`ow_directory` 的 `directory_data.g.dart`、`ow_pricing` 的 `asset_mappings_data.dart`，以及 `app/lib/l10n/app_localizations*.dart`。改了源头要重新生成。
 - `tools/ci/check_deps.dart` 会扫描 `ow_exchanges` 里含 `order`、`withdraw`、`transfer` 等字样的字符串。确属只读的查询路径或返回字段被拦时，加入 `readOnlyPathAllowlist`，每条写明用途和出处。不要用别的办法绕过。
 
-> **正在进行、请勿重复的工作（2026-11-13）**：保险库核心（M4-01、M4-02、M4-03）与加密备份的格式和解密工具（M5-01、M5-02）已有人在做。不要改动 `packages/ow_vault`，不要另写 Argon2id、加解密或备份格式的代码。这几项在 `TASKS.md` 中标为 `[~]`，变成 `[x]` 后才可以依赖它们。
+> **正在进行、请勿重复的工作（2026-11-13）**：保险库核心（M4-01、M4-02、M4-03）已完成并合并，`VaultCrypto` 可以使用；加密备份的格式和解密工具（M5-01、M5-02）正在做。不要改动 `packages/ow_vault`，不要另写 Argon2id、加解密或备份格式的代码。这几项在 `TASKS.md` 中标为 `[~]`，变成 `[x]` 后才可以依赖它们。
 
 ## 3. 剩余任务的顺序
 
@@ -123,9 +123,7 @@ M3-01 先做，M3-02 依赖它；其余互不依赖。
 
 | 任务 | 档位 | 注意 |
 |---|---|---|
-| M0-12 的 Dart 侧 + M4-01 `VaultCrypto` | 强 | 用 `sodium` 包，只调用高层接口：Argon2id（`pwhash`）、XChaCha20-Poly1305（`aead`）、`kdf`、`genericHash`、`randombytes`。先确认它在桌面测试环境和手机上的接入方式，写 `ADR_005`，并把 `sodium` 加入 `check_deps.dart` 的保险库白名单。用 libsodium 或 RFC 的公开测试向量验证。Argon2id 默认参数：内存 64 MiB、迭代 3、并行 1；真机定标留到最后的整体测试 |
-| M4-02 保险库文件格式与 `Vault`、`VaultSession` | 强 | 接口在 `IMPLEMENTATION_SPEC` 第 6 节，格式在 `SECURITY_DESIGN` 第 5.1 节，照做，不要改格式。`ow_vault` 不得导入 `dart:io`，文件读写走注入的 `VaultStorage`。每条密文带关联数据（版本、条目 id、类型）。验收里"把两个条目的密文互换后解密失败"必须有测试 |
-| M4-03 `VaultStorage` 的文件实现 | 中 | 放在 `ow_platform` 或 `app/lib/bootstrap`。原子写入：写临时文件、落盘、重命名，保留 `.bak` |
+| M4-01、M4-02、M4-03 | — | **已完成**。接口见 `IMPLEMENTATION_SPEC` 第 6 节；`VaultStorage` 接口在 `ow_domain`，文件实现 `FileVaultStorage` 在 `ow_platform`；空保险库也可以用主密钥解锁。后续任务直接使用，不要改动 `packages/ow_vault` 的格式与算法 |
 | M0-11 硬件密钥、M4-04 防截屏与安全输入 | 中 | 这是唯一必须写原生代码（Swift、Kotlin）的地方，而且无法在没有设备的环境里编译。做法：先查有没有成熟、维护活跃、代码量小的插件能满足 `SECURITY_DESIGN` 6.1 的要求（生物识别变更后失效、仅本设备）；有就用并写 ADR；没有才手写，并在真机清单里标"未编译"。在此之前，保险库页面必须能在"没有硬件密钥"的情况下只用主密码工作（`PlatformCapabilities.hardwareKeystore` 为假） |
 | M4-05 创建保险库（P13、P12） | 中 | 主密码输入框的内容不进控制器状态；创建过程显示进度（密钥派生要 1 到数秒，放到 isolate） |
 | M4-06 导入密钥（P14） | 中 | **安全敏感**。助记词用应用内的 BIP39 词表键盘输入，不经过系统输入法；离开页面即清空；保存前验证；查重用指纹 |

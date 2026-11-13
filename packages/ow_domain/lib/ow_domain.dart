@@ -26,6 +26,7 @@ export 'src/core/services.dart';
 export 'src/exchange/exchange_credentials.dart';
 export 'src/platform/device_security.dart';
 export 'src/platform/platform_capabilities.dart';
+export 'src/platform/vault_storage.dart';
 export 'src/portfolio/holding_distribution.dart';
 export 'src/portfolio/portfolio_calculator.dart';
 export 'src/portfolio/portfolio_math.dart' show ratioScale, shareOf;

@@ -20,6 +20,7 @@
 | A1 | 手机丢失或被盗（已锁屏） | 系统级加密；数据库加密；保险库密钥由硬件密钥和主密码保护 | 极低 |
 | A2 | 他人拿到已解锁的手机 | 应用锁；查看明文每次都要验证 | 生物识别被胁迫使用 |
 | A3 | 保险库文件或备份文件被拷走 | Argon2id 加 XChaCha20-Poly1305；强度取决于密码 | 弱密码可被离线暴力破解 |
+| A3b | 能写保险库文件的攻击者删改、调换、插入条目或改动文件头 | 每条密文带 AAD；文件整体校验值 `mac`（`K_mac` 计算，覆盖除 `mac` 外的全部内容），任何解锁都先校验 | 把文件**整体**回滚到本库的某个旧版本（含 `.bak`）无法检测：旧版本的 `mac` 同样有效 |
 | A4 | 同设备上的恶意 app | 系统沙盒；不使用剪贴板；Android 禁止截屏；敏感数据不放外部存储 | 已越狱或 root 的设备上沙盒失效 |
 | A5 | 恶意输入法记录输入 | iOS 上敏感输入框使用系统安全输入（禁用第三方键盘）；助记词输入提供应用内词表键盘 | Android 上私钥输入仍经过系统输入法（见 6.3） |
 | A6 | 录屏、投屏、截屏 | Android 设置禁止截屏标志；iOS 检测录屏时隐藏内容 | iOS 无法阻止单张截屏；无法防止他人偷看或拍摄屏幕 |
@@ -41,7 +42,8 @@
                                           ├─► 解开 ► VMK（保险库主密钥，32 字节随机数）
 硬件密钥（需生物识别）─────────────────────┘            │
                                                       ├─ KDF("ow_items") ► K_item  加密每个密钥条目
-                                                      └─ KDF("ow_fprnt") ► K_fp    计算查重指纹
+                                                      ├─ KDF("ow_fprnt") ► K_fp    计算查重指纹
+                                                      └─ KDF("ow_fmac_") ► K_mac   计算保险库文件的整体校验值
 ```
 
 - **VMK**：创建保险库时由系统安全随机数生成，永不以明文落盘。
@@ -54,7 +56,7 @@
 
 | 用途 | 算法 | 参数 |
 |---|---|---|
-| 密码派生 | Argon2id | 保险库：内存不低于 64 MiB，迭代 3，并行 1；备份文件：目标 256 MiB，迭代 3。M0 在真机上定标，参数写入文件头 |
+| 密码派生 | Argon2id（libsodium `crypto_pwhash`，算法 Argon2id13） | 保险库：内存不低于 64 MiB，迭代 3，并行 1；备份文件：目标 256 MiB，迭代 3。M0 在真机上定标，参数写入文件头。输出 32 字节，salt 16 字节。并行度：libsodium 把 lanes 固定为 1，与本表一致，因此实现只接受 1（ADR_005） |
 | 对称加密 | XChaCha20-Poly1305（IETF） | 256 位密钥，24 字节随机 nonce |
 | 子密钥派生 | libsodium `crypto_kdf` | 8 字节上下文标签 |
 | 查重指纹 | 带密钥的 BLAKE2b（`crypto_generichash`） | 输出截取 16 字节 |
@@ -80,14 +82,83 @@
   "wrapped_vmk_pw": { "nonce": b64, "ct": b64 },
   "items": [
     { "id": "uuid", "kind": "mnemonic|private_key", "nonce": b64, "ct": b64 }
-  ]
+  ],
+  "mac": b64
 }
 ```
 
-- 条目明文是一段 JSON：助记词、可选 passphrase、或私钥与链类型。
+- 条目明文是一段 JSON：助记词、可选 passphrase、或私钥与链类型（精确编码见下文"条目明文"）。
 - 硬件包裹的 VMK 不在此文件内，由平台层保存（见 6.1）。
-- 写入采用"写临时文件、落盘、原子重命名"，并保留上一版本作为 `.bak`，写入失败不破坏原文件。
+- 写入采用"写临时文件、落盘、原子重命名"，并保留上一版本作为 `.bak`，写入失败不破坏原文件（实现见 `ow_platform` 的 `FileVaultStorage`）。
 - 条目名称、关联账户等元数据在主数据库中；保险库文件不含这些，也不含地址。
+
+**字段细则**（M4-02 实现，代码集中在 `packages/ow_vault/lib/src/vault/vault_format.dart` 与 `vault_file.dart`）
+
+- 文件是 UTF-8 编码的 JSON 对象，键名与层级如上，不允许出现其他键。`b64` 为带填充的标准 Base64，解析时要求重新编码后与原文完全一致。
+- `version` 为整数。高于本应用支持的版本时报"版本过新"（`VaultVersionUnsupportedFailure`），不修改文件；这一判断先于其余结构检查。`format` 不对、不是 JSON、结构或长度不合法时报"文件损坏"（`VaultCorruptedFailure`）。
+- `kdf`：`alg` 固定为 `"argon2id"`；`salt` 16 字节；`mem_kib`、`iters` 为整数，读取时只接受 8–1048576 与 1–32（文件头不受认证保护，限制取值防止被改成耗尽内存的参数）；`parallelism` 只能为 1（第 4 节）。
+- `wrapped_vmk_pw`：`nonce` 24 字节；`ct` 为 `XChaCha20-Poly1305(KEK_pw, nonce, VMK, AAD_vmk)`，即 32 字节密文加 16 字节标签，共 48 字节。
+- `items[]`：`id` 为 1–64 个 ASCII 字母、数字、`-`、`_`（UUID 符合），在文件内唯一；`kind` 为 `"mnemonic"` 或 `"private_key"`；`nonce` 24 字节；`ct` 为 `XChaCha20-Poly1305(K_item, nonce, 条目明文, AAD_item)`。
+- `mac`：32 字节，`= crypto_generichash(输出 32 字节, 消息 = M, 密钥 = K_mac)`，M 的编码见下文"整体校验值"。字段缺失或长度不对视为损坏。
+- 子密钥：`K_item = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_items", VMK)`，`K_fp = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_fprnt", VMK)`，`K_mac = crypto_kdf_derive_from_key(32, 子密钥编号 1, "ow_fmac_", VMK)`（上下文必须正好 8 字节，所以末尾补一个 `_`）。
+- 每次加密（包裹 VMK、加密条目）都由 `randombytes_buf` 生成新的 24 字节 nonce。
+
+**关联数据（AAD）的精确字节编码**
+
+记 `u16be(n)` 为 2 字节大端无符号整数，`lp(x) = u16be(x 的 UTF-8 字节数) ‖ x 的 UTF-8 字节`：
+
+```
+AAD_vmk  = lp("onewallet-vault") ‖ lp("wrapped_vmk_pw") ‖ u16be(version)
+AAD_item = lp("onewallet-vault") ‖ lp("item") ‖ u16be(version) ‖ lp(id) ‖ lp(kind)
+```
+
+- `version` 为写入该密文时文件的格式版本（当前为 1）；`id`、`kind` 与文件中对应字段的字符串完全相同。
+- 第二段（`"wrapped_vmk_pw"` 或 `"item"`）区分用途，防止一种密文被挪作另一种使用。
+- 示例（version 1）：`AAD_vmk` 的十六进制为 `000f6f6e6577616c6c65742d7661756c74 000e777261707065645f766d6b5f7077 0001`（空格只为易读）。测试 `vault_format_test.dart` 固定了这两个编码的字节。
+- 效果：两条密文互换、改动条目的 `id` 或 `kind`、把条目挪到不同版本的文件里，解密都会认证失败。
+
+**整体校验值 `mac`**
+
+M 是文件除 `mac` 外全部内容的规范编码，逐字段加长度前缀，不依赖 JSON 的序列化细节（键顺序、空白、Base64 写法）。记 `u32be(n)` 为 4 字节大端无符号整数，字节串的 `lp(x) = u16be(x 的字节数) ‖ x`（字符串取 UTF-8 字节，与 AAD 相同）：
+
+```
+M = lp("onewallet-vault") ‖ lp("file_mac") ‖ u16be(version)
+  ‖ lp("argon2id") ‖ u32be(mem_kib) ‖ u32be(iters) ‖ u32be(parallelism) ‖ lp(salt)
+  ‖ lp(wrapped_vmk_pw.nonce) ‖ lp(wrapped_vmk_pw.ct)
+  ‖ u32be(条目数)
+  ‖ 按文件中的顺序，对每个条目：lp(id) ‖ lp(kind) ‖ lp(nonce) ‖ lp(ct)
+```
+
+- 字节串字段（salt、nonce、ct）取 Base64 解码后的原始字节。
+- 校验在取得 VMK 之后、返回会话之前进行，用常量时间比较（`sodium_memcmp`）：
+  - 主密码解锁：包裹解不开 → 密码错误；包裹解开但 `mac` 不符 → 文件损坏；
+  - 主密钥解锁：`mac` 不符 → 报告为密码错误。此时无法区分"主密钥不对"（如过期的硬件包裹）与"文件被改"，对调用方而言都应退回主密码解锁；若确是文件被改，主密码解锁会报告损坏。空保险库同样可以用 `mac` 校验主密钥。
+- 每次写入（创建、增删条目、改密码）都重新计算。`mac` 是内容的确定性函数：内容回到旧值时 `mac` 也回到旧值。
+- 能检测：删除、调换顺序、插入（包括从其他保险库或本库旧版本复制来的合法条目）、改动任一头部字段或 `mac` 本身。不能检测：把整个文件回滚为本库旧版本（威胁 A3b 的残余风险）。
+- 修改 kdf 参数或 salt 而保留原包裹时，主密码解锁会先因包裹解不开而表现为密码错误，这一行为不变。
+- 示例与测试：`packages/ow_vault/test/vault/vault_mac_test.dart` 用固定输入钉死了 M 的十六进制字节与 `mac` 的值（期望值由 Python `hashlib.blake2b` 独立算出）。
+
+**条目明文**
+
+固定字段顺序、无空白的 JSON（ASCII），全部密钥内容写成**原始字节的小写十六进制**：
+
+```
+{"v":1,"kind":"mnemonic","mnemonic":"<hex>","passphrase":null}
+{"v":1,"kind":"mnemonic","mnemonic":"<hex>","passphrase":"<hex>"}
+{"v":1,"kind":"private_key","family":"evm|bitcoin|solana|tron","key":"<hex>"}
+```
+
+- `mnemonic` 为助记词原文的字节（应用层约定为规范化后的 UTF-8：小写、单个空格分隔，由导入流程负责），保险库按字节原样保存；`passphrase` 为 `null` 表示没有附加密码，空字符串 `""` 表示附加密码为空字节串；`key` 为原始私钥字节。长度上限：助记词 1024 字节、附加密码 1024 字节、私钥 256 字节；助记词与私钥不得为空。
+- 用十六进制而不是 JSON 字符串，是为了编码、解码都能直接在字节上完成（不经过 Dart `String`，见 6.5），且不涉及转义与 UTF-8 合法性问题。
+- 只接受上述规范形式；任何偏差（多余空白、大写十六进制、未知字段）都视为损坏。明文中的 `kind` 必须与文件条目的 `kind` 一致。
+- **查重指纹** = `crypto_generichash(输出 16 字节, 消息 = 上述条目明文字节, 密钥 = K_fp)` 的小写十六进制（32 个字符）。同一保险库内同一内容（含附加密码与链家族）的指纹相同；不同保险库的 VMK 不同，指纹不能跨库关联。
+
+**解锁与修改**
+
+- 主密码解锁：`KEK_pw = Argon2id(主密码, salt, 文件头参数)`，解开 `wrapped_vmk_pw`，再校验 `mac`。认证加密无法区分"密码错误"与"salt、参数或包裹被篡改"，两者都报告为密码错误。
+- 主密钥解锁（硬件解包之后）：以整体校验值 `mac` 判定主密钥是否正确（见上文），空保险库也能校验。这样，过期的硬件包裹（例如保险库被重建后）不会被接受，新条目不会用错误的密钥写入。
+- 改主密码：生成新 salt，按当前默认参数重新派生 `KEK_pw`，用新 nonce 重新包裹同一个 VMK。VMK 不变，因此 `K_item`、`K_fp` 与全部条目密文、查重指纹都不变，无需重新加密。
+- 每次修改（创建、增删条目、改密码）都在内存中构造完整的新文件，整体交给 `VaultStorage.writeAtomic`；写入成功后才更新内存状态。同一个 `Vault` 实例上的写操作串行执行。
 
 ### 5.2 加密备份文件 `.owbak`
 
@@ -137,6 +208,9 @@
 - 解密、派生等操作在独立的 isolate 中进行，结束即销毁该 isolate。
 - **已知局限**：Dart 字符串不可变且由垃圾回收管理，显示助记词时必然会产生无法主动清除的字符串副本。应对：缩短明文的存活时间，页面销毁后不保留引用；不把明文放进任何状态管理对象、路由参数或缓存。
 - 明文不得作为参数传给日志、错误信息、异常对象。
+- 保险库的实现（M4-02）：条目明文的编码与解码直接在字节上完成，不产生 `String`；中间缓冲（编码结果、解密结果）用完即清零；会话持有的 VMK、`K_item`、`K_fp`、`K_mac` 在 `close()` 时清零。传给 libsodium 的密钥在其安全内存中的副本于每次调用结束时释放并清零（ADR_005）。
+- **已知局限（isolate）**：只有 Argon2id 在独立 isolate 中计算；AEAD、KDF、BLAKE2b 为微秒级运算，在调用方的 isolate 中同步执行。"解密、派生等操作在独立 isolate 中进行"的要求由应用层用例负责把整段流程放进 isolate（如 M4-08 的派生）。
+- **已知局限（Dart 堆上的密钥副本）**：`VaultCrypto` 接口以 `Uint8List` 收发密钥，会话也以 `Uint8List` 持有 VMK 与子密钥。这些字节位于 Dart 堆，垃圾回收在移动或压缩对象时可能留下旧副本，`close()` 的清零覆盖不到它们。缓解：密钥只在会话期间存在、会话用完即关；进入 libsodium 的副本位于加锁的安全内存。彻底解决需要把接口改为直接传递 libsodium 的 `SecureKey`（改 IMPLEMENTATION_SPEC 的签名），列为后续可选改进。
 
 ### 6.6 设备完整性
 
@@ -175,7 +249,7 @@
 ## 9. 供应链
 
 - 所有依赖锁定到确切版本，锁文件入库。
-- `ow_vault` 的依赖白名单：`ow_domain`、派生库 `blockchain_utils`（ADR_004）、libsodium 的 Dart 绑定（接入时加入）、Dart 标准库。白名单写在 `tools/ci/check_deps.dart` 中，新增依赖需要写 ADR。
+- `ow_vault` 的依赖白名单：`ow_domain`、派生库 `blockchain_utils`（ADR_004）、libsodium 的 Dart 绑定 `sodium` 4.1.2+1（ADR_005；原生库由其构建钩子从随包分发的 libsodium 1.0.22 源码编译）、Dart 标准库。白名单写在 `tools/ci/check_deps.dart` 中，新增依赖需要写 ADR。CI 扫描白名单内各包及其全部传递依赖的源码，以及 `ow_vault` 的完整导入闭包，不得有联网迹象；经审阅的例外逐条登记在脚本与 ADR_005 中。
 - `ow_vault` 自身代码不得导入 `dart:io`：文件读写通过注入的存储接口完成，由 `ow_data` 或 `ow_platform` 提供实现。
 - 升级任何依赖前阅读其变更说明；升级 `ow_vault` 的依赖时还要审阅代码差异。
 - 不使用带统计、广告、远程配置功能的 SDK。
@@ -193,7 +267,7 @@
 
 | 编号 | 事项 | 处理 |
 |---|---|---|
-| S1 | Argon2id 参数的最终取值 | 任务 M0-12 在真机上定标后回填第 4 节。在此之前代码中的默认值为内存 64 MiB、迭代 3、并行 1 |
+| S1 | Argon2id 参数的最终取值 | 任务 M0-12 在真机上定标后回填第 4 节。在此之前代码中的默认值为内存 64 MiB、迭代 3、并行 1（`packages/ow_vault` 的 `KdfParams.vaultDefault`：`memKib: 65536, iterations: 3, parallelism: 1`）。读取文件头时只接受内存 8 KiB–1 GiB、迭代 1–32、并行 1，超出视为文件损坏（文件头参数不受认证保护，防止被改成耗尽内存的值） |
 | S2 | 带自动清空的复制功能 | 已决定：不提供 |
 | S3 | 主密码是否强制最低强度 | 已决定：强制至少 10 个字符；强度为"弱"时需额外确认一次，但不阻止（PRD P13） |
 | S4 | iOS 钥匙串条目卸载后残留的清理 | 任务 M0-11 验证实际行为后回填 6.1；默认方案：首次启动时若数据库不存在，则清除本应用的全部钥匙串条目 |

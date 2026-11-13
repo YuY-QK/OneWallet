@@ -13,6 +13,11 @@ void main() {
         const ServiceDownFailure('s'),
         const ValidationFailure('v'),
         const WrongPasswordFailure('w'),
+        const VaultCorruptedFailure('vc'),
+        const VaultVersionUnsupportedFailure('vv'),
+        const VaultNotFoundFailure('vn'),
+        const VaultAlreadyExistsFailure('va'),
+        const VaultItemNotFoundFailure('vi'),
         const UnsupportedFailure('p'),
         const UnknownFailure('x'),
       ];
@@ -25,6 +30,11 @@ void main() {
         's',
         'v',
         'w',
+        'vc',
+        'vv',
+        'vn',
+        'va',
+        'vi',
         'p',
         'x',
       ]);

@@ -220,3 +220,24 @@
 - [ ] CoinGecko"测试连接"（不填 Key）能查到 BTC 价格
 - [ ] 自定义 RPC 端点：填 `http://` 地址被拒绝并有说明；填 `https://` 地址保存后只显示域名，同步确实走该端点
 - [ ] 编辑面板在键盘弹出时按钮仍可点到
+
+## 8. 保险库核心（任务 M4-01 至 M4-03）
+
+依据：ADR_005、SECURITY_DESIGN 第 3–5 节。桌面环境（Linux x64）的自动化测试已覆盖算法、文件格式与原子写入；以下各项只能在设备上确认。
+
+### 8.1 libsodium（M4-01）
+
+- [ ] Android（armv7a、arm64、x86_64 模拟器）与 iOS（真机、模拟器）：`flutter build` 时 `sodium` 的构建钩子用对应工具链编出 libsodium，应用启动后 `SodiumVaultCrypto.load()` 成功，`libraryVersion` 为 `1.0.22`
+- [ ] Android 16 KB 页大小的设备（或模拟器镜像）上能加载 libsodium
+- [ ] Argon2id（默认参数 64 MiB、迭代 3）在设备上计算期间界面保持流畅（在独立 isolate 中运行）；记录两台真机的耗时，供 M0-12 定标
+- [ ] 记录接入 libsodium 后的安装包体积增量
+
+### 8.2 保险库文件 `vault.owv`（M4-02、M4-03）
+
+- [ ] 保险库文件位于应用支持目录（iOS：`Library/Application Support/vault.owv`；Android：`files/` 或 `app_flutter/` 下，以 `path_provider` 实际返回为准），不在任何外部存储或共享目录
+- [ ] 导出应用沙盒后，在 `vault.owv` 与 `vault.owv.bak` 中搜索导入过的测试助记词的任一单词、私钥的十六进制片段，均搜不到（SECURITY_DESIGN 第 8 节）
+- [ ] 在保险库写入过程中强杀进程（例如导入条目时立刻从任务切换器划掉），重新打开后保险库仍能用主密码解锁，内容是写入前或写入后的完整版本之一
+- [ ] 写入后立即断电或强制重启设备（模拟器上可用冷启动代替），重新打开后保险库仍可解锁（Dart 无法对目录执行 fsync，改名的持久性依赖文件系统）
+- [ ] **iOS 备份排除（尚未实现）**：`vault.owv`、`vault.owv.bak`、`vault.owv.tmp` 需要设置 `isExcludedFromBackup`，与数据库一起留给原生插件（ADR_006 第 4 条）。实现后：做一次 iCloud 或电脑备份并恢复到另一台设备，确认保险库文件不在其中
+- [ ] Android 备份排除：清单的 `allowBackup="false"` 与 `data_extraction_rules.xml` 已覆盖全部应用数据（含保险库文件）；用 `adb shell bmgr backupnow` 或设备迁移确认保险库文件不被带走
+- [ ] 卸载重装后旧的 `vault.owv` 不存在（iOS 上应用支持目录随应用删除）

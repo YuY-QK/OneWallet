@@ -1,0 +1,108 @@
+{
+  "_note": "独立实现对照，不是官方向量。生成脚本：generate_crosscheck_vectors.py",
+  "_tools": "PyNaCl 1.6.2；Python hashlib.blake2b",
+  "argon2id_32": [
+    {
+      "password_hex": "636f727265637420686f727365206261747465727920737461706c65",
+      "salt_hex": "000102030405060708090a0b0c0d0e0f",
+      "mem_kib": 8,
+      "iterations": 1,
+      "expected_hex": "d17ea6341ca93da6079ea2f64dc4aa31dd1aaf9caa67fb42ac4afd0714706f26"
+    },
+    {
+      "password_hex": "636f727265637420686f727365206261747465727920737461706c65",
+      "salt_hex": "000102030405060708090a0b0c0d0e0f",
+      "mem_kib": 64,
+      "iterations": 2,
+      "expected_hex": "2df47ede6358ed17a9976d4fcedb897a10036d432a4acef17d263bfc98bd20ac"
+    },
+    {
+      "password_hex": "616e6f746865722066616b652070617373776f7264",
+      "salt_hex": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mem_kib": 1024,
+      "iterations": 3,
+      "expected_hex": "a9826871649df27e1fe48eb381b246d6c0b3e7163e2b9017c94a22eb298e696b"
+    },
+    {
+      "password_hex": "e590abe4b8ade69687e79a84e58187e5af86e7a081",
+      "salt_hex": "101112131415161718191a1b1c1d1e1f",
+      "mem_kib": 256,
+      "iterations": 1,
+      "expected_hex": "fe036668c63e666be09dc25e8433c6b9be63ef6ae2418a03122ac76aa6982c2e"
+    },
+    {
+      "password_hex": "64656661756c742d706172616d732066616b652070617373776f7264",
+      "salt_hex": "5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a",
+      "mem_kib": 65536,
+      "iterations": 3,
+      "expected_hex": "003a789b4f12332d8ddc9a28764c7eaec01cd040a6199e4c94978d5f547f692a"
+    }
+  ],
+  "kdf_32": [
+    {
+      "master_key_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+      "context": "ow_items",
+      "subkey_id": 0,
+      "expected_hex": "40fcb94e3957bdd3e6598bdf44fae41df050d46dc5a29b2ed61014886d3940e7"
+    },
+    {
+      "master_key_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+      "context": "ow_items",
+      "subkey_id": 1,
+      "expected_hex": "2f00a1b1b3c4e77c3cc1cc7b603fe32d419df2ceee2494b757b53ecd284d5bf3"
+    },
+    {
+      "master_key_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+      "context": "ow_items",
+      "subkey_id": 4294967303,
+      "expected_hex": "766142a21a4600f79bf91b33728fcaf22f7715562dfeb412c11e3d507925c526"
+    },
+    {
+      "master_key_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+      "context": "ow_fprnt",
+      "subkey_id": 0,
+      "expected_hex": "73d3c3c72921c01d731ee1b7f70d07b12e2a8e5aa9930e6c5467b675ecdd2877"
+    },
+    {
+      "master_key_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+      "context": "ow_fprnt",
+      "subkey_id": 1,
+      "expected_hex": "d1004d5b60f17b24c8e6de8ea0989d10e7ffea77ad284ad7477375203cb2cb33"
+    },
+    {
+      "master_key_hex": "4242424242424242424242424242424242424242424242424242424242424242",
+      "context": "ow_fprnt",
+      "subkey_id": 4294967303,
+      "expected_hex": "ec4d184fe8608b384f4518f0b03a44c1db6e9ec89e0066a53ef877028fba5c3c"
+    }
+  ],
+  "keyed_hash": [
+    {
+      "key_hex": "3333333333333333333333333333333333333333333333333333333333333333",
+      "message_hex": "",
+      "length": 16,
+      "expected_hex": "5e5ed163f663a3954af4484a05861c3f"
+    },
+    {
+      "key_hex": "3333333333333333333333333333333333333333333333333333333333333333",
+      "message_hex": "66696e6765727072696e7420696e707574",
+      "length": 16,
+      "expected_hex": "62f555b0915f8b0f6c749490b846e3e0"
+    },
+    {
+      "key_hex": "3434343434343434343434343434343434343434343434343434343434343434",
+      "message_hex": "66696e6765727072696e7420696e707574",
+      "length": 16,
+      "expected_hex": "768a977cceaa3e44cac956353cff6904"
+    },
+    {
+      "key_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f",
+      "message_hex": "000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f202122232425262728292a2b2c2d2e2f303132333435363738393a3b3c3d3e3f404142434445464748494a4b4c4d4e4f505152535455565758595a5b5c5d5e5f606162636465666768696a6b6c6d6e6f707172737475767778797a7b7c7d7e7f808182838485868788898a8b8c8d8e8f909192939495969798999a9b9c9d9e9fa0a1a2a3a4a5a6a7a8a9aaabacadaeafb0b1b2b3b4b5b6b7b8b9babbbcbdbebfc0c1c2c3c4c5c6c7",
+      "length": 32,
+      "expected_hex": "a39ff6e7e838226fd50e24a55375ff3a39419fd93e32cc463f3f74323291c425"
+    }
+  ],
+  "xchacha_draft_a31": {
+    "confirmed_by_pynacl": true
+  }
+}

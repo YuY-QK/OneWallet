@@ -24,7 +24,26 @@ const internalAllowed = <String, Set<String>>{
 const flutterAllowed = {'ow_platform'};
 
 /// ow_vault 的完整依赖白名单。新增需要写 ADR。
-const vaultAllowed = {'ow_domain', 'blockchain_utils'};
+///
+/// - `blockchain_utils`：地址派生（ADR_004）。
+/// - `sodium`：libsodium 的 Dart 绑定（ADR_005）。
+const vaultAllowed = {'ow_domain', 'blockchain_utils', 'sodium'};
+
+/// 保险库第三方依赖（含传递依赖）中，被 [networkSigns] 命中、但经逐条审阅确认
+/// 不会被编进应用的文件。键为包名，值为"包内相对路径 → 理由"。
+///
+/// 每加一条都要在 docs/ADR_005_libsodium接入.md 的"check_deps 的例外"中写明理由；
+/// 脚本另外检查：这些文件不在 ow_vault 的导入闭包内、并且确实存在（依赖升级后
+/// 文件消失或改名时报错，迫使重新审阅）。
+const vaultNetworkSignExceptions = <String, Map<String, String>>{
+  'sodium': {
+    // `dart run sodium:update_web` 命令行工具下载 sodium.js 用的 HttpClient。
+    // 只被 bin/update_web.dart 导入；包的公开库（sodium.dart、sodium_sumo.dart）
+    // 及其全部条件导入分支都不导入它（下方 _checkVaultImportClosure 逐次验证）。
+    'lib/src/js/update_web/js_library_loader.dart':
+        'sodium:update_web 命令行工具的下载代码，不在保险库的导入闭包内',
+  },
+};
 
 /// 保险库自身代码中禁止出现的导入。
 final vaultForbiddenImports = RegExp(
@@ -129,28 +148,126 @@ void _checkVaultSources() {
   }
 }
 
+/// 扫描保险库全部第三方依赖（白名单内的包及其**传递依赖**）的 `lib/`，
+/// 不得出现联网迹象；[vaultNetworkSignExceptions] 中登记的文件除外，
+/// 但这些文件必须存在且不在保险库的导入闭包内。
 void _checkVaultDependencySources() {
-  final configFile = File('.dart_tool/package_config.json');
-  if (!configFile.existsSync()) {
-    errors.add('缺少 .dart_tool/package_config.json，请先运行 flutter pub get');
-    return;
-  }
-  final config = jsonDecode(configFile.readAsStringSync()) as Map;
-  final packages = (config['packages'] as List).cast<Map<Object?, Object?>>();
-  for (final dep in vaultAllowed.where((d) => !d.startsWith('ow_'))) {
-    final entry = packages.where((p) => p['name'] == dep).firstOrNull;
-    if (entry == null) {
-      errors.add('在 package_config.json 中找不到 $dep');
+  final roots = _packageRoots();
+  if (roots == null) return;
+  final closure = <String>{};
+  final pending = [...vaultAllowed.where((d) => !d.startsWith('ow_'))];
+  while (pending.isNotEmpty) {
+    final dep = pending.removeLast();
+    if (!closure.add(dep)) continue;
+    final dir = roots[dep];
+    if (dir == null) {
+      errors.add('在 package_config.json 中找不到保险库的依赖 $dep');
       continue;
     }
-    final root = Uri.parse(entry['rootUri']! as String);
-    final dir = root.isAbsolute
-        ? root.toFilePath()
-        : configFile.parent.uri.resolveUri(root).toFilePath();
+    pending.addAll(_dependencies('$dir/pubspec.yaml'));
+  }
+  for (final dep in closure) {
+    final dir = roots[dep];
+    if (dir == null) continue;
+    final exceptions = vaultNetworkSignExceptions[dep] ?? const {};
+    for (final path in exceptions.keys) {
+      if (!File('$dir/$path').existsSync()) {
+        errors.add('保险库依赖的例外文件已不存在，请重新审阅：$dep/$path');
+      }
+    }
     for (final file in _dartFiles('$dir/lib')) {
+      final relative = File(file.path).absolute.path
+          .substring(Directory(dir).absolute.path.length + 1);
+      if (exceptions.containsKey(relative.replaceAll(r'\', '/'))) continue;
       _scan(file, networkSigns, '保险库的依赖 $dep 含有联网代码');
     }
   }
+  for (final dep in vaultNetworkSignExceptions.keys) {
+    if (!closure.contains(dep)) {
+      errors.add('vaultNetworkSignExceptions 中的 $dep 已不是保险库的依赖，请删除该例外');
+    }
+  }
+  _checkVaultImportClosure(roots);
+}
+
+/// 从 `packages/ow_vault/lib` 出发，沿 import、export、part（含全部条件导入分支）
+/// 求出可达的源文件，确认其中没有 [vaultNetworkSignExceptions] 登记的文件，
+/// 也没有任何联网迹象。条件分支全部计入，比任一平台实际编译的范围更大，因此偏保守。
+void _checkVaultImportClosure(Map<String, String> roots) {
+  final exceptionFiles = {
+    for (final MapEntry(key: dep, value: files)
+        in vaultNetworkSignExceptions.entries)
+      if (roots[dep] case final dir?)
+        for (final path in files.keys) File('$dir/$path').absolute.path,
+  };
+  final visited = <String>{};
+  final pending = [
+    for (final f in _dartFiles('packages/ow_vault/lib')) f.absolute.path,
+  ];
+  while (pending.isNotEmpty) {
+    final path = pending.removeLast();
+    if (!visited.add(path)) continue;
+    final file = File(path);
+    if (!file.existsSync()) continue;
+    if (exceptionFiles.contains(path)) {
+      errors.add('保险库的导入闭包包含了登记为例外的联网文件：$path');
+    }
+    _scan(file, networkSigns, '保险库的导入闭包含有联网代码');
+    for (final uri in _directiveUris(file.readAsStringSync())) {
+      final target = _resolveImport(uri, file, roots);
+      if (target != null) pending.add(target);
+    }
+  }
+}
+
+final _directive = RegExp(
+  r'''(?:^|[;\s])(?:import|export|part)\s+((?:'[^']*'|"[^"]*")(?:\s*if\s*\([^)]*\)\s*(?:'[^']*'|"[^"]*"))*)''',
+  multiLine: true,
+);
+final _quoted = RegExp(r'''['"]([^'"]*)['"]''');
+
+/// 源码中 import、export、part 指令引用的全部 URI（含条件导入的每个分支）。
+Iterable<String> _directiveUris(String source) sync* {
+  for (final m in _directive.allMatches(source)) {
+    for (final q in _quoted.allMatches(m.group(1)!)) {
+      yield q.group(1)!;
+    }
+  }
+}
+
+/// 把 [uri] 解析为文件的绝对路径；`dart:` 库返回 null。
+String? _resolveImport(String uri, File from, Map<String, String> roots) {
+  if (uri.startsWith('dart:')) return null;
+  if (uri.startsWith('package:')) {
+    final rest = uri.substring('package:'.length);
+    final slash = rest.indexOf('/');
+    final dir = roots[rest.substring(0, slash)];
+    if (dir == null) return null;
+    return File('$dir/lib/${rest.substring(slash + 1)}').absolute.path;
+  }
+  return File(from.parent.uri.resolve(uri).toFilePath()).absolute.path;
+}
+
+/// package_config.json 中每个包的根目录。读不到时记一条错误并返回 null。
+Map<String, String>? _packageRoots() {
+  final configFile = File('.dart_tool/package_config.json');
+  if (!configFile.existsSync()) {
+    errors.add('缺少 .dart_tool/package_config.json，请先运行 flutter pub get');
+    return null;
+  }
+  final config = jsonDecode(configFile.readAsStringSync()) as Map;
+  final packages = (config['packages'] as List).cast<Map<Object?, Object?>>();
+  return {
+    for (final entry in packages)
+      entry['name']! as String: () {
+        final root = Uri.parse(entry['rootUri']! as String);
+        final resolved = root.isAbsolute
+            ? root
+            : configFile.parent.absolute.uri.resolveUri(root);
+        final path = resolved.toFilePath();
+        return path.endsWith('/') ? path.substring(0, path.length - 1) : path;
+      }(),
+  };
 }
 
 void _checkExchangeSources() {
