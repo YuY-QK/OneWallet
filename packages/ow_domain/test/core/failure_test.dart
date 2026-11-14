@@ -18,6 +18,8 @@ void main() {
         const VaultNotFoundFailure('vn'),
         const VaultAlreadyExistsFailure('va'),
         const VaultItemNotFoundFailure('vi'),
+        const BackupCorruptedFailure('bc'),
+        const BackupVersionUnsupportedFailure('bv'),
         const UnsupportedFailure('p'),
         const UnknownFailure('x'),
       ];
@@ -35,6 +37,8 @@ void main() {
         'vn',
         'va',
         'vi',
+        'bc',
+        'bv',
         'p',
         'x',
       ]);

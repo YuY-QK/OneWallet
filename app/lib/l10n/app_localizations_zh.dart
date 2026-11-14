@@ -120,6 +120,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failureVaultItemNotFound => '保险库中找不到这个密钥，它可能已被删除。';
 
   @override
+  String get failureBackupCorrupted =>
+      '这不是 OneWallet 的备份文件，或文件已损坏，无法读取。请换一份备份文件再试。';
+
+  @override
+  String get failureBackupVersionUnsupported =>
+      '这个备份文件来自更新版本的 OneWallet，当前版本无法读取。请先升级应用再恢复。';
+
+  @override
   String get failureUnsupported => '当前设备不支持这个功能。';
 
   @override

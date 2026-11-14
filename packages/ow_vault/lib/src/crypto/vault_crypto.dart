@@ -31,6 +31,13 @@ final class KdfParams {
   /// M0-12 定标后在此回填。
   static final vaultDefault = KdfParams(memKib: 65536, iterations: 3);
 
+  /// 加密备份文件的默认参数：内存 256 MiB、迭代 3、并行 1（SECURITY_DESIGN 第 4 节）。
+  ///
+  /// 备份文件可能被拷走后离线暴力破解，且解密只在导出、恢复时各做一次，所以比
+  /// 保险库更强。手机内存不足时应用层可以降级，但不低于 [vaultDefault]；实际参数
+  /// 写在文件头部，解密时按头部取值。M0-12 真机定标后在此回填。
+  static final backupDefault = KdfParams(memKib: 262144, iterations: 3);
+
   /// libsodium Argon2id 的内存下限（`crypto_pwhash_MEMLIMIT_MIN` 为 8192 字节）。
   static const minMemKib = 8;
 

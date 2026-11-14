@@ -130,6 +130,24 @@ final class VaultItemNotFoundFailure extends Failure {
   const VaultItemNotFoundFailure([super.detail]);
 }
 
+/// 加密备份文件（`.owbak`）不是备份文件，或结构损坏（魔数、长度、头部不合法，
+/// 或解密后的内容不合法）。
+///
+/// 与 [VaultCorruptedFailure] 分开，是因为两者给用户的处理建议不同：保险库文件
+/// 损坏时可用备份恢复，备份文件损坏时只能换一份备份。密码错误与密文被篡改
+/// 无法区分，都报告为 [WrongPasswordFailure]（界面文案应为"密码不正确或文件已损坏"）。
+/// [detail] 只写固定的原因标记，不含任何文件内容。
+final class BackupCorruptedFailure extends Failure {
+  const BackupCorruptedFailure([super.detail]);
+}
+
+/// 加密备份文件的容器版本或载荷版本高于本应用支持的版本（由更新版本的应用导出）。
+///
+/// 提示用户先升级应用再恢复（PRD 第 10 节）。
+final class BackupVersionUnsupportedFailure extends Failure {
+  const BackupVersionUnsupportedFailure([super.detail]);
+}
+
 /// [UnsupportedFailure] 的原因。
 enum UnsupportedReason {
   /// 当前设备或平台不支持该能力。
