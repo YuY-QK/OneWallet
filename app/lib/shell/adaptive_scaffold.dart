@@ -25,6 +25,7 @@ class AdaptiveScaffold extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelect,
     required this.body,
+    this.showBottomNav = true,
   });
 
   final List<AdaptiveDestination> destinations;
@@ -32,10 +33,14 @@ class AdaptiveScaffold extends StatelessWidget {
   final ValueChanged<int> onSelect;
   final Widget body;
 
+  /// 是否在窄屏下显示底部导航栏。进入二级页面时为 false。
+  final bool showBottomNav;
+
   @override
   Widget build(BuildContext context) {
     final size = Breakpoints.of(context);
     if (size == ScreenSize.compact) {
+      if (!showBottomNav) return body;
       return Scaffold(
         body: body,
         bottomNavigationBar: DecoratedBox(
