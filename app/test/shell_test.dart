@@ -6,12 +6,15 @@ import 'package:onewallet/shell/breakpoints.dart';
 
 import 'support/fakes.dart';
 
-Future<void> pumpAt(WidgetTester tester, Size size) async {
+Future<void> pumpAt(WidgetTester tester, Size size, {String? location}) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
   addTearDown(tester.view.reset);
   await tester.pumpWidget(
-    ProviderScope(overrides: TestRig().overrides, child: const OneWalletApp()),
+    ProviderScope(
+      overrides: TestRig().overrides,
+      child: OneWalletApp(initialLocation: location),
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -49,6 +52,31 @@ void main() {
     await tester.tap(find.text('保险库'));
     await tester.pumpAndSettle();
     expect(find.text('保险库尚未启用'), findsOneWidget);
+  });
+
+  testWidgets('外壳_二级页面_窄屏隐藏底部导航', (tester) async {
+    await pumpAt(tester, const Size(390, 800), location: '/accounts/add');
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(NavigationRail), findsNothing);
+    expect(find.text('添加账户'), findsOneWidget);
+  });
+
+  testWidgets('外壳_二级页面_宽屏保持侧栏', (tester) async {
+    await pumpAt(tester, const Size(1280, 900), location: '/accounts/add');
+    expect(find.byType(NavigationBar), findsNothing);
+    expect(find.byType(NavigationRail), findsOneWidget);
+  });
+
+  testWidgets('外壳_从根页面进入二级页面隐藏底部导航_返回后恢复', (tester) async {
+    await pumpAt(tester, const Size(390, 800), location: '/accounts');
+    expect(find.byType(NavigationBar), findsOneWidget);
+    await tester.tap(find.byIcon(Icons.add_rounded));
+    await tester.pumpAndSettle();
+    expect(find.text('添加账户'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsNothing);
+    await tester.tap(find.byType(BackButton));
+    await tester.pumpAndSettle();
+    expect(find.byType(NavigationBar), findsOneWidget);
   });
 
   testWidgets('主题_深色模式_正常渲染', (tester) async {

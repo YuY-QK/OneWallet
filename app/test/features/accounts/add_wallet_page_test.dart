@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onewallet/widgets/ow_chip.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../support/fakes.dart';
@@ -54,7 +55,13 @@ void main() {
       expect(find.text('账户名称'), findsOneWidget);
       expect(find.text('来源钱包'), findsOneWidget);
       expect(find.text('备份状态'), findsOneWidget);
-      expect(find.text('✓ 未备份'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.widgetWithText(OwChip, '未备份'),
+          matching: find.byIcon(Icons.check),
+        ),
+        findsOneWidget,
+      );
       expect(find.text('链（可多选）'), findsNothing);
       expect(find.text('请输入账户名称，最多 30 个字。'), findsNothing);
       expect(find.text('保存'), findsOneWidget);
@@ -67,7 +74,7 @@ void main() {
       await pumpApp(tester, rig, location: '/accounts/add/wallet');
       await tester.enterText(_addressField(0), _evm1);
       await tester.pumpAndSettle();
-      expect(find.text('✓ 识别为 EVM 地址'), findsOneWidget);
+      expect(find.text('识别为 EVM 地址'), findsOneWidget);
       for (final n in [
         'Ethereum',
         'BNB Chain',
@@ -76,19 +83,31 @@ void main() {
         'Base',
         'Polygon',
       ]) {
-        expect(find.text('✓ $n'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.widgetWithText(OwChip, n),
+            matching: find.byIcon(Icons.check),
+          ),
+          findsOneWidget,
+        );
       }
-      await tester.tap(find.text('✓ Base'));
+      await tester.tap(find.widgetWithText(OwChip, 'Base'));
       await tester.pumpAndSettle();
-      expect(find.text('Base'), findsOneWidget);
-      expect(find.text('✓ Base'), findsNothing);
+      expect(find.widgetWithText(OwChip, 'Base'), findsOneWidget);
+      expect(
+        find.descendant(
+          of: find.widgetWithText(OwChip, 'Base'),
+          matching: find.byIcon(Icons.check),
+        ),
+        findsNothing,
+      );
     });
 
     testWidgets('Bitcoin地址_自动确定链_没有多选', (tester) async {
       await pumpApp(tester, rig, location: '/accounts/add/wallet');
       await tester.enterText(_addressField(0), _btc);
       await tester.pumpAndSettle();
-      expect(find.text('✓ 识别为 Bitcoin 地址'), findsOneWidget);
+      expect(find.text('识别为 Bitcoin 地址'), findsOneWidget);
       expect(find.text('链：Bitcoin（自动确定）'), findsOneWidget);
       expect(find.text('链（可多选）'), findsNothing);
     });
@@ -160,11 +179,7 @@ void main() {
       await tester.enterText(_nameField, 'Uni 钱包');
       await tester.enterText(_addressField(0), _evm1);
       await tester.pumpAndSettle();
-      await tester.tap(
-        find.text('✓ 已离线备份').evaluate().isEmpty
-            ? find.text('已离线备份')
-            : find.text('✓ 已离线备份'),
-      );
+      await tester.tap(find.widgetWithText(OwChip, '已离线备份'));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.text('保存'));
       await tester.tap(find.text('保存'));
@@ -222,7 +237,7 @@ void main() {
       await tester.pump(const Duration(seconds: 5));
       await tester.tap(find.text('粘贴'));
       await tester.pumpAndSettle();
-      expect(find.text('✓ 识别为 Bitcoin 地址'), findsOneWidget);
+      expect(find.text('识别为 Bitcoin 地址'), findsOneWidget);
     });
 
     testWidgets('EVM地址_未配置Key时提示_配置后不提示', (tester) async {

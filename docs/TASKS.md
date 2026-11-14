@@ -55,7 +55,8 @@
   - 做什么：在 iOS 和 Android 上执行 `cd app && flutter run`，确认四个 Tab 可切换、浅深色正常。把应用显示名设为 OneWallet；Android 的 `applicationId` 与 iOS 的 Bundle Identifier 向用户确认后设置（当前为 `app.onewallet.onewallet`）。
   - 验收：两个平台各一张截图，存入 `docs/evidence/M0-10/`。
 
-- [ ] **M0-11** 技术验证二：硬件密钥插件 〔真机〕
+- [~] **M0-11** 技术验证二：硬件密钥插件 〔真机〕
+  - **预留（2026-11-14）**：硬件密钥的选型与实现由协调者负责，其他执行者不要做。
   - 做什么：在 `ow_platform` 中实现 `HardwareKeyStore` 的 iOS（Swift）与 Android（Kotlin）最小实现，以及 `PlatformCapabilities`。
   - 依据：SECURITY_DESIGN 6.1；ADR_003。只用系统自带的安全框架。
   - 验收：在两台真机上逐项验证并把结果写入 `docs/evidence/M0-11.md`：包裹与解包成功；解包时出现系统生物识别；新增一枚指纹或面容后旧包裹失效；关闭锁屏密码后不可用；卸载重装后的行为。结论回填 SECURITY_DESIGN 6.1 与第 11 节 S4。
@@ -163,7 +164,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 结果：两者的主要接口与官方文档一致；修正了 JSON-RPC 错误码映射和两处多余或缺失的请求参数。读不到的项目记在 `EXTERNAL_APIS.md` 与真机测试清单。
   - 遗留给 M1-15：不配置 CoinGecko Key 时，官方要求界面展示 CoinGecko 署名，放在 P20 与 P22。
 
-- [ ] **M1-19** 界面走查修正 〔离线〕
+- [x] **M1-19** 界面走查修正 〔离线〕 2026-11-14
   - 来由：2026-11-12 对照 `docs/screenshots/` 的截图与 `docs/prototype.html` 走查发现的出入。
   - 做什么：
     1. 进入二级页面（P04、P05、P07、P20 等被 push 的页面）后，底部导航应隐藏；现在仍然显示。原型中只有四个 Tab 的根页面显示底部导航（宽屏的侧边栏不受影响）。
@@ -217,7 +218,8 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 
 ## M3 管理与备份清单
 
-- [ ] **M3-01** 应用锁核心 〔离线〕
+- [~] **M3-01** 应用锁核心 〔离线〕
+  - **预留（2026-11-14）**：应用锁的核心逻辑由协调者负责，其他执行者不要做。页面（M3-02）等它标为 `[x]` 后再开始。
   - 做什么：`SetUpPin`、`VerifyPin`、`ChangePin`；错误次数与锁定截止时间的持久化；锁定状态机（锁定时关闭数据库、清空内存数据、路由重定向）。PIN 校验值的算法：M0-12 完成后用 Argon2id，此前先抽象为接口。
   - 依据：PRD R18–R21；SECURITY_DESIGN 第 7 节。
   - 验收：用假时钟测试：连错 5 次锁 1 分钟，之后每次翻倍，上限 1 小时；重启后锁定仍在；把系统时间往回调不能提前解锁。
@@ -240,6 +242,11 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 ## M4 保险库
 
 前置：M0-11、M0-12、M3-01 的代码完成。开工前通读 SECURITY_DESIGN 全文。
+
+- [~] **M4-00** 保险库与加密备份的用例层 〔离线〕
+  - **预留（2026-11-14）**：由协调者负责，其他执行者不要做。
+  - 做什么：在 `ow_application` 实现 `CreateVault`、`ImportVaultItem`、`RevealVaultItem`、`DeleteVaultItem`、`DeriveAddresses`、`AttachDerivedAddresses`、`ChangeMasterPassword`、`SetVaultBiometrics`，以及 `ExportBackup`、`PreviewBackup`、`RestoreBackup`；并在 `app/lib/bootstrap/` 提供对应的 provider。
+  - 完成后，保险库页面（M4-05 至 M4-09）与备份页面（M5-03、M5-04）只需要调用这些用例：**页面里不出现任何加解密、密钥清零、文件读写的代码**。这些页面任务在本条标为 `[x]` 之前不要开始。
 
 > **保险库核心（M4-01、M4-02、M4-03）与加密备份的格式和解密工具（M5-01、M5-02）已完成。其他执行者不要改动 `packages/ow_vault`，也不要另写 Argon2id、加解密或备份格式的代码。** 应用锁（M3-01）需要的口令哈希由 M4-01 的 `VaultCrypto` 提供；M3-01 开工时如果它还没合并进默认分支，先做 M3 的其他任务。
 

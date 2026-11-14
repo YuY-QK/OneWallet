@@ -31,8 +31,16 @@ import '../support/fakes.dart';
 // ---------------------------------------------------------------------------
 
 /// 中文后备字体候选（本机或 CI 上第一个存在的会被注册为 `PingFang SC`，
-/// 即 [OwFonts.fallback] 的第一个名字）。都没有时中文显示为方块。
+/// 即 [OwFonts.fallback] 的第一个名字）。都没有时测试直接失败：
+/// 中文显示为方块的截图不能提交。
 const _cjkFontCandidates = <String>[
+  // macOS
+  '/System/Library/Fonts/PingFang.ttc',
+  '/System/Library/Fonts/STHeiti Medium.ttc',
+  '/System/Library/Fonts/Hiragino Sans GB.ttc',
+  // Windows
+  r'C:\Windows\Fonts\msyh.ttc',
+  // Linux
   '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc',
   '/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc',
   '/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc',
@@ -89,9 +97,14 @@ Future<void> _loadFonts() async {
       break;
     }
   }
-  if (cjk != null) {
-    await register(OwFonts.fallback.first, [_readFont(cjk)]);
+  if (cjk == null) {
+    // 没有中文字体时截图里的中文全是方块，这样的图不能提交。
+    fail(
+      '找不到中文字体，无法生成可读的截图。请安装一个中文字体，'
+      '或把它的路径加入 _cjkFontCandidates。',
+    );
   }
+  await register(OwFonts.fallback.first, [_readFont(cjk)]);
 
   final icons = _materialIconsPath();
   if (icons != null) {

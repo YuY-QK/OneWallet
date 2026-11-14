@@ -43,3 +43,7 @@ cp app/test/screenshots/goldens/*.png docs/screenshots/
 - 西文与数字：IBM Plex Sans / IBM Plex Mono（随应用打包的字体）。
 - 中文：测试会加载本机的中文字体文件（在 Linux 上找到的是 WenQuanYi Zen Hei），并注册为 `PingFang SC`。如果机器上没有任何候选中文字体，中文会显示为方块。
 - 图标：从 Flutter SDK 缓存中加载 Material 图标字体。
+
+## 注意
+
+生成截图的机器必须有中文字体（macOS、Windows 自带；Linux 需安装文泉驿或 Noto Sans CJK）。找不到时测试会直接失败。**提交前打开几张图确认中文不是方块。**

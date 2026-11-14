@@ -19,15 +19,57 @@ abstract final class AppRoutes {
   static const accounts = '/accounts';
   static const vault = '/vault';
   static const settings = '/settings';
+
+  /// 四个 Tab 的根路径。只有处于根路径时，窄屏才显示底部导航栏。
+  static const rootRoutes = {overview, accounts, vault, settings};
+}
+
+class _ShellRouterNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
+}
+
+class _ShellNavigationObserver extends NavigatorObserver {
+  _ShellNavigationObserver(this.onChanged);
+  final VoidCallback onChanged;
+
+  void _notify() {
+    WidgetsBinding.instance.addPostFrameCallback((_) => onChanged());
+  }
+
+  @override
+  void didPush(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      _notify();
+
+  @override
+  void didPop(Route<dynamic> route, Route<dynamic>? previousRoute) => _notify();
+
+  @override
+  void didRemove(Route<dynamic> route, Route<dynamic>? previousRoute) =>
+      _notify();
+
+  @override
+  void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute}) =>
+      _notify();
 }
 
 /// 构建应用路由。路径与路由名见 IMPLEMENTATION_SPEC 7.1；参数只传 id。
 GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
+  final overviewKey = GlobalKey<NavigatorState>(debugLabel: 'overview');
+  final accountsKey = GlobalKey<NavigatorState>(debugLabel: 'accounts');
+  final vaultKey = GlobalKey<NavigatorState>(debugLabel: 'vault');
+  final settingsKey = GlobalKey<NavigatorState>(debugLabel: 'settings');
+  final branchKeys = [overviewKey, accountsKey, vaultKey, settingsKey];
+
+  final notifier = _ShellRouterNotifier();
+
   StatefulShellBranch branch(
     String path,
     Widget page, {
+    required GlobalKey<NavigatorState> navigatorKey,
     List<RouteBase>? sub,
   }) => StatefulShellBranch(
+    navigatorKey: navigatorKey,
+    observers: [_ShellNavigationObserver(notifier.notify)],
     routes: [
       GoRoute(path: path, builder: (_, _) => page, routes: sub ?? const []),
     ],
@@ -38,11 +80,17 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
     initialLocation: initialLocation,
     routes: [
       StatefulShellRoute.indexedStack(
-        builder: (context, state, shell) => _Shell(shell: shell),
+        builder: (context, state, shell) => _Shell(
+          shell: shell,
+          branchKeys: branchKeys,
+          notifier: notifier,
+          state: state,
+        ),
         branches: [
           branch(
             AppRoutes.overview,
             const OverviewPage(),
+            navigatorKey: overviewKey,
             sub: [
               GoRoute(
                 path: 'asset/:assetId',
@@ -54,6 +102,7 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
           branch(
             AppRoutes.accounts,
             const AccountsPage(),
+            navigatorKey: accountsKey,
             sub: [
               GoRoute(
                 path: 'add',
@@ -96,6 +145,7 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
           branch(
             AppRoutes.vault,
             const VaultPage(),
+            navigatorKey: vaultKey,
             sub: [
               GoRoute(
                 path: 'import',
@@ -108,6 +158,7 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
           branch(
             AppRoutes.settings,
             const SettingsPage(),
+            navigatorKey: settingsKey,
             sub: [
               GoRoute(
                 path: 'sources',
@@ -122,18 +173,68 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
   );
 }
 
-class _Shell extends StatelessWidget {
-  const _Shell({required this.shell});
+class _Shell extends StatefulWidget {
+  const _Shell({
+    required this.shell,
+    required this.branchKeys,
+    required this.notifier,
+    required this.state,
+  });
 
   final StatefulNavigationShell shell;
+  final List<GlobalKey<NavigatorState>> branchKeys;
+  final _ShellRouterNotifier notifier;
+  final GoRouterState state;
+
+  @override
+  State<_Shell> createState() => _ShellState();
+}
+
+class _ShellState extends State<_Shell> {
+  @override
+  void initState() {
+    super.initState();
+    widget.notifier.addListener(_rebuild);
+  }
+
+  @override
+  void didUpdateWidget(_Shell oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.notifier != widget.notifier) {
+      oldWidget.notifier.removeListener(_rebuild);
+      widget.notifier.addListener(_rebuild);
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.notifier.removeListener(_rebuild);
+    super.dispose();
+  }
+
+  void _rebuild() {
+    if (mounted) setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
+    final navKey = widget.branchKeys[widget.shell.currentIndex];
+    final hasPushedRoute = navKey.currentState?.canPop() ?? false;
+    final currentPath = GoRouter.of(context)
+        .routerDelegate
+        .currentConfiguration
+        .uri
+        .path;
+    final isMatchedRoot = AppRoutes.rootRoutes.contains(currentPath);
+    final showBottomNav = !hasPushedRoute && isMatchedRoot;
+
     return AdaptiveScaffold(
-      selectedIndex: shell.currentIndex,
-      onSelect: (i) =>
-          shell.goBranch(i, initialLocation: i == shell.currentIndex),
+      selectedIndex: widget.shell.currentIndex,
+      onSelect: (i) => widget.shell.goBranch(
+        i,
+        initialLocation: i == widget.shell.currentIndex,
+      ),
       destinations: [
         AdaptiveDestination(
           label: l.tabOverview,
@@ -156,7 +257,8 @@ class _Shell extends StatelessWidget {
           selectedIcon: Icons.settings,
         ),
       ],
-      body: shell,
+      showBottomNav: showBottomNav,
+      body: widget.shell,
     );
   }
 }

@@ -129,9 +129,17 @@ class _AddressEntryCardState extends State<AddressEntryCard> {
       return Text(error, style: OwTextStyles.caption.copyWith(color: c.down));
     }
     if (family == null) return const SizedBox.shrink();
-    return Text(
-      '✓ ${l.walletAddRecognized(chainFamilyLabel(l, family))}',
-      style: OwTextStyles.caption.copyWith(color: c.up),
+    return Row(
+      children: [
+        Icon(Icons.check, size: 14, color: c.up),
+        const SizedBox(width: 4),
+        Flexible(
+          child: Text(
+            l.walletAddRecognized(chainFamilyLabel(l, family)),
+            style: OwTextStyles.caption.copyWith(color: c.up),
+          ),
+        ),
+      ],
     );
   }
 

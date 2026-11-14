@@ -9,14 +9,19 @@ import 'router/app_router.dart';
 import 'theme/ow_theme.dart';
 
 class OneWalletApp extends ConsumerStatefulWidget {
-  const OneWalletApp({super.key});
+  const OneWalletApp({super.key, this.initialLocation});
+
+  /// 初始路由，未指定时默认为总览。用于测试直接进入特定页面。
+  final String? initialLocation;
 
   @override
   ConsumerState<OneWalletApp> createState() => _OneWalletAppState();
 }
 
 class _OneWalletAppState extends ConsumerState<OneWalletApp> {
-  late final GoRouter _router = buildAppRouter();
+  late final GoRouter _router = buildAppRouter(
+    initialLocation: widget.initialLocation ?? AppRoutes.overview,
+  );
 
   @override
   void dispose() {
