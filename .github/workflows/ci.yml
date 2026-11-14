@@ -17,5 +17,7 @@ jobs:
           cache: true
       - name: 安装 SQLite 开发库（ow_data 的测试用内存数据库需要）
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      - name: 安装 PyNaCl（备份解密工具的互操作测试需要，见 tools/backup_decrypt/）
+        run: python3 -m pip install pynacl
       - name: 格式、静态检查、依赖边界、全部测试
         run: tools/check.sh

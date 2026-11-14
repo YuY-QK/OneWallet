@@ -23,7 +23,7 @@
 | 页面 | P02 总览、P03 账户列表、P04、P05、P07、P20 的基础版完成，实际样子见 `docs/screenshots/`；其余未做 |
 | 应用锁、备份清单、净值曲线 | 未做（M3） |
 | 保险库 | 核心完成：libsodium 加密、文件格式（带整体校验值）、原子写入的文件存储、地址派生。用例、硬件密钥、页面未做 |
-| 加密备份 | 未做（M5） |
+| 加密备份 | 格式、编解码、独立解密工具完成，两个方向的互操作测试通过；用例与页面未做 |
 | 原生代码（硬件密钥、防截屏、iOS 备份排除） | 未做 |
 
 **没有任何东西在手机上运行过。** 全部验证都来自 `flutter test`。真机验收统一放在最后，待测项目汇总在 `DEVICE_TEST_CHECKLIST.md`。
@@ -75,7 +75,7 @@
 - 生成文件要入库的有三处：`ow_data` 的 `*.g.dart`、`ow_directory` 的 `directory_data.g.dart`、`ow_pricing` 的 `asset_mappings_data.dart`，以及 `app/lib/l10n/app_localizations*.dart`。改了源头要重新生成。
 - `tools/ci/check_deps.dart` 会扫描 `ow_exchanges` 里含 `order`、`withdraw`、`transfer` 等字样的字符串。确属只读的查询路径或返回字段被拦时，加入 `readOnlyPathAllowlist`，每条写明用途和出处。不要用别的办法绕过。
 
-> **正在进行、请勿重复的工作（2026-11-13）**：保险库核心（M4-01、M4-02、M4-03）已完成并合并，`VaultCrypto` 可以使用；加密备份的格式和解密工具（M5-01、M5-02）正在做。不要改动 `packages/ow_vault`，不要另写 Argon2id、加解密或备份格式的代码。这几项在 `TASKS.md` 中标为 `[~]`，变成 `[x]` 后才可以依赖它们。
+> **已完成、可以直接使用（2026-11-14）**：保险库核心（M4-01 至 M4-03）与加密备份的格式和独立解密工具（M5-01、M5-02）。接口见 `IMPLEMENTATION_SPEC` 第 6 节，备份格式的权威说明是 `tools/backup_decrypt/FORMAT.md`。不要改动 `packages/ow_vault`，不要另写 Argon2id、加解密或备份格式的代码。这几项在 `TASKS.md` 中标为 `[~]`，变成 `[x]` 后才可以依赖它们。
 
 ## 3. 剩余任务的顺序
 
@@ -137,8 +137,7 @@ M3-01 先做，M3-02 依赖它；其余互不依赖。
 
 | 任务 | 档位 | 注意 |
 |---|---|---|
-| M5-01 `BackupCodec` 与格式文档 | 强 | 格式在 `SECURITY_DESIGN` 5.2，照做。同时写 `tools/backup_decrypt/FORMAT.md` |
-| M5-02 独立解密工具 | 省 | Python 单文件，只依赖 PyNaCl。必须有互操作测试：Dart 生成样本，Python 解密，逐字段比对 |
+| M5-01、M5-02 | — | **已完成**。`test/fixtures/backup_v1_sample.owbak` 是"版本 1 永远必须能读"的回归基准，不得修改 |
 | M5-03 导出、M5-04 恢复（P17） | 中 | 文件导出与选取用成熟插件（`share_plus`、`file_picker` 一类），写清选型。合并规则见 PRD R42 |
 | M5-05 "有未备份的更改"提醒 | 省 | R38 |
 

@@ -8,6 +8,8 @@
 key.properties
 *.owbak
 *.owv
+# 例外：备份格式的测试样本（只含公开测试向量与假数据，见该目录的 README_backup.md）
+!packages/ow_vault/test/fixtures/*.owbak
 
 # Flutter / Dart
 .dart_tool/

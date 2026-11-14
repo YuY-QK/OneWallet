@@ -561,12 +561,44 @@ final class PrivateKeySecret extends VaultItemSecret {
 }
 // 文件格式、AAD 与条目明文的精确编码见 SECURITY_DESIGN 5.1。
 
-/// 加密备份文件（.owbak）的编解码。
+/// 加密备份文件（.owbak）的编解码（src/backup/，M5-01）。格式的权威定义见 tools/backup_decrypt/FORMAT.md，
+/// 设计理由见 SECURITY_DESIGN 5.2。随机数只经 VaultCrypto（依次取 16 字节 salt、24 字节 nonce），时间由参数传入。
 abstract final class BackupCodec {
-  static Future<Uint8List> encode(BackupPayload payload, Sensitive password, VaultCrypto crypto, KdfParams params);
-  static Future<Result<BackupPayload>> decode(Uint8List file, Sensitive password, VaultCrypto crypto);
+  static Future<Uint8List> encode({required BackupPayload payload, required Sensitive password,
+      required VaultCrypto crypto, required KdfParams params, required DateTime createdAt, required String appVersion});
+      // 空密码、条目 id 不合法、助记词或私钥为空或过长、头部超过 4096 字节 → ArgumentError（程序缺陷，界面先校验）
+  static Future<Result<BackupPayload>> decode({required Uint8List file, required Sensitive password, required VaultCrypto crypto});
+      // 魔数、长度、头部、KDF 参数不合法 → BackupCorruptedFailure（不执行 Argon2id）；
+      // 容器或载荷版本过新 → BackupVersionUnsupportedFailure；空密码或认证失败 → WrongPasswordFailure
+      // （密码错与文件被改无法区分，界面文案"密码不正确或文件已损坏"）；载荷不合法 → BackupCorruptedFailure
+  static Result<BackupHeader> peekHeader(Uint8List file);  // 不需要密码、不做密码学运算；失败同 decode 的结构检查
 }
+// 传入的 password、payload 不被清除，仍归调用方；decode 返回的 BackupPayload 归调用方，用完 wipe()。
+
+final class BackupHeader { final int containerVersion; final KdfParams kdfParams; final DateTime createdAt; final String appVersion; }
+
+final class BackupPayload {
+  BackupPayload({required DateTime exportedAt, required List<Account> accounts, required List<WatchAddress> addresses,
+      required List<BackupVaultItem> vaultItems, required BackupSettings settings,
+      List<BackupExchangeCredential>? exchangeCredentials,   // null = 不包含凭据（默认，R39）
+      List<BackupSkipped> skipped = const []});               // 仅解码结果：写法不认识而跳过的条目
+  List<String> linkedAccountIds(String itemId);              // 由 Account.vaultItemId 推出，写入 linked_account_ids
+  void wipe();                                               // 清零全部密钥内容
+}
+final class BackupVaultItem { final String id; final String name; final DateTime createdAt; final VaultItemSecret secret; VaultItemKind get kind; void wipe(); }
+final class BackupExchangeCredential { final String accountId; final ExchangeCredentials credentials; void wipe(); }
+final class BackupSettings {                                 // AppSettings 中可迁移的项；不含 PIN、生物识别、导出时间、隐藏金额
+  const BackupSettings({Quote quote, bool hideSmall, ThemePreference theme, AutoLock autoLock});
+  factory BackupSettings.of(AppSettings settings);
+  AppSettings applyTo(AppSettings settings);
+}
+enum BackupSection { account, address, vaultItem, setting }
+final class BackupSkipped { final BackupSection section; final String id; }  // 设置项时 id 为字段名
+
+// KdfParams.backupDefault：256 MiB、迭代 3、并行 1（SECURITY_DESIGN 第 4 节）。
 ```
+
+备份用到的失败类型（`ow_domain` 的 `failure.dart`）：`BackupCorruptedFailure`、`BackupVersionUnsupportedFailure`。不复用保险库的两种，是因为文案不同（保险库文件损坏时"可用备份恢复"，备份文件损坏时只能换一份备份）。
 
 硬件包裹的流程在应用层：`CreateVault` 或 `SetVaultBiometrics` 取 `exportMasterKey()` 交给 `HardwareKeyStore.wrap`；`RevealVaultItem` 先尝试 `HardwareKeyStore.unwrap` 再 `unlockWithMasterKey`，失败则要求主密码。
 

@@ -162,16 +162,31 @@ M = lp("onewallet-vault") ‖ lp("file_mac") ‖ u16be(version)
 
 ### 5.2 加密备份文件 `.owbak`
 
+**权威定义**：精确到字节的格式（容器、头部字段、载荷 JSON 的全部字段与取值、示例）以面向公众的 `tools/backup_decrypt/FORMAT.md` 为准；本节只概述结构并写明设计理由。两者有出入时以 FORMAT.md 为准，并回头修正本节。实现：`packages/ow_vault/lib/src/backup/`（`BackupCodec`），独立解密工具：`tools/backup_decrypt/owbak_decrypt.py`。
+
 ```
-魔数 "OWBK" | 版本(1 字节) | 头部长度(4 字节) | 头部 JSON | 密文
-头部 JSON：{ "kdf": {...同上，参数更强...}, "nonce": b64, "created_at": "...", "app_version": "..." }
-密文 = XChaCha20-Poly1305( Argon2id(备份密码), nonce, gzip(载荷 JSON), AAD = 魔数‖版本‖头部 JSON )
+偏移 0   4 字节   魔数 "OWBK"
+偏移 4   1 字节   容器版本（当前 1）
+偏移 5   4 字节   头部 JSON 的字节数 L（大端无符号，2 ≤ L ≤ 4096）
+偏移 9   L 字节   头部 JSON（UTF-8）：{"kdf":{"alg":"argon2id","salt":b64(16),"mem_kib":…,"iters":…,"parallelism":1},
+                  "nonce":b64(24),"created_at":"UTC ISO-8601","app_version":"…"}
+其后     其余全部  密文（含 16 字节认证标签）
+
+K    = Argon2id(备份密码的 UTF-8 字节, salt, mem_kib, iters, 并行 1)，32 字节
+密文 = XChaCha20-Poly1305-IETF(K, nonce, 载荷 JSON 的 UTF-8 字节, AAD)
+AAD  = 文件偏移 0 到 9 + L 的全部原始字节（魔数、版本、长度、头部 JSON 原样）
 ```
 
-- 载荷包含：账户、地址、备份状态、设置、全部密钥条目的明文、可选的交易所凭据。
-- 备份文件自成一体：只需备份密码即可解密，不依赖任何设备或硬件密钥。
-- 格式说明随仓库公开（`tools/backup_decrypt/FORMAT.md`），并提供独立解密工具。工具必须能在断网环境运行，且只依赖广泛可得的密码学库。
-- 版本升级时旧版本必须保持可读。
+- **自成一体**：只需备份密码即可解密，不依赖任何设备、硬件密钥或保险库主密钥（VMK 不进入备份，恢复时由新设备的保险库重新生成）。
+- **不压缩**（原设计为先 gzip 再加密，已去掉）：载荷只有几 KB，压缩收益可以忽略；压缩会给禁止 `dart:io` 的 `ow_vault` 平添依赖；而且"压缩后的长度"随内容的可压缩性变化，会泄露内容特征（压缩侧信道）。未压缩时密文长度只反映明文长度。
+- **AAD 取文件中的原始字节**：头部的任何改动（含 KDF 参数、salt、nonce、时间、应用版本、版本号、长度字段）都使认证失败。解码时 AAD 必须直接取文件里的字节，不能把解析后的头部重新序列化再算，否则不同实现的 JSON 写法差异会让合法文件解不开，或让被改动的头部蒙混过关。头部长度上限 4096 字节；密文是文件其余的全部字节，所以截断与在末尾追加任何字节都会认证失败。
+- **KDF 参数**：默认 `KdfParams.backupDefault`（256 MiB、迭代 3、并行 1，第 4 节）；手机内存不足时应用层可以降级，但不低于保险库默认值（降级策略属于导出用例 M5-03）。实际参数写在头部。头部在认证之前就要使用，所以读取时只接受与保险库相同的范围（内存 8 KiB–1 GiB、迭代 1–32、并行 1），超出视为损坏且不执行 Argon2id，防止被改成耗尽内存的参数。
+- **备份密码**：按用户输入的 UTF-8 字节原样使用，不做 Unicode 规范化（Dart 侧没有可用的规范化实现，且不新增依赖）。独立工具在原样解不开且密码含非 ASCII 字符时，会再试 NFC 与 NFD 两种形式。建议界面提示：备份密码尽量只用 ASCII 字符。
+- **载荷**：一段 UTF-8 JSON，人能直接读懂（独立工具把它打印给用户）：账户、地址（含备份状态、派生方案与序号、启用的链）、保险库条目的明文（助记词为空格分隔的单词原文，私钥为该条目保存的文本，二进制内容写十六进制并标 `"encoding":"hex"`）、可迁移的设置、可选的交易所凭据（默认不含，R39）。不含余额、价格、快照、同步记录（PRD 第 12 节 Q5）。PIN、生物识别开关、上次导出时间不进入备份。
+- **失败语义**（`BackupCodec.decode`）：魔数、长度、头部 JSON、KDF 参数不合法 → `BackupCorruptedFailure`；容器版本或载荷版本高于当前 → `BackupVersionUnsupportedFailure`（提示"请更新 app 后再恢复"）；空密码或认证解密失败 → `WrongPasswordFailure`。认证加密无法区分"密码错误"与"头部或密文被改动、截断、追加"，所以恢复页的文案应为"密码不正确或文件已损坏"。解密成功但载荷不合法 → `BackupCorruptedFailure`。任何失败都不返回部分内容。
+- **向前兼容**：载荷与头部里未知的字段忽略；载荷中写法不认识的枚举（如更新版本才有的链家族、派生方案、链 id）只跳过所在条目并计数（`BackupPayload.skipped`），不让一个新值导致整份备份无法恢复；改变既有字段含义时必须升 `payload_version`，改变容器结构或算法时必须升容器版本。**版本升级时旧版本必须保持可读**：`packages/ow_vault/test/fixtures/backup_v1_sample.owbak` 是版本 1 的固定样本，测试断言它能被读出，且同样的输入编码出逐字节相同的文件。
+- **内存**：载荷 JSON 的编码与解析直接在字节上进行（`json_bytes.dart`、`json_writer.dart`），密钥字段从 `Sensitive` 的字节写入、解析时直接复制进 `Sensitive`，不产生 Dart `String`；明文缓冲、派生密钥、解析树用完清零。名称、id 等非敏感字段会成为 `String`。恢复页显示与写入保险库时的字符串副本属于 6.5 记载的已知局限。
+- 格式说明随仓库公开（`tools/backup_decrypt/FORMAT.md`），并提供只依赖 PyNaCl（自带 libsodium）的独立解密工具，可在断网电脑上运行。互操作测试（`packages/ow_vault/test/backup/interop_test.dart`）在 CI 中用 Python 工具解开 Dart 生成的文件；另有 Python 按 FORMAT.md 独立生成的样本由 Dart 解开。
 
 ## 6. 平台实现
 

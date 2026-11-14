@@ -30,6 +30,9 @@ void main() {
     const VaultNotFoundFailure(): l10n.failureVaultNotFound,
     const VaultAlreadyExistsFailure(): l10n.failureVaultAlreadyExists,
     const VaultItemNotFoundFailure(): l10n.failureVaultItemNotFound,
+    const BackupCorruptedFailure(): l10n.failureBackupCorrupted,
+    const BackupVersionUnsupportedFailure():
+        l10n.failureBackupVersionUnsupported,
     const UnsupportedFailure(): l10n.failureUnsupported,
     const UnsupportedFailure.notIntegrated():
         l10n.failureUnsupportedNotIntegrated,

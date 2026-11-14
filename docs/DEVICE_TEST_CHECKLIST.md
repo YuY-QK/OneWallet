@@ -241,3 +241,12 @@
 - [ ] **iOS 备份排除（尚未实现）**：`vault.owv`、`vault.owv.bak`、`vault.owv.tmp` 需要设置 `isExcludedFromBackup`，与数据库一起留给原生插件（ADR_006 第 4 条）。实现后：做一次 iCloud 或电脑备份并恢复到另一台设备，确认保险库文件不在其中
 - [ ] Android 备份排除：清单的 `allowBackup="false"` 与 `data_extraction_rules.xml` 已覆盖全部应用数据（含保险库文件）；用 `adb shell bmgr backupnow` 或设备迁移确认保险库文件不被带走
 - [ ] 卸载重装后旧的 `vault.owv` 不存在（iOS 上应用支持目录随应用删除）
+
+## 9. 加密备份的格式与解密工具（任务 M5-01、M5-02）
+
+桌面环境已验证：Dart 编解码的往返、篡改、版本、格式钉死测试；Dart 生成的文件由 `tools/backup_decrypt/owbak_decrypt.py`（PyNaCl）解开并逐字段比对；Python 按 FORMAT.md 独立生成的文件由 Dart 解开。本机（Linux x64，`dart test`）256 MiB、迭代 3 的一次 Argon2id 约 0.45 秒。以下需要设备：
+
+- [ ] （待 M5-03 的导出页面完成后）在手机上导出的 `.owbak` 文件，拷到一台**断网**的电脑上，按 `tools/backup_decrypt/README.md` 用独立工具解开；输出的助记词与保险库中查看到的一致（SECURITY_DESIGN 第 8 节）
+- [ ] 把上面的文件任改一个字节（如用十六进制编辑器改末尾一个字节），独立工具与应用恢复页都报"密码不正确或文件已损坏"，且不输出任何内容
+- [ ] 在两台真机上记录 `KdfParams.backupDefault`（256 MiB、迭代 3）的 Argon2id 耗时，以及是否出现内存不足（进程被系统杀掉、`argon2id` 抛出异常）；内存较小的 Android 设备尤其要测。结果供 M0-12 定标与 M5-03 的降级策略使用
+- [ ] Argon2id 计算期间（导出、恢复各一次）界面保持流畅，进度提示正常显示

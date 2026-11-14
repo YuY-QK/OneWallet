@@ -259,6 +259,14 @@ void main() {
       failureTypeName(const VaultItemNotFoundFailure()),
       'VaultItemNotFoundFailure',
     );
+    expect(
+      failureTypeName(const BackupCorruptedFailure()),
+      'BackupCorruptedFailure',
+    );
+    expect(
+      failureTypeName(const BackupVersionUnsupportedFailure()),
+      'BackupVersionUnsupportedFailure',
+    );
     expect(failureTypeName(const UnknownFailure()), 'UnknownFailure');
     expect(failureTypeName(const UnsupportedFailure()), 'UnsupportedFailure');
     expect(
