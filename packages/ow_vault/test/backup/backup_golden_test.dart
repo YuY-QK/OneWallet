@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_vault/ow_vault.dart';
 import 'package:test/test.dart';
 
@@ -40,12 +41,58 @@ void main() {
     expectSamePayload(decoded, samplePayload(withCredentials: true));
     decoded.wipe();
   });
+
+  test('FORMAT.md第7节的示例文件_逐字节相同且可解开', () async {
+    final file = await encodeGoldenSample(
+      crypto,
+      payload: formatExamplePayload(),
+    );
+    final example = File('test/fixtures/backup_v1_format_example.owbak')
+        .readAsBytesSync();
+    expect(file, example);
+    final decoded = okValue(
+      await BackupCodec.decode(
+        file: example,
+        password: sensitive(backupPassword),
+        crypto: crypto,
+      ),
+    );
+    expectSamePayload(decoded, formatExamplePayload());
+  });
 }
 
+/// FORMAT.md 第 7 节十六进制示例的载荷：一个账户、一组公开测试助记词、默认设置。
+BackupPayload formatExamplePayload() => BackupPayload(
+  exportedAt: t0,
+  accounts: [
+    Account(
+      id: 'acc-1',
+      type: AccountType.wallet,
+      name: 'Test',
+      colorIndex: 0,
+      createdAt: t0,
+      vaultItemId: 'item-1',
+    ),
+  ],
+  addresses: const [],
+  vaultItems: [
+    BackupVaultItem(
+      id: 'item-1',
+      name: 'Test',
+      createdAt: t0,
+      secret: mnemonicSecret(abandon),
+    ),
+  ],
+  settings: const BackupSettings(),
+);
+
 /// 固定的 salt（01…10）、nonce（20…37）、时间、密码、参数（8 KiB、迭代 1）与
-/// 载荷生成的样本。FORMAT.md 第 7 节的示例就是这个文件。
-Future<Uint8List> encodeGoldenSample(VaultCrypto crypto) => BackupCodec.encode(
-  payload: samplePayload(withCredentials: true),
+/// 载荷（默认为 `samplePayload(withCredentials: true)`）生成的样本。
+Future<Uint8List> encodeGoldenSample(
+  VaultCrypto crypto, {
+  BackupPayload? payload,
+}) => BackupCodec.encode(
+  payload: payload ?? samplePayload(withCredentials: true),
   password: sensitive(backupPassword),
   crypto: RecordingCrypto(
     crypto,
