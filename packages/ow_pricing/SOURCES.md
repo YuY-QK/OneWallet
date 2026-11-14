@@ -54,7 +54,7 @@ Compound 为 `compound-governance-token`），**不是核对结论**。上线前
 | polygon | `0xc2132d05d31c914a87c6611c10748aeb04b58e8f` | Uniswap 默认代币列表 |
 | solana | `Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB` | Uniswap 默认代币列表 |
 | arbitrum | `0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9` | Uniswap 默认代币列表（符号 USDT0） |
-| tron | `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t` | Tether 官方公告/第三方指南（搜索摘要核对） |
+| tron | `TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t` | Tether 官方公告/第三方指南（搜索摘要核对）；decimals 为 6（Tether 官方合约规范与 TRONSCAN 认证） |
 
 ### USDC（USD Coin，priceId `usd-coin`）
 

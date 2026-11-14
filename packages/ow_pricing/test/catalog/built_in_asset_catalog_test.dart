@@ -193,6 +193,25 @@ void main() {
     });
   });
 
+  group('decimals 与 tronDecimals', () {
+    test('USDT Tron decimals 为 6', () {
+      final token = const ContractToken(
+        'tron',
+        'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t',
+      );
+      expect(catalog.decimalsOf(token), 6);
+      expect(catalog.tronDecimals['TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t'], 6);
+    });
+
+    test('未配置小数位的合约返回 null', () {
+      final token = const ContractToken(
+        'ethereum',
+        '0xdac17f958d2ee523a2206206994597c13d831ec7',
+      );
+      expect(catalog.decimalsOf(token), isNull);
+    });
+  });
+
   group('数据结构校验', () {
     test('币种 id 唯一、均有 priceId、id 为大写', () {
       final ids = catalog.assets.map((a) => a.id).toList();

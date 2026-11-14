@@ -11,6 +11,8 @@ import '../../support/pump_app.dart';
 const _evm1 = '0x1111111111111111111111111111111111111111';
 const _evm2 = '0x2222222222222222222222222222222222222222';
 const _btc = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
+const _sol = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const _tron = 'TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t';
 
 Finder get _nameField => find.byType(TextField).at(0);
 Finder _addressField(int i) => find.byType(TextField).at(1 + i);
@@ -109,6 +111,24 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('识别为 Bitcoin 地址'), findsOneWidget);
       expect(find.text('链：Bitcoin（自动确定）'), findsOneWidget);
+      expect(find.text('链（可多选）'), findsNothing);
+    });
+
+    testWidgets('Solana地址_自动确定链_没有多选', (tester) async {
+      await pumpApp(tester, rig, location: '/accounts/add/wallet');
+      await tester.enterText(_addressField(0), _sol);
+      await tester.pumpAndSettle();
+      expect(find.text('识别为 Solana 地址'), findsOneWidget);
+      expect(find.text('链：Solana（自动确定）'), findsOneWidget);
+      expect(find.text('链（可多选）'), findsNothing);
+    });
+
+    testWidgets('Tron地址_自动确定链_没有多选', (tester) async {
+      await pumpApp(tester, rig, location: '/accounts/add/wallet');
+      await tester.enterText(_addressField(0), _tron);
+      await tester.pumpAndSettle();
+      expect(find.text('识别为 Tron 地址'), findsOneWidget);
+      expect(find.text('链：Tron（自动确定）'), findsOneWidget);
       expect(find.text('链（可多选）'), findsNothing);
     });
 

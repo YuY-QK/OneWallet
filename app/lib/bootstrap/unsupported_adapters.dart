@@ -52,16 +52,29 @@ final class UnsupportedExchangeAdapter implements ExchangeAdapter {
 
 /// 把已实现的适配器接入 [AdapterRegistry]，其余家族与交易所返回占位适配器。
 final class AppAdapterRegistry implements AdapterRegistry {
-  AppAdapterRegistry({required this._evm});
+  AppAdapterRegistry({
+    required this.evm,
+    this.bitcoin,
+    this.solana,
+    this.tron,
+    Map<ExchangeId, ExchangeAdapter>? exchanges,
+  }) : _exchanges = exchanges ?? const {};
 
-  final ChainAdapter _evm;
+  final ChainAdapter evm;
+  final ChainAdapter? bitcoin;
+  final ChainAdapter? solana;
+  final ChainAdapter? tron;
+  final Map<ExchangeId, ExchangeAdapter> _exchanges;
 
   @override
   ChainAdapter chain(ChainFamily family) => switch (family) {
-    ChainFamily.evm => _evm,
-    _ => UnsupportedChainAdapter(family),
+    ChainFamily.evm => evm,
+    ChainFamily.bitcoin => bitcoin ?? UnsupportedChainAdapter(family),
+    ChainFamily.solana => solana ?? UnsupportedChainAdapter(family),
+    ChainFamily.tron => tron ?? UnsupportedChainAdapter(family),
   };
 
   @override
-  ExchangeAdapter exchange(ExchangeId id) => UnsupportedExchangeAdapter(id);
+  ExchangeAdapter exchange(ExchangeId id) =>
+      _exchanges[id] ?? UnsupportedExchangeAdapter(id);
 }

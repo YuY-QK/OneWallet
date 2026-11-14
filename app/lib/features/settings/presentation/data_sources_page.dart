@@ -11,7 +11,6 @@ import '../../../widgets/ow_list_group.dart';
 import '../../../widgets/ow_notice.dart';
 import '../../../widgets/ow_pill.dart';
 import '../../../widgets/ow_row.dart';
-import '../../shared/labels.dart';
 import '../controllers/data_sources_controller.dart';
 import 'widgets/data_source_editor.dart';
 
@@ -71,16 +70,6 @@ class DataSourcesPage extends ConsumerWidget {
       );
     }
 
-    Widget soon(ChainFamily family) => OwRow(
-      key: ValueKey('soon-${family.name}'),
-      avatar: OwAvatar(label: chainFamilyLabel(l, family).substring(0, 3)),
-      title: chainFamilyLabel(l, family),
-      trailing: Text(
-        l.sourcesComingSoon,
-        style: OwTextStyles.caption.copyWith(color: context.ow.muted),
-      ),
-    );
-
     return ListView(
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 20),
       children: [
@@ -93,14 +82,29 @@ class DataSourcesPage extends ConsumerWidget {
               l.sourcesAlchemyBody,
             ),
             configurable(
+              DataSourceIds.mempool,
+              'BTC',
+              l.sourcesMempoolName,
+              l.sourcesMempoolBody,
+            ),
+            configurable(
+              DataSourceIds.helius,
+              'SOL',
+              l.sourcesHeliusName,
+              l.sourcesHeliusBody,
+            ),
+            configurable(
+              DataSourceIds.trongrid,
+              'TRX',
+              l.sourcesTrongridName,
+              l.sourcesTrongridBody,
+            ),
+            configurable(
               DataSourceIds.coingecko,
               '价',
               l.sourcesCoingeckoName,
               l.sourcesCoingeckoBody,
             ),
-            soon(ChainFamily.bitcoin),
-            soon(ChainFamily.solana),
-            soon(ChainFamily.tron),
           ],
         ),
         const SizedBox(height: 12),

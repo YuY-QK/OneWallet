@@ -335,7 +335,7 @@ void main() {
         ),
       );
       final f = (await adapter.fetchHoldings(owner, tron)).failureOrNull!;
-      expect(f, isA<UnknownFailure>());
+      expect(f, isA<ValidationFailure>());
       expect(f.detail, isNot(contains(owner)));
     });
 
@@ -344,7 +344,7 @@ void main() {
         (429, RateLimitedFailure),
         (403, UnauthorizedFailure),
         (503, ServiceDownFailure),
-        (400, UnknownFailure),
+        (400, ValidationFailure),
       ]) {
         final (adapter, _) = build(
           route: (o, b) =>

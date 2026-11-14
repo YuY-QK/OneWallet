@@ -186,7 +186,9 @@ final class TronChainAdapter implements ChainAdapter {
         'contract_list': batch.join(','),
       });
       if (res is Err<Object?>) {
-        if (res.failure is UnknownFailure) continue;
+        if (res.failure is UnknownFailure || res.failure is ValidationFailure) {
+          continue;
+        }
         return Err(res.failure);
       }
       final parsed = parseTrc20Info((res as Ok<Object?>).value);
@@ -222,6 +224,9 @@ final class TronChainAdapter implements ChainAdapter {
       }
       if (status is int && status >= 500) {
         return Err(ServiceDownFailure(detail));
+      }
+      if (status == 400) {
+        return Err(ValidationFailure(detail));
       }
       return Err(UnknownFailure(detail));
     }

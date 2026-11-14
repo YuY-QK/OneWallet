@@ -1000,6 +1000,24 @@ abstract class AppLocalizations {
   /// **'取消'**
   String get addressSheetCancel;
 
+  /// No description provided for @addressSheetExcludedBtc.
+  ///
+  /// In zh, this message translates to:
+  /// **'口径说明：只含已确认余额，未确认交易不计入。'**
+  String get addressSheetExcludedBtc;
+
+  /// No description provided for @addressSheetExcludedSol.
+  ///
+  /// In zh, this message translates to:
+  /// **'口径说明：不含质押在验证者上的 SOL 与 NFT。'**
+  String get addressSheetExcludedSol;
+
+  /// No description provided for @addressSheetExcludedTron.
+  ///
+  /// In zh, this message translates to:
+  /// **'口径说明：不含 Stake 1.0 质押与未领取的投票奖励。'**
+  String get addressSheetExcludedTron;
+
   /// No description provided for @settingsSectionData.
   ///
   /// In zh, this message translates to:
@@ -1035,6 +1053,42 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'EVM 六条链的余额'**
   String get sourcesAlchemyBody;
+
+  /// No description provided for @sourcesMempoolName.
+  ///
+  /// In zh, this message translates to:
+  /// **'mempool.space'**
+  String get sourcesMempoolName;
+
+  /// No description provided for @sourcesMempoolBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bitcoin · 只含已确认余额'**
+  String get sourcesMempoolBody;
+
+  /// No description provided for @sourcesHeliusName.
+  ///
+  /// In zh, this message translates to:
+  /// **'Helius'**
+  String get sourcesHeliusName;
+
+  /// No description provided for @sourcesHeliusBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'Solana · 不含质押在验证者上的 SOL 与 NFT'**
+  String get sourcesHeliusBody;
+
+  /// No description provided for @sourcesTrongridName.
+  ///
+  /// In zh, this message translates to:
+  /// **'TronGrid'**
+  String get sourcesTrongridName;
+
+  /// No description provided for @sourcesTrongridBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tron · 不含 Stake 1.0 与未领取的奖励'**
+  String get sourcesTrongridBody;
 
   /// No description provided for @sourcesCoingeckoName.
   ///
@@ -1125,6 +1179,24 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'读取 EVM 余额需要 Alchemy 的 API Key。'**
   String get sourcesAlchemyRequired;
+
+  /// No description provided for @sourcesMempoolRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'mempool.space 公共实例无需 API Key。如需自建实例，可在下方配置自定义端点。'**
+  String get sourcesMempoolRequired;
+
+  /// No description provided for @sourcesHeliusRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'Solana 余额与代币查询；未配置时使用公共节点（限制较严）。'**
+  String get sourcesHeliusRequired;
+
+  /// No description provided for @sourcesTrongridRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'Tron 余额与 TRC-20 查询；未配置时易受限频。'**
+  String get sourcesTrongridRequired;
 
   /// No description provided for @sourcesCoingeckoOptional.
   ///

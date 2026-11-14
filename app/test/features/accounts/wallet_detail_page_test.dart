@@ -273,6 +273,7 @@ void main() {
       await openAddresses(tester);
       await tester.tap(find.text('1A1zP1…vfNa'));
       await tester.pumpAndSettle();
+      expect(find.text('口径说明：只含已确认余额，未确认交易不计入。'), findsOneWidget);
       await tester.ensureVisible(find.byType(OwDangerButton));
       await tester.tap(find.byType(OwDangerButton));
       await tester.pumpAndSettle();

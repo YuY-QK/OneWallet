@@ -60,13 +60,19 @@ final priceSourceProvider = Provider<PriceSource>(
   ),
 );
 
-/// 适配器注册表。EVM 已实现，其余家族与全部交易所是占位（返回
-/// [UnsupportedFailure]）。TODO(M2-01..03)、TODO(M2-06..09)：随适配器完成替换。
-final adapterRegistryProvider = Provider<AdapterRegistry>(
-  (ref) => AppAdapterRegistry(
-    evm: EvmChainAdapter(
-      config: ref.watch(dataSourceConfigProvider),
-      onLog: ref.watch(netLogSinkProvider),
+/// 适配器注册表。已接入四类链家族（EVM、Bitcoin、Solana、Tron），全部交易所仍为占位。
+final adapterRegistryProvider = Provider<AdapterRegistry>((ref) {
+  final config = ref.watch(dataSourceConfigProvider);
+  final onLog = ref.watch(netLogSinkProvider);
+  final catalog = ref.watch(builtInAssetCatalogProvider);
+  return AppAdapterRegistry(
+    evm: EvmChainAdapter(config: config, onLog: onLog),
+    bitcoin: BitcoinChainAdapter(config: config, onLog: onLog),
+    solana: SolanaChainAdapter(config: config, onLog: onLog),
+    tron: TronChainAdapter(
+      config: config,
+      knownDecimals: catalog.tronDecimals,
+      onLog: onLog,
     ),
-  ),
-);
+  );
+});

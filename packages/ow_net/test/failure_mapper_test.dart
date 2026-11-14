@@ -36,6 +36,13 @@ void _expectClean(Failure f, {String host = 'api.example.com'}) {
 
 void main() {
   group('mapHttpFailure_状态码', () {
+    test('400_Validation', () {
+      final f = mapHttpFailure(_bad(400));
+      expect(f, isA<ValidationFailure>());
+      expect(f.detail, contains('400'));
+      _expectClean(f);
+    });
+
     test('429_RateLimited', () {
       final f = mapHttpFailure(_bad(429));
       expect(f, isA<RateLimitedFailure>());

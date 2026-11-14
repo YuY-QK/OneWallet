@@ -507,6 +507,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addressSheetCancel => '取消';
 
   @override
+  String get addressSheetExcludedBtc => '口径说明：只含已确认余额，未确认交易不计入。';
+
+  @override
+  String get addressSheetExcludedSol => '口径说明：不含质押在验证者上的 SOL 与 NFT。';
+
+  @override
+  String get addressSheetExcludedTron => '口径说明：不含 Stake 1.0 质押与未领取的投票奖励。';
+
+  @override
   String get settingsSectionData => '数据';
 
   @override
@@ -523,6 +532,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sourcesAlchemyBody => 'EVM 六条链的余额';
+
+  @override
+  String get sourcesMempoolName => 'mempool.space';
+
+  @override
+  String get sourcesMempoolBody => 'Bitcoin · 只含已确认余额';
+
+  @override
+  String get sourcesHeliusName => 'Helius';
+
+  @override
+  String get sourcesHeliusBody => 'Solana · 不含质押在验证者上的 SOL 与 NFT';
+
+  @override
+  String get sourcesTrongridName => 'TronGrid';
+
+  @override
+  String get sourcesTrongridBody => 'Tron · 不含 Stake 1.0 与未领取的奖励';
 
   @override
   String get sourcesCoingeckoName => 'CoinGecko';
@@ -572,6 +599,16 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sourcesAlchemyRequired => '读取 EVM 余额需要 Alchemy 的 API Key。';
+
+  @override
+  String get sourcesMempoolRequired =>
+      'mempool.space 公共实例无需 API Key。如需自建实例，可在下方配置自定义端点。';
+
+  @override
+  String get sourcesHeliusRequired => 'Solana 余额与代币查询；未配置时使用公共节点（限制较严）。';
+
+  @override
+  String get sourcesTrongridRequired => 'Tron 余额与 TRC-20 查询；未配置时易受限频。';
 
   @override
   String get sourcesCoingeckoOptional =>

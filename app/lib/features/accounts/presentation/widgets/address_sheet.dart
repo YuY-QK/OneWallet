@@ -116,12 +116,21 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
     if (done && mounted) Navigator.pop(context);
   }
 
+  String? _exclusionNotice(AppLocalizations l) =>
+      switch (widget.address.family) {
+        ChainFamily.bitcoin => l.addressSheetExcludedBtc,
+        ChainFamily.solana => l.addressSheetExcludedSol,
+        ChainFamily.tron => l.addressSheetExcludedTron,
+        _ => null,
+      };
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context)!;
     final c = context.ow;
     final display = _display;
     final links = explorerLinks(widget.address, display);
+    final notice = _exclusionNotice(l);
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -153,6 +162,14 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
             ),
             const SizedBox(height: 12),
             OwAddressText(display, full: true, textAlign: TextAlign.center),
+            if (notice != null) ...[
+              const SizedBox(height: 6),
+              Text(
+                notice,
+                style: OwTextStyles.caption.copyWith(color: c.muted),
+                textAlign: TextAlign.center,
+              ),
+            ],
             const SizedBox(height: 12),
             OwSecondaryButton(
               label: _copied ? l.addressSheetCopied : l.addressSheetCopy,

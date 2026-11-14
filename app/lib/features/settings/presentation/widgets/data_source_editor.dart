@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ow_domain/ow_domain.dart';
 
 import '../../../../l10n/app_localizations.dart';
 import '../../../../theme/ow_colors.dart';
@@ -46,7 +47,33 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
   bool _justSaved = false;
   bool _advancedOpen = false;
 
-  bool get _isAlchemy => widget.providerId == DataSourceIds.alchemy;
+  bool get _isMempool => widget.providerId == DataSourceIds.mempool;
+
+  String _name(AppLocalizations l) => switch (widget.providerId) {
+    DataSourceIds.alchemy => l.sourcesAlchemyName,
+    DataSourceIds.mempool => l.sourcesMempoolName,
+    DataSourceIds.helius => l.sourcesHeliusName,
+    DataSourceIds.trongrid => l.sourcesTrongridName,
+    DataSourceIds.coingecko => l.sourcesCoingeckoName,
+    _ => widget.providerId,
+  };
+
+  String _requirement(AppLocalizations l) => switch (widget.providerId) {
+    DataSourceIds.alchemy => l.sourcesAlchemyRequired,
+    DataSourceIds.mempool => l.sourcesMempoolRequired,
+    DataSourceIds.helius => l.sourcesHeliusRequired,
+    DataSourceIds.trongrid => l.sourcesTrongridRequired,
+    DataSourceIds.coingecko => l.sourcesCoingeckoOptional,
+    _ => '',
+  };
+
+  List<ChainInfo>? get _advancedChains => switch (widget.providerId) {
+    DataSourceIds.alchemy => Chains.ofFamily(ChainFamily.evm),
+    DataSourceIds.mempool => [Chains.byId('bitcoin')],
+    DataSourceIds.helius => [Chains.byId('solana')],
+    DataSourceIds.trongrid => [Chains.byId('tron')],
+    _ => null,
+  };
 
   @override
   void initState() {
@@ -93,8 +120,8 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
     final status = state?.statusOf(widget.providerId);
     final testing = state?.testing.contains(widget.providerId) ?? false;
     final outcome = state?.outcomes[widget.providerId];
-    final hasUnsaved = _input.text.trim().isNotEmpty;
-    final name = _isAlchemy ? l.sourcesAlchemyName : l.sourcesCoingeckoName;
+    final hasUnsaved = !_isMempool && _input.text.trim().isNotEmpty;
+    final name = _name(l);
     return Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.viewInsetsOf(context).bottom),
       child: SafeArea(
@@ -106,45 +133,45 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
               Text(l.sourcesEditTitle(name), style: OwTextStyles.emphasis),
               const SizedBox(height: 4),
               Text(
-                _isAlchemy
-                    ? l.sourcesAlchemyRequired
-                    : l.sourcesCoingeckoOptional,
+                _requirement(l),
                 style: OwTextStyles.caption.copyWith(color: c.muted),
               ),
               const SizedBox(height: 12),
-              OwFieldLabel(l.sourcesKeyLabel),
-              TextField(
-                controller: _input,
-                obscureText: _obscure,
-                autocorrect: false,
-                enableSuggestions: false,
-                style: OwTextStyles.mono.copyWith(color: c.ink),
-                decoration: owInputDecoration(
-                  context,
-                  hint: (status?.configured ?? false)
-                      ? l.sourcesKeyHintReplace
-                      : l.sourcesKeyHint,
-                  error: _showEmptyError,
-                  suffixIcon: IconButton(
-                    tooltip: _obscure ? l.sourcesKeyShow : l.sourcesKeyHide,
-                    icon: Icon(
-                      _obscure
-                          ? Icons.visibility_outlined
-                          : Icons.visibility_off_outlined,
+              if (!_isMempool) ...[
+                OwFieldLabel(l.sourcesKeyLabel),
+                TextField(
+                  controller: _input,
+                  obscureText: _obscure,
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  style: OwTextStyles.mono.copyWith(color: c.ink),
+                  decoration: owInputDecoration(
+                    context,
+                    hint: (status?.configured ?? false)
+                        ? l.sourcesKeyHintReplace
+                        : l.sourcesKeyHint,
+                    error: _showEmptyError,
+                    suffixIcon: IconButton(
+                      tooltip: _obscure ? l.sourcesKeyShow : l.sourcesKeyHide,
+                      icon: Icon(
+                        _obscure
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                      ),
+                      onPressed: () => setState(() => _obscure = !_obscure),
                     ),
-                    onPressed: () => setState(() => _obscure = !_obscure),
                   ),
                 ),
-              ),
-              if (_showEmptyError)
-                Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    l.sourcesKeyEmpty,
-                    style: OwTextStyles.caption.copyWith(color: c.down),
+                if (_showEmptyError)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 6),
+                    child: Text(
+                      l.sourcesKeyEmpty,
+                      style: OwTextStyles.caption.copyWith(color: c.down),
+                    ),
                   ),
-                ),
-              const SizedBox(height: 8),
+                const SizedBox(height: 8),
+              ],
               Text(
                 status?.configured ?? false
                     ? (status?.preview == null
@@ -161,8 +188,10 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
                   style: OwTextStyles.caption.copyWith(color: c.up),
                 ),
               const SizedBox(height: 12),
-              OwPrimaryButton(label: l.sourcesSave, onPressed: _save),
-              const SizedBox(height: 8),
+              if (!_isMempool) ...[
+                OwPrimaryButton(label: l.sourcesSave, onPressed: _save),
+                const SizedBox(height: 8),
+              ],
               OwSecondaryButton(
                 label: testing ? l.sourcesTesting : l.sourcesTest,
                 onPressed: (testing || hasUnsaved)
@@ -190,11 +219,11 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
                   ),
                 },
               ],
-              if (status?.configured ?? false) ...[
+              if (!_isMempool && (status?.configured ?? false)) ...[
                 const SizedBox(height: 8),
                 OwDangerButton(label: l.sourcesClear, onPressed: _clear),
               ],
-              if (_isAlchemy) ..._advanced(l, c, state),
+              if (_advancedChains != null) ..._advanced(l, c, state),
             ],
           ),
         ),
@@ -229,7 +258,7 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
           style: OwTextStyles.caption.copyWith(color: c.muted),
         ),
         const SizedBox(height: 8),
-        const EndpointEditors(),
+        EndpointEditors(chains: _advancedChains),
       ],
     ];
   }
