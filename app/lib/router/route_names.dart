@@ -1,5 +1,7 @@
 /// 路由名与路径，取自 docs/IMPLEMENTATION_SPEC_v1.0.md 7.1。
 abstract final class RouteNames {
+  static const lock = 'lock';
+  static const onboarding = 'onboarding';
   static const overview = 'overview';
   static const accounts = 'accounts';
   static const accountAdd = 'accountAdd';

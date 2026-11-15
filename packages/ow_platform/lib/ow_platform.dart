@@ -6,6 +6,7 @@
 /// 硬件密钥、生物识别、防截屏、文件导出由 M0-11、M3-02 等任务加入。
 library;
 
+export 'src/biometrics/device_biometric_auth.dart';
 export 'src/capabilities/device_platform_capabilities.dart';
 export 'src/database/database_opener.dart';
 export 'src/secret/clearable_secret_store.dart';

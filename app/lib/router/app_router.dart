@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ow_application/ow_application.dart';
 
 import '../features/accounts/presentation/accounts_page.dart';
 import '../features/accounts/presentation/add_account_page.dart';
 import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/common/presentation/coming_soon_page.dart';
+import '../features/lock/presentation/lock_page.dart';
+import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
@@ -15,6 +18,8 @@ import '../shell/adaptive_scaffold.dart';
 import 'route_names.dart';
 
 abstract final class AppRoutes {
+  static const lock = '/lock';
+  static const onboarding = '/onboarding';
   static const overview = '/overview';
   static const accounts = '/accounts';
   static const vault = '/vault';
@@ -53,7 +58,11 @@ class _ShellNavigationObserver extends NavigatorObserver {
 }
 
 /// 构建应用路由。路径与路由名见 IMPLEMENTATION_SPEC 7.1；参数只传 id。
-GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
+GoRouter buildAppRouter({
+  String initialLocation = AppRoutes.overview,
+  AppLockStateMachine? Function()? appLock,
+  Listenable? refreshListenable,
+}) {
   final overviewKey = GlobalKey<NavigatorState>(debugLabel: 'overview');
   final accountsKey = GlobalKey<NavigatorState>(debugLabel: 'accounts');
   final vaultKey = GlobalKey<NavigatorState>(debugLabel: 'vault');
@@ -78,7 +87,47 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
       ComingSoonPage(title: title);
   return GoRouter(
     initialLocation: initialLocation,
+    refreshListenable: refreshListenable,
+    redirect: (context, state) {
+      if (appLock == null) return null;
+      final machine = appLock();
+      if (machine == null) return null;
+      final path = state.uri.path;
+      final lockState = machine.current;
+
+      if (lockState is AppLockUninitialized) {
+        if (path == AppRoutes.onboarding ||
+            path.startsWith('/settings/backup/restore')) {
+          return null;
+        }
+        return AppRoutes.onboarding;
+      }
+
+      if (lockState is AppLockLocked) {
+        if (path == AppRoutes.lock) return null;
+        return AppRoutes.lock;
+      }
+
+      if (lockState is AppLockUnlocked) {
+        if (path == AppRoutes.lock || path == AppRoutes.onboarding) {
+          return AppRoutes.overview;
+        }
+        return null;
+      }
+
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: AppRoutes.lock,
+        name: RouteNames.lock,
+        builder: (_, _) => const LockPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        name: RouteNames.onboarding,
+        builder: (_, _) => const OnboardingPage(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => _Shell(
           shell: shell,

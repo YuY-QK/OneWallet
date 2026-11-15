@@ -361,6 +361,8 @@ Future<void> _tapText(WidgetTester tester, String text) async {
 }
 
 final _shots = <_Shot>[
+  const _Shot('lock', '/lock'),
+  const _Shot('onboarding', '/onboarding'),
   const _Shot('overview', '/overview'),
   _Shot('overview_by_account', '/overview', after: (t) => _tapText(t, '按账户')),
   const _Shot('overview_empty', '/overview', seeded: false),

@@ -1239,6 +1239,168 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'完成'**
   String get sourcesDone;
+
+  /// No description provided for @lockTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'OneWallet'**
+  String get lockTitle;
+
+  /// No description provided for @lockSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入 6 位 PIN'**
+  String get lockSubtitle;
+
+  /// No description provided for @lockWrongPin.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 码不正确'**
+  String get lockWrongPin;
+
+  /// No description provided for @lockCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'错误次数过多，请在 {time} 后重试'**
+  String lockCountdown(String time);
+
+  /// No description provided for @lockBiometricsButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物识别'**
+  String get lockBiometricsButton;
+
+  /// No description provided for @lockBiometricReason.
+  ///
+  /// In zh, this message translates to:
+  /// **'解锁 OneWallet'**
+  String get lockBiometricReason;
+
+  /// No description provided for @lockDeleteKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'⌫'**
+  String get lockDeleteKey;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'一处看全，备份不丢'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看所有链上钱包和交易所的资产，并把助记词存进本机的加密保险库。'**
+  String get onboardingWelcomeSubtitle;
+
+  /// No description provided for @onboardingSecurityTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始前请了解'**
+  String get onboardingSecurityTitle;
+
+  /// No description provided for @onboardingSecurity1Title.
+  ///
+  /// In zh, this message translates to:
+  /// **'只读，不转账'**
+  String get onboardingSecurity1Title;
+
+  /// No description provided for @onboardingSecurity1Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'app 不会发起任何交易'**
+  String get onboardingSecurity1Desc;
+
+  /// No description provided for @onboardingSecurity2Title.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥只存在这台手机'**
+  String get onboardingSecurity2Title;
+
+  /// No description provided for @onboardingSecurity2Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'不上传到任何服务器'**
+  String get onboardingSecurity2Desc;
+
+  /// No description provided for @onboardingSecurity3Title.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 和主密码无法找回'**
+  String get onboardingSecurity3Title;
+
+  /// No description provided for @onboardingSecurity3Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'请务必记牢，并导出加密备份'**
+  String get onboardingSecurity3Desc;
+
+  /// No description provided for @onboardingStartButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'我已了解，开始使用'**
+  String get onboardingStartButton;
+
+  /// No description provided for @onboardingRestoreButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'从备份恢复'**
+  String get onboardingRestoreButton;
+
+  /// No description provided for @onboardingSetPinTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置 6 位 PIN'**
+  String get onboardingSetPinTitle;
+
+  /// No description provided for @onboardingSetPinSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'用于每次打开应用时验证身份'**
+  String get onboardingSetPinSubtitle;
+
+  /// No description provided for @onboardingConfirmPinTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入以确认'**
+  String get onboardingConfirmPinTitle;
+
+  /// No description provided for @onboardingConfirmPinSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的 PIN 必须一致'**
+  String get onboardingConfirmPinSubtitle;
+
+  /// No description provided for @onboardingPinMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的 PIN 不一致，请重新输入'**
+  String get onboardingPinMismatch;
+
+  /// No description provided for @onboardingBiometricTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启生物识别'**
+  String get onboardingBiometricTitle;
+
+  /// No description provided for @onboardingBiometricSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用面容或指纹更快捷地解锁 OneWallet'**
+  String get onboardingBiometricSubtitle;
+
+  /// No description provided for @onboardingEnableBiometric.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启'**
+  String get onboardingEnableBiometric;
+
+  /// No description provided for @onboardingSkipBiometric.
+  ///
+  /// In zh, this message translates to:
+  /// **'稍后再说'**
+  String get onboardingSkipBiometric;
 }
 
 class _AppLocalizationsDelegate

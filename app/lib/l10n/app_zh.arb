@@ -339,5 +339,39 @@
   "sourcesEndpointDefault": "使用默认端点",
   "sourcesEndpointSave": "保存端点",
   "sourcesEndpointClear": "恢复默认",
-  "sourcesDone": "完成"
+  "sourcesDone": "完成",
+  "lockTitle": "OneWallet",
+  "lockSubtitle": "输入 6 位 PIN",
+  "lockWrongPin": "PIN 码不正确",
+  "lockCountdown": "错误次数过多，请在 {time} 后重试",
+  "@lockCountdown": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockBiometricsButton": "生物识别",
+  "lockBiometricReason": "解锁 OneWallet",
+  "lockDeleteKey": "⌫",
+  "onboardingWelcomeTitle": "一处看全，备份不丢",
+  "onboardingWelcomeSubtitle": "查看所有链上钱包和交易所的资产，并把助记词存进本机的加密保险库。",
+  "onboardingSecurityTitle": "开始前请了解",
+  "onboardingSecurity1Title": "只读，不转账",
+  "onboardingSecurity1Desc": "app 不会发起任何交易",
+  "onboardingSecurity2Title": "密钥只存在这台手机",
+  "onboardingSecurity2Desc": "不上传到任何服务器",
+  "onboardingSecurity3Title": "PIN 和主密码无法找回",
+  "onboardingSecurity3Desc": "请务必记牢，并导出加密备份",
+  "onboardingStartButton": "我已了解，开始使用",
+  "onboardingRestoreButton": "从备份恢复",
+  "onboardingSetPinTitle": "设置 6 位 PIN",
+  "onboardingSetPinSubtitle": "用于每次打开应用时验证身份",
+  "onboardingConfirmPinTitle": "请再次输入以确认",
+  "onboardingConfirmPinSubtitle": "两次输入的 PIN 必须一致",
+  "onboardingPinMismatch": "两次输入的 PIN 不一致，请重新输入",
+  "onboardingBiometricTitle": "开启生物识别",
+  "onboardingBiometricSubtitle": "使用面容或指纹更快捷地解锁 OneWallet",
+  "onboardingEnableBiometric": "开启",
+  "onboardingSkipBiometric": "稍后再说"
 }

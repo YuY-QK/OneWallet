@@ -634,4 +634,87 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sourcesDone => '完成';
+
+  @override
+  String get lockTitle => 'OneWallet';
+
+  @override
+  String get lockSubtitle => '输入 6 位 PIN';
+
+  @override
+  String get lockWrongPin => 'PIN 码不正确';
+
+  @override
+  String lockCountdown(String time) {
+    return '错误次数过多，请在 $time 后重试';
+  }
+
+  @override
+  String get lockBiometricsButton => '生物识别';
+
+  @override
+  String get lockBiometricReason => '解锁 OneWallet';
+
+  @override
+  String get lockDeleteKey => '⌫';
+
+  @override
+  String get onboardingWelcomeTitle => '一处看全，备份不丢';
+
+  @override
+  String get onboardingWelcomeSubtitle => '查看所有链上钱包和交易所的资产，并把助记词存进本机的加密保险库。';
+
+  @override
+  String get onboardingSecurityTitle => '开始前请了解';
+
+  @override
+  String get onboardingSecurity1Title => '只读，不转账';
+
+  @override
+  String get onboardingSecurity1Desc => 'app 不会发起任何交易';
+
+  @override
+  String get onboardingSecurity2Title => '密钥只存在这台手机';
+
+  @override
+  String get onboardingSecurity2Desc => '不上传到任何服务器';
+
+  @override
+  String get onboardingSecurity3Title => 'PIN 和主密码无法找回';
+
+  @override
+  String get onboardingSecurity3Desc => '请务必记牢，并导出加密备份';
+
+  @override
+  String get onboardingStartButton => '我已了解，开始使用';
+
+  @override
+  String get onboardingRestoreButton => '从备份恢复';
+
+  @override
+  String get onboardingSetPinTitle => '设置 6 位 PIN';
+
+  @override
+  String get onboardingSetPinSubtitle => '用于每次打开应用时验证身份';
+
+  @override
+  String get onboardingConfirmPinTitle => '请再次输入以确认';
+
+  @override
+  String get onboardingConfirmPinSubtitle => '两次输入的 PIN 必须一致';
+
+  @override
+  String get onboardingPinMismatch => '两次输入的 PIN 不一致，请重新输入';
+
+  @override
+  String get onboardingBiometricTitle => '开启生物识别';
+
+  @override
+  String get onboardingBiometricSubtitle => '使用面容或指纹更快捷地解锁 OneWallet';
+
+  @override
+  String get onboardingEnableBiometric => '开启';
+
+  @override
+  String get onboardingSkipBiometric => '稍后再说';
 }

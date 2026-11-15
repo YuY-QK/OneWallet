@@ -18,6 +18,11 @@ final platformCapabilitiesProvider = Provider<PlatformCapabilities>(
   (ref) => DevicePlatformCapabilities(),
 );
 
+/// 系统生物识别。默认是平台通道实现；测试换成假实现。
+final biometricAuthProvider = Provider<BiometricAuth>(
+  (ref) => DeviceBiometricAuth(),
+);
+
 final loggerProvider = Provider<OwLogger>((ref) => OwLogger());
 
 final clockProvider = Provider<Clock>((ref) => const SystemClock());

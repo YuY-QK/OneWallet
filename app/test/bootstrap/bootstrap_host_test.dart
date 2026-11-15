@@ -81,7 +81,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('还没有账户'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Text && (w.data == '还没有账户' || w.data == '一处看全，备份不丢'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('无法打开本地数据'), findsNothing);
     await unmount(tester);
   });
