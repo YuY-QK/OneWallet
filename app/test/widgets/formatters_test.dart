@@ -50,6 +50,26 @@ void main() {
     });
   });
 
+  group('formatPrice（单价）', () {
+    test('formatPrice_大于等于1且整分_显示两位小数', () {
+      expect(formatPrice(d('82100.4'), symbol: fiatSymbolUsd), r'$82,100.40');
+      expect(formatPrice(d('100'), symbol: fiatSymbolUsd), r'$100.00');
+    });
+
+    test('formatPrice_大于等于1且有多位小数_保留最多4位', () {
+      expect(formatPrice(d('1.0002'), symbol: fiatSymbolUsd), r'$1.0002');
+      expect(formatPrice(d('1.00025'), symbol: fiatSymbolUsd), r'$1.0002');
+      expect(formatPrice(d('1.2000'), symbol: fiatSymbolUsd), r'$1.20');
+    });
+
+    test('formatPrice_小于1_使用有效数字', () {
+      expect(
+        formatPrice(d('0.00001234'), symbol: fiatSymbolUsd),
+        r'$0.00001234',
+      );
+    });
+  });
+
   group('formatQuantity（数量）', () {
     test('formatQuantity_零_显示0', () {
       expect(formatQuantity(Decimal.zero), '0');

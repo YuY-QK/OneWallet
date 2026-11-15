@@ -872,4 +872,40 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get subAccountOther => '其他';
+
+  @override
+  String get assetDetailTitle => '币种详情';
+
+  @override
+  String get assetDetailCurrentPrice => '当前价格';
+
+  @override
+  String get assetDetailHoldings => '持有';
+
+  @override
+  String get assetDetailValuation => '估值';
+
+  @override
+  String get assetDetailDistributionTitle => '分布';
+
+  @override
+  String get assetDetailDistributionEmpty => '暂无账户持有该币种';
+
+  @override
+  String get assetDetailContractsTitle => '合约地址';
+
+  @override
+  String get assetDetailCopyContract => '复制';
+
+  @override
+  String get assetDetailCopied => '已复制合约地址';
+
+  @override
+  String get assetDetailNoPrice => '估值缺失';
+
+  @override
+  String get assetDetailNotFound => '未找到该币种信息';
+
+  @override
+  String get assetDetailViewDistribution => '查看币种分布';
 }

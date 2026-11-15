@@ -516,10 +516,22 @@ const String builtInAssetMappingsJson = r'''{
     }
   ],
   "exchangeAliases": {
-    "binance": {},
-    "okx": {},
-    "bybit": {},
-    "bitget": {}
+    "binance": {
+      "MATIC": "POL",
+      "XBT": "BTC"
+    },
+    "okx": {
+      "MATIC": "POL",
+      "XBT": "BTC"
+    },
+    "bybit": {
+      "MATIC": "POL",
+      "XBT": "BTC"
+    },
+    "bitget": {
+      "MATIC": "POL",
+      "XBT": "BTC"
+    }
   }
 }
 ''';

@@ -8,6 +8,7 @@ import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/common/presentation/coming_soon_page.dart';
+import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
@@ -97,7 +98,8 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
               GoRoute(
                 path: 'asset/:assetId',
                 name: RouteNames.assetDetail,
-                builder: (c, _) => soon(c, AppLocalizations.of(c)!.tabOverview),
+                builder: (c, state) =>
+                    AssetDetailPage(assetId: state.pathParameters['assetId']!),
               ),
             ],
           ),

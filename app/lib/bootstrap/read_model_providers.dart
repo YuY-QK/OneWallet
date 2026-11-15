@@ -53,3 +53,8 @@ final quotePricesProvider = StreamProvider<Map<String, Price>>((ref) {
   final quote = ref.watch(quoteProvider);
   return ref.watch(priceRepositoryProvider).watch(quote);
 });
+
+/// 手动隐藏的代币键集合。
+final hiddenTokensProvider = StreamProvider<Set<String>>(
+  (ref) => ref.watch(tokenVisibilityRepositoryProvider).watchHidden(),
+);

@@ -448,5 +448,17 @@
   "subAccountFutures": "合约",
   "subAccountMargin": "杠杆",
   "subAccountEarn": "理财",
-  "subAccountOther": "其他"
+  "subAccountOther": "其他",
+  "assetDetailTitle": "币种详情",
+  "assetDetailCurrentPrice": "当前价格",
+  "assetDetailHoldings": "持有",
+  "assetDetailValuation": "估值",
+  "assetDetailDistributionTitle": "分布",
+  "assetDetailDistributionEmpty": "暂无账户持有该币种",
+  "assetDetailContractsTitle": "合约地址",
+  "assetDetailCopyContract": "复制",
+  "assetDetailCopied": "已复制合约地址",
+  "assetDetailNoPrice": "估值缺失",
+  "assetDetailNotFound": "未找到该币种信息",
+  "assetDetailViewDistribution": "查看币种分布"
 }

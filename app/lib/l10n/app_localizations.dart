@@ -1683,6 +1683,78 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'其他'**
   String get subAccountOther;
+
+  /// No description provided for @assetDetailTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'币种详情'**
+  String get assetDetailTitle;
+
+  /// No description provided for @assetDetailCurrentPrice.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前价格'**
+  String get assetDetailCurrentPrice;
+
+  /// No description provided for @assetDetailHoldings.
+  ///
+  /// In zh, this message translates to:
+  /// **'持有'**
+  String get assetDetailHoldings;
+
+  /// No description provided for @assetDetailValuation.
+  ///
+  /// In zh, this message translates to:
+  /// **'估值'**
+  String get assetDetailValuation;
+
+  /// No description provided for @assetDetailDistributionTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'分布'**
+  String get assetDetailDistributionTitle;
+
+  /// No description provided for @assetDetailDistributionEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无账户持有该币种'**
+  String get assetDetailDistributionEmpty;
+
+  /// No description provided for @assetDetailContractsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'合约地址'**
+  String get assetDetailContractsTitle;
+
+  /// No description provided for @assetDetailCopyContract.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制'**
+  String get assetDetailCopyContract;
+
+  /// No description provided for @assetDetailCopied.
+  ///
+  /// In zh, this message translates to:
+  /// **'已复制合约地址'**
+  String get assetDetailCopied;
+
+  /// No description provided for @assetDetailNoPrice.
+  ///
+  /// In zh, this message translates to:
+  /// **'估值缺失'**
+  String get assetDetailNoPrice;
+
+  /// No description provided for @assetDetailNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到该币种信息'**
+  String get assetDetailNotFound;
+
+  /// No description provided for @assetDetailViewDistribution.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看币种分布'**
+  String get assetDetailViewDistribution;
 }
 
 class _AppLocalizationsDelegate

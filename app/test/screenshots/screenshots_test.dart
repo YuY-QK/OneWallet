@@ -364,6 +364,7 @@ final _shots = <_Shot>[
   const _Shot('overview', '/overview'),
   _Shot('overview_by_account', '/overview', after: (t) => _tapText(t, '按账户')),
   const _Shot('overview_empty', '/overview', seeded: false),
+  const _Shot('asset_detail', '/overview/asset/ETH'), // P09
   const _Shot('accounts', '/accounts'), // P03
   const _Shot('wallet_detail_assets', '/accounts/wallet/w1'),
   _Shot(
