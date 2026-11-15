@@ -1881,6 +1881,120 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'已删除的账户'**
   String get syncStatusDeletedAccount;
+
+  /// No description provided for @accountsTabAccounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户'**
+  String get accountsTabAccounts;
+
+  /// No description provided for @accountsTabAddressBook.
+  ///
+  /// In zh, this message translates to:
+  /// **'地址簿'**
+  String get accountsTabAddressBook;
+
+  /// No description provided for @accountsSort.
+  ///
+  /// In zh, this message translates to:
+  /// **'排序'**
+  String get accountsSort;
+
+  /// No description provided for @accountsSortByValuation.
+  ///
+  /// In zh, this message translates to:
+  /// **'按估值排序'**
+  String get accountsSortByValuation;
+
+  /// No description provided for @accountsSortByName.
+  ///
+  /// In zh, this message translates to:
+  /// **'按名称排序'**
+  String get accountsSortByName;
+
+  /// No description provided for @accountsMoreActions.
+  ///
+  /// In zh, this message translates to:
+  /// **'更多操作'**
+  String get accountsMoreActions;
+
+  /// No description provided for @accountsMenuRename.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名'**
+  String get accountsMenuRename;
+
+  /// No description provided for @accountsMenuDelete.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get accountsMenuDelete;
+
+  /// No description provided for @accountsRenameTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'重命名账户'**
+  String get accountsRenameTitle;
+
+  /// No description provided for @accountsRenameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入账户名称'**
+  String get accountsRenameHint;
+
+  /// No description provided for @accountsRenameCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get accountsRenameCancel;
+
+  /// No description provided for @accountsRenameSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get accountsRenameSave;
+
+  /// No description provided for @accountsDeleteWalletTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除钱包账户'**
+  String get accountsDeleteWalletTitle;
+
+  /// No description provided for @accountsDeleteWalletMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除此账户？将删除其地址、持仓缓存与历史快照中的该账户明细。如果关联了保险库密钥，密钥不会被删除，仅解除关联。此操作无法撤销。'**
+  String get accountsDeleteWalletMessage;
+
+  /// No description provided for @accountsDeleteExchangeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除交易所账户'**
+  String get accountsDeleteExchangeTitle;
+
+  /// No description provided for @accountsDeleteExchangeMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。此操作无法撤销。'**
+  String get accountsDeleteExchangeMessage;
+
+  /// No description provided for @accountsDeleteCancelAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get accountsDeleteCancelAction;
+
+  /// No description provided for @accountsDeleteConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get accountsDeleteConfirmAction;
+
+  /// No description provided for @accountsFooterHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'长按账户可重命名或删除'**
+  String get accountsFooterHint;
 }
 
 class _AppLocalizationsDelegate

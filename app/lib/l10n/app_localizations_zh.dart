@@ -984,4 +984,63 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get syncStatusDeletedAccount => '已删除的账户';
+
+  @override
+  String get accountsTabAccounts => '账户';
+
+  @override
+  String get accountsTabAddressBook => '地址簿';
+
+  @override
+  String get accountsSort => '排序';
+
+  @override
+  String get accountsSortByValuation => '按估值排序';
+
+  @override
+  String get accountsSortByName => '按名称排序';
+
+  @override
+  String get accountsMoreActions => '更多操作';
+
+  @override
+  String get accountsMenuRename => '重命名';
+
+  @override
+  String get accountsMenuDelete => '删除';
+
+  @override
+  String get accountsRenameTitle => '重命名账户';
+
+  @override
+  String get accountsRenameHint => '请输入账户名称';
+
+  @override
+  String get accountsRenameCancel => '取消';
+
+  @override
+  String get accountsRenameSave => '保存';
+
+  @override
+  String get accountsDeleteWalletTitle => '删除钱包账户';
+
+  @override
+  String get accountsDeleteWalletMessage =>
+      '确定删除此账户？将删除其地址、持仓缓存与历史快照中的该账户明细。如果关联了保险库密钥，密钥不会被删除，仅解除关联。此操作无法撤销。';
+
+  @override
+  String get accountsDeleteExchangeTitle => '删除交易所账户';
+
+  @override
+  String get accountsDeleteExchangeMessage =>
+      '确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。此操作无法撤销。';
+
+  @override
+  String get accountsDeleteCancelAction => '取消';
+
+  @override
+  String get accountsDeleteConfirmAction => '删除';
+
+  @override
+  String get accountsFooterHint => '长按账户可重命名或删除';
 }

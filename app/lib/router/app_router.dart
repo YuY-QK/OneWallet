@@ -150,6 +150,12 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                   ),
                 ),
               ),
+              GoRoute(
+                path: 'addresses',
+                name: RouteNames.addressBook,
+                builder: (c, state) =>
+                    const Scaffold(body: Center(child: Text('地址簿'))),
+              ),
             ],
           ),
           branch(

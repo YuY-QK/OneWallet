@@ -75,6 +75,26 @@ void main() {
         expect(find.byType(InkWell), findsNothing);
       });
 
+      testWidgets('有onLongPress或onSecondaryTap_能触发对应手势', (tester) async {
+        var longs = 0;
+        var secondaries = 0;
+        await pumpOw(
+          tester,
+          OwRow(
+            title: '手势',
+            onLongPress: () => longs++,
+            onSecondaryTap: () => secondaries++,
+          ),
+          brightness: b,
+        );
+        expect(find.byType(InkWell), findsOneWidget);
+        await tester.longPress(find.text('手势'));
+        expect(longs, 1);
+
+        await tester.tap(find.text('手势'), buttons: kSecondaryMouseButton);
+        expect(secondaries, 1);
+      });
+
       testWidgets('长标题_单行省略不溢出', (tester) async {
         await pumpOw(
           tester,
