@@ -109,7 +109,7 @@ void main() {
       expect(view.runningCount, 1);
     });
 
-    test('同步日志映射_正确关联账户名与耗时', () {
+    test('同步日志映射_正确关联账户名与耗时_已删除账户名称为null', () {
       final r1 = SyncRecord(
         accountId: 'w1',
         startedAt: t0,
@@ -133,13 +133,13 @@ void main() {
       );
 
       expect(view.logs, hasLength(2));
-      expect(view.logs[0].accountName, 'deleted_account');
+      expect(view.logs[0].accountName, isNull);
       expect(view.logs[0].duration, const Duration(milliseconds: 350));
       expect(view.logs[1].accountName, 'Uni 钱包');
       expect(view.logs[1].duration, const Duration(milliseconds: 1200));
     });
 
-    test('全量同步耗时_优先使用明确传入的值_缺失时由记录推导', () {
+    test('全量同步耗时_使用明确传入的值_未传入时为null', () {
       final r1 = SyncRecord(
         accountId: 'w1',
         startedAt: t0,
@@ -153,16 +153,16 @@ void main() {
         status: SyncStatus.success,
       );
 
-      // 1. 自动从记录推导
-      final viewDerived = buildSyncStatusView(
+      // 1. 未传入全量同步状态时，不推导，保持为 null
+      final viewNone = buildSyncStatusView(
         accounts: [a1, a2],
         latestRecords: [r1, r2],
         lastSuccessPerAccount: {},
         recentLogs: [],
         syncingAccountIds: {},
       );
-      expect(viewDerived.lastFullSyncAt, t0.add(const Duration(seconds: 11)));
-      expect(viewDerived.lastFullSyncDuration, const Duration(seconds: 11));
+      expect(viewNone.lastFullSyncAt, isNull);
+      expect(viewNone.lastFullSyncDuration, isNull);
 
       // 2. 传入显式值
       final viewExplicit = buildSyncStatusView(

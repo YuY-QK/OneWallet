@@ -341,6 +341,7 @@ abstract interface class SnapshotRepository {
 abstract interface class SyncRecordRepository {
   Stream<List<SyncRecord>> watchLatestPerAccount();
   Stream<Map<String, DateTime>> watchLastSuccessPerAccount();               // 账户 id → 最近一次成功的结束时间；读 accounts.last_synced_at
+  Stream<List<SyncRecord>> watchRecent({int limit = 50});                   // 最近的同步记录（按写入时间降序），最多返回 limit 条
   Future<void> add(SyncRecord record);                                      // 只保留最近 50 条；成功记录同时把 last_synced_at 推进到 finishedAt
 }
 // 价格源查到的币种与"合约 → 币种"对应（M1-18）

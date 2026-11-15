@@ -508,5 +508,6 @@
   },
   "syncStatusNeverSuccess": "从未成功同步",
   "syncStatusKeyExpiredHint": "API Key 已失效，请更换",
-  "syncStatusViewFullStatus": "查看完整同步状态"
+  "syncStatusViewFullStatus": "查看完整同步状态",
+  "syncStatusDeletedAccount": "已删除的账户"
 }

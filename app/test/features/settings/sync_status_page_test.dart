@@ -82,16 +82,33 @@ void main() {
       expect(find.text('最近同步记录（最多 50 条）'), findsOneWidget);
     });
 
-    testWidgets('空状态_无账户与无日志时显示空占位', (tester) async {
+    testWidgets('空状态_无全量同步记录时显示破折号_无账户与无日志时显示空占位', (tester) async {
       rig.accounts.feed.value = [];
       rig.syncRecords.feed.value = [];
       rig.syncRecords.allRecords.value = [];
 
       await pumpApp(tester, rig, location: '/settings/sync');
 
-      expect(find.text('尚未进行过全量同步'), findsOneWidget);
+      expect(find.text('—'), findsOneWidget);
       expect(find.text('还没有账户'), findsOneWidget);
       expect(find.text('暂无同步记录'), findsOneWidget);
+    });
+
+    testWidgets('日志中已删除的账户_显示已删除的账户而不显示ID', (tester) async {
+      rig.accounts.feed.value = [w1];
+      final recDeleted = SyncRecord(
+        accountId: 'deleted_acc_123',
+        startedAt: t0,
+        finishedAt: t0.add(const Duration(seconds: 1)),
+        status: SyncStatus.success,
+      );
+      rig.syncRecords.feed.value = [];
+      rig.syncRecords.allRecords.value = [recDeleted];
+
+      await pumpApp(tester, rig, location: '/settings/sync');
+
+      expect(find.text('已删除的账户'), findsOneWidget);
+      expect(find.text('deleted_acc_123'), findsNothing);
     });
 
     testWidgets('点击凭据失效的交易所账户_跳转到更换Key页面', (tester) async {

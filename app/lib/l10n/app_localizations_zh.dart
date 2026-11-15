@@ -981,4 +981,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get syncStatusViewFullStatus => '查看完整同步状态';
+
+  @override
+  String get syncStatusDeletedAccount => '已删除的账户';
 }

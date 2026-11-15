@@ -95,7 +95,7 @@ class SyncStatusPage extends ConsumerWidget {
   ) {
     final String summary;
     if (view.lastFullSyncAt == null) {
-      summary = l.syncStatusNeverFullSynced;
+      summary = '—';
     } else {
       final timeStr = formatRelativeTime(
         view.lastFullSyncAt!,
@@ -267,7 +267,7 @@ class SyncStatusPage extends ConsumerWidget {
       children: [
         for (final log in view.logs)
           OwRow(
-            title: log.accountName,
+            title: log.accountName ?? l.syncStatusDeletedAccount,
             subtitle: _logSubtitle(l, log, now),
             trailing: OwPill(
               label: log.record.status == SyncStatus.success

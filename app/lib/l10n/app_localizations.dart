@@ -1875,6 +1875,12 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'查看完整同步状态'**
   String get syncStatusViewFullStatus;
+
+  /// No description provided for @syncStatusDeletedAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除的账户'**
+  String get syncStatusDeletedAccount;
 }
 
 class _AppLocalizationsDelegate

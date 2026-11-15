@@ -50,12 +50,15 @@ final class AccountSyncStatusItem {
 final class SyncLogItem {
   const SyncLogItem({
     required this.accountId,
-    required this.accountName,
+    this.accountName,
     required this.record,
   });
 
   final String accountId;
-  final String accountName;
+
+  /// 账户名称；若账户已被删除则为 null。
+  final String? accountName;
+
   final SyncRecord record;
 
   /// 同步耗时（若已结束）。
@@ -127,38 +130,17 @@ SyncStatusView buildSyncStatusView({
 
   final logItems = <SyncLogItem>[];
   for (final rec in recentLogs) {
-    final name = accountMap[rec.accountId]?.name ?? rec.accountId;
+    final name = accountMap[rec.accountId]?.name;
     logItems.add(
       SyncLogItem(accountId: rec.accountId, accountName: name, record: rec),
     );
   }
 
-  DateTime? fullSyncAt = lastFullSyncFinishedAt;
-  Duration? fullSyncDuration = lastFullSyncDuration;
-
-  if (fullSyncAt == null && latestRecords.isNotEmpty) {
-    DateTime? latestFinished;
-    DateTime? earliestStarted;
-    for (final r in latestRecords) {
-      final f = r.finishedAt ?? r.startedAt;
-      if (latestFinished == null || f.isAfter(latestFinished)) {
-        latestFinished = f;
-      }
-      if (earliestStarted == null || r.startedAt.isBefore(earliestStarted)) {
-        earliestStarted = r.startedAt;
-      }
-    }
-    fullSyncAt = latestFinished;
-    if (latestFinished != null && earliestStarted != null) {
-      fullSyncDuration = latestFinished.difference(earliestStarted);
-    }
-  }
-
   return SyncStatusView(
     accounts: accountItems,
     logs: logItems,
-    lastFullSyncAt: fullSyncAt,
-    lastFullSyncDuration: fullSyncDuration,
+    lastFullSyncAt: lastFullSyncFinishedAt,
+    lastFullSyncDuration: lastFullSyncDuration,
     isFullSyncRunning: isFullSyncRunning,
   );
 }
