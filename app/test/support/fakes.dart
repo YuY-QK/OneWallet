@@ -445,7 +445,15 @@ final class TestRig {
   /// 打开链接是否成功。
   bool openSucceeds = true;
 
+  /// 保险库是否已初始化。
+  bool isVaultInitialized = false;
+
+  /// 保险库条目列表。
+  List<VaultItemSummary> vaultItems = const [];
+
   List<Override> get overrides => [
+    isVaultInitializedProvider.overrideWith((ref) => isVaultInitialized),
+    vaultItemsProvider.overrideWith((ref) => Stream.value(vaultItems)),
     accountRepositoryProvider.overrideWithValue(accounts),
     addressRepositoryProvider.overrideWithValue(addresses),
     holdingRepositoryProvider.overrideWithValue(holdings),

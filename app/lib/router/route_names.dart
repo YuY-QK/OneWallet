@@ -10,9 +10,19 @@ abstract final class RouteNames {
   static const walletDetail = 'walletDetail';
   static const exchangeDetail = 'exchangeDetail';
   static const assetDetail = 'assetDetail';
+  static const addressBook = 'addressBook';
+  static const backupChecklist = 'backupChecklist';
   static const vault = 'vault';
+  static const vaultSetup = 'vaultSetup';
   static const vaultImport = 'vaultImport';
+  static const vaultItem = 'vaultItem';
+  static const vaultDerive = 'vaultDerive';
+  static const backup = 'backup';
+  static const backupExport = 'backupExport';
+  static const backupRestore = 'backupRestore';
   static const settings = 'settings';
+  static const settingsSecurity = 'settingsSecurity';
   static const settingsSources = 'settingsSources';
   static const settingsSync = 'settingsSync';
+  static const settingsAbout = 'settingsAbout';
 }

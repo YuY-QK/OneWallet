@@ -2055,6 +2055,204 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'稍后再说'**
   String get onboardingSkipBiometric;
+
+  /// No description provided for @vaultTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库'**
+  String get vaultTitle;
+
+  /// No description provided for @vaultFooterNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库内容仅存于本机。请定期导出加密备份。'**
+  String get vaultFooterNote;
+
+  /// No description provided for @vaultChecklistNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份清单：{count} 个钱包未备份'**
+  String vaultChecklistNotice(int count);
+
+  /// No description provided for @vaultEmptyItemsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无密钥条目'**
+  String get vaultEmptyItemsTitle;
+
+  /// No description provided for @vaultEmptyItemsBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击右上角「＋」导入第一个助记词或私钥。'**
+  String get vaultEmptyItemsBody;
+
+  /// No description provided for @vaultItemKindMnemonic.
+  ///
+  /// In zh, this message translates to:
+  /// **'助记词'**
+  String get vaultItemKindMnemonic;
+
+  /// No description provided for @vaultItemKindPrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultItemKindPrivateKey;
+
+  /// No description provided for @vaultItemPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'含密码'**
+  String get vaultItemPassphrase;
+
+  /// No description provided for @vaultImportAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入密钥'**
+  String get vaultImportAction;
+
+  /// No description provided for @vaultSetupTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建保险库'**
+  String get vaultSetupTitle;
+
+  /// No description provided for @vaultSetupIntro.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码用于保护你的助记词，换手机恢复时也需要它。'**
+  String get vaultSetupIntro;
+
+  /// No description provided for @vaultSetupWarningTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码无法找回'**
+  String get vaultSetupWarningTitle;
+
+  /// No description provided for @vaultSetupWarningBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'OneWallet 不在任何服务器保存你的密码。如果遗忘主密码，保险库内的全部密钥将永远无法恢复。'**
+  String get vaultSetupWarningBody;
+
+  /// No description provided for @vaultSetupPasswordLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码（至少 10 个字符）'**
+  String get vaultSetupPasswordLabel;
+
+  /// No description provided for @vaultSetupPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入至少 10 位主密码'**
+  String get vaultSetupPasswordHint;
+
+  /// No description provided for @vaultSetupPasswordConfirmLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'再次输入'**
+  String get vaultSetupPasswordConfirmLabel;
+
+  /// No description provided for @vaultSetupPasswordConfirmHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入主密码'**
+  String get vaultSetupPasswordConfirmHint;
+
+  /// No description provided for @vaultSetupAgreeRisk.
+  ///
+  /// In zh, this message translates to:
+  /// **'我明白主密码丢失后，保险库内容无法恢复。'**
+  String get vaultSetupAgreeRisk;
+
+  /// No description provided for @vaultSetupBiometricsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用面容或指纹解锁保险库'**
+  String get vaultSetupBiometricsTitle;
+
+  /// No description provided for @vaultSetupBiometricsSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'日常查看更方便，硬件安全芯片保护'**
+  String get vaultSetupBiometricsSubtitle;
+
+  /// No description provided for @vaultSetupCreateButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建保险库'**
+  String get vaultSetupCreateButton;
+
+  /// No description provided for @vaultSetupCreating.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在生成保险库与加密密钥…'**
+  String get vaultSetupCreating;
+
+  /// No description provided for @vaultSetupTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码长度至少为 10 个字符'**
+  String get vaultSetupTooShort;
+
+  /// No description provided for @vaultSetupMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的密码不一致'**
+  String get vaultSetupMismatch;
+
+  /// No description provided for @vaultSetupStrengthLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'强度：{strength}'**
+  String vaultSetupStrengthLabel(String strength);
+
+  /// No description provided for @vaultSetupStrengthWeak.
+  ///
+  /// In zh, this message translates to:
+  /// **'弱'**
+  String get vaultSetupStrengthWeak;
+
+  /// No description provided for @vaultSetupStrengthMedium.
+  ///
+  /// In zh, this message translates to:
+  /// **'中等'**
+  String get vaultSetupStrengthMedium;
+
+  /// No description provided for @vaultSetupStrengthStrong.
+  ///
+  /// In zh, this message translates to:
+  /// **'强'**
+  String get vaultSetupStrengthStrong;
+
+  /// No description provided for @vaultSetupWeakConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码强度较弱'**
+  String get vaultSetupWeakConfirmTitle;
+
+  /// No description provided for @vaultSetupWeakConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前主密码强度较弱。为了资金安全，建议使用包含大小写字母、数字或符号的复杂密码。是否确认使用当前密码？'**
+  String get vaultSetupWeakConfirmBody;
+
+  /// No description provided for @vaultSetupWeakConfirmContinue.
+  ///
+  /// In zh, this message translates to:
+  /// **'仍然使用'**
+  String get vaultSetupWeakConfirmContinue;
+
+  /// No description provided for @vaultSetupWeakConfirmCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回修改'**
+  String get vaultSetupWeakConfirmCancel;
+
+  /// No description provided for @vaultSetupSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库已成功创建'**
+  String get vaultSetupSuccess;
 }
 
 class _AppLocalizationsDelegate

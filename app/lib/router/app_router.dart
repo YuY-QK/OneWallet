@@ -17,6 +17,7 @@ import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
 import '../features/vault/presentation/vault_page.dart';
+import '../features/vault/presentation/vault_setup_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shell/adaptive_scaffold.dart';
 import 'route_names.dart';
@@ -207,10 +208,20 @@ GoRouter buildAppRouter({
             navigatorKey: vaultKey,
             sub: [
               GoRoute(
+                path: 'setup',
+                name: RouteNames.vaultSetup,
+                builder: (c, _) => const VaultSetupPage(),
+              ),
+              GoRoute(
                 path: 'import',
                 name: RouteNames.vaultImport,
                 builder: (c, _) =>
                     soon(c, AppLocalizations.of(c)!.accountAddImportTitle),
+              ),
+              GoRoute(
+                path: 'item/:id',
+                name: RouteNames.vaultItem,
+                builder: (c, _) => soon(c, '密钥详情'),
               ),
             ],
           ),

@@ -121,6 +121,11 @@ final vaultAccessProvider = FutureProvider<VaultAccess>((ref) async {
   );
 });
 
+final isVaultInitializedProvider = FutureProvider<bool>((ref) async {
+  final access = await ref.watch(vaultAccessProvider.future);
+  return access.exists();
+});
+
 final createVaultProvider = FutureProvider<CreateVault>((ref) async {
   final vault = await ref.watch(vaultProvider.future);
   final access = await ref.watch(vaultAccessProvider.future);

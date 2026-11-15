@@ -1075,4 +1075,109 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get onboardingSkipBiometric => '稍后再说';
+
+  @override
+  String get vaultTitle => '保险库';
+
+  @override
+  String get vaultFooterNote => '保险库内容仅存于本机。请定期导出加密备份。';
+
+  @override
+  String vaultChecklistNotice(int count) {
+    return '备份清单：$count 个钱包未备份';
+  }
+
+  @override
+  String get vaultEmptyItemsTitle => '暂无密钥条目';
+
+  @override
+  String get vaultEmptyItemsBody => '点击右上角「＋」导入第一个助记词或私钥。';
+
+  @override
+  String get vaultItemKindMnemonic => '助记词';
+
+  @override
+  String get vaultItemKindPrivateKey => '私钥';
+
+  @override
+  String get vaultItemPassphrase => '含密码';
+
+  @override
+  String get vaultImportAction => '导入密钥';
+
+  @override
+  String get vaultSetupTitle => '创建保险库';
+
+  @override
+  String get vaultSetupIntro => '主密码用于保护你的助记词，换手机恢复时也需要它。';
+
+  @override
+  String get vaultSetupWarningTitle => '主密码无法找回';
+
+  @override
+  String get vaultSetupWarningBody =>
+      'OneWallet 不在任何服务器保存你的密码。如果遗忘主密码，保险库内的全部密钥将永远无法恢复。';
+
+  @override
+  String get vaultSetupPasswordLabel => '主密码（至少 10 个字符）';
+
+  @override
+  String get vaultSetupPasswordHint => '请输入至少 10 位主密码';
+
+  @override
+  String get vaultSetupPasswordConfirmLabel => '再次输入';
+
+  @override
+  String get vaultSetupPasswordConfirmHint => '请再次输入主密码';
+
+  @override
+  String get vaultSetupAgreeRisk => '我明白主密码丢失后，保险库内容无法恢复。';
+
+  @override
+  String get vaultSetupBiometricsTitle => '使用面容或指纹解锁保险库';
+
+  @override
+  String get vaultSetupBiometricsSubtitle => '日常查看更方便，硬件安全芯片保护';
+
+  @override
+  String get vaultSetupCreateButton => '创建保险库';
+
+  @override
+  String get vaultSetupCreating => '正在生成保险库与加密密钥…';
+
+  @override
+  String get vaultSetupTooShort => '主密码长度至少为 10 个字符';
+
+  @override
+  String get vaultSetupMismatch => '两次输入的密码不一致';
+
+  @override
+  String vaultSetupStrengthLabel(String strength) {
+    return '强度：$strength';
+  }
+
+  @override
+  String get vaultSetupStrengthWeak => '弱';
+
+  @override
+  String get vaultSetupStrengthMedium => '中等';
+
+  @override
+  String get vaultSetupStrengthStrong => '强';
+
+  @override
+  String get vaultSetupWeakConfirmTitle => '密码强度较弱';
+
+  @override
+  String get vaultSetupWeakConfirmBody =>
+      '当前主密码强度较弱。为了资金安全，建议使用包含大小写字母、数字或符号的复杂密码。是否确认使用当前密码？';
+
+  @override
+  String get vaultSetupWeakConfirmContinue => '仍然使用';
+
+  @override
+  String get vaultSetupWeakConfirmCancel => '返回修改';
+
+  @override
+  String get vaultSetupSuccess => '保险库已成功创建';
 }

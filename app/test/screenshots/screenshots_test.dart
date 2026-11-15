@@ -22,6 +22,7 @@ import 'package:onewallet/l10n/app_localizations.dart';
 import 'package:onewallet/router/app_router.dart';
 import 'package:onewallet/theme/ow_text_styles.dart';
 import 'package:onewallet/theme/ow_theme.dart';
+import 'package:ow_application/ow_application.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../support/fakes.dart';
@@ -256,6 +257,23 @@ TestRig _sampleRig() {
     failureType: 'ServiceDownFailure',
     at: DateTime.utc(2026, 11, 12, 11, 58),
   );
+
+  rig.isVaultInitialized = true;
+  rig.vaultItems = [
+    VaultItemSummary(
+      meta: VaultItemMeta(
+        id: 'v1',
+        name: '个人主助记词',
+        kind: VaultItemKind.mnemonic,
+        wordCount: 12,
+        hasPassphrase: false,
+        fingerprint: 'a1b2c3d4e5f6',
+        createdAt: DateTime.utc(2026, 11, 1),
+      ),
+      linkedAccountIds: const ['w1'],
+      linkedAccountNames: const ['主钱包'],
+    ),
+  ];
   return rig;
 }
 
@@ -394,6 +412,9 @@ final _shots = <_Shot>[
   const _Shot('data_sources', '/settings/sources'),
   const _Shot('sync_status', '/settings/sync'), // P21
   const _Shot('settings', '/settings'),
+  const _Shot('vault_home', '/vault'), // P12 已初始化
+  const _Shot('vault_uninitialized', '/vault', seeded: false), // P12 未初始化
+  const _Shot('vault_setup', '/vault/setup'), // P13
   // 宽屏：列表与详情并排（1280×900，像素比 1）。
   const _Shot(
     'accounts_wide',
