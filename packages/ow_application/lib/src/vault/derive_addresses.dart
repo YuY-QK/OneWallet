@@ -51,8 +51,8 @@ final class DerivedAddress {
       'DerivedAddress(${family.name}, $address, scheme: $scheme, index: $index, watched: $alreadyWatched)';
 }
 
-final class _MnemonicDeriveArgs {
-  const _MnemonicDeriveArgs({
+final class MnemonicDeriveArgs {
+  const MnemonicDeriveArgs({
     required this.mnemonicBytes,
     required this.passphraseBytes,
     required this.scheme,
@@ -67,8 +67,8 @@ final class _MnemonicDeriveArgs {
   final int count;
 }
 
-final class _PrivateKeyDeriveArgs {
-  const _PrivateKeyDeriveArgs({
+final class PrivateKeyDeriveArgs {
+  const PrivateKeyDeriveArgs({
     required this.keyBytes,
     required this.family,
     this.scheme,
@@ -79,7 +79,7 @@ final class _PrivateKeyDeriveArgs {
   final DerivationScheme? scheme;
 }
 
-List<String> _deriveMnemonicInIsolate(_MnemonicDeriveArgs args) {
+List<String> _deriveMnemonicInIsolate(MnemonicDeriveArgs args) {
   final mnemonicStr = utf8.decode(args.mnemonicBytes);
   final passphraseStr = args.passphraseBytes != null
       ? utf8.decode(args.passphraseBytes!)
@@ -111,7 +111,7 @@ List<String> _deriveMnemonicInIsolate(_MnemonicDeriveArgs args) {
   }
 }
 
-String _derivePrivateKeyInIsolate(_PrivateKeyDeriveArgs args) {
+String _derivePrivateKeyInIsolate(PrivateKeyDeriveArgs args) {
   final keyStr = utf8.decode(args.keyBytes);
   final sens = Sensitive(Uint8List.fromList(utf8.encode(keyStr)));
   try {
@@ -125,20 +125,37 @@ String _derivePrivateKeyInIsolate(_PrivateKeyDeriveArgs args) {
   }
 }
 
-Future<List<String>> _runMnemonicDerive(_MnemonicDeriveArgs args) {
+Future<List<String>> _runMnemonicDerive(MnemonicDeriveArgs args) {
   return Isolate.run(() => _deriveMnemonicInIsolate(args));
 }
 
-Future<String> _runPrivateKeyDerive(_PrivateKeyDeriveArgs args) {
+Future<String> _runPrivateKeyDerive(PrivateKeyDeriveArgs args) {
   return Isolate.run(() => _derivePrivateKeyInIsolate(args));
 }
 
 /// 派生地址（规格 4.5 节）。
 final class DeriveAddresses {
-  DeriveAddresses({required this.vaultAccess, required this.addressRepo});
+  DeriveAddresses({
+    required this.vaultAccess,
+    required this.addressRepo,
+    Future<List<String>> Function(MnemonicDeriveArgs args)? mnemonicRunner,
+    Future<String> Function(PrivateKeyDeriveArgs args)? privateKeyRunner,
+  }) : _mnemonicRunner = mnemonicRunner ?? _runMnemonicDerive,
+       _privateKeyRunner = privateKeyRunner ?? _runPrivateKeyDerive;
 
   final VaultAccess vaultAccess;
   final AddressRepository addressRepo;
+  final Future<List<String>> Function(MnemonicDeriveArgs args) _mnemonicRunner;
+  final Future<String> Function(PrivateKeyDeriveArgs args) _privateKeyRunner;
+
+  static List<String> deriveMnemonicSynchronously(MnemonicDeriveArgs args) =>
+      _deriveMnemonicInIsolate(args);
+
+  static Future<List<String>> runMnemonicSync(MnemonicDeriveArgs args) async =>
+      _deriveMnemonicInIsolate(args);
+
+  static Future<String> runPrivateKeySync(PrivateKeyDeriveArgs args) async =>
+      _derivePrivateKeyInIsolate(args);
 
   Future<Result<List<DerivedAddress>>> call({
     required String itemId,
@@ -167,14 +184,14 @@ final class DeriveAddresses {
 
             final List<String> addressStrings;
             try {
-              final args = _MnemonicDeriveArgs(
+              final args = MnemonicDeriveArgs(
                 mnemonicBytes: mnemonicBytes,
                 passphraseBytes: passphraseBytes,
                 scheme: scheme,
                 startIndex: startIndex,
                 count: count,
               );
-              addressStrings = await _runMnemonicDerive(args);
+              addressStrings = await _mnemonicRunner(args);
             } finally {
               mnemonicBytes.fillRange(0, mnemonicBytes.length, 0);
               passphraseBytes?.fillRange(0, passphraseBytes.length, 0);
@@ -204,12 +221,12 @@ final class DeriveAddresses {
             final keyBytes = key.use(Uint8List.fromList);
             final String rawAddr;
             try {
-              final args = _PrivateKeyDeriveArgs(
+              final args = PrivateKeyDeriveArgs(
                 keyBytes: keyBytes,
                 family: family,
                 scheme: scheme,
               );
-              rawAddr = await _runPrivateKeyDerive(args);
+              rawAddr = await _privateKeyRunner(args);
             } on ArgumentError {
               return const Err(ValidationFailure('unsupported_scheme_for_key'));
             } finally {

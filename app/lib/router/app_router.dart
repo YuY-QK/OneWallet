@@ -8,7 +8,6 @@ import '../features/accounts/presentation/add_exchange_page.dart';
 import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
-import '../features/common/presentation/coming_soon_page.dart';
 import '../features/lock/presentation/lock_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/overview/presentation/asset_detail_page.dart';
@@ -16,6 +15,7 @@ import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
+import '../features/vault/presentation/derive_addresses_page.dart';
 import '../features/vault/presentation/vault_import_page.dart';
 import '../features/vault/presentation/vault_item_detail_page.dart';
 import '../features/vault/presentation/vault_page.dart';
@@ -90,8 +90,6 @@ GoRouter buildAppRouter({
       GoRoute(path: path, builder: (_, _) => page, routes: sub ?? const []),
     ],
   );
-  Widget soon(BuildContext context, String title) =>
-      ComingSoonPage(title: title);
   return GoRouter(
     initialLocation: initialLocation,
     refreshListenable: refreshListenable,
@@ -236,7 +234,8 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'derive/:id',
                 name: RouteNames.vaultDerive,
-                builder: (c, _) => soon(c, '派生地址'),
+                builder: (c, state) =>
+                    DeriveAddressesPage(itemId: state.pathParameters['id']!),
               ),
             ],
           ),

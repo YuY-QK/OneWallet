@@ -2691,6 +2691,204 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'名称'**
   String get vaultItemEditNameLabel;
+
+  /// No description provided for @vaultDeriveTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'派生地址'**
+  String get vaultDeriveTitle;
+
+  /// No description provided for @vaultDeriveNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'以下地址由你的密钥计算得出，仅地址会被用于查询余额，密钥不会离开保险库。'**
+  String get vaultDeriveNotice;
+
+  /// No description provided for @vaultDeriveSchemeEvmStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准（MetaMask 等）'**
+  String get vaultDeriveSchemeEvmStandard;
+
+  /// No description provided for @vaultDeriveSchemeEvmLedgerLive.
+  ///
+  /// In zh, this message translates to:
+  /// **'Ledger Live'**
+  String get vaultDeriveSchemeEvmLedgerLive;
+
+  /// No description provided for @vaultDeriveSchemeBtcNativeSegwit.
+  ///
+  /// In zh, this message translates to:
+  /// **'原生隔离见证 bc1q（默认）'**
+  String get vaultDeriveSchemeBtcNativeSegwit;
+
+  /// No description provided for @vaultDeriveSchemeBtcTaproot.
+  ///
+  /// In zh, this message translates to:
+  /// **'Taproot bc1p'**
+  String get vaultDeriveSchemeBtcTaproot;
+
+  /// No description provided for @vaultDeriveSchemeBtcNestedSegwit.
+  ///
+  /// In zh, this message translates to:
+  /// **'嵌套隔离见证 3 开头'**
+  String get vaultDeriveSchemeBtcNestedSegwit;
+
+  /// No description provided for @vaultDeriveSchemeBtcLegacy.
+  ///
+  /// In zh, this message translates to:
+  /// **'传统 1 开头'**
+  String get vaultDeriveSchemeBtcLegacy;
+
+  /// No description provided for @vaultDeriveSchemeSolanaStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准（Phantom 等）'**
+  String get vaultDeriveSchemeSolanaStandard;
+
+  /// No description provided for @vaultDeriveSchemeSolanaLegacy.
+  ///
+  /// In zh, this message translates to:
+  /// **'旧式'**
+  String get vaultDeriveSchemeSolanaLegacy;
+
+  /// No description provided for @vaultDeriveSchemeTronStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准'**
+  String get vaultDeriveSchemeTronStandard;
+
+  /// No description provided for @vaultDeriveAlreadyWatched.
+  ///
+  /// In zh, this message translates to:
+  /// **'已在观察'**
+  String get vaultDeriveAlreadyWatched;
+
+  /// No description provided for @vaultDeriveShowMore.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示更多'**
+  String get vaultDeriveShowMore;
+
+  /// No description provided for @vaultDeriveCheckBalance.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测余额'**
+  String get vaultDeriveCheckBalance;
+
+  /// No description provided for @vaultDeriveCheckingBalance.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在检测...'**
+  String get vaultDeriveCheckingBalance;
+
+  /// No description provided for @vaultDeriveActive.
+  ///
+  /// In zh, this message translates to:
+  /// **'有活动'**
+  String get vaultDeriveActive;
+
+  /// No description provided for @vaultDeriveInactive.
+  ///
+  /// In zh, this message translates to:
+  /// **'无活动'**
+  String get vaultDeriveInactive;
+
+  /// No description provided for @vaultDeriveCheckNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测余额将向公开节点查询该地址是否有交易活动或余额，密钥不会离开设备。'**
+  String get vaultDeriveCheckNotice;
+
+  /// No description provided for @vaultDeriveTargetAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'目标账户'**
+  String get vaultDeriveTargetAccount;
+
+  /// No description provided for @vaultDeriveNewAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建钱包账户'**
+  String get vaultDeriveNewAccount;
+
+  /// No description provided for @vaultDeriveExistingAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'加入已有账户'**
+  String get vaultDeriveExistingAccount;
+
+  /// No description provided for @vaultDeriveNewAccountNameLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户名称'**
+  String get vaultDeriveNewAccountNameLabel;
+
+  /// No description provided for @vaultDeriveSelectAccountHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择已有钱包账户'**
+  String get vaultDeriveSelectAccountHint;
+
+  /// No description provided for @vaultDeriveAttachAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'加入观察'**
+  String get vaultDeriveAttachAction;
+
+  /// No description provided for @vaultDeriveSkipAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过'**
+  String get vaultDeriveSkipAction;
+
+  /// No description provided for @vaultDeriveSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已成功加入观察'**
+  String get vaultDeriveSuccess;
+
+  /// No description provided for @vaultDeriveNoSelection.
+  ///
+  /// In zh, this message translates to:
+  /// **'请至少选择一个地址'**
+  String get vaultDeriveNoSelection;
+
+  /// No description provided for @vaultDeriveAuthPrompt.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码以计算派生地址'**
+  String get vaultDeriveAuthPrompt;
+
+  /// No description provided for @vaultDeriveVerifyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证主密码'**
+  String get vaultDeriveVerifyTitle;
+
+  /// No description provided for @vaultDeriveVerifyConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始派生'**
+  String get vaultDeriveVerifyConfirm;
+
+  /// No description provided for @vaultDeriveDeriving.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在派生地址...'**
+  String get vaultDeriveDeriving;
+
+  /// No description provided for @vaultDeriveEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无派生地址'**
+  String get vaultDeriveEmpty;
+
+  /// No description provided for @vaultDeriveItemNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到密钥条目'**
+  String get vaultDeriveItemNotFound;
 }
 
 class _AppLocalizationsDelegate

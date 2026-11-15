@@ -1406,4 +1406,103 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaultItemEditNameLabel => '名称';
+
+  @override
+  String get vaultDeriveTitle => '派生地址';
+
+  @override
+  String get vaultDeriveNotice => '以下地址由你的密钥计算得出，仅地址会被用于查询余额，密钥不会离开保险库。';
+
+  @override
+  String get vaultDeriveSchemeEvmStandard => '标准（MetaMask 等）';
+
+  @override
+  String get vaultDeriveSchemeEvmLedgerLive => 'Ledger Live';
+
+  @override
+  String get vaultDeriveSchemeBtcNativeSegwit => '原生隔离见证 bc1q（默认）';
+
+  @override
+  String get vaultDeriveSchemeBtcTaproot => 'Taproot bc1p';
+
+  @override
+  String get vaultDeriveSchemeBtcNestedSegwit => '嵌套隔离见证 3 开头';
+
+  @override
+  String get vaultDeriveSchemeBtcLegacy => '传统 1 开头';
+
+  @override
+  String get vaultDeriveSchemeSolanaStandard => '标准（Phantom 等）';
+
+  @override
+  String get vaultDeriveSchemeSolanaLegacy => '旧式';
+
+  @override
+  String get vaultDeriveSchemeTronStandard => '标准';
+
+  @override
+  String get vaultDeriveAlreadyWatched => '已在观察';
+
+  @override
+  String get vaultDeriveShowMore => '显示更多';
+
+  @override
+  String get vaultDeriveCheckBalance => '检测余额';
+
+  @override
+  String get vaultDeriveCheckingBalance => '正在检测...';
+
+  @override
+  String get vaultDeriveActive => '有活动';
+
+  @override
+  String get vaultDeriveInactive => '无活动';
+
+  @override
+  String get vaultDeriveCheckNotice => '检测余额将向公开节点查询该地址是否有交易活动或余额，密钥不会离开设备。';
+
+  @override
+  String get vaultDeriveTargetAccount => '目标账户';
+
+  @override
+  String get vaultDeriveNewAccount => '新建钱包账户';
+
+  @override
+  String get vaultDeriveExistingAccount => '加入已有账户';
+
+  @override
+  String get vaultDeriveNewAccountNameLabel => '账户名称';
+
+  @override
+  String get vaultDeriveSelectAccountHint => '选择已有钱包账户';
+
+  @override
+  String get vaultDeriveAttachAction => '加入观察';
+
+  @override
+  String get vaultDeriveSkipAction => '跳过';
+
+  @override
+  String get vaultDeriveSuccess => '已成功加入观察';
+
+  @override
+  String get vaultDeriveNoSelection => '请至少选择一个地址';
+
+  @override
+  String get vaultDeriveAuthPrompt => '请输入主密码以计算派生地址';
+
+  @override
+  String get vaultDeriveVerifyTitle => '验证主密码';
+
+  @override
+  String get vaultDeriveVerifyConfirm => '开始派生';
+
+  @override
+  String get vaultDeriveDeriving => '正在派生地址...';
+
+  @override
+  String get vaultDeriveEmpty => '暂无派生地址';
+
+  @override
+  String get vaultDeriveItemNotFound => '未找到密钥条目';
 }
