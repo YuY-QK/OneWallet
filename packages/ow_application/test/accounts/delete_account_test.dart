@@ -66,5 +66,16 @@ void main() {
       expect(await accounts.byId('w1'), isNotNull);
       expect(await accounts.byId('e1'), isNotNull);
     });
+
+    test('凭据删除抛异常时_先删凭据失败导致中止_账户与凭据仍然存在', () async {
+      credentials.deleteError = Exception('Secure storage IO error');
+
+      expect(() => deleteAccount('e1'), throwsA(isA<Exception>()));
+
+      // 账户必须仍然保留，不能已被删除
+      expect(await accounts.byId('e1'), isNotNull);
+      // 凭据也仍在
+      expect(await credentials.load('e1'), isNotNull);
+    });
   });
 }

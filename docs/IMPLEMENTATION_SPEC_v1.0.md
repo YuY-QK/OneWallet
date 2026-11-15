@@ -440,7 +440,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - `AddWalletAccount`、`AddAddressesToAccount` 不触发同步，由调用它们的控制器在成功后调用 `SyncAccount`。
 - `AddWalletAccount` 经 `AccountRepository.insertWithAddresses` 在一个事务里写入账户与地址；`DeleteAddress` 保证账户至少保留一个地址（否则 `ValidationFailure`），删除地址时同事务清掉它的持仓，不触发同步（P07 的控制器随后重新同步该账户）。
 - `RenameAccount` 校验账户是否存在（不存在返回 `ValidationFailure`）与新名称（1–30 字，首尾去空白，否则返回 `ValidationFailure`），通过 `AccountRepository.upsert` 更新账户名称并返回更新后的账户。
-- `DeleteAccount` 删除指定账户：调用 `AccountRepository.delete` 级联删除地址、持仓与同步记录，并调用 `CredentialRepository.delete` 清理可能存在的交易所凭据（幂等操作）。
+- `DeleteAccount` 删除指定账户：必须先调用 `CredentialRepository.delete` 清理可能存在的交易所凭据，再调用 `AccountRepository.delete` 级联删除地址、持仓与同步记录（操作幂等；若凭据删除失败则中止，避免账户已删而残留无法清理的 API 密钥）。
 - `SyncAccount.watchSyncingAccountIds()` 推送正在同步的账户 id 集合（订阅时先推送当前集合）；页面用它显示"同步中"。成功的同步记录写入时，仓储同时更新账户的最近成功时间。
 - `DuplicateAddressFailure.kind`：`existing`（带账户名）、`withinInput`（本次输入内重复）、`ownerMissing`（地址在库中但所属账户不存在，数据异常，界面提示"该地址已存在于本应用中"）。
 - `UnsupportedFailure.reason`：`platform`（当前设备不支持，默认）、`notIntegrated`（该链或交易所尚未接入，构造函数 `UnsupportedFailure.notIntegrated`）。`failureTypeName` 对后者返回 `UnsupportedFailure.notIntegrated`，使同步记录能还原原因。
