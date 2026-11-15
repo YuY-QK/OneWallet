@@ -646,5 +646,45 @@
   "vaultImportVerifyPasswordCancel": "取消",
   "vaultImportVerifyPasswordConfirm": "验证并保存",
   "vaultImportSuccess": "密钥已成功保存到保险库",
-  "vaultImportDuplicateError": "该密钥已存在于保险库中"
+  "vaultImportDuplicateError": "该密钥已存在于保险库中",
+  "vaultItemDetailTitle": "密钥详情",
+  "vaultItemType": "类型",
+  "vaultItemCreatedAt": "创建于",
+  "vaultItemLinkedAccount": "关联账户",
+  "vaultItemLinkedAccountNone": "未关联",
+  "vaultItemVeilMessage": "每次查看都需要面容或主密码验证",
+  "vaultItemVeilAction": "验证后查看",
+  "vaultItemPassphraseLabel": "BIP39 附加密码 (Passphrase)",
+  "vaultItemPrivateKey": "私钥",
+  "vaultItemShowQrCode": "以二维码显示",
+  "vaultItemHideQrCode": "以文字显示",
+  "vaultItemCountdown": "{seconds} 秒后自动隐藏",
+  "@vaultItemCountdown": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "vaultItemHideAction": "隐藏",
+  "vaultItemDerivedAddresses": "已派生地址",
+  "vaultItemDerivedAddressesCount": "{count} 个地址已在观察中",
+  "@vaultItemDerivedAddressesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vaultItemDeleteButton": "删除此密钥",
+  "vaultItemDeleteDialogTitle": "删除此密钥",
+  "vaultItemDeleteDialogMessage": "确定删除此密钥条目？删除后，关联钱包的备份状态将变为未备份。若未另行备份，将无法再查看或导出此密钥。此操作无法撤销。",
+  "vaultItemDeleteAgreeRisk": "我明白此操作无法撤销，且我已另有备份。",
+  "vaultItemDeletePasswordHint": "请输入主密码以确认删除",
+  "vaultItemDeleteConfirm": "删除",
+  "vaultItemDeleteSuccess": "密钥已删除",
+  "vaultItemFooterNote": "不提供复制；本页禁止截屏",
+  "vaultItemRecordingWarning": "检测到录屏，已隐藏敏感内容",
+  "vaultItemEditNameTitle": "修改条目名称",
+  "vaultItemEditNameLabel": "名称"
 }

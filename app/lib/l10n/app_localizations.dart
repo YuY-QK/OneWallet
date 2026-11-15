@@ -2535,6 +2535,162 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'该密钥已存在于保险库中'**
   String get vaultImportDuplicateError;
+
+  /// No description provided for @vaultItemDetailTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥详情'**
+  String get vaultItemDetailTitle;
+
+  /// No description provided for @vaultItemType.
+  ///
+  /// In zh, this message translates to:
+  /// **'类型'**
+  String get vaultItemType;
+
+  /// No description provided for @vaultItemCreatedAt.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建于'**
+  String get vaultItemCreatedAt;
+
+  /// No description provided for @vaultItemLinkedAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'关联账户'**
+  String get vaultItemLinkedAccount;
+
+  /// No description provided for @vaultItemLinkedAccountNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'未关联'**
+  String get vaultItemLinkedAccountNone;
+
+  /// No description provided for @vaultItemVeilMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'每次查看都需要面容或主密码验证'**
+  String get vaultItemVeilMessage;
+
+  /// No description provided for @vaultItemVeilAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证后查看'**
+  String get vaultItemVeilAction;
+
+  /// No description provided for @vaultItemPassphraseLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'BIP39 附加密码 (Passphrase)'**
+  String get vaultItemPassphraseLabel;
+
+  /// No description provided for @vaultItemPrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultItemPrivateKey;
+
+  /// No description provided for @vaultItemShowQrCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'以二维码显示'**
+  String get vaultItemShowQrCode;
+
+  /// No description provided for @vaultItemHideQrCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'以文字显示'**
+  String get vaultItemHideQrCode;
+
+  /// No description provided for @vaultItemCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'{seconds} 秒后自动隐藏'**
+  String vaultItemCountdown(int seconds);
+
+  /// No description provided for @vaultItemHideAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏'**
+  String get vaultItemHideAction;
+
+  /// No description provided for @vaultItemDerivedAddresses.
+  ///
+  /// In zh, this message translates to:
+  /// **'已派生地址'**
+  String get vaultItemDerivedAddresses;
+
+  /// No description provided for @vaultItemDerivedAddressesCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个地址已在观察中'**
+  String vaultItemDerivedAddressesCount(int count);
+
+  /// No description provided for @vaultItemDeleteButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此密钥'**
+  String get vaultItemDeleteButton;
+
+  /// No description provided for @vaultItemDeleteDialogTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此密钥'**
+  String get vaultItemDeleteDialogTitle;
+
+  /// No description provided for @vaultItemDeleteDialogMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除此密钥条目？删除后，关联钱包的备份状态将变为未备份。若未另行备份，将无法再查看或导出此密钥。此操作无法撤销。'**
+  String get vaultItemDeleteDialogMessage;
+
+  /// No description provided for @vaultItemDeleteAgreeRisk.
+  ///
+  /// In zh, this message translates to:
+  /// **'我明白此操作无法撤销，且我已另有备份。'**
+  String get vaultItemDeleteAgreeRisk;
+
+  /// No description provided for @vaultItemDeletePasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码以确认删除'**
+  String get vaultItemDeletePasswordHint;
+
+  /// No description provided for @vaultItemDeleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get vaultItemDeleteConfirm;
+
+  /// No description provided for @vaultItemDeleteSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥已删除'**
+  String get vaultItemDeleteSuccess;
+
+  /// No description provided for @vaultItemFooterNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'不提供复制；本页禁止截屏'**
+  String get vaultItemFooterNote;
+
+  /// No description provided for @vaultItemRecordingWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到录屏，已隐藏敏感内容'**
+  String get vaultItemRecordingWarning;
+
+  /// No description provided for @vaultItemEditNameTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改条目名称'**
+  String get vaultItemEditNameTitle;
+
+  /// No description provided for @vaultItemEditNameLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get vaultItemEditNameLabel;
 }
 
 class _AppLocalizationsDelegate

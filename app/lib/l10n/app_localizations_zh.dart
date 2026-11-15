@@ -1323,4 +1323,87 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaultImportDuplicateError => '该密钥已存在于保险库中';
+
+  @override
+  String get vaultItemDetailTitle => '密钥详情';
+
+  @override
+  String get vaultItemType => '类型';
+
+  @override
+  String get vaultItemCreatedAt => '创建于';
+
+  @override
+  String get vaultItemLinkedAccount => '关联账户';
+
+  @override
+  String get vaultItemLinkedAccountNone => '未关联';
+
+  @override
+  String get vaultItemVeilMessage => '每次查看都需要面容或主密码验证';
+
+  @override
+  String get vaultItemVeilAction => '验证后查看';
+
+  @override
+  String get vaultItemPassphraseLabel => 'BIP39 附加密码 (Passphrase)';
+
+  @override
+  String get vaultItemPrivateKey => '私钥';
+
+  @override
+  String get vaultItemShowQrCode => '以二维码显示';
+
+  @override
+  String get vaultItemHideQrCode => '以文字显示';
+
+  @override
+  String vaultItemCountdown(int seconds) {
+    return '$seconds 秒后自动隐藏';
+  }
+
+  @override
+  String get vaultItemHideAction => '隐藏';
+
+  @override
+  String get vaultItemDerivedAddresses => '已派生地址';
+
+  @override
+  String vaultItemDerivedAddressesCount(int count) {
+    return '$count 个地址已在观察中';
+  }
+
+  @override
+  String get vaultItemDeleteButton => '删除此密钥';
+
+  @override
+  String get vaultItemDeleteDialogTitle => '删除此密钥';
+
+  @override
+  String get vaultItemDeleteDialogMessage =>
+      '确定删除此密钥条目？删除后，关联钱包的备份状态将变为未备份。若未另行备份，将无法再查看或导出此密钥。此操作无法撤销。';
+
+  @override
+  String get vaultItemDeleteAgreeRisk => '我明白此操作无法撤销，且我已另有备份。';
+
+  @override
+  String get vaultItemDeletePasswordHint => '请输入主密码以确认删除';
+
+  @override
+  String get vaultItemDeleteConfirm => '删除';
+
+  @override
+  String get vaultItemDeleteSuccess => '密钥已删除';
+
+  @override
+  String get vaultItemFooterNote => '不提供复制；本页禁止截屏';
+
+  @override
+  String get vaultItemRecordingWarning => '检测到录屏，已隐藏敏感内容';
+
+  @override
+  String get vaultItemEditNameTitle => '修改条目名称';
+
+  @override
+  String get vaultItemEditNameLabel => '名称';
 }

@@ -17,6 +17,7 @@ import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
 import '../features/vault/presentation/vault_import_page.dart';
+import '../features/vault/presentation/vault_item_detail_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../features/vault/presentation/vault_setup_page.dart';
 import '../l10n/app_localizations.dart';
@@ -229,7 +230,13 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'item/:id',
                 name: RouteNames.vaultItem,
-                builder: (c, _) => soon(c, '密钥详情'),
+                builder: (c, state) =>
+                    VaultItemDetailPage(itemId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'derive/:id',
+                name: RouteNames.vaultDerive,
+                builder: (c, _) => soon(c, '派生地址'),
               ),
             ],
           ),
