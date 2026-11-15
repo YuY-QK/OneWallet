@@ -95,10 +95,21 @@ final class InMemoryAddressRepository implements AddressRepository {
   Stream<List<WatchAddress>> watchAll() => store.watch();
 
   @override
+  Future<List<WatchAddress>> all() async => List.of(store.value);
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) async => [
     for (final a in store.value)
       if (a.accountId == accountId) a,
   ];
+
+  @override
+  Future<WatchAddress?> byId(String id) async {
+    for (final a in store.value) {
+      if (a.id == id) return a;
+    }
+    return null;
+  }
 
   @override
   Future<WatchAddress?> find(ChainFamily family, String normalized) async {

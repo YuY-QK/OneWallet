@@ -35,8 +35,14 @@ final class _StaleAddressRepository implements AddressRepository {
   Stream<List<WatchAddress>> watchAll() => _inner.watchAll();
 
   @override
+  Future<List<WatchAddress>> all() => _inner.all();
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) =>
       _inner.byAccount(accountId);
+
+  @override
+  Future<WatchAddress?> byId(String id) => _inner.byId(id);
 
   @override
   Future<void> upsert(WatchAddress address) => _inner.upsert(address);

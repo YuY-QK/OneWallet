@@ -366,6 +366,7 @@ final _shots = <_Shot>[
   const _Shot('overview_empty', '/overview', seeded: false),
   const _Shot('asset_detail', '/overview/asset/ETH'), // P09
   const _Shot('accounts', '/accounts'), // P03
+  const _Shot('address_book', '/accounts/addresses'), // P10
   const _Shot('wallet_detail_assets', '/accounts/wallet/w1'),
   _Shot(
     'wallet_detail_addresses',

@@ -321,7 +321,9 @@ abstract interface class AccountRepository {
 }
 abstract interface class AddressRepository {
   Stream<List<WatchAddress>> watchAll();
+  Future<List<WatchAddress>> all();
   Future<List<WatchAddress>> byAccount(String accountId);
+  Future<WatchAddress?> byId(String id);
   Future<WatchAddress?> find(ChainFamily family, String normalizedAddress); // R2
   Future<void> upsert(WatchAddress address);
   Future<void> delete(String id);
@@ -441,6 +443,8 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - `AddWalletAccount` 经 `AccountRepository.insertWithAddresses` 在一个事务里写入账户与地址；`DeleteAddress` 保证账户至少保留一个地址（否则 `ValidationFailure`），删除地址时同事务清掉它的持仓，不触发同步（P07 的控制器随后重新同步该账户）。
 - `RenameAccount` 校验账户是否存在（不存在返回 `ValidationFailure`）与新名称（1–30 字，首尾去空白，否则返回 `ValidationFailure`），通过 `AccountRepository.upsert` 更新账户名称并返回更新后的账户。
 - `DeleteAccount` 删除指定账户：必须先调用 `CredentialRepository.delete` 清理可能存在的交易所凭据，再调用 `AccountRepository.delete` 级联删除地址、持仓与同步记录（操作幂等；若凭据删除失败则中止，避免账户已删而残留无法清理的 API 密钥）。
+- `SearchAddresses` 根据查询词（地址片段/完整地址、账户名、备注）与可选过滤条件（链家族 `family`、账户 `accountId`）搜索地址簿。支持粘贴完整地址后精确匹配（大小写不敏感/规范化匹配，设置 `isExactMatch: true` 并优先排在首位）；查询无匹配时返回空列表，界面呈现「不在你的地址簿中」。
+- `UpdateAddressNote` 更新观察地址备注：校验备注长度（首尾去空白后不超过 100 字符，否则返回 `ValidationFailure`）与地址存在性（不存在返回 `ValidationFailure`），经 `AddressRepository.upsert` 更新并返回最新地址。
 - `SyncAccount.watchSyncingAccountIds()` 推送正在同步的账户 id 集合（订阅时先推送当前集合）；页面用它显示"同步中"。成功的同步记录写入时，仓储同时更新账户的最近成功时间。
 - `DuplicateAddressFailure.kind`：`existing`（带账户名）、`withinInput`（本次输入内重复）、`ownerMissing`（地址在库中但所属账户不存在，数据异常，界面提示"该地址已存在于本应用中"）。
 - `UnsupportedFailure.reason`：`platform`（当前设备不支持，默认）、`notIntegrated`（该链或交易所尚未接入，构造函数 `UnsupportedFailure.notIntegrated`）。`failureTypeName` 对后者返回 `UnsupportedFailure.notIntegrated`，使同步记录能还原原因。

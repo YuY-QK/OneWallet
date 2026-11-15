@@ -96,10 +96,21 @@ final class FakeAddressRepository implements AddressRepository {
   Stream<List<WatchAddress>> watchAll() => feed.stream();
 
   @override
+  Future<List<WatchAddress>> all() async => List.of(feed.value);
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) async => [
     for (final a in feed.value)
       if (a.accountId == accountId) a,
   ];
+
+  @override
+  Future<WatchAddress?> byId(String id) async {
+    for (final a in feed.value) {
+      if (a.id == id) return a;
+    }
+    return null;
+  }
 
   @override
   Future<WatchAddress?> find(
@@ -514,6 +525,9 @@ final class TestRig {
     String address, {
     ChainFamily family = ChainFamily.evm,
     Set<String>? chains,
+    DerivationScheme? scheme,
+    int? derivationIndex,
+    String note = '',
   }) {
     final a = WatchAddress(
       id: id,
@@ -522,6 +536,9 @@ final class TestRig {
       address: address,
       enabledChainIds:
           chains ?? {for (final c in Chains.ofFamily(family)) c.id},
+      scheme: scheme,
+      derivationIndex: derivationIndex,
+      note: note,
     );
     addresses.feed.value = [...addresses.feed.value, a];
     return a;

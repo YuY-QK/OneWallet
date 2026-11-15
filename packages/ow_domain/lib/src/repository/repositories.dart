@@ -44,7 +44,13 @@ abstract interface class AccountRepository {
 abstract interface class AddressRepository {
   Stream<List<WatchAddress>> watchAll();
 
+  /// 获取全部观察地址。
+  Future<List<WatchAddress>> all();
+
   Future<List<WatchAddress>> byAccount(String accountId);
+
+  /// 按 id 查找地址。不存在时返回 null。
+  Future<WatchAddress?> byId(String id);
 
   /// 按家族与规范化地址查找，用于全局唯一检查（R2）。不存在时返回 null。
   Future<WatchAddress?> find(ChainFamily family, String normalizedAddress);

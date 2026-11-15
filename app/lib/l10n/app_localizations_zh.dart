@@ -1043,4 +1043,57 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get accountsFooterHint => '长按账户可重命名或删除';
+
+  @override
+  String get addressSheetNoteLabel => '备注';
+
+  @override
+  String get addressSheetNoNote => '添加备注';
+
+  @override
+  String get addressSheetEditNoteTitle => '编辑备注';
+
+  @override
+  String get addressSheetEditNoteHint => '请输入地址备注（如：长期持有、主要收款）';
+
+  @override
+  String get addressSheetEditNoteTooLong => '备注长度不能超过 100 个字符';
+
+  @override
+  String get addressSheetSave => '保存';
+
+  @override
+  String get addressBookSearchHint => '搜索地址、账户、备注';
+
+  @override
+  String get addressBookChainAll => '全部链';
+
+  @override
+  String get addressBookAccountAll => '全部账户';
+
+  @override
+  String get addressBookExactMatch => '是你的地址';
+
+  @override
+  String get addressBookVaultDerived => '保险库派生';
+
+  @override
+  String addressBookNote(String note) {
+    return '备注：$note';
+  }
+
+  @override
+  String get addressBookEmptyTitle => '暂无地址';
+
+  @override
+  String get addressBookEmptyDesc => '添加钱包账户后，此处将集中管理你的所有地址';
+
+  @override
+  String get addressBookSearchNoResultTitle => '不在你的地址簿中';
+
+  @override
+  String get addressBookSearchNoResultDesc => '未在你的地址簿中找到此地址或相关信息';
+
+  @override
+  String get addressBookFooterTip => '粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。';
 }

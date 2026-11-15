@@ -127,3 +127,15 @@ final deleteAccountProvider = Provider<DeleteAccount>(
     credentials: ref.watch(credentialRepositoryProvider),
   ),
 );
+
+final searchAddressesProvider = Provider<SearchAddresses>(
+  (ref) => SearchAddresses(
+    accounts: ref.watch(accountRepositoryProvider),
+    addresses: ref.watch(addressRepositoryProvider),
+    codec: ref.watch(addressCodecProvider),
+  ),
+);
+
+final updateAddressNoteProvider = Provider<UpdateAddressNote>(
+  (ref) => UpdateAddressNote(addresses: ref.watch(addressRepositoryProvider)),
+);
