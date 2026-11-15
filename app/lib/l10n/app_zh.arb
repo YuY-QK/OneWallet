@@ -390,5 +390,63 @@
         "type": "String"
       }
     }
-  }
+  },
+  "exchangeDetailTotal": "账户总估值",
+  "exchangeDetailTabAssets": "按币种",
+  "exchangeDetailTabSubAccounts": "按子账户",
+  "exchangeDetailKeyStatusNormal": "API Key 正常 · 只读",
+  "exchangeDetailKeyStatusExpired": "API Key 已失效",
+  "exchangeDetailKeyExpiredNotice": "API Key 已失效，无法同步最新资产，请尽快更换。",
+  "exchangeDetailNoAssets": "该交易所目前没有可显示的资产",
+  "exchangeDetailNotFound": "找不到这个交易所账户，它可能已被删除。",
+  "exchangeDetailFailedTitle": "同步失败",
+  "exchangeDetailLastSuccess": "上次成功同步：{time}",
+  "@exchangeDetailLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailNeverSucceeded": "还没有成功同步过，下面没有缓存数据。",
+  "exchangeDetailUnpriced": "{count} 个未识别或无估值的币种",
+  "@exchangeDetailUnpriced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeDetailNotIncluded": "未包含：{items}",
+  "@exchangeDetailNotIncluded": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailDepositAddressesTitle": "充值地址",
+  "exchangeDetailDepositAddressesSubtitle": "由交易所控制，仅供查看",
+  "exchangeDetailDepositAddressesNotice": "此地址由交易所控制，仅供查看。为避免在交易所自动创建新地址，仅展示已有地址。",
+  "exchangeDetailDepositAddressesEmpty": "暂无充值地址",
+  "exchangeDetailDepositAddressMemo": "备注/Tag: {memo}",
+  "@exchangeDetailDepositAddressMemo": {
+    "placeholders": {
+      "memo": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailReplaceKey": "更换 API Key",
+  "exchangeDetailDeleteAccount": "删除账户",
+  "exchangeDetailDeleteConfirmTitle": "删除交易所账户",
+  "exchangeDetailDeleteConfirmBody": "确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。",
+  "exchangeDetailDeleteConfirmAction": "删除",
+  "exchangeDetailDeleteCancelAction": "取消",
+  "subAccountSpot": "现货",
+  "subAccountFunding": "资金",
+  "subAccountFutures": "合约",
+  "subAccountMargin": "杠杆",
+  "subAccountEarn": "理财",
+  "subAccountOther": "其他"
 }

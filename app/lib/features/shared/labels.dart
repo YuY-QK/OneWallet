@@ -35,6 +35,17 @@ String exchangeLabel(AppLocalizations l, ExchangeId id) => switch (id) {
   ExchangeId.bitget => l.exchangeBitget,
 };
 
+/// 交易所子账户的显示名。
+String subAccountLabel(AppLocalizations l, ExchangeSubAccount sub) =>
+    switch (sub) {
+      ExchangeSubAccount.spot => l.subAccountSpot,
+      ExchangeSubAccount.funding => l.subAccountFunding,
+      ExchangeSubAccount.futures => l.subAccountFutures,
+      ExchangeSubAccount.margin => l.subAccountMargin,
+      ExchangeSubAccount.earn => l.subAccountEarn,
+      ExchangeSubAccount.other => l.subAccountOther,
+    };
+
 /// 链家族的显示名。
 String chainFamilyLabel(AppLocalizations l, ChainFamily family) =>
     switch (family) {

@@ -291,6 +291,8 @@ final class FakeExchangeAdapter implements ExchangeAdapter {
   final List<ExchangeCredentials> verifyCalls = [];
   final List<ExchangeCredentials> fetchHoldingsCalls = [];
 
+  Completer<void>? gate;
+
   List<Result<List<(ExchangeSubAccount, RawHolding)>>> holdingsResponses = [];
   List<Result<List<DepositAddress>>> depositAddressesResponses = [];
 
@@ -305,6 +307,7 @@ final class FakeExchangeAdapter implements ExchangeAdapter {
     ExchangeCredentials c,
   ) async {
     fetchHoldingsCalls.add(c);
+    await gate?.future;
     if (holdingsResponses.isEmpty) return const Ok([]);
     final callIndex = fetchHoldingsCalls.length - 1;
     return holdingsResponses[callIndex < holdingsResponses.length
@@ -405,6 +408,8 @@ final class FakePlatformCapabilities implements PlatformCapabilities {
 }
 
 /// 页面测试的一套假依赖。`overrides` 直接用于 `ProviderScope`。
+const _unset = Object();
+
 final class TestRig {
   TestRig({DateTime? now})
     : clock = FixedClock(now ?? DateTime.utc(2026, 11, 12, 12));
@@ -544,6 +549,43 @@ final class TestRig {
         ...prices.feed.value,
         assetId: Price(
           assetId: assetId,
+          quote: Quote.usd,
+          price: Decimal.parse(price),
+          updatedAt: DateTime.utc(2026, 11, 12, 11, 57),
+        ),
+      };
+    }
+  }
+
+  void addExchangeHolding(
+    String accountId, {
+    ExchangeSubAccount sub = ExchangeSubAccount.spot,
+    String symbol = 'BTC',
+    Object? assetId = _unset,
+    String amount = '1',
+    String? price,
+    TokenRef? token,
+  }) {
+    final effectiveAssetId = identical(assetId, _unset)
+        ? symbol
+        : assetId as String?;
+    holdings.feed.value = [
+      ...holdings.feed.value,
+      Holding(
+        accountId: accountId,
+        location: ExchangeLocation(sub),
+        token: token ?? NativeToken(symbol),
+        assetId: effectiveAssetId,
+        displaySymbol: symbol,
+        amount: Decimal.parse(amount),
+        updatedAt: DateTime.utc(2026, 11, 12, 11, 57),
+      ),
+    ];
+    if (effectiveAssetId != null && price != null) {
+      prices.feed.value = {
+        ...prices.feed.value,
+        effectiveAssetId: Price(
+          assetId: effectiveAssetId,
           quote: Quote.usd,
           price: Decimal.parse(price),
           updatedAt: DateTime.utc(2026, 11, 12, 11, 57),

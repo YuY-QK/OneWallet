@@ -1503,6 +1503,186 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'验证失败：{detail}'**
   String exchangeAddErrUnknown(String detail);
+
+  /// No description provided for @exchangeDetailTotal.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户总估值'**
+  String get exchangeDetailTotal;
+
+  /// No description provided for @exchangeDetailTabAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'按币种'**
+  String get exchangeDetailTabAssets;
+
+  /// No description provided for @exchangeDetailTabSubAccounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'按子账户'**
+  String get exchangeDetailTabSubAccounts;
+
+  /// No description provided for @exchangeDetailKeyStatusNormal.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 正常 · 只读'**
+  String get exchangeDetailKeyStatusNormal;
+
+  /// No description provided for @exchangeDetailKeyStatusExpired.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效'**
+  String get exchangeDetailKeyStatusExpired;
+
+  /// No description provided for @exchangeDetailKeyExpiredNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效，无法同步最新资产，请尽快更换。'**
+  String get exchangeDetailKeyExpiredNotice;
+
+  /// No description provided for @exchangeDetailNoAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'该交易所目前没有可显示的资产'**
+  String get exchangeDetailNoAssets;
+
+  /// No description provided for @exchangeDetailNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到这个交易所账户，它可能已被删除。'**
+  String get exchangeDetailNotFound;
+
+  /// No description provided for @exchangeDetailFailedTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步失败'**
+  String get exchangeDetailFailedTitle;
+
+  /// No description provided for @exchangeDetailLastSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次成功同步：{time}'**
+  String exchangeDetailLastSuccess(String time);
+
+  /// No description provided for @exchangeDetailNeverSucceeded.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有成功同步过，下面没有缓存数据。'**
+  String get exchangeDetailNeverSucceeded;
+
+  /// No description provided for @exchangeDetailUnpriced.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个未识别或无估值的币种'**
+  String exchangeDetailUnpriced(int count);
+
+  /// No description provided for @exchangeDetailNotIncluded.
+  ///
+  /// In zh, this message translates to:
+  /// **'未包含：{items}'**
+  String exchangeDetailNotIncluded(String items);
+
+  /// No description provided for @exchangeDetailDepositAddressesTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'充值地址'**
+  String get exchangeDetailDepositAddressesTitle;
+
+  /// No description provided for @exchangeDetailDepositAddressesSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'由交易所控制，仅供查看'**
+  String get exchangeDetailDepositAddressesSubtitle;
+
+  /// No description provided for @exchangeDetailDepositAddressesNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'此地址由交易所控制，仅供查看。为避免在交易所自动创建新地址，仅展示已有地址。'**
+  String get exchangeDetailDepositAddressesNotice;
+
+  /// No description provided for @exchangeDetailDepositAddressesEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无充值地址'**
+  String get exchangeDetailDepositAddressesEmpty;
+
+  /// No description provided for @exchangeDetailDepositAddressMemo.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注/Tag: {memo}'**
+  String exchangeDetailDepositAddressMemo(String memo);
+
+  /// No description provided for @exchangeDetailReplaceKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'更换 API Key'**
+  String get exchangeDetailReplaceKey;
+
+  /// No description provided for @exchangeDetailDeleteAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除账户'**
+  String get exchangeDetailDeleteAccount;
+
+  /// No description provided for @exchangeDetailDeleteConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除交易所账户'**
+  String get exchangeDetailDeleteConfirmTitle;
+
+  /// No description provided for @exchangeDetailDeleteConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。'**
+  String get exchangeDetailDeleteConfirmBody;
+
+  /// No description provided for @exchangeDetailDeleteConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get exchangeDetailDeleteConfirmAction;
+
+  /// No description provided for @exchangeDetailDeleteCancelAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get exchangeDetailDeleteCancelAction;
+
+  /// No description provided for @subAccountSpot.
+  ///
+  /// In zh, this message translates to:
+  /// **'现货'**
+  String get subAccountSpot;
+
+  /// No description provided for @subAccountFunding.
+  ///
+  /// In zh, this message translates to:
+  /// **'资金'**
+  String get subAccountFunding;
+
+  /// No description provided for @subAccountFutures.
+  ///
+  /// In zh, this message translates to:
+  /// **'合约'**
+  String get subAccountFutures;
+
+  /// No description provided for @subAccountMargin.
+  ///
+  /// In zh, this message translates to:
+  /// **'杠杆'**
+  String get subAccountMargin;
+
+  /// No description provided for @subAccountEarn.
+  ///
+  /// In zh, this message translates to:
+  /// **'理财'**
+  String get subAccountEarn;
+
+  /// No description provided for @subAccountOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get subAccountOther;
 }
 
 class _AppLocalizationsDelegate

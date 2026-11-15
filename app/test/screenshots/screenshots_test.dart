@@ -382,6 +382,12 @@ final _shots = <_Shot>[
     },
   ),
   const _Shot('add_exchange', '/accounts/add/exchange'),
+  const _Shot('exchange_detail_assets', '/accounts/exchange/e1'),
+  _Shot(
+    'exchange_detail_subaccounts',
+    '/accounts/exchange/e1',
+    after: (t) => _tapText(t, '按子账户'),
+  ),
   const _Shot('data_sources', '/settings/sources'),
   const _Shot('settings', '/settings'),
   // 宽屏：列表与详情并排（1280×900，像素比 1）。

@@ -772,4 +772,104 @@ class AppLocalizationsZh extends AppLocalizations {
   String exchangeAddErrUnknown(String detail) {
     return '验证失败：$detail';
   }
+
+  @override
+  String get exchangeDetailTotal => '账户总估值';
+
+  @override
+  String get exchangeDetailTabAssets => '按币种';
+
+  @override
+  String get exchangeDetailTabSubAccounts => '按子账户';
+
+  @override
+  String get exchangeDetailKeyStatusNormal => 'API Key 正常 · 只读';
+
+  @override
+  String get exchangeDetailKeyStatusExpired => 'API Key 已失效';
+
+  @override
+  String get exchangeDetailKeyExpiredNotice => 'API Key 已失效，无法同步最新资产，请尽快更换。';
+
+  @override
+  String get exchangeDetailNoAssets => '该交易所目前没有可显示的资产';
+
+  @override
+  String get exchangeDetailNotFound => '找不到这个交易所账户，它可能已被删除。';
+
+  @override
+  String get exchangeDetailFailedTitle => '同步失败';
+
+  @override
+  String exchangeDetailLastSuccess(String time) {
+    return '上次成功同步：$time';
+  }
+
+  @override
+  String get exchangeDetailNeverSucceeded => '还没有成功同步过，下面没有缓存数据。';
+
+  @override
+  String exchangeDetailUnpriced(int count) {
+    return '$count 个未识别或无估值的币种';
+  }
+
+  @override
+  String exchangeDetailNotIncluded(String items) {
+    return '未包含：$items';
+  }
+
+  @override
+  String get exchangeDetailDepositAddressesTitle => '充值地址';
+
+  @override
+  String get exchangeDetailDepositAddressesSubtitle => '由交易所控制，仅供查看';
+
+  @override
+  String get exchangeDetailDepositAddressesNotice =>
+      '此地址由交易所控制，仅供查看。为避免在交易所自动创建新地址，仅展示已有地址。';
+
+  @override
+  String get exchangeDetailDepositAddressesEmpty => '暂无充值地址';
+
+  @override
+  String exchangeDetailDepositAddressMemo(String memo) {
+    return '备注/Tag: $memo';
+  }
+
+  @override
+  String get exchangeDetailReplaceKey => '更换 API Key';
+
+  @override
+  String get exchangeDetailDeleteAccount => '删除账户';
+
+  @override
+  String get exchangeDetailDeleteConfirmTitle => '删除交易所账户';
+
+  @override
+  String get exchangeDetailDeleteConfirmBody =>
+      '确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。';
+
+  @override
+  String get exchangeDetailDeleteConfirmAction => '删除';
+
+  @override
+  String get exchangeDetailDeleteCancelAction => '取消';
+
+  @override
+  String get subAccountSpot => '现货';
+
+  @override
+  String get subAccountFunding => '资金';
+
+  @override
+  String get subAccountFutures => '合约';
+
+  @override
+  String get subAccountMargin => '杠杆';
+
+  @override
+  String get subAccountEarn => '理财';
+
+  @override
+  String get subAccountOther => '其他';
 }

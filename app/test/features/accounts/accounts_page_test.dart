@@ -89,12 +89,13 @@ void main() {
       expect(find.text('账户总估值'), findsOneWidget);
     });
 
-    testWidgets('点击交易所行_进入说明页', (tester) async {
+    testWidgets('点击交易所行_进入P08', (tester) async {
       final router = await pumpApp(tester, _rig(), location: '/accounts');
       await tester.tap(find.text('Binance 主账户'));
       await tester.pumpAndSettle();
       expect(locationOf(router), '/accounts/exchange/x1');
-      expect(find.text('此功能将在后续版本提供。'), findsOneWidget);
+      expect(find.text('账户总估值'), findsOneWidget);
+      expect(find.text('API Key 正常 · 只读'), findsOneWidget);
     });
 
     testWidgets('右上角加号_进入P04', (tester) async {
