@@ -516,6 +516,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSourcesBody => '配置链上数据与价格服务的 API Key';
 
   @override
+  String get settingsSync => '同步状态';
+
+  @override
+  String get settingsSyncBody => '各账户同步情况与日志';
+
+  @override
+  String settingsSyncFailedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个账户失败',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sourcesTitle => '数据源';
 
   @override
@@ -908,4 +924,61 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get assetDetailViewDistribution => '查看币种分布';
+
+  @override
+  String get syncStatusTitle => '同步状态';
+
+  @override
+  String get syncStatusLastFullSync => '上次全量同步';
+
+  @override
+  String get syncStatusNeverFullSynced => '尚未进行过全量同步';
+
+  @override
+  String get syncStatusSyncNow => '立即同步';
+
+  @override
+  String get syncStatusSyncing => '正在同步...';
+
+  @override
+  String syncStatusDurationSeconds(String seconds) {
+    return '用时 $seconds 秒';
+  }
+
+  @override
+  String syncStatusDurationMs(int ms) {
+    return '用时 $ms 毫秒';
+  }
+
+  @override
+  String get syncStatusAccountsSection => '各账户状态';
+
+  @override
+  String get syncStatusLogsSection => '最近同步记录（最多 50 条）';
+
+  @override
+  String get syncStatusLogsEmpty => '暂无同步记录';
+
+  @override
+  String get syncStatusSuccess => '成功';
+
+  @override
+  String get syncStatusFailed => '失败';
+
+  @override
+  String get syncStatusRunning => '同步中';
+
+  @override
+  String syncStatusLastSuccess(String time) {
+    return '上次成功 $time';
+  }
+
+  @override
+  String get syncStatusNeverSuccess => '从未成功同步';
+
+  @override
+  String get syncStatusKeyExpiredHint => 'API Key 已失效，请更换';
+
+  @override
+  String get syncStatusViewFullStatus => '查看完整同步状态';
 }

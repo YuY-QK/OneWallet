@@ -275,6 +275,16 @@
   "settingsSectionData": "数据",
   "settingsSources": "数据源",
   "settingsSourcesBody": "配置链上数据与价格服务的 API Key",
+  "settingsSync": "同步状态",
+  "settingsSyncBody": "各账户同步情况与日志",
+  "settingsSyncFailedCount": "{count, plural, other{{count} 个账户失败}}",
+  "@settingsSyncFailedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sourcesTitle": "数据源",
   "sourcesAlchemyName": "Alchemy",
   "sourcesAlchemyBody": "EVM 六条链的余额",
@@ -460,5 +470,43 @@
   "assetDetailCopied": "已复制合约地址",
   "assetDetailNoPrice": "估值缺失",
   "assetDetailNotFound": "未找到该币种信息",
-  "assetDetailViewDistribution": "查看币种分布"
+  "assetDetailViewDistribution": "查看币种分布",
+  "syncStatusTitle": "同步状态",
+  "syncStatusLastFullSync": "上次全量同步",
+  "syncStatusNeverFullSynced": "尚未进行过全量同步",
+  "syncStatusSyncNow": "立即同步",
+  "syncStatusSyncing": "正在同步...",
+  "syncStatusDurationSeconds": "用时 {seconds} 秒",
+  "@syncStatusDurationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "syncStatusDurationMs": "用时 {ms} 毫秒",
+  "@syncStatusDurationMs": {
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "syncStatusAccountsSection": "各账户状态",
+  "syncStatusLogsSection": "最近同步记录（最多 50 条）",
+  "syncStatusLogsEmpty": "暂无同步记录",
+  "syncStatusSuccess": "成功",
+  "syncStatusFailed": "失败",
+  "syncStatusRunning": "同步中",
+  "syncStatusLastSuccess": "上次成功 {time}",
+  "@syncStatusLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncStatusNeverSuccess": "从未成功同步",
+  "syncStatusKeyExpiredHint": "API Key 已失效，请更换",
+  "syncStatusViewFullStatus": "查看完整同步状态"
 }

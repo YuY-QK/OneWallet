@@ -256,4 +256,29 @@ void main() {
       expect(fmt(DateTime(2026, 1, 5, 9, 7)), '01-05 09:07');
     });
   });
+
+  group('formatDuration（耗时）', () {
+    final l10n = AppLocalizationsZh();
+
+    test('formatDuration_不足1秒_显示毫秒', () {
+      expect(
+        formatDuration(const Duration(milliseconds: 350), l10n: l10n),
+        '用时 350 毫秒',
+      );
+    });
+
+    test('formatDuration_整秒_不带小数', () {
+      expect(
+        formatDuration(const Duration(seconds: 11), l10n: l10n),
+        '用时 11 秒',
+      );
+    });
+
+    test('formatDuration_小数秒_保留一位小数', () {
+      expect(
+        formatDuration(const Duration(milliseconds: 1200), l10n: l10n),
+        '用时 1.2 秒',
+      );
+    });
+  });
 }

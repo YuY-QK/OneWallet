@@ -154,6 +154,19 @@ String formatRelativeTime(
   return sameDay ? hm : '${_two(t.month)}-${_two(t.day)} $hm';
 }
 
+/// 耗时格式化（例如 `用时 11 秒`、`用时 1.2 秒`、`用时 350 毫秒`）。
+String formatDuration(Duration duration, {required AppLocalizations l10n}) {
+  final ms = duration.inMilliseconds;
+  if (ms < 1000) {
+    return l10n.syncStatusDurationMs(ms);
+  }
+  final sec = ms / 1000.0;
+  final formattedSec = (ms % 1000 == 0)
+      ? (ms ~/ 1000).toString()
+      : sec.toStringAsFixed(1);
+  return l10n.syncStatusDurationSeconds(formattedSec);
+}
+
 String _two(int v) => v.toString().padLeft(2, '0');
 
 /// 给整数部分的数字串加千分位逗号。

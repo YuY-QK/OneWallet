@@ -203,6 +203,10 @@ final class InMemorySyncRecordRepository implements SyncRecordRepository {
       _lastSuccess.watch();
 
   @override
+  Stream<List<SyncRecord>> watchRecent({int limit = 50}) =>
+      _store.watch().map((list) => list.reversed.take(limit).toList());
+
+  @override
   Future<void> add(SyncRecord record) async {
     final all = [..._store.value, record];
     _store.value = all.length > 50 ? all.sublist(all.length - 50) : all;

@@ -1018,6 +1018,24 @@ abstract class AppLocalizations {
   /// **'配置链上数据与价格服务的 API Key'**
   String get settingsSourcesBody;
 
+  /// No description provided for @settingsSync.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步状态'**
+  String get settingsSync;
+
+  /// No description provided for @settingsSyncBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'各账户同步情况与日志'**
+  String get settingsSyncBody;
+
+  /// No description provided for @settingsSyncFailedCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count, plural, other{{count} 个账户失败}}'**
+  String settingsSyncFailedCount(int count);
+
   /// No description provided for @sourcesTitle.
   ///
   /// In zh, this message translates to:
@@ -1755,6 +1773,108 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'查看币种分布'**
   String get assetDetailViewDistribution;
+
+  /// No description provided for @syncStatusTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步状态'**
+  String get syncStatusTitle;
+
+  /// No description provided for @syncStatusLastFullSync.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次全量同步'**
+  String get syncStatusLastFullSync;
+
+  /// No description provided for @syncStatusNeverFullSynced.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未进行过全量同步'**
+  String get syncStatusNeverFullSynced;
+
+  /// No description provided for @syncStatusSyncNow.
+  ///
+  /// In zh, this message translates to:
+  /// **'立即同步'**
+  String get syncStatusSyncNow;
+
+  /// No description provided for @syncStatusSyncing.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在同步...'**
+  String get syncStatusSyncing;
+
+  /// No description provided for @syncStatusDurationSeconds.
+  ///
+  /// In zh, this message translates to:
+  /// **'用时 {seconds} 秒'**
+  String syncStatusDurationSeconds(String seconds);
+
+  /// No description provided for @syncStatusDurationMs.
+  ///
+  /// In zh, this message translates to:
+  /// **'用时 {ms} 毫秒'**
+  String syncStatusDurationMs(int ms);
+
+  /// No description provided for @syncStatusAccountsSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'各账户状态'**
+  String get syncStatusAccountsSection;
+
+  /// No description provided for @syncStatusLogsSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'最近同步记录（最多 50 条）'**
+  String get syncStatusLogsSection;
+
+  /// No description provided for @syncStatusLogsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无同步记录'**
+  String get syncStatusLogsEmpty;
+
+  /// No description provided for @syncStatusSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'成功'**
+  String get syncStatusSuccess;
+
+  /// No description provided for @syncStatusFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'失败'**
+  String get syncStatusFailed;
+
+  /// No description provided for @syncStatusRunning.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步中'**
+  String get syncStatusRunning;
+
+  /// No description provided for @syncStatusLastSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次成功 {time}'**
+  String syncStatusLastSuccess(String time);
+
+  /// No description provided for @syncStatusNeverSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'从未成功同步'**
+  String get syncStatusNeverSuccess;
+
+  /// No description provided for @syncStatusKeyExpiredHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效，请更换'**
+  String get syncStatusKeyExpiredHint;
+
+  /// No description provided for @syncStatusViewFullStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看完整同步状态'**
+  String get syncStatusViewFullStatus;
 }
 
 class _AppLocalizationsDelegate

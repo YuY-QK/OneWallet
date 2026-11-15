@@ -165,6 +165,7 @@ final class FakePriceRepository implements PriceRepository {
 final class FakeSyncRecordRepository implements SyncRecordRepository {
   final feed = ValueFeed<List<SyncRecord>>([]);
   final lastSuccess = ValueFeed<Map<String, DateTime>>({});
+  final allRecords = ValueFeed<List<SyncRecord>>([]);
 
   @override
   Stream<List<SyncRecord>> watchLatestPerAccount() => feed.stream();
@@ -172,6 +173,10 @@ final class FakeSyncRecordRepository implements SyncRecordRepository {
   @override
   Stream<Map<String, DateTime>> watchLastSuccessPerAccount() =>
       lastSuccess.stream();
+
+  @override
+  Stream<List<SyncRecord>> watchRecent({int limit = 50}) =>
+      allRecords.stream().map((list) => list.take(limit).toList());
 
   @override
   Future<void> add(SyncRecord record) async {
@@ -184,6 +189,7 @@ final class FakeSyncRecordRepository implements SyncRecordRepository {
         if (r.accountId != record.accountId) r,
       record,
     ];
+    allRecords.value = [record, ...allRecords.value].take(50).toList();
   }
 }
 
@@ -607,16 +613,21 @@ final class TestRig {
         accountId: t,
       };
     }
+    final rec = SyncRecord(
+      accountId: accountId,
+      startedAt: t,
+      finishedAt: t,
+      status: success ? SyncStatus.success : SyncStatus.failed,
+      failureType: success ? null : (failureType ?? 'UnknownFailure'),
+    );
     syncRecords.feed.value = [
       for (final r in syncRecords.feed.value)
         if (r.accountId != accountId) r,
-      SyncRecord(
-        accountId: accountId,
-        startedAt: t,
-        finishedAt: t,
-        status: success ? SyncStatus.success : SyncStatus.failed,
-        failureType: success ? null : (failureType ?? 'UnknownFailure'),
-      ),
+      rec,
     ];
+    syncRecords.allRecords.value = [
+      rec,
+      ...syncRecords.allRecords.value,
+    ].take(50).toList();
   }
 }

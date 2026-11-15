@@ -12,6 +12,7 @@ import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
+import '../features/settings/presentation/sync_status_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shell/adaptive_scaffold.dart';
@@ -173,6 +174,11 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                 path: 'sources',
                 name: RouteNames.settingsSources,
                 builder: (_, _) => const DataSourcesPage(),
+              ),
+              GoRoute(
+                path: 'sync',
+                name: RouteNames.settingsSync,
+                builder: (_, _) => const SyncStatusPage(),
               ),
             ],
           ),
