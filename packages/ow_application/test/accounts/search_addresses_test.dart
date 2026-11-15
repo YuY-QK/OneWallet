@@ -52,6 +52,15 @@ void main() {
     note: '长期持有',
   );
 
+  final trxAddress = WatchAddress(
+    id: 'ad4',
+    accountId: 'w2',
+    family: ChainFamily.tron,
+    address: 'TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE',
+    enabledChainIds: {'tron'},
+    note: '波场地址',
+  );
+
   setUp(() async {
     accounts = InMemoryAccountRepository();
     addresses = InMemoryAddressRepository();
@@ -63,12 +72,13 @@ void main() {
     await addresses.upsert(evmAddress);
     await addresses.upsert(solAddress);
     await addresses.upsert(btcAddress);
+    await addresses.upsert(trxAddress);
   });
 
   group('SearchAddresses', () {
     test('空查询词_返回全部匹配链与账户的条目', () async {
       final results = await searchAddresses();
-      expect(results, hasLength(3));
+      expect(results, hasLength(4));
       expect(results.every((r) => !r.isExactMatch), isTrue);
     });
 
@@ -99,12 +109,49 @@ void main() {
       expect(results.first.isExactMatch, isTrue);
     });
 
-    test('账户名搜索_匹配所属账户名称', () async {
-      final results = await searchAddresses(query: '冷钱包');
+    test('Solana与Tron等Base58地址大小写敏感_大小写改变后isExactMatch为false', () async {
+      // 1. Solana: 原始为 7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU
+      // 改变大小写后，仍作为片段模糊匹配命中，但 isExactMatch 必须为 false
+      final solLower = solAddress.address.toLowerCase();
+      final rSol = await searchAddresses(query: solLower);
+      expect(rSol, hasLength(1));
+      expect(rSol.first.address.id, 'ad2');
+      expect(rSol.first.isExactMatch, isFalse);
+
+      // 2. Tron: 原始为 TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE
+      // 改变大小写后，isExactMatch 必须为 false
+      final trxLower = trxAddress.address.toLowerCase();
+      final rTrx = await searchAddresses(query: trxLower);
+      expect(rTrx, hasLength(1));
+      expect(rTrx.first.address.id, 'ad4');
+      expect(rTrx.first.isExactMatch, isFalse);
+    });
+
+    test('全大写的BC1地址精确匹配为true', () async {
+      // 原始为 bc1qar0srrr7xfkvy5l643lydnw9re59gtzzwf5mdq
+      // BIP173 规范全大写 Bech32 地址在规范化后转为全小写，isExactMatch 应为 true
+      final btcUpper = btcAddress.address.toUpperCase();
+      final results = await searchAddresses(query: btcUpper);
       expect(results, hasLength(1));
       expect(results.first.address.id, 'ad3');
-      expect(results.first.account.name, '冷钱包');
+      expect(results.first.isExactMatch, isTrue);
+    });
+
+    test('不带0x的40位十六进制不是EVM精确匹配_isExactMatch为false', () async {
+      // 40 位十六进制（缺少 0x 前缀）：作为片段模糊匹配命中，但 isExactMatch 为 false
+      const noPrefix = '12ab34cd56ef7890ab12cd34ef567890ab129f3c';
+      final results = await searchAddresses(query: noPrefix);
+      expect(results, hasLength(1));
+      expect(results.first.address.id, 'ad1');
       expect(results.first.isExactMatch, isFalse);
+    });
+
+    test('账户名搜索_匹配所属账户名称', () async {
+      final results = await searchAddresses(query: '冷钱包');
+      expect(results, hasLength(2));
+      expect(results.map((r) => r.address.id), containsAll(['ad3', 'ad4']));
+      expect(results.every((r) => r.account.name == '冷钱包'), isTrue);
+      expect(results.every((r) => !r.isExactMatch), isTrue);
     });
 
     test('备注搜索_匹配备注文本', () async {
@@ -122,8 +169,8 @@ void main() {
 
     test('账户过滤_仅返回属于该账户的地址', () async {
       final results = await searchAddresses(accountId: 'w2');
-      expect(results, hasLength(1));
-      expect(results.first.address.id, 'ad3');
+      expect(results, hasLength(2));
+      expect(results.map((r) => r.address.id), containsAll(['ad3', 'ad4']));
     });
 
     test('搜索与过滤组合_同时命中条件时才返回', () async {
@@ -147,33 +194,42 @@ void main() {
       expect(results, isEmpty);
     });
 
-    test('精确匹配排序优先于非精确匹配', () {
+    test('精确匹配稳定置顶_其余匹配保持原有相对顺序', () {
+      final addrSnippet1 = WatchAddress(
+        id: 's1',
+        accountId: 'w1',
+        family: ChainFamily.bitcoin,
+        address: 'bc1qtest_alpha',
+        enabledChainIds: {'bitcoin'},
+      );
       final addrExact = WatchAddress(
-        id: 'ad4',
+        id: 'e1',
         accountId: 'w1',
         family: ChainFamily.bitcoin,
         address: 'bc1qtest',
         enabledChainIds: {'bitcoin'},
       );
-      final addrSnippet = WatchAddress(
-        id: 'ad5',
+      final addrSnippet2 = WatchAddress(
+        id: 's2',
         accountId: 'w1',
         family: ChainFamily.bitcoin,
-        address: 'bc1qtest123',
+        address: 'bc1qtest_beta',
         enabledChainIds: {'bitcoin'},
       );
 
-      final out = searchAddresses.execute(
-        addresses: [addrSnippet, addrExact],
+      final out = executeSearchAddresses(
+        addresses: [addrSnippet1, addrExact, addrSnippet2],
         accountsById: {'w1': wallet1},
         query: 'bc1qtest',
       );
 
-      expect(out, hasLength(2));
-      expect(out[0].address.id, 'ad4');
+      expect(out, hasLength(3));
+      expect(out[0].address.id, 'e1');
       expect(out[0].isExactMatch, isTrue);
-      expect(out[1].address.id, 'ad5');
+      expect(out[1].address.id, 's1');
       expect(out[1].isExactMatch, isFalse);
+      expect(out[2].address.id, 's2');
+      expect(out[2].isExactMatch, isFalse);
     });
   });
 }
