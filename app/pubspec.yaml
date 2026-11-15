@@ -23,6 +23,8 @@ dependencies:
     path: ../packages/ow_chains
   ow_data:
     path: ../packages/ow_data
+  ow_directory:
+    path: ../packages/ow_directory
   ow_domain:
     path: ../packages/ow_domain
   ow_net:

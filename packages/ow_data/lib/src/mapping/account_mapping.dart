@@ -5,22 +5,29 @@ import '../database/ow_database.dart';
 import 'codec.dart';
 
 /// 账户行 → 领域对象。枚举名未知时抛出 [RowDecodeException]。
-Account accountFromRow(AccountRow row) => Account(
-  id: row.id,
-  type: decodeEnum(AccountType.values, row.type, '账户类型'),
-  name: row.name,
-  colorIndex: row.colorIndex,
-  note: row.note,
-  walletSource: decodeEnumOrNull(WalletSource.values, row.walletSource, '钱包来源'),
-  exchange: decodeEnumOrNull(ExchangeId.values, row.exchange, '交易所'),
-  vaultItemId: row.vaultItemId,
-  backup: BackupStatus(
-    offlineBackedUp: row.offlineBackedUp,
-    offlineVerifiedAt: row.offlineVerifiedAt?.toUtc(),
-    keyless: row.keyless,
-  ),
-  createdAt: row.createdAt.toUtc(),
-);
+Account accountFromRow(AccountRow row) {
+  final type = decodeEnum(AccountType.values, row.type, '账户类型');
+  final walletSourceId = row.walletSourceId;
+  return Account(
+    id: row.id,
+    type: type,
+    name: row.name,
+    colorIndex: row.colorIndex,
+    note: row.note,
+    walletSourceId: walletSourceId,
+    walletSource: type == AccountType.wallet
+        ? WalletSourceMapping.toWalletSource(walletSourceId)
+        : null,
+    exchange: decodeEnumOrNull(ExchangeId.values, row.exchange, '交易所'),
+    vaultItemId: row.vaultItemId,
+    backup: BackupStatus(
+      offlineBackedUp: row.offlineBackedUp,
+      offlineVerifiedAt: row.offlineVerifiedAt?.toUtc(),
+      keyless: row.keyless,
+    ),
+    createdAt: row.createdAt.toUtc(),
+  );
+}
 
 /// 领域对象 → 账户行。
 AccountsCompanion accountToCompanion(Account a) => AccountsCompanion(
@@ -29,6 +36,7 @@ AccountsCompanion accountToCompanion(Account a) => AccountsCompanion(
   name: Value(a.name),
   colorIndex: Value(a.colorIndex),
   note: Value(a.note),
+  walletSourceId: Value(a.walletSourceId),
   walletSource: Value(a.walletSource?.name),
   exchange: Value(a.exchange?.name),
   vaultItemId: Value(a.vaultItemId),

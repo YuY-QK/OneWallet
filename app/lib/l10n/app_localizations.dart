@@ -1227,6 +1227,66 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'完成'**
   String get sourcesDone;
+
+  /// No description provided for @sourcesCoingeckoAttribution.
+  ///
+  /// In zh, this message translates to:
+  /// **'价格数据来自 CoinGecko'**
+  String get sourcesCoingeckoAttribution;
+
+  /// No description provided for @externalLinkConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'即将离开 OneWallet'**
+  String get externalLinkConfirmTitle;
+
+  /// No description provided for @externalLinkConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'将用系统浏览器打开以下网址，请核对域名：\n\n{url}'**
+  String externalLinkConfirmBody(String url);
+
+  /// No description provided for @externalLinkConfirmOpen.
+  ///
+  /// In zh, this message translates to:
+  /// **'继续访问'**
+  String get externalLinkConfirmOpen;
+
+  /// No description provided for @externalLinkCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get externalLinkCancel;
+
+  /// No description provided for @directoryLinkWebsite.
+  ///
+  /// In zh, this message translates to:
+  /// **'官网'**
+  String get directoryLinkWebsite;
+
+  /// No description provided for @directoryLinkDocs.
+  ///
+  /// In zh, this message translates to:
+  /// **'帮助文档'**
+  String get directoryLinkDocs;
+
+  /// No description provided for @directoryLinkApiKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'获取 API Key'**
+  String get directoryLinkApiKey;
+
+  /// No description provided for @walletAddSourceSearch.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索钱包…'**
+  String get walletAddSourceSearch;
+
+  /// No description provided for @walletAddSourceOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get walletAddSourceOther;
 }
 
 class _AppLocalizationsDelegate

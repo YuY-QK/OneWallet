@@ -626,4 +626,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sourcesDone => '完成';
+
+  @override
+  String get sourcesCoingeckoAttribution => '价格数据来自 CoinGecko';
+
+  @override
+  String get externalLinkConfirmTitle => '即将离开 OneWallet';
+
+  @override
+  String externalLinkConfirmBody(String url) {
+    return '将用系统浏览器打开以下网址，请核对域名：\n\n$url';
+  }
+
+  @override
+  String get externalLinkConfirmOpen => '继续访问';
+
+  @override
+  String get externalLinkCancel => '取消';
+
+  @override
+  String get directoryLinkWebsite => '官网';
+
+  @override
+  String get directoryLinkDocs => '帮助文档';
+
+  @override
+  String get directoryLinkApiKey => '获取 API Key';
+
+  @override
+  String get walletAddSourceSearch => '搜索钱包…';
+
+  @override
+  String get walletAddSourceOther => '其他';
 }

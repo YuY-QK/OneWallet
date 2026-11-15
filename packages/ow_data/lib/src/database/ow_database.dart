@@ -28,7 +28,7 @@ final class OwDatabase extends _$OwDatabase {
   OwDatabase(super.executor);
 
   /// 当前表结构版本。每次改表都要提升版本、写迁移并加迁移测试。
-  static const int currentSchemaVersion = 2;
+  static const int currentSchemaVersion = 3;
 
   @override
   int get schemaVersion => currentSchemaVersion;
@@ -42,6 +42,20 @@ final class OwDatabase extends _$OwDatabase {
         await m.createTable(assets);
         await m.createTable(assetContracts);
         await m.addColumn(accounts, accounts.lastSyncedAt);
+      }
+      // 2 → 3（M1-15）：accounts 加 wallet_source_id 列，并按固定映射表回填已有数据。
+      if (from < 3) {
+        await m.addColumn(accounts, accounts.walletSourceId);
+        await customStatement(
+          "UPDATE accounts SET wallet_source_id = CASE wallet_source "
+          "WHEN 'uniswap' THEN 'uniswap-wallet' "
+          "WHEN 'metamask' THEN 'metamask' "
+          "WHEN 'okxWeb3' THEN 'okx-web3-wallet' "
+          "WHEN 'bitgetWallet' THEN 'bitget-wallet' "
+          "WHEN 'trustWallet' THEN 'trust-wallet' "
+          "ELSE NULL END "
+          "WHERE wallet_source IS NOT NULL",
+        );
       }
     },
     beforeOpen: (details) async {

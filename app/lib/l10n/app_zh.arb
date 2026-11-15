@@ -330,5 +330,22 @@
   "sourcesEndpointDefault": "使用默认端点",
   "sourcesEndpointSave": "保存端点",
   "sourcesEndpointClear": "恢复默认",
-  "sourcesDone": "完成"
+  "sourcesDone": "完成",
+  "sourcesCoingeckoAttribution": "价格数据来自 CoinGecko",
+  "externalLinkConfirmTitle": "即将离开 OneWallet",
+  "externalLinkConfirmBody": "将用系统浏览器打开以下网址，请核对域名：\n\n{url}",
+  "@externalLinkConfirmBody": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "externalLinkConfirmOpen": "继续访问",
+  "externalLinkCancel": "取消",
+  "directoryLinkWebsite": "官网",
+  "directoryLinkDocs": "帮助文档",
+  "directoryLinkApiKey": "获取 API Key",
+  "walletAddSourceSearch": "搜索钱包…",
+  "walletAddSourceOther": "其他"
 }

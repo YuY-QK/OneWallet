@@ -13,6 +13,7 @@ class Accounts extends Table {
   IntColumn get colorIndex => integer()();
   TextColumn get note => text().withDefault(const Constant(''))();
   TextColumn get walletSource => text().nullable()();
+  TextColumn get walletSourceId => text().nullable()();
   TextColumn get exchange => text().nullable()();
   TextColumn get vaultItemId => text().nullable()();
   BoolColumn get offlineBackedUp =>

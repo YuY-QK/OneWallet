@@ -138,9 +138,10 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 做什么：新建纯 Dart 包 `ow_directory`，内置 `directory.json`（交易所、钱包、数据服务、区块浏览器的名称、官网、API 文档、创建只读 Key 的指引、导出私钥的指引、帮助中心等链接）与加载、查询、校验代码。选型与字段见 IMPLEMENTATION_SPEC 第 9 节；后续补充条目的方法见 `docs/DIRECTORY_COLLECTION_GUIDE.md`。
   - 安全要求：钱包类应用里的链接是钓鱼的高发点。只允许 https；每条链接的主机名必须落在该条目声明的官方域名内；每个条目记录核对日期与出处；app 只展示已核对的条目，并在打开前显示完整域名。
   - 验收：结构校验测试（id 唯一、https、域名归属、必填字段、枚举取值）；已接入的 4 家交易所、6 个钱包来源、各数据服务都有条目。
-- [ ] **M1-15** 目录接入页面 〔离线〕
-  - 做什么：`Account.walletSource` 从固定枚举改为目录中的钱包 id（字符串，可为空表示"其他"）；P05 的来源钱包改为从目录选择（可搜索）；P06 的"如何创建只读 Key"、P08、P11 的无助记词钱包建议、P20 的服务商、P22 各处显示对应链接。新增通用组件 `OwExternalLink`（显示域名，点击后先确认再用系统浏览器打开）。同步更新 PRD 的 R5、P05、P06、P11、P20。另外在 P20 的价格源一行和 P22 展示"价格数据来自 CoinGecko"的署名与链接（CoinGecko 对免费使用的要求）。
-  - 依赖：M1-14，以及 M1-09 至 M1-12 的页面。
+- [x] **M1-15** 目录接入页面 〔离线〕 2026-11-15
+  - 做什么：`Account.walletSource` 从固定枚举改为以目录中的钱包 id（`walletSourceId`）为准，同时保留派生的 `walletSource` 供备份格式兼容；P05 的来源钱包改为从目录搜索选择（支持"其他"）；通用外链组件 `OwExternalLink`（显示完整域名、弹窗确认、系统浏览器打开）；P07 钱包详情展示来源钱包官网外链；P20 价格源一行展示"价格数据来自 CoinGecko"署名与外链，服务商编辑面板显示官网与 Key 文档外链；数据库升级至版本 3 并加迁移测试。
+  - 同步更新 PRD 的 R5、P05、P06、P20 与 IMPLEMENTATION_SPEC 2.2、第 5 节。
+  - 已知局限：从备份恢复时，不在对应表里的钱包（例如 Phantom、Rabby）会恢复为"其他"（FORMAT.md 备份格式保持不变）。
 
 - [x] **M1-16** 补齐 ow_domain 的测试覆盖率 〔离线〕 2026-11-12（70% → 99.7%）
   - 来由：M1-08 审查时测得 ow_domain 整包行覆盖率 69%，低于 90% 的门槛。缺口在 M0-09 的值类型（asset、holding、price、snapshot、sync_record、vault_item_meta、exchange_credentials、failure、derivation_scheme、chain_info）。

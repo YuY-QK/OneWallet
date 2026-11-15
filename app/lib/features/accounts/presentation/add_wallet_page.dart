@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:ow_application/ow_application.dart';
-import 'package:ow_domain/ow_domain.dart';
+import 'package:ow_directory/ow_directory.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../router/route_names.dart';
@@ -169,26 +169,63 @@ class _AddWalletPageState extends ConsumerState<AddWalletPage> {
       return _readOnly(
         context,
         l.walletAddSource,
-        walletSourceLabel(l, s.existing?.walletSource) ?? '—',
+        walletSourceLabel(
+              l,
+              s.existing?.walletSource,
+              walletSourceId: s.existing?.walletSourceId,
+            ) ??
+            '—',
       );
     }
+    final selectedLabel =
+        walletSourceLabel(l, s.source, walletSourceId: s.walletSourceId) ??
+        l.walletSourceOther;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         OwFieldLabel(l.walletAddSource),
-        DropdownButtonFormField<WalletSource>(
-          initialValue: s.source,
-          isExpanded: true,
-          decoration: owInputDecoration(context),
-          items: [
-            for (final v in WalletSource.values)
-              DropdownMenuItem(value: v, child: Text(walletSourceLabel(l, v)!)),
-          ],
-          onChanged: (v) {
-            if (v != null) _controller.setSource(v);
-          },
+        InkWell(
+          key: const ValueKey('wallet-source-field'),
+          onTap: () => _showWalletSourcePicker(context, l, s),
+          borderRadius: BorderRadius.circular(10),
+          child: InputDecorator(
+            decoration: owInputDecoration(
+              context,
+              suffixIcon: const Icon(Icons.arrow_drop_down),
+            ),
+            child: Text(
+              selectedLabel,
+              style: OwTextStyles.body.copyWith(color: context.ow.ink),
+            ),
+          ),
         ),
       ],
+    );
+  }
+
+  Future<void> _showWalletSourcePicker(
+    BuildContext context,
+    AppLocalizations l,
+    AddWalletState s,
+  ) async {
+    final directory = ThirdPartyDirectory.builtin();
+    final verifiedWallets = directory.verifiedOnly
+        .where((e) => e.kind == DirectoryKind.wallet)
+        .toList(growable: false);
+
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (ctx) => _WalletSourcePickerSheet(
+        wallets: verifiedWallets,
+        selectedId: s.walletSourceId,
+        onSelected: (id) {
+          _controller.setSourceId(id);
+          Navigator.pop(ctx);
+        },
+      ),
     );
   }
 
@@ -230,6 +267,114 @@ class _AddWalletPageState extends ConsumerState<AddWalletPage> {
           ],
         ),
       ],
+    );
+  }
+}
+
+class _WalletSourcePickerSheet extends StatefulWidget {
+  const _WalletSourcePickerSheet({
+    required this.wallets,
+    required this.selectedId,
+    required this.onSelected,
+  });
+
+  final List<DirectoryEntry> wallets;
+  final String? selectedId;
+  final ValueChanged<String?> onSelected;
+
+  @override
+  State<_WalletSourcePickerSheet> createState() =>
+      _WalletSourcePickerSheetState();
+}
+
+class _WalletSourcePickerSheetState extends State<_WalletSourcePickerSheet> {
+  final TextEditingController _query = TextEditingController();
+  String _filter = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _query.addListener(() {
+      setState(() => _filter = _query.text.trim().toLowerCase());
+    });
+  }
+
+  @override
+  void dispose() {
+    _query.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
+    final c = context.ow;
+
+    final filtered = widget.wallets
+        .where((w) {
+          if (_filter.isEmpty) return true;
+          if (w.name.toLowerCase().contains(_filter)) return true;
+          return w.aliases.any((a) => a.toLowerCase().contains(_filter));
+        })
+        .toList(growable: false);
+
+    final showOther =
+        _filter.isEmpty ||
+        l.walletSourceOther.toLowerCase().contains(_filter) ||
+        'other'.contains(_filter);
+
+    return DraggableScrollableSheet(
+      initialChildSize: 0.7,
+      minChildSize: 0.4,
+      maxChildSize: 0.9,
+      expand: false,
+      builder: (context, scrollController) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(l.walletAddSource, style: OwTextStyles.emphasis),
+          ),
+          const SizedBox(height: 12),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _query,
+              style: OwTextStyles.body.copyWith(color: c.ink),
+              decoration: owInputDecoration(
+                context,
+                hint: l.walletAddSourceSearch,
+                prefixIcon: const Icon(Icons.search, size: 20),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ListView(
+              controller: scrollController,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              children: [
+                for (final w in filtered)
+                  ListTile(
+                    title: Text(w.name, style: OwTextStyles.body),
+                    trailing: widget.selectedId == w.id
+                        ? Icon(Icons.check, color: c.brand, size: 20)
+                        : null,
+                    onTap: () => widget.onSelected(w.id),
+                  ),
+                if (showOther)
+                  ListTile(
+                    title: Text(l.walletSourceOther, style: OwTextStyles.body),
+                    trailing: widget.selectedId == null
+                        ? Icon(Icons.check, color: c.brand, size: 20)
+                        : null,
+                    onTap: () => widget.onSelected(null),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

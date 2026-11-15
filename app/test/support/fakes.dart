@@ -409,17 +409,20 @@ final class TestRig {
   Account addWallet(
     String id,
     String name, {
+    String? walletSourceId,
     WalletSource? source,
     BackupStatus? backup,
     String? vaultItemId,
   }) {
-    final a = Account(
+    final effectiveSourceId =
+        walletSourceId ??
+        (source != null ? WalletSourceMapping.toDirectoryId(source) : null);
+    final a = Account.wallet(
       id: id,
-      type: AccountType.wallet,
       name: name,
       colorIndex: 0,
       createdAt: DateTime.utc(2026, 11, 1),
-      walletSource: source,
+      walletSourceId: effectiveSourceId,
       backup: backup ?? const BackupStatus(),
       vaultItemId: vaultItemId,
     );
