@@ -447,8 +447,8 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 | M1 | `AddWalletAccount`、`AddAddressesToAccount`、`DeleteAddress`、`SyncAccount`、`SyncAllAccounts`、`WatchPortfolio`（返回 `Stream<PortfolioSummary>`） | P05、P02、P07、R13–R17 |
 | M2 | `AddExchangeAccount`、`ReplaceExchangeCredentials`、`WatchAssetDistribution` | P06、P08、P09 |
 | M3 | `SetUpPin`、`VerifyPin`、`ChangePin`、`RenameAccount`、`DeleteAccount`、`UpdateBackupStatus`、`WatchBackupChecklist`、`SearchAddresses`、`RecordDailySnapshot`、`WipeAllData` | P00、P01、P03、P10、P11、R18–R21、R34–R38 |
-| M4 | `CreateVault`、`ImportVaultItem`、`RevealVaultItem`、`DeleteVaultItem`、`DeriveAddresses`、`AttachDerivedAddresses`、`ChangeMasterPassword`、`SetVaultBiometrics` | P12–P16、R22–R33 |
-| M5 | `ExportBackup`、`PreviewBackup`、`RestoreBackup` | P17、R39–R43 |
+| M4 | `CreateVault`、`ImportVaultItem`、`RevealVaultItem`、`DeleteVaultItem`、`DeriveAddresses`、`AttachDerivedAddresses`、`ChangeMasterPassword`、`SetVaultBiometrics`、`WatchVaultItems`（详细规格见 `docs/M4-00_VAULT_USECASES_SPEC.md` 第 4 节） | P12–P16、R22–R33 |
+| M5 | `ExportBackup`、`ConfirmBackupSaved`、`OpenBackup`、`RestoreBackup`（详细规格见 `docs/M4-00_VAULT_USECASES_SPEC.md` 第 5 节） | P17、R39–R43 |
 
 `SyncAllAccounts` 的并发、重试、限速规则见 TECH_DESIGN 5.2；重试与限速实现为可复用的 `RetryPolicy` 和 `RateLimiter`：`RetryPolicy` 在 `ow_application/lib/src/sync/`，`RateLimiter` 在 `ow_net`。
 

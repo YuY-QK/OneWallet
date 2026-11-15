@@ -36,6 +36,10 @@ void main() {
     const UnsupportedFailure(): l10n.failureUnsupported,
     const UnsupportedFailure.notIntegrated():
         l10n.failureUnsupportedNotIntegrated,
+    const BiometricUnavailableFailure(): l10n.failureBiometricUnavailable,
+    LockedOutFailure(DateTime.utc(2026, 11, 15, 12, 34)): l10n.failureLockedOut(
+      '${DateTime.utc(2026, 11, 15, 12, 34).toLocal().hour.toString().padLeft(2, '0')}:${DateTime.utc(2026, 11, 15, 12, 34).toLocal().minute.toString().padLeft(2, '0')}',
+    ),
     const DuplicateAddressFailure(
       shortAddress: '0x12ab…9f3c',
       ownerMissing: true,

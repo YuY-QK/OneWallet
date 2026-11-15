@@ -328,6 +328,18 @@ abstract class AppLocalizations {
   /// **'暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。'**
   String get failureUnsupportedNotIntegrated;
 
+  /// No description provided for @failureBiometricUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法使用生物识别，请输入主密码。'**
+  String get failureBiometricUnavailable;
+
+  /// No description provided for @failureLockedOut.
+  ///
+  /// In zh, this message translates to:
+  /// **'输错次数过多，请在 {time} 之后再试。'**
+  String failureLockedOut(String time);
+
   /// No description provided for @failureUnknown.
   ///
   /// In zh, this message translates to:

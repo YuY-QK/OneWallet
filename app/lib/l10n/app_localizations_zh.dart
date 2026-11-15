@@ -135,6 +135,14 @@ class AppLocalizationsZh extends AppLocalizations {
       '暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。';
 
   @override
+  String get failureBiometricUnavailable => '无法使用生物识别，请输入主密码。';
+
+  @override
+  String failureLockedOut(String time) {
+    return '输错次数过多，请在 $time 之后再试。';
+  }
+
+  @override
   String get failureUnknown => '出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。';
 
   @override
