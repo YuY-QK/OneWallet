@@ -121,10 +121,6 @@ final vaultAccessProvider = FutureProvider<VaultAccess>((ref) async {
   );
 });
 
-final credentialRepositoryProvider = Provider<CredentialRepository>((ref) {
-  return SecretStoreCredentialRepository(ref.watch(secretStoreProvider));
-});
-
 final createVaultProvider = FutureProvider<CreateVault>((ref) async {
   final vault = await ref.watch(vaultProvider.future);
   final access = await ref.watch(vaultAccessProvider.future);
