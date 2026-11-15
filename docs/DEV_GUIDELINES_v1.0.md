@@ -18,7 +18,7 @@
 | 包 | 可以依赖 | 不可以依赖 |
 |---|---|---|
 | `ow_domain` | Dart 标准库、十进制库、freezed | 其他任何 `ow_*` 包、Flutter、IO |
-| `ow_application` | `ow_domain` | 具体实现包、Flutter |
+| `ow_application` | `ow_domain`、`ow_vault`（保险库与备份的用例需要，2026-11-15 开放） | 其他具体实现包、Flutter |
 | `ow_net` | `ow_domain`、`dio` | 其他 `ow_*` 包、Flutter、平台名称判断 |
 | `ow_data` | `ow_domain` | 彼此、`ow_vault`、`ow_net`、Flutter 界面库 |
 | `ow_chains`、`ow_exchanges`、`ow_pricing` | `ow_domain`、`ow_net` | 彼此、`ow_data`、`ow_vault`、Flutter 界面库 |

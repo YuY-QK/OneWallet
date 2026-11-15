@@ -55,8 +55,8 @@
   - 做什么：在 iOS 和 Android 上执行 `cd app && flutter run`，确认四个 Tab 可切换、浅深色正常。把应用显示名设为 OneWallet；Android 的 `applicationId` 与 iOS 的 Bundle Identifier 向用户确认后设置（当前为 `app.onewallet.onewallet`）。
   - 验收：两个平台各一张截图，存入 `docs/evidence/M0-10/`。
 
-- [~] **M0-11** 技术验证二：硬件密钥插件 〔真机〕
-  - **预留（2026-11-14）**：硬件密钥的选型与实现由协调者负责，其他执行者不要做。
+- [ ] **M0-11** 技术验证二：硬件密钥插件 〔真机〕
+  - 2026-11-15：不再预留。做法见 `HANDOFF.md` 第 3 节第四批的说明。
   - 做什么：在 `ow_platform` 中实现 `HardwareKeyStore` 的 iOS（Swift）与 Android（Kotlin）最小实现，以及 `PlatformCapabilities`。
   - 依据：SECURITY_DESIGN 6.1；ADR_003。只用系统自带的安全框架。
   - 验收：在两台真机上逐项验证并把结果写入 `docs/evidence/M0-11.md`：包裹与解包成功；解包时出现系统生物识别；新增一枚指纹或面容后旧包裹失效；关闭锁屏密码后不可用；卸载重装后的行为。结论回填 SECURITY_DESIGN 6.1 与第 11 节 S4。
@@ -219,8 +219,8 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 
 ## M3 管理与备份清单
 
-- [~] **M3-01** 应用锁核心 〔离线〕
-  - **预留（2026-11-14）**：应用锁的核心逻辑由协调者负责，其他执行者不要做。页面（M3-02）等它标为 `[x]` 后再开始。
+- [ ] **M3-01** 应用锁核心 〔离线〕
+  - 2026-11-15：不再预留。**要等 M4-00 完成后再做**：错误次数限制直接复用 M4-00 的 `AttemptLimiter`（键前缀 `ow.app.pin`），PIN 校验值用 `VaultCrypto.argon2id`；不要另写一套。
   - 做什么：`SetUpPin`、`VerifyPin`、`ChangePin`；错误次数与锁定截止时间的持久化；锁定状态机（锁定时关闭数据库、清空内存数据、路由重定向）。PIN 校验值的算法：M0-12 完成后用 Argon2id，此前先抽象为接口。
   - 依据：PRD R18–R21；SECURITY_DESIGN 第 7 节。
   - 验收：用假时钟测试：连错 5 次锁 1 分钟，之后每次翻倍，上限 1 小时；重启后锁定仍在；把系统时间往回调不能提前解锁。
@@ -244,12 +244,11 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 
 前置：M0-11、M0-12、M3-01 的代码完成。开工前通读 SECURITY_DESIGN 全文。
 
-- [~] **M4-00** 保险库与加密备份的用例层 〔离线〕
-  - **预留（2026-11-14）**：由协调者负责，其他执行者不要做。
-  - 做什么：在 `ow_application` 实现 `CreateVault`、`ImportVaultItem`、`RevealVaultItem`、`DeleteVaultItem`、`DeriveAddresses`、`AttachDerivedAddresses`、`ChangeMasterPassword`、`SetVaultBiometrics`，以及 `ExportBackup`、`PreviewBackup`、`RestoreBackup`；并在 `app/lib/bootstrap/` 提供对应的 provider。
-  - 完成后，保险库页面（M4-05 至 M4-09）与备份页面（M5-03、M5-04）只需要调用这些用例：**页面里不出现任何加解密、密钥清零、文件读写的代码**。这些页面任务在本条标为 `[x]` 之前不要开始。
+- [ ] **M4-00** 保险库与加密备份的用例层 〔离线〕
+  - **规格：`docs/M4-00_VAULT_USECASES_SPEC.md`（唯一权威，照做）。**
+  - 完成后，保险库页面（M4-05 至 M4-09）与备份页面（M5-03、M5-04）只调用这些用例：页面里不出现任何加解密、密钥清零、文件读写的代码。这些页面任务在本条标为 `[x]` 之前不要开始。
 
-> **保险库核心（M4-01、M4-02、M4-03）与加密备份的格式和解密工具（M5-01、M5-02）已完成。其他执行者不要改动 `packages/ow_vault`，也不要另写 Argon2id、加解密或备份格式的代码。** 应用锁（M3-01）需要的口令哈希由 M4-01 的 `VaultCrypto` 提供；M3-01 开工时如果它还没合并进默认分支，先做 M3 的其他任务。
+> **保险库核心（M4-01、M4-02、M4-03）与加密备份的格式和解密工具（M5-01、M5-02）已完成。下一步是用例层 M4-00，规格见 `docs/M4-00_VAULT_USECASES_SPEC.md`。其他执行者不要改动 `packages/ow_vault`，也不要另写 Argon2id、加解密或备份格式的代码。** 应用锁（M3-01）需要的口令哈希由 M4-01 的 `VaultCrypto` 提供；M3-01 开工时如果它还没合并进默认分支，先做 M3 的其他任务。
 
 - [x] **M4-01** `VaultCrypto` 的 libsodium 实现 〔离线〕 2026-11-13
   - 验收：用 libsodium 或 RFC 的公开测试向量验证 Argon2id 与 XChaCha20-Poly1305；篡改密文、nonce、AAD 任一字节都解密失败。
