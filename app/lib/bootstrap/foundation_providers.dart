@@ -23,6 +23,9 @@ final biometricAuthProvider = Provider<BiometricAuth>(
   (ref) => DeviceBiometricAuth(),
 );
 
+/// 屏幕保护（Android FLAG_SECURE、iOS 录屏监听）。
+final screenGuardProvider = Provider<ScreenGuard>((ref) => DeviceScreenGuard());
+
 final loggerProvider = Provider<OwLogger>((ref) => OwLogger());
 
 final clockProvider = Provider<Clock>((ref) => const SystemClock());

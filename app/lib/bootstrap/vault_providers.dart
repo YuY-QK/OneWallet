@@ -88,7 +88,7 @@ final vaultStorageProvider = Provider<VaultStorage>((ref) {
 });
 
 final hardwareKeyStoreProvider = Provider<HardwareKeyStore>((ref) {
-  return const UnsupportedHardwareKeyStore();
+  return DeviceHardwareKeyStore();
 });
 
 final vaultProvider = FutureProvider<Vault>((ref) async {

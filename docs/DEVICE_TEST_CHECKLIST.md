@@ -280,3 +280,25 @@
   - [ ] 设置为"5 分钟后"：后台超过 5 分钟切回显示解锁页
 - [ ] 任务切换器隐私遮挡（R21）：
   - [ ] 在任意展示敏感数据的页面（总览、账户列表等），向上滑动呼出多任务管理/任务切换器，应用卡片预览应为纯色遮挡遮罩，无明文内容残留
+
+
+## 12. 平台保护与硬件密钥（任务 M0-11、M4-04）
+
+依据：SECURITY_DESIGN 第 6.1、6.3、6.4、8 节。
+自动化测试已覆盖 Dart 侧通道调用、各种失败映射与平台能力探测（`packages/ow_platform/test/`）。
+原生代码状态：Android (`MainActivity.kt`) 与 iOS (`AppDelegate.swift`) 已实现最小原生通道，**原生代码未在手机上编译过（未编译）**，需在真机或模拟器上联调验证：
+
+- [ ] Android 硬件密钥（M0-11）：
+  - [ ] AndroidKeyStore 生成 AES-256-GCM 密钥，绑定生物识别（`setUserAuthenticationRequired(true)` 与 `setInvalidatedByBiometricEnrollment(true)`）
+  - [ ] `wrap` 成功加密保险库主密钥 VMK，密文可持久化
+  - [ ] `unwrap` 触发系统验证并成功解密原始主密钥
+  - [ ] 设备新增指纹/面容后，旧包裹解包触发 `KeyPermanentlyInvalidatedException`，正确回退到主密码解锁
+- [ ] iOS 硬件密钥（M0-11）：
+  - [ ] Keychain 写入条目带 `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly` 与 `.biometryCurrentSet`
+  - [ ] `wrap` 成功保存；`unwrap` 触发系统 Face ID / Touch ID 提示并正确读出 VMK
+  - [ ] 设备新增面容/指纹后，旧条目解密失败（`errSecAuthFailed`），正确回退到主密码
+  - [ ] `excludeAppDocumentsFromBackup` 确认 documents 目录具有 `isExcludedFromBackup = true`，iTunes/iCloud 备份不包含应用数据
+- [ ] 防截屏与安全输入（M4-04）：
+  - [ ] Android: 敏感页面设置 `FLAG_SECURE` 后，系统截图被阻止（提示"无法截取屏幕截图"），在多任务切换器预览为空白
+  - [ ] iOS: 开启录屏或投屏时，`UIScreen.capturedDidChangeNotification` 触发，`captureActive` 发出 `true`，明文遮挡并弹出警示
+  - [ ] 安全输入：敏感密码/助记词输入框无第三方键盘联想、无输入预测、关闭自动更正

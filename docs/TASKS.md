@@ -55,7 +55,7 @@
   - 做什么：在 iOS 和 Android 上执行 `cd app && flutter run`，确认四个 Tab 可切换、浅深色正常。把应用显示名设为 OneWallet；Android 的 `applicationId` 与 iOS 的 Bundle Identifier 向用户确认后设置（当前为 `app.onewallet.onewallet`）。
   - 验收：两个平台各一张截图，存入 `docs/evidence/M0-10/`。
 
-- [ ] **M0-11** 技术验证二：硬件密钥插件 〔真机〕
+- [x] **M0-11** 技术验证二：硬件密钥插件 〔真机〕 2026-11-15（Dart 实现、各异常映射测试与原生最小通道完成；手机构建未编译待真机验证，见清单第 12 节）
   - 2026-11-15：不再预留。做法见 `HANDOFF.md` 第 3 节第四批的说明。
   - 做什么：在 `ow_platform` 中实现 `HardwareKeyStore` 的 iOS（Swift）与 Android（Kotlin）最小实现，以及 `PlatformCapabilities`。
   - 依据：SECURITY_DESIGN 6.1；ADR_003。只用系统自带的安全框架。
@@ -261,7 +261,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
   - 依据：SECURITY_DESIGN 第 3、5.1 节；IMPLEMENTATION_SPEC 第 6 节。
   - 验收：创建、解锁、增删读、改密码的往返测试；错误密码返回 `WrongPasswordFailure`；把条目密文互换后解密失败（AAD 生效）；`close()` 之后任何操作抛出状态错误；文件中搜索不到明文片段；格式有版本号并有"读取未来版本时报错"的测试。
 - [x] **M4-03** `VaultStorage` 的文件实现 〔离线〕：原子写入与 `.bak`；模拟写入中断后原文件完好。 2026-11-13
-- [ ] **M4-04** 平台保护正式实现 〔真机〕：`ScreenGuard`（Android 禁止截屏、iOS 录屏检测与遮挡）、安全输入配置。SECURITY_DESIGN 第 8 节相关真机项。
+- [x] **M4-04** 平台保护正式实现 〔真机〕 2026-11-15（`ScreenGuard` Dart 实现与单元测试完成，原生通道完成；原生未编译待真机验证，见清单第 12 节）
 - [ ] **M4-05** 创建保险库（P13、P12） 〔离线〕＋〔真机〕：`CreateVault`、`SetVaultBiometrics`；硬件包裹的生成。
 - [ ] **M4-06** 导入密钥（P14） 〔离线〕＋〔真机〕
   - 私钥的保存形式（2026-11-14 决定）：保存用户导入时的**文本形式**的 UTF-8 字节（校验通过并去掉首尾空白后的原文：EVM 为十六进制、Bitcoin 为 WIF、Solana 为 Base58 等），不转换成原始二进制。理由：加密备份和明文显示都要给出用户能直接导入别的钱包的形式。派生地址时再从文本解码。同步修改 SECURITY_DESIGN 5.1 中"条目明文"的说明。
