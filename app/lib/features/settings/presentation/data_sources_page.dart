@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ow_directory/ow_directory.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../../l10n/app_localizations.dart';
@@ -7,6 +8,7 @@ import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
 import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_avatar.dart';
+import '../../../widgets/ow_external_link.dart';
 import '../../../widgets/ow_list_group.dart';
 import '../../../widgets/ow_notice.dart';
 import '../../../widgets/ow_pill.dart';
@@ -42,11 +44,37 @@ class DataSourcesPage extends ConsumerWidget {
   Widget _list(BuildContext context, AppLocalizations l, DataSourcesState s) {
     Widget configurable(String id, String mark, String name, String body) {
       final status = s.statusOf(id);
+      final isCoingecko = id == DataSourceIds.coingecko;
       return OwRow(
         key: ValueKey(id),
         avatar: OwAvatar(label: mark),
         title: name,
-        subtitle: body,
+        subtitleWidget: isCoingecko
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    body,
+                    style: OwTextStyles.caption.copyWith(
+                      color: context.ow.muted,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  OwExternalLink(
+                    url: Uri.parse(
+                      ThirdPartyDirectory.builtin()
+                              .byId('coingecko')
+                              ?.link(LinkKind.website) ??
+                          'https://www.coingecko.com',
+                    ),
+                    label: l.sourcesCoingeckoAttribution,
+                    showHost: false,
+                  ),
+                ],
+              )
+            : null,
+        subtitle: isCoingecko ? null : body,
         trailing: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisSize: MainAxisSize.min,

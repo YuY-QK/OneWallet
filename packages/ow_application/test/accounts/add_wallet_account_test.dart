@@ -92,6 +92,19 @@ void main() {
     expect(saved.family, ChainFamily.evm);
   });
 
+  test('AddWalletAccount_传入walletSourceId_正确保存并派生walletSource', () async {
+    final r = await add(
+      name: 'OKX钱包',
+      walletSourceId: 'okx-web3-wallet',
+      addresses: [AddressInput(raw: TestAddresses.evmC)],
+    );
+
+    final account = r.valueOrNull;
+    expect(account, isNotNull);
+    expect(account?.walletSourceId, 'okx-web3-wallet');
+    expect(account?.walletSource, WalletSource.okxWeb3);
+  });
+
   test('AddWalletAccount_EVM地址未指定链_默认启用全部6条EVM链', () async {
     await add(
       name: 'a',

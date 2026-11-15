@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 /// 密钥类数据的容器：助记词、私钥、种子、密码、API Secret。
@@ -8,6 +9,10 @@ import 'dart:typed_data';
 final class Sensitive {
   /// 接管 [bytes] 的所有权；调用方不应再保留对它的引用。
   Sensitive(Uint8List bytes) : _bytes = bytes;
+
+  /// 便捷工厂：从 UTF-8 字符串构造。
+  factory Sensitive.fromString(String text) =>
+      Sensitive(Uint8List.fromList(utf8.encode(text)));
 
   Uint8List _bytes;
   bool _wiped = false;
@@ -21,6 +26,10 @@ final class Sensitive {
     }
     return action(_bytes);
   }
+
+  /// 在 [action] 中把 UTF-8 字节作为临时字符串读取。
+  R useString<R>(R Function(String text) action) =>
+      use((bytes) => action(utf8.decode(bytes, allowMalformed: true)));
 
   /// 覆写清零。可重复调用。
   void wipe() {

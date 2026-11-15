@@ -1,11 +1,15 @@
 import '../core/equality.dart';
 import 'backup_status.dart';
 import 'exchange_id.dart';
+import 'wallet_source_mapping.dart';
 
 /// 账户类型。
 enum AccountType { wallet, exchange }
 
-/// 钱包账户的来源钱包（PRD R5），只用于显示。
+/// 钱包账户的来源钱包（PRD R5），只用于显示与向后兼容。
+///
+/// 在应用内以 [Account.walletSourceId]（`ow_directory` 中的条目 ID）为准，
+/// [walletSource] 为其派生值，保持与备份格式一致。
 enum WalletSource {
   uniswap,
   metamask,
@@ -19,18 +23,70 @@ enum WalletSource {
 ///
 /// 字段取值范围（名称 1–30 字、颜色序号 0–7）由用例校验，本类不检查。
 final class Account {
-  const Account({
+  Account({
     required this.id,
     required this.type,
     required this.name,
     required this.colorIndex,
     required this.createdAt,
     this.note = '',
-    this.walletSource,
+    String? walletSourceId,
+    WalletSource? walletSource,
     this.exchange,
     this.vaultItemId,
     this.backup = const BackupStatus(),
-  });
+  }) : walletSourceId =
+           walletSourceId ??
+           (walletSource != null
+               ? WalletSourceMapping.toDirectoryId(walletSource)
+               : null),
+       walletSource = walletSourceId != null
+           ? WalletSourceMapping.toWalletSource(walletSourceId)
+           : walletSource;
+
+  /// 便捷工厂：创建钱包账户。
+  ///
+  /// [walletSourceId] 为 `ow_directory` 中的钱包条目 ID，null 表示"其他"。
+  /// 对应的 [walletSource] 将根据双向映射表自动派生。
+  factory Account.wallet({
+    required String id,
+    required String name,
+    required int colorIndex,
+    required DateTime createdAt,
+    String note = '',
+    String? walletSourceId,
+    String? vaultItemId,
+    BackupStatus backup = const BackupStatus(),
+  }) => Account(
+    id: id,
+    type: AccountType.wallet,
+    name: name,
+    colorIndex: colorIndex,
+    createdAt: createdAt,
+    note: note,
+    walletSourceId: walletSourceId,
+    walletSource: WalletSourceMapping.toWalletSource(walletSourceId),
+    vaultItemId: vaultItemId,
+    backup: backup,
+  );
+
+  /// 便捷工厂：创建交易所账户。
+  factory Account.exchange({
+    required String id,
+    required String name,
+    required int colorIndex,
+    required DateTime createdAt,
+    required ExchangeId exchange,
+    String note = '',
+  }) => Account(
+    id: id,
+    type: AccountType.exchange,
+    name: name,
+    colorIndex: colorIndex,
+    createdAt: createdAt,
+    exchange: exchange,
+    note: note,
+  );
 
   final String id;
   final AccountType type;
@@ -42,7 +98,10 @@ final class Account {
   final int colorIndex;
   final String note;
 
-  /// 仅钱包账户。
+  /// 仅钱包账户：第三方目录中的钱包条目 ID（null 表示"其他"）。
+  final String? walletSourceId;
+
+  /// 仅钱包账户：由 [walletSourceId] 派生的枚举值，供备份载荷读写与向后兼容。
   final WalletSource? walletSource;
 
   /// 仅交易所账户。
@@ -77,28 +136,42 @@ final class Account {
     String? name,
     int? colorIndex,
     String? note,
+    Object? walletSourceId = unset,
     Object? walletSource = unset,
     Object? exchange = unset,
     Object? vaultItemId = unset,
     BackupStatus? backup,
-  }) => Account(
-    id: id,
-    type: type,
-    name: name ?? this.name,
-    colorIndex: colorIndex ?? this.colorIndex,
-    note: note ?? this.note,
-    walletSource: identical(walletSource, unset)
-        ? this.walletSource
-        : walletSource as WalletSource?,
-    exchange: identical(exchange, unset)
-        ? this.exchange
-        : exchange as ExchangeId?,
-    vaultItemId: identical(vaultItemId, unset)
-        ? this.vaultItemId
-        : vaultItemId as String?,
-    backup: backup ?? this.backup,
-    createdAt: createdAt,
-  );
+  }) {
+    final nextWalletSourceId = !identical(walletSourceId, unset)
+        ? walletSourceId as String?
+        : (!identical(walletSource, unset)
+              ? WalletSourceMapping.toDirectoryId(walletSource as WalletSource?)
+              : this.walletSourceId);
+    final nextWalletSource = !identical(walletSourceId, unset)
+        ? (type == AccountType.wallet
+              ? WalletSourceMapping.toWalletSource(walletSourceId as String?)
+              : null)
+        : (!identical(walletSource, unset)
+              ? walletSource as WalletSource?
+              : this.walletSource);
+    return Account(
+      id: id,
+      type: type,
+      name: name ?? this.name,
+      colorIndex: colorIndex ?? this.colorIndex,
+      note: note ?? this.note,
+      walletSourceId: nextWalletSourceId,
+      walletSource: nextWalletSource,
+      exchange: identical(exchange, unset)
+          ? this.exchange
+          : exchange as ExchangeId?,
+      vaultItemId: identical(vaultItemId, unset)
+          ? this.vaultItemId
+          : vaultItemId as String?,
+      backup: backup ?? this.backup,
+      createdAt: createdAt,
+    );
+  }
 
   @override
   bool operator ==(Object other) =>
@@ -108,6 +181,7 @@ final class Account {
       other.name == name &&
       other.colorIndex == colorIndex &&
       other.note == note &&
+      other.walletSourceId == walletSourceId &&
       other.walletSource == walletSource &&
       other.exchange == exchange &&
       other.vaultItemId == vaultItemId &&
@@ -121,6 +195,7 @@ final class Account {
     name,
     colorIndex,
     note,
+    walletSourceId,
     walletSource,
     exchange,
     vaultItemId,

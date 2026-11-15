@@ -90,7 +90,7 @@ class _DistributionSectionState extends State<DistributionSection> {
               share: shareOf(a.value, s.total),
               symbol: symbol,
               hidden: widget.hidden,
-              onTap: () => context.pushNamed(
+              onTap: () => context.goNamed(
                 RouteNames.assetDetail,
                 pathParameters: {'assetId': a.assetId},
               ),

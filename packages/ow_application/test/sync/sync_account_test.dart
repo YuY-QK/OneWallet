@@ -172,7 +172,42 @@ void main() {
     expect(f.adapters.evm.calls, hasLength(2));
   });
 
-  test('SyncAccount_交易所账户_返回不支持并写失败记录', () async {
+  test('SyncAccount_交易所账户_未装配凭据仓储_返回不支持并写失败记录', () async {
+    final noCredsSync = SyncAccount(
+      accounts: f.accounts,
+      addresses: f.addresses,
+      holdings: f.holdings,
+      syncRecords: f.syncRecords,
+      adapters: f.adapters,
+      normalizer: HoldingNormalizer(
+        catalog: f.catalog,
+        priceSource: f.priceSource,
+      ),
+      retryPolicy: f.retryPolicy,
+      clock: f.clock,
+    );
+    await f.accounts.upsert(
+      Account(
+        id: 'x0',
+        type: AccountType.exchange,
+        name: '未装配凭据交易所',
+        colorIndex: 1,
+        exchange: ExchangeId.binance,
+        createdAt: f.clock.nowUtc(),
+      ),
+    );
+    final result = await noCredsSync('x0');
+    expect(
+      result.when(ok: (_) => null, err: (e) => e),
+      isA<UnsupportedFailure>(),
+    );
+    expect(
+      f.syncRecords.records.single.failureType,
+      'UnsupportedFailure.notIntegrated',
+    );
+  });
+
+  test('SyncAccount_交易所账户_未配置凭据_返回未授权并写失败记录', () async {
     await f.accounts.upsert(
       Account(
         id: 'x1',
@@ -188,12 +223,9 @@ void main() {
 
     expect(
       result.when(ok: (_) => null, err: (e) => e),
-      isA<UnsupportedFailure>(),
+      isA<UnauthorizedFailure>(),
     );
-    expect(
-      f.syncRecords.records.single.failureType,
-      'UnsupportedFailure.notIntegrated',
-    );
+    expect(f.syncRecords.records.single.failureType, 'UnauthorizedFailure');
   });
 
   test('SyncAccount_账户不存在_返回校验失败且不写记录', () async {
@@ -223,6 +255,89 @@ void main() {
     expect(f.adapters.evm.calls, hasLength(1));
     expect(f.holdings.forAccount('w1'), [old]);
     expect(f.syncRecords.records, isEmpty);
+  });
+
+  group('SyncAccount 交易所账户同步', () {
+    test('交易所账户_凭据存在且适配器成功_替换持仓为ExchangeLocation并写成功记录', () async {
+      f.catalog.register(const ExchangeToken(ExchangeId.binance, 'USDT'), usdt);
+      final creds = ExchangeCredentials(
+        apiKey: Sensitive.fromString('key'),
+        apiSecret: Sensitive.fromString('secret'),
+      );
+      await f.addExchange('ex1', ExchangeId.binance, creds: creds);
+
+      f.adapters.exchangeFake(ExchangeId.binance).holdingsResponses = [
+        Ok([
+          (
+            ExchangeSubAccount.spot,
+            RawHolding(
+              token: const ExchangeToken(ExchangeId.binance, 'USDT'),
+              amount: Decimal.parse('100.5'),
+            ),
+          ),
+          (
+            ExchangeSubAccount.funding,
+            RawHolding(
+              token: const ExchangeToken(ExchangeId.binance, 'USDT'),
+              amount: Decimal.parse('50.25'),
+            ),
+          ),
+        ]),
+      ];
+
+      final res = await f.syncAccount('ex1');
+
+      expect(res.isOk, isTrue);
+      final held = f.holdings.forAccount('ex1');
+      expect(held, hasLength(2));
+      expect(held[0].location, const ExchangeLocation(ExchangeSubAccount.spot));
+      expect(held[0].amount, Decimal.parse('100.5'));
+      expect(
+        held[1].location,
+        const ExchangeLocation(ExchangeSubAccount.funding),
+      );
+      expect(held[1].amount, Decimal.parse('50.25'));
+
+      final record = f.syncRecords.records.single;
+      expect(record.status, SyncStatus.success);
+      expect(record.accountId, 'ex1');
+      expect(record.failureType, isNull);
+    });
+
+    test('交易所账户_未配置凭据_返回 UnauthorizedFailure 并写失败记录', () async {
+      await f.addExchange('ex2', ExchangeId.binance, creds: null);
+
+      final res = await f.syncAccount('ex2');
+
+      expect(res, isA<Err<SyncAccountOutcome>>());
+      expect((res as Err).failure, isA<UnauthorizedFailure>());
+      final record = f.syncRecords.records.single;
+      expect(record.status, SyncStatus.failed);
+      expect(record.failureType, 'UnauthorizedFailure');
+    });
+
+    test('交易所账户_适配器返回失败_写失败记录并保留旧持仓', () async {
+      final creds = ExchangeCredentials(
+        apiKey: Sensitive.fromString('key'),
+        apiSecret: Sensitive.fromString('secret'),
+      );
+      await f.addExchange('ex3', ExchangeId.binance, creds: creds);
+      final old = await f.seedOldHolding('ex3');
+
+      f.adapters.exchangeFake(ExchangeId.binance).holdingsResponses = [
+        const Err(NetworkFailure()),
+      ];
+
+      final res = await f.syncAccount('ex3');
+
+      expect(res, isA<Err<SyncAccountOutcome>>());
+      expect((res as Err).failure, isA<NetworkFailure>());
+      // 旧持仓未被清空
+      expect(f.holdings.forAccount('ex3'), [old]);
+      final record = f.syncRecords.records.single;
+      expect(record.status, SyncStatus.failed);
+      expect(record.failureType, 'NetworkFailure');
+    });
   });
 
   test('failureTypeName_各失败类型_返回稳定的类型名', () {

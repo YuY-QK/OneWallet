@@ -96,6 +96,16 @@ void main() {
       );
     });
 
+    test('watchRecent 按时间倒序返回最近记录且受 limit 限制', () async {
+      for (var i = 0; i < 10; i++) {
+        await repos.syncRecords.add(rec('a1', i, SyncStatus.success));
+      }
+      final list = await repos.syncRecords.watchRecent(limit: 5).first;
+      expect(list, hasLength(5));
+      expect(list.first.startedAt, t0.add(const Duration(minutes: 9)));
+      expect(list.last.startedAt, t0.add(const Duration(minutes: 5)));
+    });
+
     test('最近成功时间：随成功记录发出新值', () async {
       final expectation = expectLater(
         repos.syncRecords.watchLastSuccessPerAccount(),

@@ -43,6 +43,7 @@ final class AddWalletAccount {
   Future<Result<Account>> call({
     required String name,
     required List<AddressInput> addresses,
+    String? walletSourceId,
     WalletSource? walletSource,
     BackupStatus backup = const BackupStatus(),
     int? colorIndex,
@@ -62,13 +63,17 @@ final class AddWalletAccount {
       case Err(:final failure):
         return Err(failure);
       case Ok(:final value):
-        final account = Account(
+        final effectiveSourceId =
+            walletSourceId ??
+            (walletSource != null
+                ? WalletSourceMapping.toDirectoryId(walletSource)
+                : null);
+        final account = Account.wallet(
           id: _ids.newId(),
-          type: AccountType.wallet,
           name: trimmed,
           colorIndex: colorIndex ?? await _nextColor(),
           note: note,
-          walletSource: walletSource,
+          walletSourceId: effectiveSourceId,
           backup: backup,
           createdAt: _clock.nowUtc(),
         );

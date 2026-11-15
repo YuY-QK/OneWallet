@@ -117,7 +117,8 @@ final class Account {
   final String name;                 // 1–30 字
   final int colorIndex;              // 0–7，对应设计规范中的头像色
   final String note;
-  final WalletSource? walletSource;  // 仅钱包
+  final String? walletSourceId;      // 仅钱包：第三方目录条目 id（M1-15；null 表示"其他"）
+  final WalletSource? walletSource;  // 仅钱包：由 walletSourceId 派生，供备份载荷读写与兼容
   final ExchangeId? exchange;        // 仅交易所
   final String? vaultItemId;         // 仅钱包；关联的密钥条目
   final BackupStatus backup;         // 仅钱包有意义
@@ -340,6 +341,7 @@ abstract interface class SnapshotRepository {
 abstract interface class SyncRecordRepository {
   Stream<List<SyncRecord>> watchLatestPerAccount();
   Stream<Map<String, DateTime>> watchLastSuccessPerAccount();               // 账户 id → 最近一次成功的结束时间；读 accounts.last_synced_at
+  Stream<List<SyncRecord>> watchRecent({int limit = 50});                   // 最近的同步记录（按写入时间降序），最多返回 limit 条
   Future<void> add(SyncRecord record);                                      // 只保留最近 50 条；成功记录同时把 last_synced_at 推进到 finishedAt
 }
 // 价格源查到的币种与"合约 → 币种"对应（M1-18）
@@ -458,7 +460,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 
 | 表 | 列（主键加粗） |
 |---|---|
-| `accounts` | **id**, type, name, color_index, note, wallet_source, exchange, vault_item_id, offline_backed_up, offline_verified_at, keyless, created_at, last_synced_at（v2；最近一次成功同步的结束时间，可空；`Account` 实体不含） |
+| `accounts` | **id**, type, name, color_index, note, wallet_source, wallet_source_id（v3；第三方目录 id，可空）, exchange, vault_item_id, offline_backed_up, offline_verified_at, keyless, created_at, last_synced_at（v2；最近一次成功同步的结束时间，可空；`Account` 实体不含） |
 | `addresses` | **id**, account_id→accounts, family, address, enabled_chain_ids（JSON 数组）, scheme, derivation_index, note；唯一索引 (family, address) |
 | `holdings` | **id**（自增）, account_id→accounts, location_kind, chain_id, address_id, exchange_sub, token_kind, token_chain_id, token_contract, token_symbol, asset_id, display_symbol, amount（文本）, updated_at |
 | `prices` | **asset_id**, **quote**, price（文本）, change_24h_percent（文本）, updated_at |
@@ -480,6 +482,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - 生成的 `ow_database.g.dart` 纳入版本控制；改表后运行 `cd packages/ow_data && dart run build_runner build`。
 - 数据库 `schemaVersion` 从 1 开始；每次改表都写迁移并加迁移测试。
 - 版本 2（M1-18）：新建 `assets`、`asset_contracts`，`accounts` 加 `last_synced_at`。迁移 1 → 2 只做这三件事，旧数据保持不变，`last_synced_at` 为空，下一次成功同步后写入。`last_synced_at` 由 `SyncRecordRepository.add` 在写入成功记录的同一事务内更新（只前进不后退），因此不受 `sync_records` 只保留 50 条的影响；`AccountRepository.upsert` 不触碰该列。
+- 版本 3（M1-15）：`accounts` 表新增 `wallet_source_id` 列，迁移 2 → 3 按固定映射表（uniswap-wallet↔uniswap、metamask↔metamask、okx-web3-wallet↔okxWeb3、bitget-wallet↔bitgetWallet、trust-wallet↔trustWallet，其余为 NULL）回填已有数据。数据库以 `wallet_source_id` 为准，读出时 `walletSource` 始终由其派生。
 - 文件名 `onewallet.db`，位于应用支持目录。
 
 ## 6. 保险库（`packages/ow_vault`）

@@ -4,6 +4,7 @@ import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ow_directory/ow_directory.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../../bootstrap/providers.dart';
@@ -17,6 +18,7 @@ import '../../../widgets/formatters.dart';
 import '../../../widgets/ow_amount_text.dart';
 import '../../../widgets/ow_avatar.dart';
 import '../../../widgets/ow_card.dart';
+import '../../../widgets/ow_external_link.dart';
 import '../../../widgets/ow_list_group.dart';
 import '../../../widgets/ow_notice.dart';
 import '../../../widgets/ow_pill.dart';
@@ -127,7 +129,43 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                   ),
                   const SizedBox(height: 6),
                   // 备份状态在本任务只读；操作面板属于 M3-06。
-                  OwPill(label: backupText, tone: backupTone),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    runSpacing: 4,
+                    children: [
+                      OwPill(label: backupText, tone: backupTone),
+                      () {
+                        final sourceId = v.account.walletSourceId;
+                        final entry = sourceId != null
+                            ? ThirdPartyDirectory.builtin().byId(sourceId)
+                            : null;
+                        final website = entry?.link(LinkKind.website);
+                        final websiteUrl = website != null
+                            ? Uri.tryParse(website)
+                            : null;
+                        final label = walletSourceLabel(
+                          l,
+                          v.account.walletSource,
+                          walletSourceId: sourceId,
+                        );
+                        if (label == null) return const SizedBox.shrink();
+                        if (websiteUrl != null) {
+                          return OwExternalLink(
+                            url: websiteUrl,
+                            label: label,
+                            showHost: false,
+                          );
+                        }
+                        return Text(
+                          label,
+                          style: OwTextStyles.caption.copyWith(
+                            color: context.ow.muted,
+                          ),
+                        );
+                      }(),
+                    ],
+                  ),
                 ],
               ),
             ),

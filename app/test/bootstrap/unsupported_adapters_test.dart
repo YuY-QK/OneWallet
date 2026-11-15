@@ -19,6 +19,25 @@ class _EvmStub implements ChainAdapter {
       const Ok(false);
 }
 
+class _ExchangeStub implements ExchangeAdapter {
+  _ExchangeStub(this.id);
+  @override
+  final ExchangeId id;
+  @override
+  bool get needsPassphrase => false;
+  @override
+  Future<Result<CredentialCheck>> verify(ExchangeCredentials c) async =>
+      const Ok(CredentialCheck(permission: KeyPermission.readOnly));
+  @override
+  Future<Result<List<(ExchangeSubAccount, RawHolding)>>> fetchHoldings(
+    ExchangeCredentials c,
+  ) async => const Ok([]);
+  @override
+  Future<Result<List<DepositAddress>>> fetchDepositAddresses(
+    ExchangeCredentials c,
+  ) async => const Ok([]);
+}
+
 void main() {
   final credentials = ExchangeCredentials(
     apiKey: Sensitive(Uint8List.fromList([1, 2, 3])),
@@ -76,5 +95,10 @@ void main() {
     for (final id in ExchangeId.values) {
       expect(registry.exchange(id), isA<UnsupportedExchangeAdapter>());
     }
+
+    final binance = _ExchangeStub(ExchangeId.binance);
+    final withEx = AppAdapterRegistry(evm: evm, binance: binance);
+    expect(withEx.exchange(ExchangeId.binance), same(binance));
+    expect(withEx.exchange(ExchangeId.okx), isA<UnsupportedExchangeAdapter>());
   });
 }

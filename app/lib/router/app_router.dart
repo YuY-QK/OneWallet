@@ -4,14 +4,18 @@ import 'package:ow_application/ow_application.dart';
 
 import '../features/accounts/presentation/accounts_page.dart';
 import '../features/accounts/presentation/add_account_page.dart';
+import '../features/accounts/presentation/add_exchange_page.dart';
 import '../features/accounts/presentation/add_wallet_page.dart';
+import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/common/presentation/coming_soon_page.dart';
 import '../features/lock/presentation/lock_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
+import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
+import '../features/settings/presentation/sync_status_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shell/adaptive_scaffold.dart';
@@ -144,7 +148,8 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'asset/:assetId',
                 name: RouteNames.assetDetail,
-                builder: (c, _) => soon(c, AppLocalizations.of(c)!.tabOverview),
+                builder: (c, state) =>
+                    AssetDetailPage(assetId: state.pathParameters['assetId']!),
               ),
             ],
           ),
@@ -169,8 +174,10 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'add/exchange',
                 name: RouteNames.exchangeAdd,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.accountAddExchangeTitle),
+                builder: (_, state) => AddExchangePage(
+                  key: ValueKey(state.uri.toString()),
+                  accountId: state.uri.queryParameters['accountId'],
+                ),
               ),
               GoRoute(
                 path: 'wallet/:id',
@@ -185,8 +192,11 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'exchange/:id',
                 name: RouteNames.exchangeDetail,
-                builder: (c, _) => AccountsPage(
-                  detail: soon(c, AppLocalizations.of(c)!.tabAccounts),
+                builder: (c, state) => AccountsPage(
+                  detail: ExchangeDetailPage(
+                    key: ValueKey(state.pathParameters['id']),
+                    accountId: state.pathParameters['id']!,
+                  ),
                 ),
               ),
             ],
@@ -213,6 +223,11 @@ GoRouter buildAppRouter({
                 path: 'sources',
                 name: RouteNames.settingsSources,
                 builder: (_, _) => const DataSourcesPage(),
+              ),
+              GoRoute(
+                path: 'sync',
+                name: RouteNames.settingsSync,
+                builder: (_, _) => const SyncStatusPage(),
               ),
             ],
           ),

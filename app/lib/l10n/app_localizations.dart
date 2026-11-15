@@ -1030,6 +1030,24 @@ abstract class AppLocalizations {
   /// **'配置链上数据与价格服务的 API Key'**
   String get settingsSourcesBody;
 
+  /// No description provided for @settingsSync.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步状态'**
+  String get settingsSync;
+
+  /// No description provided for @settingsSyncBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'各账户同步情况与日志'**
+  String get settingsSyncBody;
+
+  /// No description provided for @settingsSyncFailedCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count, plural, other{{count} 个账户失败}}'**
+  String settingsSyncFailedCount(int count);
+
   /// No description provided for @sourcesTitle.
   ///
   /// In zh, this message translates to:
@@ -1239,6 +1257,642 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'完成'**
   String get sourcesDone;
+
+  /// No description provided for @sourcesCoingeckoAttribution.
+  ///
+  /// In zh, this message translates to:
+  /// **'价格数据来自 CoinGecko'**
+  String get sourcesCoingeckoAttribution;
+
+  /// No description provided for @externalLinkConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'即将离开 OneWallet'**
+  String get externalLinkConfirmTitle;
+
+  /// No description provided for @externalLinkConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'将用系统浏览器打开以下网址，请核对域名：\n\n{url}'**
+  String externalLinkConfirmBody(String url);
+
+  /// No description provided for @externalLinkConfirmOpen.
+  ///
+  /// In zh, this message translates to:
+  /// **'继续访问'**
+  String get externalLinkConfirmOpen;
+
+  /// No description provided for @externalLinkCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get externalLinkCancel;
+
+  /// No description provided for @directoryLinkWebsite.
+  ///
+  /// In zh, this message translates to:
+  /// **'官网'**
+  String get directoryLinkWebsite;
+
+  /// No description provided for @directoryLinkDocs.
+  ///
+  /// In zh, this message translates to:
+  /// **'帮助文档'**
+  String get directoryLinkDocs;
+
+  /// No description provided for @directoryLinkApiKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'获取 API Key'**
+  String get directoryLinkApiKey;
+
+  /// No description provided for @walletAddSourceSearch.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索钱包…'**
+  String get walletAddSourceSearch;
+
+  /// No description provided for @walletAddSourceOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get walletAddSourceOther;
+
+  /// No description provided for @exchangeAddTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接交易所'**
+  String get exchangeAddTitle;
+
+  /// No description provided for @exchangeReplaceKeyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'更换 API Key'**
+  String get exchangeReplaceKeyTitle;
+
+  /// No description provided for @exchangeAddExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'交易所'**
+  String get exchangeAddExchange;
+
+  /// No description provided for @exchangeAddAccountName.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户名称'**
+  String get exchangeAddAccountName;
+
+  /// No description provided for @exchangeAddAccountNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如：Binance 主账户'**
+  String get exchangeAddAccountNameHint;
+
+  /// No description provided for @exchangeAddAccountNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入账户名称，最多 30 个字。'**
+  String get exchangeAddAccountNameRequired;
+
+  /// No description provided for @exchangeAddApiKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key'**
+  String get exchangeAddApiKey;
+
+  /// No description provided for @exchangeAddApiKeyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴或输入 API Key'**
+  String get exchangeAddApiKeyHint;
+
+  /// No description provided for @exchangeAddApiKeyRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 API Key。'**
+  String get exchangeAddApiKeyRequired;
+
+  /// No description provided for @exchangeAddApiSecret.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Secret'**
+  String get exchangeAddApiSecret;
+
+  /// No description provided for @exchangeAddApiSecretHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴或输入 API Secret'**
+  String get exchangeAddApiSecretHint;
+
+  /// No description provided for @exchangeAddApiSecretRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 API Secret。'**
+  String get exchangeAddApiSecretRequired;
+
+  /// No description provided for @exchangeAddPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'Passphrase'**
+  String get exchangeAddPassphrase;
+
+  /// No description provided for @exchangeAddPassphraseHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建 API Key 时设置的口令'**
+  String get exchangeAddPassphraseHint;
+
+  /// No description provided for @exchangeAddPassphraseRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 Passphrase。'**
+  String get exchangeAddPassphraseRequired;
+
+  /// No description provided for @exchangeAddPaste.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴'**
+  String get exchangeAddPaste;
+
+  /// No description provided for @exchangeAddSecurityNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。'**
+  String get exchangeAddSecurityNote;
+
+  /// No description provided for @exchangeAddGuideTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'如何创建只读 API Key'**
+  String get exchangeAddGuideTitle;
+
+  /// No description provided for @exchangeAddGuideSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'分步图文与官方指引'**
+  String get exchangeAddGuideSubtitle;
+
+  /// No description provided for @exchangeAddGuideOfficialLink.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往官方创建指引'**
+  String get exchangeAddGuideOfficialLink;
+
+  /// No description provided for @exchangeAddGuideApiManagementLink.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往 API 管理'**
+  String get exchangeAddGuideApiManagementLink;
+
+  /// No description provided for @exchangeAddTestAndSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试并保存'**
+  String get exchangeAddTestAndSave;
+
+  /// No description provided for @exchangeAddVerifying.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在验证凭据…'**
+  String get exchangeAddVerifying;
+
+  /// No description provided for @exchangeAddSaving.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在保存…'**
+  String get exchangeAddSaving;
+
+  /// No description provided for @exchangeAddComingSoon.
+  ///
+  /// In zh, this message translates to:
+  /// **'即将支持'**
+  String get exchangeAddComingSoon;
+
+  /// No description provided for @exchangeAddBitgetNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bitget 暂未接入，即将支持。'**
+  String get exchangeAddBitgetNotice;
+
+  /// No description provided for @exchangeAddPermWarningTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'权限超出只读'**
+  String get exchangeAddPermWarningTitle;
+
+  /// No description provided for @exchangeAddPermWarningBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到此 Key 包含交易或提现权限，存在资金安全风险。建议在交易所后台重新创建只读 Key。'**
+  String get exchangeAddPermWarningBody;
+
+  /// No description provided for @exchangeAddPermWarningModify.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回修改'**
+  String get exchangeAddPermWarningModify;
+
+  /// No description provided for @exchangeAddPermWarningProceed.
+  ///
+  /// In zh, this message translates to:
+  /// **'仍然保存'**
+  String get exchangeAddPermWarningProceed;
+
+  /// No description provided for @exchangeAddErrCredential.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key、Secret 或 Passphrase 不正确，服务商拒绝了请求。'**
+  String get exchangeAddErrCredential;
+
+  /// No description provided for @exchangeAddErrNetwork.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络不可用或请求超时。请检查网络连接后重试。'**
+  String get exchangeAddErrNetwork;
+
+  /// No description provided for @exchangeAddErrClockSkew.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。'**
+  String get exchangeAddErrClockSkew;
+
+  /// No description provided for @exchangeAddErrIpRestricted.
+  ///
+  /// In zh, this message translates to:
+  /// **'该 API Key 限制了访问 IP，请检查交易所后台的 IP 白名单设置。'**
+  String get exchangeAddErrIpRestricted;
+
+  /// No description provided for @exchangeAddErrAccountMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到这个账户，它可能已被删除。'**
+  String get exchangeAddErrAccountMissing;
+
+  /// No description provided for @exchangeAddErrUnknown.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证失败：{detail}'**
+  String exchangeAddErrUnknown(String detail);
+
+  /// No description provided for @exchangeDetailTotal.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户总估值'**
+  String get exchangeDetailTotal;
+
+  /// No description provided for @exchangeDetailTabAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'按币种'**
+  String get exchangeDetailTabAssets;
+
+  /// No description provided for @exchangeDetailTabSubAccounts.
+  ///
+  /// In zh, this message translates to:
+  /// **'按子账户'**
+  String get exchangeDetailTabSubAccounts;
+
+  /// No description provided for @exchangeDetailKeyStatusNormal.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 正常 · 只读'**
+  String get exchangeDetailKeyStatusNormal;
+
+  /// No description provided for @exchangeDetailKeyStatusExpired.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效'**
+  String get exchangeDetailKeyStatusExpired;
+
+  /// No description provided for @exchangeDetailKeyExpiredNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效，无法同步最新资产，请尽快更换。'**
+  String get exchangeDetailKeyExpiredNotice;
+
+  /// No description provided for @exchangeDetailNoAssets.
+  ///
+  /// In zh, this message translates to:
+  /// **'该交易所目前没有可显示的资产'**
+  String get exchangeDetailNoAssets;
+
+  /// No description provided for @exchangeDetailNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到这个交易所账户，它可能已被删除。'**
+  String get exchangeDetailNotFound;
+
+  /// No description provided for @exchangeDetailFailedTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步失败'**
+  String get exchangeDetailFailedTitle;
+
+  /// No description provided for @exchangeDetailLastSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次成功同步：{time}'**
+  String exchangeDetailLastSuccess(String time);
+
+  /// No description provided for @exchangeDetailNeverSucceeded.
+  ///
+  /// In zh, this message translates to:
+  /// **'还没有成功同步过，下面没有缓存数据。'**
+  String get exchangeDetailNeverSucceeded;
+
+  /// No description provided for @exchangeDetailUnpriced.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个未识别或无估值的币种'**
+  String exchangeDetailUnpriced(int count);
+
+  /// No description provided for @exchangeDetailNotIncluded.
+  ///
+  /// In zh, this message translates to:
+  /// **'未包含：{items}'**
+  String exchangeDetailNotIncluded(String items);
+
+  /// No description provided for @exchangeDetailDepositAddressesTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'充值地址'**
+  String get exchangeDetailDepositAddressesTitle;
+
+  /// No description provided for @exchangeDetailDepositAddressesSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'由交易所控制，仅供查看'**
+  String get exchangeDetailDepositAddressesSubtitle;
+
+  /// No description provided for @exchangeDetailDepositAddressesNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'此地址由交易所控制，仅供查看。为避免在交易所自动创建新地址，仅展示已有地址。'**
+  String get exchangeDetailDepositAddressesNotice;
+
+  /// No description provided for @exchangeDetailDepositAddressesEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无充值地址'**
+  String get exchangeDetailDepositAddressesEmpty;
+
+  /// No description provided for @exchangeDetailDepositAddressMemo.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注/Tag: {memo}'**
+  String exchangeDetailDepositAddressMemo(String memo);
+
+  /// No description provided for @exchangeDetailReplaceKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'更换 API Key'**
+  String get exchangeDetailReplaceKey;
+
+  /// No description provided for @exchangeDetailDeleteAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除账户'**
+  String get exchangeDetailDeleteAccount;
+
+  /// No description provided for @exchangeDetailDeleteConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除交易所账户'**
+  String get exchangeDetailDeleteConfirmTitle;
+
+  /// No description provided for @exchangeDetailDeleteConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。'**
+  String get exchangeDetailDeleteConfirmBody;
+
+  /// No description provided for @exchangeDetailDeleteConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get exchangeDetailDeleteConfirmAction;
+
+  /// No description provided for @exchangeDetailDeleteCancelAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get exchangeDetailDeleteCancelAction;
+
+  /// No description provided for @subAccountSpot.
+  ///
+  /// In zh, this message translates to:
+  /// **'现货'**
+  String get subAccountSpot;
+
+  /// No description provided for @subAccountFunding.
+  ///
+  /// In zh, this message translates to:
+  /// **'资金'**
+  String get subAccountFunding;
+
+  /// No description provided for @subAccountFutures.
+  ///
+  /// In zh, this message translates to:
+  /// **'合约'**
+  String get subAccountFutures;
+
+  /// No description provided for @subAccountMargin.
+  ///
+  /// In zh, this message translates to:
+  /// **'杠杆'**
+  String get subAccountMargin;
+
+  /// No description provided for @subAccountEarn.
+  ///
+  /// In zh, this message translates to:
+  /// **'理财'**
+  String get subAccountEarn;
+
+  /// No description provided for @subAccountOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get subAccountOther;
+
+  /// No description provided for @assetDetailTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'币种详情'**
+  String get assetDetailTitle;
+
+  /// No description provided for @assetDetailCurrentPrice.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前价格'**
+  String get assetDetailCurrentPrice;
+
+  /// No description provided for @assetDetailHoldings.
+  ///
+  /// In zh, this message translates to:
+  /// **'持有'**
+  String get assetDetailHoldings;
+
+  /// No description provided for @assetDetailValuation.
+  ///
+  /// In zh, this message translates to:
+  /// **'估值'**
+  String get assetDetailValuation;
+
+  /// No description provided for @assetDetailDistributionTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'分布'**
+  String get assetDetailDistributionTitle;
+
+  /// No description provided for @assetDetailDistributionEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无账户持有该币种'**
+  String get assetDetailDistributionEmpty;
+
+  /// No description provided for @assetDetailContractsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'合约地址'**
+  String get assetDetailContractsTitle;
+
+  /// No description provided for @assetDetailCopyContract.
+  ///
+  /// In zh, this message translates to:
+  /// **'复制'**
+  String get assetDetailCopyContract;
+
+  /// No description provided for @assetDetailCopied.
+  ///
+  /// In zh, this message translates to:
+  /// **'已复制合约地址'**
+  String get assetDetailCopied;
+
+  /// No description provided for @assetDetailNoPrice.
+  ///
+  /// In zh, this message translates to:
+  /// **'估值缺失'**
+  String get assetDetailNoPrice;
+
+  /// No description provided for @assetDetailNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到该币种信息'**
+  String get assetDetailNotFound;
+
+  /// No description provided for @assetDetailViewDistribution.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看币种分布'**
+  String get assetDetailViewDistribution;
+
+  /// No description provided for @syncStatusTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步状态'**
+  String get syncStatusTitle;
+
+  /// No description provided for @syncStatusLastFullSync.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次全量同步'**
+  String get syncStatusLastFullSync;
+
+  /// No description provided for @syncStatusNeverFullSynced.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未进行过全量同步'**
+  String get syncStatusNeverFullSynced;
+
+  /// No description provided for @syncStatusSyncNow.
+  ///
+  /// In zh, this message translates to:
+  /// **'立即同步'**
+  String get syncStatusSyncNow;
+
+  /// No description provided for @syncStatusSyncing.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在同步...'**
+  String get syncStatusSyncing;
+
+  /// No description provided for @syncStatusDurationSeconds.
+  ///
+  /// In zh, this message translates to:
+  /// **'用时 {seconds} 秒'**
+  String syncStatusDurationSeconds(String seconds);
+
+  /// No description provided for @syncStatusDurationMs.
+  ///
+  /// In zh, this message translates to:
+  /// **'用时 {ms} 毫秒'**
+  String syncStatusDurationMs(int ms);
+
+  /// No description provided for @syncStatusAccountsSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'各账户状态'**
+  String get syncStatusAccountsSection;
+
+  /// No description provided for @syncStatusLogsSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'最近同步记录（最多 50 条）'**
+  String get syncStatusLogsSection;
+
+  /// No description provided for @syncStatusLogsEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无同步记录'**
+  String get syncStatusLogsEmpty;
+
+  /// No description provided for @syncStatusSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'成功'**
+  String get syncStatusSuccess;
+
+  /// No description provided for @syncStatusFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'失败'**
+  String get syncStatusFailed;
+
+  /// No description provided for @syncStatusRunning.
+  ///
+  /// In zh, this message translates to:
+  /// **'同步中'**
+  String get syncStatusRunning;
+
+  /// No description provided for @syncStatusLastSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次成功 {time}'**
+  String syncStatusLastSuccess(String time);
+
+  /// No description provided for @syncStatusNeverSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'从未成功同步'**
+  String get syncStatusNeverSuccess;
+
+  /// No description provided for @syncStatusKeyExpiredHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key 已失效，请更换'**
+  String get syncStatusKeyExpiredHint;
+
+  /// No description provided for @syncStatusViewFullStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看完整同步状态'**
+  String get syncStatusViewFullStatus;
+
+  /// No description provided for @syncStatusDeletedAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'已删除的账户'**
+  String get syncStatusDeletedAccount;
 
   /// No description provided for @lockTitle.
   ///

@@ -203,6 +203,10 @@ final class InMemorySyncRecordRepository implements SyncRecordRepository {
       _lastSuccess.watch();
 
   @override
+  Stream<List<SyncRecord>> watchRecent({int limit = 50}) =>
+      _store.watch().map((list) => list.reversed.take(limit).toList());
+
+  @override
   Future<void> add(SyncRecord record) async {
     final all = [..._store.value, record];
     _store.value = all.length > 50 ? all.sublist(all.length - 50) : all;
@@ -283,4 +287,24 @@ final class InMemoryAssetRepository implements AssetRepository {
 
   @override
   Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
+}
+
+final class FakeCredentialRepository implements CredentialRepository {
+  final Map<String, ExchangeCredentials> _creds = {};
+
+  @override
+  Future<void> save(String accountId, ExchangeCredentials c) async {
+    _creds[accountId] = c;
+  }
+
+  @override
+  Future<ExchangeCredentials?> load(String accountId) async =>
+      _creds[accountId];
+
+  @override
+  Future<void> delete(String accountId) async {
+    _creds.remove(accountId);
+  }
+
+  void seed(String accountId, ExchangeCredentials c) => _creds[accountId] = c;
 }

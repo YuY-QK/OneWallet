@@ -51,7 +51,11 @@ class AddWalletController extends Notifier<AddWalletState> {
   void setName(String value) =>
       state = state.copyWith(name: value, saveFailure: null);
 
-  void setSource(WalletSource value) => state = state.copyWith(source: value);
+  void setSourceId(String? value) =>
+      state = state.copyWith(walletSourceId: value);
+
+  void setSource(WalletSource value) =>
+      setSourceId(WalletSourceMapping.toDirectoryId(value));
 
   void setBackup(BackupChoice value) => state = state.copyWith(backup: value);
 
@@ -210,7 +214,7 @@ class AddWalletController extends Notifier<AddWalletState> {
     final created = await ref.read(addWalletAccountProvider)(
       name: state.name,
       addresses: inputs,
-      walletSource: state.source,
+      walletSourceId: state.walletSourceId,
       backup: switch (state.backup) {
         BackupChoice.none => const BackupStatus(),
         BackupChoice.offline => const BackupStatus(offlineBackedUp: true),

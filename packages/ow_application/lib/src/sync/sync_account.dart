@@ -40,6 +40,7 @@ final class SyncAccount {
     required this._normalizer,
     required this._retryPolicy,
     required this._clock,
+    this._credentials,
   });
 
   final AccountRepository _accounts;
@@ -50,6 +51,7 @@ final class SyncAccount {
   final HoldingNormalizer _normalizer;
   final RetryPolicy _retryPolicy;
   final Clock _clock;
+  final CredentialRepository? _credentials;
 
   final Map<String, Future<Result<SyncAccountOutcome>>> _inFlight = {};
   final StreamController<Set<String>> _syncingChanges =
@@ -164,12 +166,41 @@ final class SyncAccount {
     return Ok(all);
   }
 
-  /// 交易所账户：M2-10 在此接入 `CredentialRepository.load` 与
+  /// 交易所账户：接入 `CredentialRepository.load` 与
   /// `ExchangeAdapter.fetchHoldings`，把子账户映射为 [ExchangeLocation]。
   Future<Result<List<LocatedRawHolding>>> _fetchExchange(
     Account account,
     SyncCancellation? cancellation,
-  ) async => const Err(UnsupportedFailure.notIntegrated('交易所同步在 M2-10 接入'));
+  ) async {
+    final exchangeId = account.exchange;
+    if (exchangeId == null) {
+      return const Err(ValidationFailure('交易所账户缺少交易所标识'));
+    }
+    final credsRepo = _credentials;
+    if (credsRepo == null) {
+      return const Err(UnsupportedFailure.notIntegrated('尚未装配凭据仓储'));
+    }
+    final creds = await credsRepo.load(account.id);
+    if (creds == null) {
+      return const Err(UnauthorizedFailure('未找到该交易所的 API 凭据，请重新设置'));
+    }
+    if (cancellation?.isCancelled ?? false) return const Ok([]);
+    final adapter = _adapters.exchange(exchangeId);
+    final result = await _retryPolicy(
+      () => adapter.fetchHoldings(creds),
+      cancellation: cancellation,
+    );
+    switch (result) {
+      case Err(:final failure):
+        return Err(failure);
+      case Ok(:final value):
+        final all = <LocatedRawHolding>[];
+        for (final (sub, raw) in value) {
+          all.add((location: ExchangeLocation(sub), raw: raw));
+        }
+        return Ok(all);
+    }
+  }
 
   Future<void> _record(
     String accountId,

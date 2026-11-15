@@ -15,6 +15,7 @@ class OwRow extends StatelessWidget {
     required this.title,
     this.avatar,
     this.subtitle,
+    this.subtitleWidget,
     this.trailing,
     this.onTap,
     this.monoTitle = false,
@@ -29,6 +30,9 @@ class OwRow extends StatelessWidget {
 
   /// 副标题，单行，过长时省略。
   final String? subtitle;
+
+  /// 自定义副标题组件。提供时优先于 [subtitle]。
+  final Widget? subtitleWidget;
 
   /// 右侧内容，如 [OwAmountText]、[OwPill]。右对齐，不会被压缩。
   final Widget? trailing;
@@ -68,7 +72,9 @@ class OwRow extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: titleBase.copyWith(color: c.ink),
                   ),
-                  if (subtitle != null)
+                  if (subtitleWidget != null)
+                    subtitleWidget!
+                  else if (subtitle != null)
                     Text(
                       subtitle!,
                       maxLines: 1,

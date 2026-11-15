@@ -78,3 +78,7 @@ final tokenVisibilityRepositoryProvider = Provider<TokenVisibilityRepository>(
 final assetRepositoryProvider = Provider<AssetRepository>(
   (ref) => ref.watch(repositoriesProvider).assets,
 );
+
+final credentialRepositoryProvider = Provider<CredentialRepository>(
+  (ref) => SecretStoreCredentialRepository(ref.watch(secretStoreProvider)),
+);
