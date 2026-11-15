@@ -291,6 +291,7 @@ final class InMemoryAssetRepository implements AssetRepository {
 
 final class FakeCredentialRepository implements CredentialRepository {
   final Map<String, ExchangeCredentials> _creds = {};
+  Object? deleteError;
 
   @override
   Future<void> save(String accountId, ExchangeCredentials c) async {
@@ -303,6 +304,8 @@ final class FakeCredentialRepository implements CredentialRepository {
 
   @override
   Future<void> delete(String accountId) async {
+    final err = deleteError;
+    if (err != null) throw err;
     _creds.remove(accountId);
   }
 

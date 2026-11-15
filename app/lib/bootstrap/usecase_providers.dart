@@ -116,3 +116,14 @@ final themeModeProvider = Provider<ThemePreference>(
     _ => ThemePreference.system,
   },
 );
+
+final renameAccountProvider = Provider<RenameAccount>(
+  (ref) => RenameAccount(accounts: ref.watch(accountRepositoryProvider)),
+);
+
+final deleteAccountProvider = Provider<DeleteAccount>(
+  (ref) => DeleteAccount(
+    accounts: ref.watch(accountRepositoryProvider),
+    credentials: ref.watch(credentialRepositoryProvider),
+  ),
+);

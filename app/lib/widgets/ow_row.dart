@@ -18,6 +18,8 @@ class OwRow extends StatelessWidget {
     this.subtitleWidget,
     this.trailing,
     this.onTap,
+    this.onLongPress,
+    this.onSecondaryTap,
     this.monoTitle = false,
     this.monoSubtitle = false,
   });
@@ -37,8 +39,14 @@ class OwRow extends StatelessWidget {
   /// 右侧内容，如 [OwAmountText]、[OwPill]。右对齐，不会被压缩。
   final Widget? trailing;
 
-  /// 点击回调。为空时该行不可点击。
+  /// 点击回调。为空且没有长按/右键时该行不可点击。
   final VoidCallback? onTap;
+
+  /// 长按回调。
+  final VoidCallback? onLongPress;
+
+  /// 次级点击（右键）回调。
+  final VoidCallback? onSecondaryTap;
 
   /// 标题用等宽字体（标题是地址时使用）。
   final bool monoTitle;
@@ -90,11 +98,15 @@ class OwRow extends StatelessWidget {
       ),
     );
 
-    if (onTap == null) return content;
+    final interactive =
+        onTap != null || onLongPress != null || onSecondaryTap != null;
+    if (!interactive) return content;
     return Semantics(
       button: true,
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
+        onSecondaryTap: onSecondaryTap,
         hoverColor: c.brandSoft,
         focusColor: c.brandSoft,
         splashColor: c.brandSoft,
