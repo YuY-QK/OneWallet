@@ -171,6 +171,19 @@ final class UnsupportedFailure extends Failure {
   final UnsupportedReason reason;
 }
 
+/// 生物识别不可用、被取消，或硬件包裹已失效（例如新增了指纹）。调用方应改用主密码。
+final class BiometricUnavailableFailure extends Failure {
+  const BiometricUnavailableFailure([super.detail]);
+}
+
+/// 连续输错次数过多，在 [until] 之前不接受验证。
+final class LockedOutFailure extends Failure {
+  const LockedOutFailure(this.until, [super.detail]);
+
+  /// 锁定截止时间（UTC）。
+  final DateTime until;
+}
+
 /// 无法归类的失败。
 final class UnknownFailure extends Failure {
   const UnknownFailure([super.detail]);
