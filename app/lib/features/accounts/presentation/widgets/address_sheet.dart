@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ow_domain/ow_domain.dart';
@@ -13,7 +15,6 @@ import '../../../../widgets/ow_list_group.dart';
 import '../../../../widgets/ow_row.dart';
 import '../../../../widgets/ow_secondary_button.dart';
 import '../../../shared/labels.dart';
-import '../../controllers/wallet_detail_controller.dart';
 
 /// 地址操作面板（底部弹层）：完整地址、二维码、复制、在区块浏览器中打开、删除。
 Future<void> showAddressSheet(
@@ -71,12 +72,12 @@ class AddressSheet extends ConsumerStatefulWidget {
 }
 
 class _AddressSheetState extends ConsumerState<AddressSheet> {
+  late WatchAddress _address = widget.address;
   bool _copied = false;
   bool _openFailed = false;
 
-  String get _display => ref
-      .read(addressCodecProvider)
-      .display(widget.address.address, widget.address.family);
+  String get _display =>
+      ref.read(addressCodecProvider).display(_address.address, _address.family);
 
   Future<void> _copy() async {
     await ref.read(clipboardWriterProvider)(_display);
@@ -86,6 +87,65 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
   Future<void> _open(ExplorerLink link) async {
     final ok = await ref.read(externalUrlOpenerProvider)(link.url);
     if (mounted) setState(() => _openFailed = !ok);
+  }
+
+  Future<void> _editNote() async {
+    final l = AppLocalizations.of(context)!;
+    final controller = TextEditingController(text: _address.note);
+    String? errorText;
+
+    final newNote = await showDialog<String>(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) {
+          return AlertDialog(
+            title: Text(l.addressSheetEditNoteTitle),
+            content: TextField(
+              controller: controller,
+              autofocus: true,
+              maxLength: 100,
+              decoration: InputDecoration(
+                hintText: l.addressSheetEditNoteHint,
+                errorText: errorText,
+              ),
+              onChanged: (_) {
+                if (errorText != null) {
+                  setDialogState(() => errorText = null);
+                }
+              },
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(l.addressSheetCancel),
+              ),
+              TextButton(
+                onPressed: () {
+                  final text = controller.text.trim();
+                  if (text.runes.length > 100) {
+                    setDialogState(
+                      () => errorText = l.addressSheetEditNoteTooLong,
+                    );
+                    return;
+                  }
+                  Navigator.pop(context, text);
+                },
+                child: Text(l.addressSheetSave),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+
+    if (newNote == null || !mounted) return;
+    final updateUsecase = ref.read(updateAddressNoteProvider);
+    final res = await updateUsecase(addressId: _address.id, note: newNote);
+    if (res case Ok(:final value)) {
+      if (mounted) {
+        setState(() => _address = value);
+      }
+    }
   }
 
   Future<void> _delete() async {
@@ -109,11 +169,12 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
       ),
     );
     if (confirmed != true || !mounted) return;
-    final actions = ref.read(
-      walletDetailActionsProvider(widget.address.accountId),
-    );
-    final done = await actions.deleteAddress(widget.address.id);
-    if (done && mounted) Navigator.pop(context);
+    final deleteAddress = ref.read(deleteAddressProvider);
+    final res = await deleteAddress(_address.id);
+    if (res.isOk) {
+      unawaited(ref.read(syncAccountProvider)(_address.accountId));
+      if (mounted) Navigator.pop(context);
+    }
   }
 
   @override
@@ -121,7 +182,7 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
     final l = AppLocalizations.of(context)!;
     final c = context.ow;
     final display = _display;
-    final links = explorerLinks(widget.address, display);
+    final links = explorerLinks(_address, display);
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
@@ -130,7 +191,7 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text(
-              l.addressSheetTitle(chainFamilyLabel(l, widget.address.family)),
+              l.addressSheetTitle(chainFamilyLabel(l, _address.family)),
               style: OwTextStyles.emphasis,
             ),
             const SizedBox(height: 12),
@@ -157,6 +218,15 @@ class _AddressSheetState extends ConsumerState<AddressSheet> {
             OwSecondaryButton(
               label: _copied ? l.addressSheetCopied : l.addressSheetCopy,
               onPressed: _copy,
+            ),
+            const SizedBox(height: 12),
+            OwRow(
+              title: _address.note.isEmpty
+                  ? l.addressSheetNoNote
+                  : _address.note,
+              subtitle: l.addressSheetNoteLabel,
+              trailing: Icon(Icons.edit_outlined, size: 18, color: c.muted),
+              onTap: _editNote,
             ),
             const SizedBox(height: 16),
             Text(

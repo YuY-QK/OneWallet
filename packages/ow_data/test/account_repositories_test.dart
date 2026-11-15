@@ -183,6 +183,20 @@ void main() {
       });
     });
 
+    test('all 与 byId：获取全部与单项按 id 查找', () async {
+      final a1 = makeAddress('ad1', 'a1', address: '0x111');
+      final a2 = makeAddress('ad2', 'a1', address: '0x222');
+      await repos.addresses.upsert(a1);
+      await repos.addresses.upsert(a2);
+
+      final all = await repos.addresses.all();
+      expect(all.map((a) => a.id), ['ad1', 'ad2']);
+
+      expect(await repos.addresses.byId('ad1'), a1);
+      expect(await repos.addresses.byId('ad2'), a2);
+      expect(await repos.addresses.byId('non_existent'), isNull);
+    });
+
     test('未知链 id：列表读取跳过该行，find 返回 null', () async {
       await repos.addresses.upsert(makeAddress('ad1', 'a1'));
       await repos.addresses.upsert(makeAddress('ad2', 'a1', address: '0xdef'));

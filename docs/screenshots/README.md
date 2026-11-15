@@ -31,6 +31,7 @@ cp app/test/screenshots/goldens/*.png docs/screenshots/
 | `overview_empty_light.png` / `overview_empty_dark.png` | P02 总览（没有账户） | 390×844，像素比 2 |
 | `asset_detail_light.png` / `asset_detail_dark.png` | P09 币种详情 | 390×844，像素比 2 |
 | `accounts_light.png` / `accounts_dark.png` | P03 账户列表 | 390×844，像素比 2 |
+| `address_book_light.png` / `address_book_dark.png` | P10 地址簿 | 390×844，像素比 2 |
 | `wallet_detail_assets_light.png` / `wallet_detail_assets_dark.png` | P07 钱包详情，"资产"分段 | 390×844，像素比 2 |
 | `wallet_detail_addresses_light.png` / `wallet_detail_addresses_dark.png` | P07 钱包详情，"地址"分段 | 390×844，像素比 2 |
 | `add_account_light.png` / `add_account_dark.png` | P04 添加账户（三个选项） | 390×844，像素比 2 |

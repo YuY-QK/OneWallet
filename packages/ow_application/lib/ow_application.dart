@@ -9,6 +9,8 @@ export 'src/accounts/delete_account.dart';
 export 'src/accounts/delete_address.dart';
 export 'src/accounts/rename_account.dart';
 export 'src/accounts/replace_exchange_credentials.dart';
+export 'src/accounts/search_addresses.dart';
+export 'src/accounts/update_address_note.dart';
 export 'src/backup/confirm_backup_saved.dart';
 export 'src/backup/export_backup.dart';
 export 'src/backup/open_backup.dart';

@@ -2008,6 +2008,108 @@ abstract class AppLocalizations {
   /// **'长按账户可重命名或删除'**
   String get accountsFooterHint;
 
+  /// No description provided for @addressSheetNoteLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注'**
+  String get addressSheetNoteLabel;
+
+  /// No description provided for @addressSheetNoNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加备注'**
+  String get addressSheetNoNote;
+
+  /// No description provided for @addressSheetEditNoteTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'编辑备注'**
+  String get addressSheetEditNoteTitle;
+
+  /// No description provided for @addressSheetEditNoteHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入地址备注（如：长期持有、主要收款）'**
+  String get addressSheetEditNoteHint;
+
+  /// No description provided for @addressSheetEditNoteTooLong.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注长度不能超过 100 个字符'**
+  String get addressSheetEditNoteTooLong;
+
+  /// No description provided for @addressSheetSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存'**
+  String get addressSheetSave;
+
+  /// No description provided for @addressBookSearchHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'搜索地址、账户、备注'**
+  String get addressBookSearchHint;
+
+  /// No description provided for @addressBookChainAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部链'**
+  String get addressBookChainAll;
+
+  /// No description provided for @addressBookAccountAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部账户'**
+  String get addressBookAccountAll;
+
+  /// No description provided for @addressBookExactMatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'是你的地址'**
+  String get addressBookExactMatch;
+
+  /// No description provided for @addressBookVaultDerived.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库派生'**
+  String get addressBookVaultDerived;
+
+  /// No description provided for @addressBookNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'备注：{note}'**
+  String addressBookNote(String note);
+
+  /// No description provided for @addressBookEmptyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无地址'**
+  String get addressBookEmptyTitle;
+
+  /// No description provided for @addressBookEmptyDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加钱包账户后，此处将集中管理你的所有地址'**
+  String get addressBookEmptyDesc;
+
+  /// No description provided for @addressBookSearchNoResultTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'不在你的地址簿中'**
+  String get addressBookSearchNoResultTitle;
+
+  /// No description provided for @addressBookSearchNoResultDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'未在你的地址簿中找到此地址或相关信息'**
+  String get addressBookSearchNoResultDesc;
+
+  /// No description provided for @addressBookFooterTip.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。'**
+  String get addressBookFooterTip;
+
   /// No description provided for @lockTitle.
   ///
   /// In zh, this message translates to:

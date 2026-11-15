@@ -538,6 +538,30 @@
   "accountsDeleteCancelAction": "取消",
   "accountsDeleteConfirmAction": "删除",
   "accountsFooterHint": "长按账户可重命名或删除",
+  "addressSheetNoteLabel": "备注",
+  "addressSheetNoNote": "添加备注",
+  "addressSheetEditNoteTitle": "编辑备注",
+  "addressSheetEditNoteHint": "请输入地址备注（如：长期持有、主要收款）",
+  "addressSheetEditNoteTooLong": "备注长度不能超过 100 个字符",
+  "addressSheetSave": "保存",
+  "addressBookSearchHint": "搜索地址、账户、备注",
+  "addressBookChainAll": "全部链",
+  "addressBookAccountAll": "全部账户",
+  "addressBookExactMatch": "是你的地址",
+  "addressBookVaultDerived": "保险库派生",
+  "addressBookNote": "备注：{note}",
+  "@addressBookNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "addressBookEmptyTitle": "暂无地址",
+  "addressBookEmptyDesc": "添加钱包账户后，此处将集中管理你的所有地址",
+  "addressBookSearchNoResultTitle": "不在你的地址簿中",
+  "addressBookSearchNoResultDesc": "未在你的地址簿中找到此地址或相关信息",
+  "addressBookFooterTip": "粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。",
   "lockTitle": "OneWallet",
   "lockSubtitle": "输入 6 位 PIN",
   "lockWrongPin": "PIN 码不正确",

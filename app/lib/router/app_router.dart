@@ -6,6 +6,7 @@ import '../features/accounts/presentation/accounts_page.dart';
 import '../features/accounts/presentation/add_account_page.dart';
 import '../features/accounts/presentation/add_exchange_page.dart';
 import '../features/accounts/presentation/add_wallet_page.dart';
+import '../features/accounts/presentation/address_book_page.dart';
 import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/lock/presentation/lock_page.dart';
@@ -203,8 +204,7 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'addresses',
                 name: RouteNames.addressBook,
-                builder: (c, state) =>
-                    const Scaffold(body: Center(child: Text('地址簿'))),
+                builder: (c, state) => const AddressBookPage(),
               ),
             ],
           ),
