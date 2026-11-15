@@ -41,12 +41,12 @@ void main() {
       expect(find.text('API Key'), findsOneWidget);
     });
 
-    testWidgets('导入助记词_进入说明页', (tester) async {
+    testWidgets('导入助记词_进入导入页', (tester) async {
       final router = await pumpApp(tester, rig, location: '/accounts/add');
       await tester.tap(find.text('导入助记词或私钥'));
       await tester.pumpAndSettle();
       expect(locationOf(router), '/vault/import');
-      expect(find.text('此功能将在后续版本提供。'), findsOneWidget);
+      expect(find.text('导入到保险库'), findsOneWidget);
     });
   });
 

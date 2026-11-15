@@ -16,6 +16,7 @@ import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
+import '../features/vault/presentation/vault_import_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../features/vault/presentation/vault_setup_page.dart';
 import '../l10n/app_localizations.dart';
@@ -221,8 +222,9 @@ GoRouter buildAppRouter({
               GoRoute(
                 path: 'import',
                 name: RouteNames.vaultImport,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.accountAddImportTitle),
+                builder: (c, state) => VaultImportPage(
+                  linkToAccountId: state.uri.queryParameters['accountId'],
+                ),
               ),
               GoRoute(
                 path: 'item/:id',

@@ -1239,4 +1239,88 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaultSetupSuccess => '保险库已成功创建';
+
+  @override
+  String get vaultImportTitle => '导入到保险库';
+
+  @override
+  String get vaultImportTypeMnemonic => '助记词';
+
+  @override
+  String get vaultImportTypePrivateKey => '私钥';
+
+  @override
+  String get vaultImportNameLabel => '名称';
+
+  @override
+  String get vaultImportNameHint => '如：小狐狸主号';
+
+  @override
+  String get vaultImportWordCountLabel => '词数';
+
+  @override
+  String get vaultImportPasteFullPhrase => '粘贴整段';
+
+  @override
+  String get vaultImportPasteInvalid => '剪贴板中的内容词数不匹配（支持 12/15/18/21/24 词）';
+
+  @override
+  String get vaultImportWordSuggestions => '联想词';
+
+  @override
+  String get vaultImportMnemonicChecksumFailed => '助记词校验失败，请检查拼写和顺序';
+
+  @override
+  String get vaultImportAdvancedPassphrase => '高级：BIP39 附加密码 (Passphrase)';
+
+  @override
+  String get vaultImportPassphraseHint => '可选，通常为空';
+
+  @override
+  String get vaultImportChainFamilyLabel => '链类型';
+
+  @override
+  String get vaultImportPrivateKeyLabel => '私钥';
+
+  @override
+  String get vaultImportPrivateKeyHintEvm => '64 位十六进制私钥，可带 0x';
+
+  @override
+  String get vaultImportPrivateKeyHintBtc => 'WIF 格式私钥（以 5、K 或 L 开头）';
+
+  @override
+  String get vaultImportPrivateKeyHintSol => 'Base58 编码的私钥';
+
+  @override
+  String get vaultImportPrivateKeyHintTrx => '64 位十六进制私钥，可带 0x';
+
+  @override
+  String get vaultImportPrivateKeyFormatError => '私钥格式不正确';
+
+  @override
+  String get vaultImportLinkAccountLabel => '关联账户';
+
+  @override
+  String get vaultImportLinkAccountNone => '不关联（稍后在派生地址页处理）';
+
+  @override
+  String get vaultImportSubmitButton => '保存到保险库';
+
+  @override
+  String get vaultImportVerifyPasswordTitle => '输入主密码';
+
+  @override
+  String get vaultImportVerifyPasswordMessage => '请先输入主密码验证身份后保存密钥';
+
+  @override
+  String get vaultImportVerifyPasswordCancel => '取消';
+
+  @override
+  String get vaultImportVerifyPasswordConfirm => '验证并保存';
+
+  @override
+  String get vaultImportSuccess => '密钥已成功保存到保险库';
+
+  @override
+  String get vaultImportDuplicateError => '该密钥已存在于保险库中';
 }

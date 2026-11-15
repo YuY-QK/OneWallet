@@ -2367,6 +2367,174 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'保险库已成功创建'**
   String get vaultSetupSuccess;
+
+  /// No description provided for @vaultImportTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入到保险库'**
+  String get vaultImportTitle;
+
+  /// No description provided for @vaultImportTypeMnemonic.
+  ///
+  /// In zh, this message translates to:
+  /// **'助记词'**
+  String get vaultImportTypeMnemonic;
+
+  /// No description provided for @vaultImportTypePrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultImportTypePrivateKey;
+
+  /// No description provided for @vaultImportNameLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get vaultImportNameLabel;
+
+  /// No description provided for @vaultImportNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'如：小狐狸主号'**
+  String get vaultImportNameHint;
+
+  /// No description provided for @vaultImportWordCountLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'词数'**
+  String get vaultImportWordCountLabel;
+
+  /// No description provided for @vaultImportPasteFullPhrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴整段'**
+  String get vaultImportPasteFullPhrase;
+
+  /// No description provided for @vaultImportPasteInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'剪贴板中的内容词数不匹配（支持 12/15/18/21/24 词）'**
+  String get vaultImportPasteInvalid;
+
+  /// No description provided for @vaultImportWordSuggestions.
+  ///
+  /// In zh, this message translates to:
+  /// **'联想词'**
+  String get vaultImportWordSuggestions;
+
+  /// No description provided for @vaultImportMnemonicChecksumFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'助记词校验失败，请检查拼写和顺序'**
+  String get vaultImportMnemonicChecksumFailed;
+
+  /// No description provided for @vaultImportAdvancedPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'高级：BIP39 附加密码 (Passphrase)'**
+  String get vaultImportAdvancedPassphrase;
+
+  /// No description provided for @vaultImportPassphraseHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'可选，通常为空'**
+  String get vaultImportPassphraseHint;
+
+  /// No description provided for @vaultImportChainFamilyLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'链类型'**
+  String get vaultImportChainFamilyLabel;
+
+  /// No description provided for @vaultImportPrivateKeyLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultImportPrivateKeyLabel;
+
+  /// No description provided for @vaultImportPrivateKeyHintEvm.
+  ///
+  /// In zh, this message translates to:
+  /// **'64 位十六进制私钥，可带 0x'**
+  String get vaultImportPrivateKeyHintEvm;
+
+  /// No description provided for @vaultImportPrivateKeyHintBtc.
+  ///
+  /// In zh, this message translates to:
+  /// **'WIF 格式私钥（以 5、K 或 L 开头）'**
+  String get vaultImportPrivateKeyHintBtc;
+
+  /// No description provided for @vaultImportPrivateKeyHintSol.
+  ///
+  /// In zh, this message translates to:
+  /// **'Base58 编码的私钥'**
+  String get vaultImportPrivateKeyHintSol;
+
+  /// No description provided for @vaultImportPrivateKeyHintTrx.
+  ///
+  /// In zh, this message translates to:
+  /// **'64 位十六进制私钥，可带 0x'**
+  String get vaultImportPrivateKeyHintTrx;
+
+  /// No description provided for @vaultImportPrivateKeyFormatError.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥格式不正确'**
+  String get vaultImportPrivateKeyFormatError;
+
+  /// No description provided for @vaultImportLinkAccountLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'关联账户'**
+  String get vaultImportLinkAccountLabel;
+
+  /// No description provided for @vaultImportLinkAccountNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'不关联（稍后在派生地址页处理）'**
+  String get vaultImportLinkAccountNone;
+
+  /// No description provided for @vaultImportSubmitButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存到保险库'**
+  String get vaultImportSubmitButton;
+
+  /// No description provided for @vaultImportVerifyPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入主密码'**
+  String get vaultImportVerifyPasswordTitle;
+
+  /// No description provided for @vaultImportVerifyPasswordMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先输入主密码验证身份后保存密钥'**
+  String get vaultImportVerifyPasswordMessage;
+
+  /// No description provided for @vaultImportVerifyPasswordCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get vaultImportVerifyPasswordCancel;
+
+  /// No description provided for @vaultImportVerifyPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证并保存'**
+  String get vaultImportVerifyPasswordConfirm;
+
+  /// No description provided for @vaultImportSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥已成功保存到保险库'**
+  String get vaultImportSuccess;
+
+  /// No description provided for @vaultImportDuplicateError.
+  ///
+  /// In zh, this message translates to:
+  /// **'该密钥已存在于保险库中'**
+  String get vaultImportDuplicateError;
 }
 
 class _AppLocalizationsDelegate
