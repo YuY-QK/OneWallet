@@ -135,6 +135,22 @@ void main() {
 
       const lockState = Unlocked(3);
       assertNoLeaks(lockState.toString(), context: 'LockState.toString');
+
+      const appLockUninit = AppLockUninitialized();
+      assertNoLeaks(
+        appLockUninit.toString(),
+        context: 'AppLockUninitialized.toString',
+      );
+      const appLockLocked = AppLockLocked();
+      assertNoLeaks(
+        appLockLocked.toString(),
+        context: 'AppLockLocked.toString',
+      );
+      const appLockUnlocked = AppLockUnlocked();
+      assertNoLeaks(
+        appLockUnlocked.toString(),
+        context: 'AppLockUnlocked.toString',
+      );
     });
 
     test('导入与派生失败时的 Failure.detail 和 toString() 不泄露明文', () async {

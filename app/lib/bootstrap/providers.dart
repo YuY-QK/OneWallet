@@ -2,6 +2,7 @@
 library;
 
 export 'adapter_providers.dart';
+export 'app_lock_providers.dart';
 export 'foundation_providers.dart';
 export 'read_model_providers.dart';
 export 'ui_services.dart';
