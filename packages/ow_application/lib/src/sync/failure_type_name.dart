@@ -25,5 +25,7 @@ String failureTypeName(Failure failure) => switch (failure) {
     UnsupportedReason.platform => 'UnsupportedFailure',
     UnsupportedReason.notIntegrated => 'UnsupportedFailure.notIntegrated',
   },
+  BiometricUnavailableFailure() => 'BiometricUnavailableFailure',
+  LockedOutFailure() => 'LockedOutFailure',
   UnknownFailure() => 'UnknownFailure',
 };
