@@ -347,5 +347,48 @@
   "directoryLinkDocs": "帮助文档",
   "directoryLinkApiKey": "获取 API Key",
   "walletAddSourceSearch": "搜索钱包…",
-  "walletAddSourceOther": "其他"
+  "walletAddSourceOther": "其他",
+  "exchangeAddTitle": "连接交易所",
+  "exchangeReplaceKeyTitle": "更换 API Key",
+  "exchangeAddExchange": "交易所",
+  "exchangeAddAccountName": "账户名称",
+  "exchangeAddAccountNameHint": "例如：Binance 主账户",
+  "exchangeAddAccountNameRequired": "请输入账户名称，最多 30 个字。",
+  "exchangeAddApiKey": "API Key",
+  "exchangeAddApiKeyHint": "粘贴或输入 API Key",
+  "exchangeAddApiKeyRequired": "请输入 API Key。",
+  "exchangeAddApiSecret": "API Secret",
+  "exchangeAddApiSecretHint": "粘贴或输入 API Secret",
+  "exchangeAddApiSecretRequired": "请输入 API Secret。",
+  "exchangeAddPassphrase": "Passphrase",
+  "exchangeAddPassphraseHint": "创建 API Key 时设置的口令",
+  "exchangeAddPassphraseRequired": "请输入 Passphrase。",
+  "exchangeAddPaste": "粘贴",
+  "exchangeAddSecurityNote": "请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。",
+  "exchangeAddGuideTitle": "如何创建只读 API Key",
+  "exchangeAddGuideSubtitle": "分步图文与官方指引",
+  "exchangeAddGuideOfficialLink": "前往官方创建指引",
+  "exchangeAddGuideApiManagementLink": "前往 API 管理",
+  "exchangeAddTestAndSave": "测试并保存",
+  "exchangeAddVerifying": "正在验证凭据…",
+  "exchangeAddSaving": "正在保存…",
+  "exchangeAddComingSoon": "即将支持",
+  "exchangeAddBitgetNotice": "Bitget 暂未接入，即将支持。",
+  "exchangeAddPermWarningTitle": "权限超出只读",
+  "exchangeAddPermWarningBody": "检测到此 Key 包含交易或提现权限，存在资金安全风险。建议在交易所后台重新创建只读 Key。",
+  "exchangeAddPermWarningModify": "返回修改",
+  "exchangeAddPermWarningProceed": "仍然保存",
+  "exchangeAddErrCredential": "API Key、Secret 或 Passphrase 不正确，服务商拒绝了请求。",
+  "exchangeAddErrNetwork": "网络不可用或请求超时。请检查网络连接后重试。",
+  "exchangeAddErrClockSkew": "设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。",
+  "exchangeAddErrIpRestricted": "该 API Key 限制了访问 IP，请检查交易所后台的 IP 白名单设置。",
+  "exchangeAddErrAccountMissing": "找不到这个账户，它可能已被删除。",
+  "exchangeAddErrUnknown": "验证失败：{detail}",
+  "@exchangeAddErrUnknown": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  }
 }

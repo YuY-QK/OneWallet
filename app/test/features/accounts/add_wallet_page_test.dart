@@ -33,11 +33,12 @@ void main() {
       expect(find.text('账户名称'), findsOneWidget);
     });
 
-    testWidgets('连接交易所_进入说明页', (tester) async {
+    testWidgets('连接交易所_进入P06', (tester) async {
       await pumpApp(tester, rig, location: '/accounts/add');
       await tester.tap(find.text('连接交易所'));
       await tester.pumpAndSettle();
-      expect(find.text('此功能将在后续版本提供。'), findsOneWidget);
+      expect(find.text('连接交易所'), findsOneWidget);
+      expect(find.text('API Key'), findsOneWidget);
     });
 
     testWidgets('导入助记词_进入说明页', (tester) async {

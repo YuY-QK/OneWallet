@@ -1287,6 +1287,222 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'其他'**
   String get walletAddSourceOther;
+
+  /// No description provided for @exchangeAddTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'连接交易所'**
+  String get exchangeAddTitle;
+
+  /// No description provided for @exchangeReplaceKeyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'更换 API Key'**
+  String get exchangeReplaceKeyTitle;
+
+  /// No description provided for @exchangeAddExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'交易所'**
+  String get exchangeAddExchange;
+
+  /// No description provided for @exchangeAddAccountName.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户名称'**
+  String get exchangeAddAccountName;
+
+  /// No description provided for @exchangeAddAccountNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'例如：Binance 主账户'**
+  String get exchangeAddAccountNameHint;
+
+  /// No description provided for @exchangeAddAccountNameRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入账户名称，最多 30 个字。'**
+  String get exchangeAddAccountNameRequired;
+
+  /// No description provided for @exchangeAddApiKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key'**
+  String get exchangeAddApiKey;
+
+  /// No description provided for @exchangeAddApiKeyHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴或输入 API Key'**
+  String get exchangeAddApiKeyHint;
+
+  /// No description provided for @exchangeAddApiKeyRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 API Key。'**
+  String get exchangeAddApiKeyRequired;
+
+  /// No description provided for @exchangeAddApiSecret.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Secret'**
+  String get exchangeAddApiSecret;
+
+  /// No description provided for @exchangeAddApiSecretHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴或输入 API Secret'**
+  String get exchangeAddApiSecretHint;
+
+  /// No description provided for @exchangeAddApiSecretRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 API Secret。'**
+  String get exchangeAddApiSecretRequired;
+
+  /// No description provided for @exchangeAddPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'Passphrase'**
+  String get exchangeAddPassphrase;
+
+  /// No description provided for @exchangeAddPassphraseHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建 API Key 时设置的口令'**
+  String get exchangeAddPassphraseHint;
+
+  /// No description provided for @exchangeAddPassphraseRequired.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入 Passphrase。'**
+  String get exchangeAddPassphraseRequired;
+
+  /// No description provided for @exchangeAddPaste.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴'**
+  String get exchangeAddPaste;
+
+  /// No description provided for @exchangeAddSecurityNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。'**
+  String get exchangeAddSecurityNote;
+
+  /// No description provided for @exchangeAddGuideTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'如何创建只读 API Key'**
+  String get exchangeAddGuideTitle;
+
+  /// No description provided for @exchangeAddGuideSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'分步图文与官方指引'**
+  String get exchangeAddGuideSubtitle;
+
+  /// No description provided for @exchangeAddGuideOfficialLink.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往官方创建指引'**
+  String get exchangeAddGuideOfficialLink;
+
+  /// No description provided for @exchangeAddGuideApiManagementLink.
+  ///
+  /// In zh, this message translates to:
+  /// **'前往 API 管理'**
+  String get exchangeAddGuideApiManagementLink;
+
+  /// No description provided for @exchangeAddTestAndSave.
+  ///
+  /// In zh, this message translates to:
+  /// **'测试并保存'**
+  String get exchangeAddTestAndSave;
+
+  /// No description provided for @exchangeAddVerifying.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在验证凭据…'**
+  String get exchangeAddVerifying;
+
+  /// No description provided for @exchangeAddSaving.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在保存…'**
+  String get exchangeAddSaving;
+
+  /// No description provided for @exchangeAddComingSoon.
+  ///
+  /// In zh, this message translates to:
+  /// **'即将支持'**
+  String get exchangeAddComingSoon;
+
+  /// No description provided for @exchangeAddBitgetNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'Bitget 暂未接入，即将支持。'**
+  String get exchangeAddBitgetNotice;
+
+  /// No description provided for @exchangeAddPermWarningTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'权限超出只读'**
+  String get exchangeAddPermWarningTitle;
+
+  /// No description provided for @exchangeAddPermWarningBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到此 Key 包含交易或提现权限，存在资金安全风险。建议在交易所后台重新创建只读 Key。'**
+  String get exchangeAddPermWarningBody;
+
+  /// No description provided for @exchangeAddPermWarningModify.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回修改'**
+  String get exchangeAddPermWarningModify;
+
+  /// No description provided for @exchangeAddPermWarningProceed.
+  ///
+  /// In zh, this message translates to:
+  /// **'仍然保存'**
+  String get exchangeAddPermWarningProceed;
+
+  /// No description provided for @exchangeAddErrCredential.
+  ///
+  /// In zh, this message translates to:
+  /// **'API Key、Secret 或 Passphrase 不正确，服务商拒绝了请求。'**
+  String get exchangeAddErrCredential;
+
+  /// No description provided for @exchangeAddErrNetwork.
+  ///
+  /// In zh, this message translates to:
+  /// **'网络不可用或请求超时。请检查网络连接后重试。'**
+  String get exchangeAddErrNetwork;
+
+  /// No description provided for @exchangeAddErrClockSkew.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。'**
+  String get exchangeAddErrClockSkew;
+
+  /// No description provided for @exchangeAddErrIpRestricted.
+  ///
+  /// In zh, this message translates to:
+  /// **'该 API Key 限制了访问 IP，请检查交易所后台的 IP 白名单设置。'**
+  String get exchangeAddErrIpRestricted;
+
+  /// No description provided for @exchangeAddErrAccountMissing.
+  ///
+  /// In zh, this message translates to:
+  /// **'找不到这个账户，它可能已被删除。'**
+  String get exchangeAddErrAccountMissing;
+
+  /// No description provided for @exchangeAddErrUnknown.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证失败：{detail}'**
+  String exchangeAddErrUnknown(String detail);
 }
 
 class _AppLocalizationsDelegate

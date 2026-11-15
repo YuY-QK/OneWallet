@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/accounts/presentation/accounts_page.dart';
 import '../features/accounts/presentation/add_account_page.dart';
+import '../features/accounts/presentation/add_exchange_page.dart';
 import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/common/presentation/coming_soon_page.dart';
@@ -120,8 +121,10 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
               GoRoute(
                 path: 'add/exchange',
                 name: RouteNames.exchangeAdd,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.accountAddExchangeTitle),
+                builder: (_, state) => AddExchangePage(
+                  key: ValueKey(state.uri.toString()),
+                  accountId: state.uri.queryParameters['accountId'],
+                ),
               ),
               GoRoute(
                 path: 'wallet/:id',

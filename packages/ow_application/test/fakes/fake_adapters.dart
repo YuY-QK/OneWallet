@@ -59,13 +59,75 @@ final class FakeChainAdapter implements ChainAdapter {
       const Ok(false);
 }
 
+final class FakeExchangeAdapter implements ExchangeAdapter {
+  FakeExchangeAdapter(this.id, {this.needsPassphrase = false});
+
+  @override
+  final ExchangeId id;
+
+  @override
+  final bool needsPassphrase;
+
+  Result<CredentialCheck> verifyResult = const Ok(
+    CredentialCheck(permission: KeyPermission.readOnly),
+  );
+
+  final List<ExchangeCredentials> verifyCalls = [];
+  final List<ExchangeCredentials> fetchHoldingsCalls = [];
+
+  List<Result<List<(ExchangeSubAccount, RawHolding)>>> holdingsResponses = [];
+  List<Result<List<DepositAddress>>> depositAddressesResponses = [];
+
+  @override
+  Future<Result<CredentialCheck>> verify(ExchangeCredentials c) async {
+    verifyCalls.add(c);
+    return verifyResult;
+  }
+
+  @override
+  Future<Result<List<(ExchangeSubAccount, RawHolding)>>> fetchHoldings(
+    ExchangeCredentials c,
+  ) async {
+    fetchHoldingsCalls.add(c);
+    if (holdingsResponses.isEmpty) return const Ok([]);
+    final callIndex = fetchHoldingsCalls.length - 1;
+    return holdingsResponses[callIndex < holdingsResponses.length
+        ? callIndex
+        : holdingsResponses.length - 1];
+  }
+
+  @override
+  Future<Result<List<DepositAddress>>> fetchDepositAddresses(
+    ExchangeCredentials c,
+  ) async {
+    if (depositAddressesResponses.isEmpty) return const Ok([]);
+    return depositAddressesResponses.removeAt(0);
+  }
+}
+
 final class FakeAdapterRegistry implements AdapterRegistry {
-  FakeAdapterRegistry()
-    : chains = {for (final f in ChainFamily.values) f: FakeChainAdapter(f)};
+  FakeAdapterRegistry({
+    Map<ChainFamily, FakeChainAdapter>? chains,
+    Map<ExchangeId, FakeExchangeAdapter>? exchanges,
+  }) : chains =
+           chains ??
+           {for (final f in ChainFamily.values) f: FakeChainAdapter(f)},
+       exchanges =
+           exchanges ??
+           {
+             for (final id in ExchangeId.values)
+               id: FakeExchangeAdapter(
+                 id,
+                 needsPassphrase:
+                     id == ExchangeId.okx || id == ExchangeId.bitget,
+               ),
+           };
 
   final Map<ChainFamily, FakeChainAdapter> chains;
+  final Map<ExchangeId, FakeExchangeAdapter> exchanges;
 
   FakeChainAdapter get evm => _of(ChainFamily.evm);
+  FakeExchangeAdapter exchangeFake(ExchangeId id) => exchanges[id]!;
 
   FakeChainAdapter _of(ChainFamily f) =>
       chains[f] ?? (throw StateError('缺少 $f 的假适配器'));
@@ -75,7 +137,7 @@ final class FakeAdapterRegistry implements AdapterRegistry {
 
   @override
   ExchangeAdapter exchange(ExchangeId id) =>
-      throw UnimplementedError('交易所适配器在 M2 接入');
+      exchanges[id] ?? (throw StateError('缺少 $id 的假适配器'));
 }
 
 /// 只认识预先登记的代币的映射表。

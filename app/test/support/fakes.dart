@@ -275,16 +275,70 @@ final class FakeChainAdapter implements ChainAdapter {
   }
 }
 
+final class FakeExchangeAdapter implements ExchangeAdapter {
+  FakeExchangeAdapter(this.id, {this.needsPassphrase = false});
+
+  @override
+  final ExchangeId id;
+
+  @override
+  final bool needsPassphrase;
+
+  Result<CredentialCheck> verifyResult = const Ok(
+    CredentialCheck(permission: KeyPermission.readOnly),
+  );
+
+  final List<ExchangeCredentials> verifyCalls = [];
+  final List<ExchangeCredentials> fetchHoldingsCalls = [];
+
+  List<Result<List<(ExchangeSubAccount, RawHolding)>>> holdingsResponses = [];
+  List<Result<List<DepositAddress>>> depositAddressesResponses = [];
+
+  @override
+  Future<Result<CredentialCheck>> verify(ExchangeCredentials c) async {
+    verifyCalls.add(c);
+    return verifyResult;
+  }
+
+  @override
+  Future<Result<List<(ExchangeSubAccount, RawHolding)>>> fetchHoldings(
+    ExchangeCredentials c,
+  ) async {
+    fetchHoldingsCalls.add(c);
+    if (holdingsResponses.isEmpty) return const Ok([]);
+    final callIndex = fetchHoldingsCalls.length - 1;
+    return holdingsResponses[callIndex < holdingsResponses.length
+        ? callIndex
+        : holdingsResponses.length - 1];
+  }
+
+  @override
+  Future<Result<List<DepositAddress>>> fetchDepositAddresses(
+    ExchangeCredentials c,
+  ) async {
+    if (depositAddressesResponses.isEmpty) return const Ok([]);
+    return depositAddressesResponses.removeAt(0);
+  }
+}
+
 final class FakeAdapterRegistry implements AdapterRegistry {
   final adapters = {for (final f in ChainFamily.values) f: FakeChainAdapter(f)};
+  final exchanges = {
+    for (final id in ExchangeId.values)
+      id: FakeExchangeAdapter(
+        id,
+        needsPassphrase: id == ExchangeId.okx || id == ExchangeId.bitget,
+      ),
+  };
 
   FakeChainAdapter operator [](ChainFamily f) => adapters[f]!;
+  FakeExchangeAdapter exchangeFake(ExchangeId id) => exchanges[id]!;
 
   @override
   ChainAdapter chain(ChainFamily family) => adapters[family]!;
 
   @override
-  ExchangeAdapter exchange(ExchangeId id) => throw UnimplementedError();
+  ExchangeAdapter exchange(ExchangeId id) => exchanges[id]!;
 }
 
 /// 对任何币种报固定价格的价格源；[failure] 非空时失败。

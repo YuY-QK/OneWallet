@@ -70,6 +70,24 @@ final class Account {
     backup: backup,
   );
 
+  /// 便捷工厂：创建交易所账户。
+  factory Account.exchange({
+    required String id,
+    required String name,
+    required int colorIndex,
+    required DateTime createdAt,
+    required ExchangeId exchange,
+    String note = '',
+  }) => Account(
+    id: id,
+    type: AccountType.exchange,
+    name: name,
+    colorIndex: colorIndex,
+    createdAt: createdAt,
+    exchange: exchange,
+    note: note,
+  );
+
   final String id;
   final AccountType type;
 

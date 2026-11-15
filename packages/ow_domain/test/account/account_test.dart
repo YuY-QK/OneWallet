@@ -249,6 +249,26 @@ void main() {
       expect(c.walletSourceId, 'rabby');
       expect(c.walletSource, WalletSource.other);
     });
+
+    test('Account.exchange_工厂方法构造_属性正确', () {
+      final acc = Account.exchange(
+        id: 'acc-ex1',
+        name: 'Binance 主账户',
+        colorIndex: 3,
+        createdAt: DateTime.utc(2026, 1, 1),
+        exchange: ExchangeId.binance,
+        note: '只读观察',
+      );
+      expect(acc.id, 'acc-ex1');
+      expect(acc.type, AccountType.exchange);
+      expect(acc.name, 'Binance 主账户');
+      expect(acc.colorIndex, 3);
+      expect(acc.exchange, ExchangeId.binance);
+      expect(acc.note, '只读观察');
+      expect(acc.walletSourceId, isNull);
+      expect(acc.walletSource, isNull);
+      expect(acc.vaultItemId, isNull);
+    });
   });
 
   group('WatchAddress', () {

@@ -28,6 +28,7 @@ final syncAccountProvider = Provider<SyncAccount>(
     normalizer: ref.watch(holdingNormalizerProvider),
     retryPolicy: ref.watch(retryPolicyProvider),
     clock: ref.watch(clockProvider),
+    credentials: ref.watch(credentialRepositoryProvider),
   ),
 );
 
@@ -68,6 +69,24 @@ final addAddressesToAccountProvider = Provider<AddAddressesToAccount>(
 
 final deleteAddressProvider = Provider<DeleteAddress>(
   (ref) => DeleteAddress(addresses: ref.watch(addressRepositoryProvider)),
+);
+
+final addExchangeAccountProvider = Provider<AddExchangeAccount>(
+  (ref) => AddExchangeAccount(
+    accounts: ref.watch(accountRepositoryProvider),
+    credentials: ref.watch(credentialRepositoryProvider),
+    adapters: ref.watch(adapterRegistryProvider),
+    ids: ref.watch(idGeneratorProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+final replaceExchangeCredentialsProvider = Provider<ReplaceExchangeCredentials>(
+  (ref) => ReplaceExchangeCredentials(
+    accounts: ref.watch(accountRepositoryProvider),
+    credentials: ref.watch(credentialRepositoryProvider),
+    adapters: ref.watch(adapterRegistryProvider),
+  ),
 );
 
 final watchPortfolioProvider = Provider<WatchPortfolio>(

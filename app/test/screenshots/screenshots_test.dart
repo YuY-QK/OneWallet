@@ -381,6 +381,7 @@ final _shots = <_Shot>[
       await t.pumpAndSettle();
     },
   ),
+  const _Shot('add_exchange', '/accounts/add/exchange'),
   const _Shot('data_sources', '/settings/sources'),
   const _Shot('settings', '/settings'),
   // 宽屏：列表与详情并排（1280×900，像素比 1）。

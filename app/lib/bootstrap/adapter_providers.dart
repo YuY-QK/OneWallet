@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ow_application/ow_application.dart';
 import 'package:ow_chains/ow_chains.dart';
 import 'package:ow_domain/ow_domain.dart';
+import 'package:ow_exchanges/ow_exchanges.dart';
 import 'package:ow_net/ow_net.dart';
 import 'package:ow_pricing/ow_pricing.dart';
 
@@ -60,12 +61,23 @@ final priceSourceProvider = Provider<PriceSource>(
   ),
 );
 
-/// 适配器注册表。EVM 已实现，其余家族与全部交易所是占位（返回
-/// [UnsupportedFailure]）。TODO(M2-01..03)、TODO(M2-06..09)：随适配器完成替换。
+/// 适配器注册表。EVM 及 Binance、OKX、Bybit 已实现；其余家族与 Bitget 是占位。
 final adapterRegistryProvider = Provider<AdapterRegistry>(
   (ref) => AppAdapterRegistry(
     evm: EvmChainAdapter(
       config: ref.watch(dataSourceConfigProvider),
+      onLog: ref.watch(netLogSinkProvider),
+    ),
+    binance: BinanceAdapter(
+      clock: ref.watch(clockProvider),
+      onLog: ref.watch(netLogSinkProvider),
+    ),
+    okx: OkxAdapter(
+      clock: ref.watch(clockProvider),
+      onLog: ref.watch(netLogSinkProvider),
+    ),
+    bybit: BybitAdapter(
+      clock: ref.watch(clockProvider),
       onLog: ref.watch(netLogSinkProvider),
     ),
   ),

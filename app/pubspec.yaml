@@ -27,6 +27,8 @@ dependencies:
     path: ../packages/ow_directory
   ow_domain:
     path: ../packages/ow_domain
+  ow_exchanges:
+    path: ../packages/ow_exchanges
   ow_net:
     path: ../packages/ow_net
   ow_platform:

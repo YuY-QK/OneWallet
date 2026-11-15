@@ -658,4 +658,118 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get walletAddSourceOther => '其他';
+
+  @override
+  String get exchangeAddTitle => '连接交易所';
+
+  @override
+  String get exchangeReplaceKeyTitle => '更换 API Key';
+
+  @override
+  String get exchangeAddExchange => '交易所';
+
+  @override
+  String get exchangeAddAccountName => '账户名称';
+
+  @override
+  String get exchangeAddAccountNameHint => '例如：Binance 主账户';
+
+  @override
+  String get exchangeAddAccountNameRequired => '请输入账户名称，最多 30 个字。';
+
+  @override
+  String get exchangeAddApiKey => 'API Key';
+
+  @override
+  String get exchangeAddApiKeyHint => '粘贴或输入 API Key';
+
+  @override
+  String get exchangeAddApiKeyRequired => '请输入 API Key。';
+
+  @override
+  String get exchangeAddApiSecret => 'API Secret';
+
+  @override
+  String get exchangeAddApiSecretHint => '粘贴或输入 API Secret';
+
+  @override
+  String get exchangeAddApiSecretRequired => '请输入 API Secret。';
+
+  @override
+  String get exchangeAddPassphrase => 'Passphrase';
+
+  @override
+  String get exchangeAddPassphraseHint => '创建 API Key 时设置的口令';
+
+  @override
+  String get exchangeAddPassphraseRequired => '请输入 Passphrase。';
+
+  @override
+  String get exchangeAddPaste => '粘贴';
+
+  @override
+  String get exchangeAddSecurityNote =>
+      '请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。';
+
+  @override
+  String get exchangeAddGuideTitle => '如何创建只读 API Key';
+
+  @override
+  String get exchangeAddGuideSubtitle => '分步图文与官方指引';
+
+  @override
+  String get exchangeAddGuideOfficialLink => '前往官方创建指引';
+
+  @override
+  String get exchangeAddGuideApiManagementLink => '前往 API 管理';
+
+  @override
+  String get exchangeAddTestAndSave => '测试并保存';
+
+  @override
+  String get exchangeAddVerifying => '正在验证凭据…';
+
+  @override
+  String get exchangeAddSaving => '正在保存…';
+
+  @override
+  String get exchangeAddComingSoon => '即将支持';
+
+  @override
+  String get exchangeAddBitgetNotice => 'Bitget 暂未接入，即将支持。';
+
+  @override
+  String get exchangeAddPermWarningTitle => '权限超出只读';
+
+  @override
+  String get exchangeAddPermWarningBody =>
+      '检测到此 Key 包含交易或提现权限，存在资金安全风险。建议在交易所后台重新创建只读 Key。';
+
+  @override
+  String get exchangeAddPermWarningModify => '返回修改';
+
+  @override
+  String get exchangeAddPermWarningProceed => '仍然保存';
+
+  @override
+  String get exchangeAddErrCredential =>
+      'API Key、Secret 或 Passphrase 不正确，服务商拒绝了请求。';
+
+  @override
+  String get exchangeAddErrNetwork => '网络不可用或请求超时。请检查网络连接后重试。';
+
+  @override
+  String get exchangeAddErrClockSkew => '设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。';
+
+  @override
+  String get exchangeAddErrIpRestricted =>
+      '该 API Key 限制了访问 IP，请检查交易所后台的 IP 白名单设置。';
+
+  @override
+  String get exchangeAddErrAccountMissing => '找不到这个账户，它可能已被删除。';
+
+  @override
+  String exchangeAddErrUnknown(String detail) {
+    return '验证失败：$detail';
+  }
 }

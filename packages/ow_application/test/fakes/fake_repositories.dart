@@ -284,3 +284,23 @@ final class InMemoryAssetRepository implements AssetRepository {
   @override
   Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
 }
+
+final class FakeCredentialRepository implements CredentialRepository {
+  final Map<String, ExchangeCredentials> _creds = {};
+
+  @override
+  Future<void> save(String accountId, ExchangeCredentials c) async {
+    _creds[accountId] = c;
+  }
+
+  @override
+  Future<ExchangeCredentials?> load(String accountId) async =>
+      _creds[accountId];
+
+  @override
+  Future<void> delete(String accountId) async {
+    _creds.remove(accountId);
+  }
+
+  void seed(String accountId, ExchangeCredentials c) => _creds[accountId] = c;
+}

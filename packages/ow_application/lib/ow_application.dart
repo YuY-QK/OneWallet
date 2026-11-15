@@ -2,9 +2,11 @@
 library;
 
 export 'src/accounts/add_addresses_to_account.dart';
+export 'src/accounts/add_exchange_account.dart';
 export 'src/accounts/add_wallet_account.dart';
 export 'src/accounts/address_input.dart';
 export 'src/accounts/delete_address.dart';
+export 'src/accounts/replace_exchange_credentials.dart';
 export 'src/portfolio/watch_portfolio.dart';
 export 'src/sync/failure_type_name.dart';
 export 'src/sync/holding_normalizer.dart';
