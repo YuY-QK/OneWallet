@@ -81,3 +81,7 @@ final credentialRepositoryProvider = Provider<CredentialRepository>(
 final vaultStorageProvider = Provider<VaultStorage>(
   (ref) => FileVaultStorage(),
 );
+
+final databaseOpenerProvider = Provider<DatabaseOpener>(
+  (ref) => SqlCipherDatabaseOpener(),
+);

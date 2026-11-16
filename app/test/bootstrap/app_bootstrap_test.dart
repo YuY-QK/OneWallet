@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:onewallet/bootstrap/app_bootstrap.dart';
 import 'package:onewallet/bootstrap/logger.dart';
+import 'package:ow_application/ow_application.dart';
 import 'package:ow_data/ow_data.dart';
 
 import 'support.dart';
@@ -149,5 +150,41 @@ void main() {
     for (final r in logs) {
       expect(r.message, isNot(contains(key)));
     }
+  });
+
+  test('WipeAllData 清除后再次启动_成功且为全新启动状态而不是 databaseKeyMissing', () async {
+    // 1. 首次正常启动并写入数据
+    final first = await boot() as BootstrapSuccess;
+    final initialKey = secrets.data[databaseKeyStoreKey];
+    expect(initialKey, matches(hex64));
+    expect(opener.fileExists, isTrue);
+
+    // 写入残留凭据
+    await secrets.write('ow.datasource.alchemy.key', 'some_key');
+
+    // 2. 执行 WipeAllData（关闭连接、删数据库文件、删保险库与清空安全存储）
+    final fakeVault = FakeVaultStorage();
+    final wipeAll = WipeAllData(
+      closer: first.database,
+      databaseDeleter: opener,
+      vaultStorage: fakeVault,
+      secrets: secrets,
+    );
+    final wipeResult = await wipeAll();
+    expect(wipeResult.isOk, isTrue);
+
+    // 断言数据库文件已被删除、安全存储已被清空
+    expect(opener.fileExists, isFalse);
+    expect(fakeVault.deleteCount, 1);
+    expect(secrets.data.isEmpty, isTrue);
+
+    // 3. 再次启动，必须成功且为全新启动，而不是 databaseKeyMissing
+    final second = await boot();
+    expect(second, isA<BootstrapSuccess>());
+    final newKey = secrets.data[databaseKeyStoreKey];
+    expect(newKey, isNotNull);
+    expect(newKey, matches(hex64));
+    expect(newKey, isNot(initialKey));
+    await (second as BootstrapSuccess).database.close();
   });
 }

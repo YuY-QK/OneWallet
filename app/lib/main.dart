@@ -1,4 +1,5 @@
 import 'package:flutter/widgets.dart';
+import 'package:ow_application/ow_application.dart';
 import 'package:ow_platform/ow_platform.dart';
 
 import 'bootstrap/app_bootstrap.dart';
@@ -9,14 +10,15 @@ void main() {
   final secrets = SecureSecretStore();
   final opener = SqlCipherDatabaseOpener();
   final vaultStorage = FileVaultStorage();
+  final wipeAllData = WipeAllData(
+    databaseDeleter: opener,
+    vaultStorage: vaultStorage,
+    secrets: secrets,
+  );
   runApp(
     BootstrapHost(
       bootstrap: () => bootstrapApp(secrets: secrets, opener: opener),
-      onWipeAndRestart: () async {
-        await opener.delete();
-        await vaultStorage.delete();
-        await secrets.clearAll();
-      },
+      wipeAllData: wipeAllData,
     ),
   );
 }

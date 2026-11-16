@@ -246,11 +246,11 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 - [x] **M3-07** 设置首页（P18）与关于（P22） 〔离线〕 2026-11-16
   - 做什么：
     1. 启动失败页（`_BootstrapErrorPage`）：针对 `databaseKeyMissing` 或 `databaseOpenFailed` 提供「清除本地数据并重新开始」入口，弹出二次确认对话框并明确提示可从 `.owbak` 加密备份恢复，确认后清理安全存储、删除数据库并重启引导至 P01（PRD 第 10 节）。
-    2. 用例 `WipeAllData`：在 `packages/ow_application` 实现，跨层调用 `DatabaseWiper.wipe()` 单事务清空全表、`VaultStorage.delete()` 删除本地保险库文件、`ClearableSecretStore.clearAll()` 清空全部 `ow.` 密钥与凭据。
-    3. 设置首页（P18 `SettingsPage`）：安全分组（安全设置入口先指向占位等线 B 合并、数据源、同步状态入口带失败数、备份清单入口带未导出提示）、数据偏好（计价货币 USD/CNY 切换、隐藏小额资产开关、未识别代币管理底抽屉）、外观（系统/浅色/深色切换）、其他（关于与帮助）、危险区（清除全部数据与二次确认）。
+    2. 用例 `WipeAllData`：在 `packages/ow_application` 实现，跨层严格按顺序执行：① 关闭数据库连接（若存在，经 `DatabaseCloser.close`）；② 删除数据库物理文件（经 `DatabaseDeleter.delete` 清理 `.db`, `-wal`, `-shm`）；③ 删除本地保险库文件（`VaultStorage.delete`）；④ 清空安全存储中全部 `ow.` 凭据与密钥（`ClearableSecretStore.clearAll`）。两处入口（设置页与启动失败页）共用同一段逻辑，清除后重新走启动流程回到初始引导状态。
+    3. 设置首页（P18 `SettingsPage`）：安全分组（安全设置入口先指向占位「安全设置功能即将提供」、数据源、同步状态入口带失败数、备份清单入口带未导出提示）、数据偏好（计价货币 USD/CNY 切换、隐藏小额资产开关、未识别代币管理底抽屉）、外观（系统/浅色/深色切换）、其他（关于与帮助）、危险区（清除全部数据与二次确认，确认后彻底清空并重启至初始状态）。
     4. 关于与帮助（P22 `AboutPage`）：版本号（1.0.0）、CoinGecko 署名与官方外链、安全设计原则说明弹窗、备份文件格式与离线 Python 解密工具说明弹窗、常见问题（FAQ）折叠列表、开源许可列表。
-    5. 规格与抽象：`DatabaseWiper` 接口与 SQLite 单事务实现、`ClearableSecretStore` 接口、`DatabaseOpener.delete()` 接口与原生实现，更新 IMPLEMENTATION_SPEC 第 3.1、3.2、4、7.1 节。
-  - 验收：数据层单测覆盖 `DatabaseWiper.wipe()` 清空全部数据表且保留表结构；平台层单测覆盖 `DatabaseOpener.delete()` 清理 `.db`, `-wal`, `-shm`；用例单测覆盖 `WipeAllData` 成功清空三处存储与无保险库降级容错；组件单测覆盖 `_BootstrapErrorPage` 清除本地数据确认并重试、P18 货币与主题与隐藏小额与危险按钮清除数据交互、P22 署名外链与安全弹窗与 FAQ 与开源许可；生成 P18/P22 浅深色金样截图并通过比对；`tools/check.sh` 全部通过。
+    5. 规格与抽象：`DatabaseCloser` 与 `DatabaseDeleter` 接口、`ClearableSecretStore` 接口、`DatabaseOpener.delete()` 接口与原生实现，同步更新 IMPLEMENTATION_SPEC 第 3.3、4 节，移除无用的 `DatabaseWiper`。
+  - 验收：平台层单测覆盖 `DatabaseOpener.delete()` 清理 `.db`, `-wal`, `-shm`；用例单测覆盖 `WipeAllData` 严格按序执行关闭、删库、删保险库与清空存储；启动测试覆盖清除后再次启动成功且为全新启动状态（非 `databaseKeyMissing`）；组件单测覆盖 `_BootstrapErrorPage` 清除本地数据确认并重启、P18 货币与主题与隐藏小额与危险按钮清除数据重启、P22 署名外链与安全弹窗与 FAQ 与开源许可；生成 P18/P22 浅深色金样截图并通过比对；`tools/check.sh` 全部通过。
 - [ ] **M3-08** 设备完整性提示 〔设备〕：`DeviceIntegrity` 的平台实现；启动警告与 P19 的状态行。
 - [ ] **M3-09** M3 验收 〔设备〕：PRD 第 11 节"应用锁"三条、"备份清单"第一条；PRD 第 10 节相关边界逐条走查。
 

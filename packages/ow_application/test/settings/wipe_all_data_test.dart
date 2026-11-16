@@ -4,21 +4,33 @@ import 'package:ow_application/ow_application.dart';
 import 'package:ow_domain/ow_domain.dart';
 import 'package:test/test.dart';
 
-final class FakeDatabaseWiper implements DatabaseWiper {
-  int wipeCount = 0;
+final class FakeDatabaseCloser implements DatabaseCloser {
+  FakeDatabaseCloser(this.log);
+  final List<String> log;
 
   @override
-  Future<void> wipe() async {
-    wipeCount++;
+  Future<void> close() async {
+    log.add('close');
+  }
+}
+
+final class FakeDatabaseDeleter implements DatabaseDeleter {
+  FakeDatabaseDeleter(this.log);
+  final List<String> log;
+
+  @override
+  Future<void> delete() async {
+    log.add('deleteDb');
   }
 }
 
 final class FakeVaultStorage implements VaultStorage {
-  int deleteCount = 0;
+  FakeVaultStorage(this.log);
+  final List<String> log;
 
   @override
   Future<void> delete() async {
-    deleteCount++;
+    log.add('deleteVault');
   }
 
   @override
@@ -29,12 +41,13 @@ final class FakeVaultStorage implements VaultStorage {
 }
 
 final class FakeClearableSecretStore implements ClearableSecretStore {
-  int clearAllCount = 0;
+  FakeClearableSecretStore(this.log);
+  final List<String> log;
   final Map<String, String> data = {};
 
   @override
   Future<void> clearAll() async {
-    clearAllCount++;
+    log.add('clearSecrets');
     data.clear();
   }
 
@@ -50,31 +63,52 @@ final class FakeClearableSecretStore implements ClearableSecretStore {
 
 void main() {
   group('WipeAllData', () {
-    test('依次执行数据库清空、保险库删除与安全存储清理', () async {
-      final wiper = FakeDatabaseWiper();
-      final vault = FakeVaultStorage();
-      final secrets = FakeClearableSecretStore();
+    test('严格按顺序执行：关闭连接、删除数据库文件、删除保险库与清空安全存储', () async {
+      final log = <String>[];
+      final closer = FakeDatabaseCloser(log);
+      final deleter = FakeDatabaseDeleter(log);
+      final vault = FakeVaultStorage(log);
+      final secrets = FakeClearableSecretStore(log);
 
       final usecase = WipeAllData(
-        databaseWiper: wiper,
+        closer: closer,
+        databaseDeleter: deleter,
         vaultStorage: vault,
         secrets: secrets,
       );
 
       final result = await usecase();
       expect(result.isOk, isTrue);
-      expect(wiper.wipeCount, 1);
-      expect(vault.deleteCount, 1);
-      expect(secrets.clearAllCount, 1);
+      expect(log, ['close', 'deleteDb', 'deleteVault', 'clearSecrets']);
     });
 
-    test('vaultStorage与secrets可为空并正常完成', () async {
-      final wiper = FakeDatabaseWiper();
-      final usecase = WipeAllData(databaseWiper: wiper);
+    test('closer为空时_正常执行删库、删保险库与清安全存储', () async {
+      final log = <String>[];
+      final deleter = FakeDatabaseDeleter(log);
+      final vault = FakeVaultStorage(log);
+      final secrets = FakeClearableSecretStore(log);
+
+      final usecase = WipeAllData(
+        databaseDeleter: deleter,
+        vaultStorage: vault,
+        secrets: secrets,
+      );
 
       final result = await usecase();
       expect(result.isOk, isTrue);
-      expect(wiper.wipeCount, 1);
+      expect(log, ['deleteDb', 'deleteVault', 'clearSecrets']);
+    });
+
+    test('也可在call时动态传入closer覆盖构造函数closer', () async {
+      final log = <String>[];
+      final closer = FakeDatabaseCloser(log);
+      final deleter = FakeDatabaseDeleter(log);
+
+      final usecase = WipeAllData(databaseDeleter: deleter);
+
+      final result = await usecase(closer: closer);
+      expect(result.isOk, isTrue);
+      expect(log, ['close', 'deleteDb']);
     });
   });
 }

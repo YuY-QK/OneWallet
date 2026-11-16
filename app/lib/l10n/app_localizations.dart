@@ -2386,6 +2386,12 @@ abstract class AppLocalizations {
   /// **'修改 PIN、自动锁定时间与生物识别'**
   String get settingsSecurityBody;
 
+  /// No description provided for @settingsSecuritySoon.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设置功能即将提供'**
+  String get settingsSecuritySoon;
+
   /// No description provided for @settingsBackup.
   ///
   /// In zh, this message translates to:

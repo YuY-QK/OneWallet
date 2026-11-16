@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ow_application/ow_application.dart';
 
 import '../app.dart';
 import '../l10n/app_localizations.dart';
@@ -18,10 +19,12 @@ class BootstrapHost extends StatefulWidget {
   const BootstrapHost({
     super.key,
     required this.bootstrap,
+    this.wipeAllData,
     this.onWipeAndRestart,
   });
 
   final Future<BootstrapResult> Function() bootstrap;
+  final WipeAllData? wipeAllData;
   final Future<void> Function()? onWipeAndRestart;
 
   @override
@@ -47,9 +50,20 @@ class _BootstrapHostState extends State<BootstrapHost> {
   }
 
   Future<void> _wipeAndRestart() async {
-    final onWipe = widget.onWipeAndRestart;
-    if (onWipe != null) {
-      await onWipe();
+    final opened = _opened;
+    final closer = opened?.database;
+    if (opened != null) {
+      _opened = null;
+    }
+    final wipeAll = widget.wipeAllData;
+    if (wipeAll != null) {
+      await wipeAll(closer: closer);
+    } else {
+      final onWipe = widget.onWipeAndRestart;
+      if (onWipe != null) {
+        if (closer != null) await closer.close();
+        await onWipe();
+      }
     }
     _retry();
   }
@@ -69,6 +83,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
               overrides: [
                 databaseProvider.overrideWithValue(result.database),
                 secretStoreProvider.overrideWithValue(result.secrets),
+                wipeAndRestartProvider.overrideWithValue(_wipeAndRestart),
               ],
               child: const AssetCatalogGate(child: OneWalletApp()),
             );
@@ -77,7 +92,9 @@ class _BootstrapHostState extends State<BootstrapHost> {
               child: _BootstrapErrorPage(
                 kind: kind,
                 onRetry: _retry,
-                onWipeAndRestart: widget.onWipeAndRestart != null
+                onWipeAndRestart:
+                    (widget.wipeAllData != null ||
+                        widget.onWipeAndRestart != null)
                     ? _wipeAndRestart
                     : null,
               ),

@@ -130,7 +130,7 @@ void main() {
 
       await tester.tap(find.text('应用锁与生物识别'));
       await tester.pumpAndSettle();
-      expect(find.textContaining('等线 B 合并后接上'), findsOneWidget);
+      expect(find.text('安全设置功能即将提供'), findsOneWidget);
 
       await tester.drag(find.byType(ListView), const Offset(0, -200));
       await tester.pumpAndSettle();

@@ -68,6 +68,16 @@ abstract interface class ScreenGuard {
   Stream<bool> get captureActive;
 }
 
+/// 可关闭的数据库连接（用于数据重置时断开连接）。
+abstract interface class DatabaseCloser {
+  Future<void> close();
+}
+
+/// 数据库存储文件删除能力（用于数据重置时删除物理文件）。
+abstract interface class DatabaseDeleter {
+  Future<void> delete();
+}
+
 /// 文件的导出与选取。手机用系统分享面板，桌面用"另存为"对话框。
 abstract interface class FileExporter {
   /// 返回用户是否完成了保存。

@@ -377,9 +377,6 @@ abstract interface class CredentialRepository {                             // �
   Future<ExchangeCredentials?> load(String accountId);
   Future<void> delete(String accountId);
 }
-abstract interface class DatabaseWiper {
-  Future<void> wipe();                                                      // 清空所有表中的数据（P18 WipeAllData）
-}
 ```
 
 ### 3.2 数据源适配器
@@ -428,6 +425,12 @@ abstract interface class DataSourceConfig {          // P20；Key 存 SecretStor
 平台能力接口（`PlatformCapabilities`、`HardwareKeyStore`、`SecretStore`、`ClearableSecretStore`、`ScreenGuard`、`FileExporter`）已存在。M3 另加：
 
 ```dart
+abstract interface class DatabaseCloser {
+  Future<void> close();                                                     // 断开当前数据库连接
+}
+abstract interface class DatabaseDeleter {
+  Future<void> delete();                                                    // 删除数据库物理文件（.db, -wal, -shm）
+}
 abstract interface class ClearableSecretStore implements SecretStore {
   Future<void> clearAll();                                                  // 删除全部 ow. 前缀条目（M3 WipeAllData 与首次启动）
 }
@@ -455,7 +458,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - `UpdateBackupStatus` 更新钱包账户的备份状态（R34–R36）：校验账户存在且为钱包账户（否则返回 `ValidationFailure`），通过 `AccountRepository.upsert` 更新账户的 `backup` 标记（支持更新 `offlineBackedUp`、`offlineVerifiedAt`、`keyless`，以及重置为未备份）并返回最新账户。
 - `WatchBackupChecklist` 备份清单只读聚合流（R34–R38）：汇集钱包账户、各账户估值与应用设置。返回 `Stream<BackupChecklistData>`（同时提供纯函数 `buildBackupChecklistData`）。待处理组（`pendingWallets`，状态为未备份 `none` 或无助记词 `keyless`）按当前估值降序排列（金额相同按名称升序）；已完成组（`completedWallets`，状态为已入库、已离线备份或两者兼具）标记对应状态标签，离线备份超过 180 天未核对时标记 `isOverdue: true`；汇总已备份钱包数与钱包总数；提取 `lastBackupExportedAt` 与保险库未备份更改标记 `hasUnexportedVaultChanges`（`vaultChangedAt != null && (lastBackupExportedAt == null || vaultChangedAt > lastBackupExportedAt)`）；交易所账户完全不计入清单条目（R37）。
 - `RecordDailySnapshot` 全量同步完成后的钩子用例（R16）：以当前 UTC 日期零点为键（`date`）统计各账户与标准币种的 USD 估值（金额均以 `Decimal` 高精度计算，不用浮点数），通过 `SnapshotRepository.upsert` 写入或覆盖当日快照。若任一账户同步失败或取消，该账户沿用上次余额计入快照并将快照标记为不完整（`complete: false`）；全量成功且价格更新成功时记录 `complete: true`；若当前无任何账户则不记录快照。
-- `WipeAllData` 清除全部数据用例（P18、PRD 第 10 节）：依次清空数据库所有数据表（`DatabaseWiper.wipe`）、删除本地保险库文件（`VaultStorage.delete`），并清空安全存储中全部 `ow.` 凭据与密钥（`ClearableSecretStore.clearAll`）。操作不可撤销，执行完毕后应用重置回到初始引导状态。
+- `WipeAllData` 清除全部数据用例（P18、PRD 第 10 节）：执行本地数据的彻底清除。设置页危险区与启动失败页两处清除入口共用此逻辑。步骤严格按序执行：① 关闭数据库连接（若存在当前已打开的连接，经 `DatabaseCloser.close`）；② 删除数据库物理文件（经 `DatabaseDeleter.delete`，删除 .db、-wal、-shm）；③ 删除本地保险库文件（`VaultStorage.delete`）；④ 清空安全存储中全部 `ow.` 凭据与密钥（`ClearableSecretStore.clearAll`）。操作不可撤销，执行完毕后触发应用重新执行启动流程回到初始引导状态（重新执行 `bootstrapApp`，因数据库文件已删除，走全新初始化流程生成新密钥并创建新库）。
 - `SyncAccount.watchSyncingAccountIds()` 推送正在同步的账户 id 集合（订阅时先推送当前集合）；页面用它显示"同步中"。成功的同步记录写入时，仓储同时更新账户的最近成功时间。
 - `DuplicateAddressFailure.kind`：`existing`（带账户名）、`withinInput`（本次输入内重复）、`ownerMissing`（地址在库中但所属账户不存在，数据异常，界面提示"该地址已存在于本应用中"）。
 - `UnsupportedFailure.reason`：`platform`（当前设备不支持，默认）、`notIntegrated`（该链或交易所尚未接入，构造函数 `UnsupportedFailure.notIntegrated`）。`failureTypeName` 对后者返回 `UnsupportedFailure.notIntegrated`，使同步记录能还原原因。
