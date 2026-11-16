@@ -17,6 +17,7 @@ import '../controllers/overview_controller.dart';
 import '../controllers/overview_view.dart';
 import 'widgets/distribution_section.dart';
 import 'widgets/failure_sheet.dart';
+import 'widgets/net_worth_card.dart';
 import 'widgets/total_card.dart';
 
 /// P02 总览：总资产、分布、同步状态。
@@ -175,6 +176,8 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
                     lastSyncedAt: last,
                     now: now,
                   ),
+                  const SizedBox(height: 12),
+                  const NetWorthCard(),
                   const SizedBox(height: 12),
                   DistributionSection(
                     summary: data,

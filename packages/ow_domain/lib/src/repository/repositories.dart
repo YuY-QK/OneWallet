@@ -85,6 +85,9 @@ abstract interface class SnapshotRepository {
   /// 日期在 [from] 与 [to] 之间（含两端）的快照，按日期升序。
   Future<List<Snapshot>> range(DateTime from, DateTime to);
 
+  /// 监听日期在 [from] 与 [to] 之间（含两端）的快照流，按日期升序。
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to);
+
   /// 以 date 为键新增或替换。
   Future<void> upsert(Snapshot snapshot);
 }

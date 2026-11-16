@@ -322,3 +322,33 @@ final class FakeCredentialRepository implements CredentialRepository {
 
   void seed(String accountId, ExchangeCredentials c) => _creds[accountId] = c;
 }
+
+final class InMemorySnapshotRepository implements SnapshotRepository {
+  final store = Watchable<Map<DateTime, Snapshot>>({});
+
+  @override
+  Future<List<Snapshot>> range(DateTime from, DateTime to) async =>
+      _filter(from, to);
+
+  @override
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to) =>
+      store.watch().map((_) => _filter(from, to));
+
+  @override
+  Future<void> upsert(Snapshot snapshot) async {
+    final next = Map<DateTime, Snapshot>.from(store.value);
+    next[snapshot.date.toUtc()] = snapshot;
+    store.value = next;
+  }
+
+  List<Snapshot> _filter(DateTime from, DateTime to) {
+    final f = from.toUtc();
+    final t = to.toUtc();
+    final list =
+        store.value.values
+            .where((s) => !s.date.isBefore(f) && !s.date.isAfter(t))
+            .toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+    return list;
+  }
+}

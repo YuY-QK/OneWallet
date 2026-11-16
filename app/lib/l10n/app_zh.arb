@@ -552,5 +552,28 @@
   "addressBookEmptyDesc": "添加钱包账户后，此处将集中管理你的所有地址",
   "addressBookSearchNoResultTitle": "不在你的地址簿中",
   "addressBookSearchNoResultDesc": "未在你的地址簿中找到此地址或相关信息",
-  "addressBookFooterTip": "粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。"
+  "addressBookFooterTip": "粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。",
+  "overviewChartRange7d": "7 天",
+  "overviewChartRange30d": "30 天",
+  "overviewChartRange90d": "90 天",
+  "overviewChartRangeAll": "全部",
+  "overviewChartEmpty": "至少需要两天的快照数据以绘制净值曲线",
+  "overviewChartAriaLabel": "近 {count} 天净值曲线",
+  "@overviewChartAriaLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewChartAriaLabelAll": "全部净值曲线",
+  "overviewChartDaysAgo": "{count} 天前",
+  "@overviewChartDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewChartToday": "今天"
 }

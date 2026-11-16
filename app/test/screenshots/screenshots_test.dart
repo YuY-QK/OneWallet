@@ -256,6 +256,33 @@ TestRig _sampleRig() {
     failureType: 'ServiceDownFailure',
     at: DateTime.utc(2026, 11, 12, 11, 58),
   );
+
+  // 30 天净值快照（展示净值走势曲线）。
+  const baseVal = 46000.0;
+  const targetVal = 53900.5;
+  for (var i = 0; i < 30; i++) {
+    final d = DateTime.utc(2026, 11, 12).subtract(Duration(days: 29 - i));
+    final double v;
+    if (i == 29) {
+      v = targetVal;
+    } else {
+      v =
+          baseVal +
+          (targetVal - baseVal) * (i / 29.0) +
+          (i % 3 == 0 ? 800 : (i % 2 == 0 ? -600 : 400));
+    }
+    rig.snapshots.feed.value = [
+      ...rig.snapshots.feed.value,
+      Snapshot(
+        date: d,
+        totalUsd: Decimal.parse(v.toStringAsFixed(2)),
+        complete: true,
+        byAccountUsd: {},
+        byAssetUsd: {},
+      ),
+    ];
+  }
+
   return rig;
 }
 

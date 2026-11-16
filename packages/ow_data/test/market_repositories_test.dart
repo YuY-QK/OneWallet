@@ -198,6 +198,26 @@ void main() {
       final day = DateTime.utc(2026, 1, 1);
       expect(await repos.snapshots.range(day, day), isEmpty);
     });
+
+    test('watchRange 先推送当前范围，upsert 后推送更新结果', () async {
+      final d1 = DateTime.utc(2026, 11, 1);
+      final d2 = DateTime.utc(2026, 11, 2);
+      await repos.snapshots.upsert(makeSnapshot(d1));
+
+      final stream = repos.snapshots.watchRange(d1, d2);
+      final emitted = <List<Snapshot>>[];
+      final sub = stream.listen(emitted.add);
+      addTearDown(sub.cancel);
+
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(emitted, hasLength(1));
+      expect(emitted.first, hasLength(1));
+
+      await repos.snapshots.upsert(makeSnapshot(d2));
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(emitted.length, greaterThanOrEqualTo(2));
+      expect(emitted.last.map((s) => s.date), [d1, d2]);
+    });
   });
 }
 

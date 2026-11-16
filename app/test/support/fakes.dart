@@ -204,6 +204,42 @@ final class FakeSyncRecordRepository implements SyncRecordRepository {
   }
 }
 
+final class FakeSnapshotRepository implements SnapshotRepository {
+  final feed = ValueFeed<List<Snapshot>>([]);
+
+  @override
+  Future<List<Snapshot>> range(DateTime from, DateTime to) async {
+    final fromUtc = DateTime.utc(from.year, from.month, from.day);
+    final toUtc = DateTime.utc(to.year, to.month, to.day);
+    return feed.value
+        .where((s) => !s.date.isBefore(fromUtc) && !s.date.isAfter(toUtc))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  @override
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to) {
+    final fromUtc = DateTime.utc(from.year, from.month, from.day);
+    final toUtc = DateTime.utc(to.year, to.month, to.day);
+    return feed.stream().map(
+      (list) =>
+          list
+              .where((s) => !s.date.isBefore(fromUtc) && !s.date.isAfter(toUtc))
+              .toList()
+            ..sort((a, b) => a.date.compareTo(b.date)),
+    );
+  }
+
+  @override
+  Future<void> upsert(Snapshot snapshot) async {
+    feed.value = [
+      for (final s in feed.value)
+        if (s.date != snapshot.date) s,
+      snapshot,
+    ];
+  }
+}
+
 final class FakeAssetRepository implements AssetRepository {
   final assets = <String, Asset>{};
   final contractMap = <ContractToken, String>{};
@@ -435,6 +471,7 @@ final class TestRig {
   final addresses = FakeAddressRepository();
   final holdings = FakeHoldingRepository();
   final prices = FakePriceRepository();
+  final snapshots = FakeSnapshotRepository();
   final syncRecords = FakeSyncRecordRepository();
   final settings = FakeSettingsRepository();
   final assetRepo = FakeAssetRepository();
@@ -461,6 +498,7 @@ final class TestRig {
     addressRepositoryProvider.overrideWithValue(addresses),
     holdingRepositoryProvider.overrideWithValue(holdings),
     priceRepositoryProvider.overrideWithValue(prices),
+    snapshotRepositoryProvider.overrideWithValue(snapshots),
     syncRecordRepositoryProvider.overrideWithValue(syncRecords),
     settingsRepositoryProvider.overrideWithValue(settings),
     assetRepositoryProvider.overrideWithValue(assetRepo),

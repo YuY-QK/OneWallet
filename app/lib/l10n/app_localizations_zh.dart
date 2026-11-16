@@ -1096,4 +1096,35 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addressBookFooterTip => '粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。';
+
+  @override
+  String get overviewChartRange7d => '7 天';
+
+  @override
+  String get overviewChartRange30d => '30 天';
+
+  @override
+  String get overviewChartRange90d => '90 天';
+
+  @override
+  String get overviewChartRangeAll => '全部';
+
+  @override
+  String get overviewChartEmpty => '至少需要两天的快照数据以绘制净值曲线';
+
+  @override
+  String overviewChartAriaLabel(int count) {
+    return '近 $count 天净值曲线';
+  }
+
+  @override
+  String get overviewChartAriaLabelAll => '全部净值曲线';
+
+  @override
+  String overviewChartDaysAgo(int count) {
+    return '$count 天前';
+  }
+
+  @override
+  String get overviewChartToday => '今天';
 }

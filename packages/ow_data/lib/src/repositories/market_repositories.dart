@@ -112,6 +112,35 @@ final class DriftSnapshotRepository implements SnapshotRepository {
     );
   }
 
+  /// 监听 [from, to]（含两端）内的快照流，按日期升序。
+  @override
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to) {
+    final fromUtc = from.toUtc();
+    final toUtc = to.toUtc();
+    final query = _db.select(_db.snapshots)
+      ..where(
+        (t) =>
+            t.date.isBiggerOrEqualValue(fromUtc) &
+            t.date.isSmallerOrEqualValue(toUtc),
+      )
+      ..orderBy([(t) => OrderingTerm.asc(t.date)]);
+
+    return query.watch().asyncMap((rows) async {
+      if (rows.isEmpty) return const [];
+      final items = await (_db.select(
+        _db.snapshotItems,
+      )..where((t) => t.date.isIn(rows.map((r) => r.date)))).get();
+      final byDate = <DateTime, List<SnapshotItemRow>>{};
+      for (final item in items) {
+        byDate.putIfAbsent(item.date.toUtc(), () => []).add(item);
+      }
+      return decodeRows(
+        rows,
+        (r) => snapshotFromRows(r, byDate[r.date.toUtc()] ?? const []),
+      );
+    });
+  }
+
   /// 以 `date` 为键整体替换：主行与明细在同一事务里重写。
   @override
   Future<void> upsert(Snapshot snapshot) => _db.transaction(() async {

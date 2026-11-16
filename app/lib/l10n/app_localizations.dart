@@ -2097,6 +2097,60 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。'**
   String get addressBookFooterTip;
+
+  /// No description provided for @overviewChartRange7d.
+  ///
+  /// In zh, this message translates to:
+  /// **'7 天'**
+  String get overviewChartRange7d;
+
+  /// No description provided for @overviewChartRange30d.
+  ///
+  /// In zh, this message translates to:
+  /// **'30 天'**
+  String get overviewChartRange30d;
+
+  /// No description provided for @overviewChartRange90d.
+  ///
+  /// In zh, this message translates to:
+  /// **'90 天'**
+  String get overviewChartRange90d;
+
+  /// No description provided for @overviewChartRangeAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部'**
+  String get overviewChartRangeAll;
+
+  /// No description provided for @overviewChartEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'至少需要两天的快照数据以绘制净值曲线'**
+  String get overviewChartEmpty;
+
+  /// No description provided for @overviewChartAriaLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'近 {count} 天净值曲线'**
+  String overviewChartAriaLabel(int count);
+
+  /// No description provided for @overviewChartAriaLabelAll.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部净值曲线'**
+  String get overviewChartAriaLabelAll;
+
+  /// No description provided for @overviewChartDaysAgo.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 天前'**
+  String overviewChartDaysAgo(int count);
+
+  /// No description provided for @overviewChartToday.
+  ///
+  /// In zh, this message translates to:
+  /// **'今天'**
+  String get overviewChartToday;
 }
 
 class _AppLocalizationsDelegate
