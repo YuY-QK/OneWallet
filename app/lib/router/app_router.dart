@@ -14,6 +14,7 @@ import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
+import '../features/vault/presentation/backup_checklist_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shell/adaptive_scaffold.dart';
@@ -169,6 +170,11 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                 builder: (c, _) =>
                     soon(c, AppLocalizations.of(c)!.accountAddImportTitle),
               ),
+              GoRoute(
+                path: 'checklist',
+                name: RouteNames.backupChecklist,
+                builder: (c, _) => const BackupChecklistPage(),
+              ),
             ],
           ),
           branch(
@@ -185,6 +191,12 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                 path: 'sync',
                 name: RouteNames.settingsSync,
                 builder: (_, _) => const SyncStatusPage(),
+              ),
+              GoRoute(
+                path: 'backup/export',
+                name: RouteNames.backupExport,
+                builder: (c, _) =>
+                    soon(c, AppLocalizations.of(c)!.backupChecklistExport),
               ),
             ],
           ),

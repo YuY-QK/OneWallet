@@ -1127,4 +1127,103 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get overviewChartToday => '今天';
+
+  @override
+  String overviewBackupWarning(int count) {
+    return '$count 个钱包尚未备份';
+  }
+
+  @override
+  String get backupChecklistTitle => '备份清单';
+
+  @override
+  String backupChecklistProgress(int backedUp, int total) {
+    return '$backedUp / $total 个钱包已备份';
+  }
+
+  @override
+  String get backupChecklistAllBackedUp => '全部钱包已备份';
+
+  @override
+  String get backupChecklistNeverExported => '尚未导出过加密备份';
+
+  @override
+  String backupChecklistLastExport(String time) {
+    return '加密备份文件：$time 导出';
+  }
+
+  @override
+  String get backupChecklistUnexportedChanges => '之后保险库有更改，尚未导出';
+
+  @override
+  String get backupChecklistExport => '导出加密备份';
+
+  @override
+  String get backupChecklistPendingSection => '待处理';
+
+  @override
+  String get backupChecklistCompletedSection => '已完成';
+
+  @override
+  String get backupChecklistExchangeNote => '交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。';
+
+  @override
+  String get backupChecklistEmptyTitle => '暂无钱包账户';
+
+  @override
+  String get backupChecklistEmptyDesc => '添加钱包账户后，在此查看和管理各钱包的备份状况。';
+
+  @override
+  String get backupChecklistKeylessNote =>
+      '这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。';
+
+  @override
+  String get backupChecklistOverdueWarning => '超过 180 天未核对';
+
+  @override
+  String backupChecklistLastVerified(String date) {
+    return '上次核对 $date';
+  }
+
+  @override
+  String get backupActionGoToVault => '去入库';
+
+  @override
+  String get backupActionMarkOffline => '标记已离线备份';
+
+  @override
+  String get backupActionUnmarkOffline => '取消离线备份标记';
+
+  @override
+  String get backupActionMarkKeyless => '标记为无助记词钱包';
+
+  @override
+  String get backupActionUnmarkKeyless => '取消无助记词标记';
+
+  @override
+  String get backupActionVerifiedToday => '今天已核对';
+
+  @override
+  String get backupActionResetStatus => '重新标记';
+
+  @override
+  String get backupActionViewChecklist => '查看完整备份清单';
+
+  @override
+  String get backupStatusSheetTitle => '备份状态管理';
+
+  @override
+  String get backupStatusInVaultDesc => '已关联保险库中的密钥条目。';
+
+  @override
+  String get backupStatusOfflineDesc => '已标记为有纸质或其他离线备份。';
+
+  @override
+  String get backupStatusOfflineNeverVerified => '未记录核对日期';
+
+  @override
+  String get backupStatusKeylessDesc => '无助记词钱包（MPC 或社交登录型，无法导出）。';
+
+  @override
+  String get backupStatusNoneDesc => '尚未在保险库入库，也没有标记离线备份。';
 }

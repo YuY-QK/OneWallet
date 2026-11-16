@@ -236,6 +236,16 @@ void main() {
       await pumpApp(tester, rig);
       expect(rig.registry[ChainFamily.evm].fetchCount, greaterThan(0));
     });
+
+    testWidgets('未备份钱包提醒_点击跳转到备份清单', (tester) async {
+      final rig = _richRig();
+      final router = await pumpApp(tester, rig);
+      expect(find.text('1 个钱包尚未备份'), findsOneWidget);
+
+      await tester.tap(find.text('1 个钱包尚未备份'));
+      await tester.pumpAndSettle();
+      expect(locationOf(router), '/vault/checklist');
+    });
   });
 
   group('P02 不同屏宽下无溢出', () {

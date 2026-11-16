@@ -31,6 +31,7 @@ import '../../shared/sync_failure.dart';
 import '../controllers/wallet_detail_controller.dart';
 import '../controllers/wallet_detail_view.dart';
 import 'widgets/address_sheet.dart';
+import 'widgets/backup_status_sheet.dart';
 import 'widgets/wallet_asset_row.dart';
 
 enum _Tab { assets, addresses }
@@ -128,13 +129,18 @@ class _WalletDetailPageState extends ConsumerState<WalletDetailPage> {
                     style: OwTextStyles.display,
                   ),
                   const SizedBox(height: 6),
-                  // 备份状态在本任务只读；操作面板属于 M3-06。
+                  // 备份状态操作面板（M3-06）。
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: 8,
                     runSpacing: 4,
                     children: [
-                      OwPill(label: backupText, tone: backupTone),
+                      InkWell(
+                        borderRadius: BorderRadius.circular(99),
+                        onTap: () =>
+                            showBackupStatusSheet(context, account: v.account),
+                        child: OwPill(label: backupText, tone: backupTone),
+                      ),
                       () {
                         final sourceId = v.account.walletSourceId;
                         final entry = sourceId != null

@@ -136,6 +136,9 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
     final data = summary.value;
     if (data == null) return const OwSkeleton();
     final last = view.lastSyncedAt;
+    final pendingCount = ref.watch(
+      backupChecklistProvider.select((s) => s.value?.pendingCount ?? 0),
+    );
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView(
@@ -178,6 +181,14 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
                   ),
                   const SizedBox(height: 12),
                   const NetWorthCard(),
+                  if (pendingCount > 0) ...[
+                    const SizedBox(height: 12),
+                    OwNotice(
+                      tone: OwNoticeTone.warn,
+                      message: l.overviewBackupWarning(pendingCount),
+                      onTap: () => context.goNamed(RouteNames.backupChecklist),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   DistributionSection(
                     summary: data,

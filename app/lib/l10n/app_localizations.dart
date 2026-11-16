@@ -2151,6 +2151,186 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'今天'**
   String get overviewChartToday;
+
+  /// No description provided for @overviewBackupWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个钱包尚未备份'**
+  String overviewBackupWarning(int count);
+
+  /// No description provided for @backupChecklistTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份清单'**
+  String get backupChecklistTitle;
+
+  /// No description provided for @backupChecklistProgress.
+  ///
+  /// In zh, this message translates to:
+  /// **'{backedUp} / {total} 个钱包已备份'**
+  String backupChecklistProgress(int backedUp, int total);
+
+  /// No description provided for @backupChecklistAllBackedUp.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部钱包已备份'**
+  String get backupChecklistAllBackedUp;
+
+  /// No description provided for @backupChecklistNeverExported.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未导出过加密备份'**
+  String get backupChecklistNeverExported;
+
+  /// No description provided for @backupChecklistLastExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份文件：{time} 导出'**
+  String backupChecklistLastExport(String time);
+
+  /// No description provided for @backupChecklistUnexportedChanges.
+  ///
+  /// In zh, this message translates to:
+  /// **'之后保险库有更改，尚未导出'**
+  String get backupChecklistUnexportedChanges;
+
+  /// No description provided for @backupChecklistExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出加密备份'**
+  String get backupChecklistExport;
+
+  /// No description provided for @backupChecklistPendingSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'待处理'**
+  String get backupChecklistPendingSection;
+
+  /// No description provided for @backupChecklistCompletedSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'已完成'**
+  String get backupChecklistCompletedSection;
+
+  /// No description provided for @backupChecklistExchangeNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。'**
+  String get backupChecklistExchangeNote;
+
+  /// No description provided for @backupChecklistEmptyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无钱包账户'**
+  String get backupChecklistEmptyTitle;
+
+  /// No description provided for @backupChecklistEmptyDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'添加钱包账户后，在此查看和管理各钱包的备份状况。'**
+  String get backupChecklistEmptyDesc;
+
+  /// No description provided for @backupChecklistKeylessNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。'**
+  String get backupChecklistKeylessNote;
+
+  /// No description provided for @backupChecklistOverdueWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'超过 180 天未核对'**
+  String get backupChecklistOverdueWarning;
+
+  /// No description provided for @backupChecklistLastVerified.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次核对 {date}'**
+  String backupChecklistLastVerified(String date);
+
+  /// No description provided for @backupActionGoToVault.
+  ///
+  /// In zh, this message translates to:
+  /// **'去入库'**
+  String get backupActionGoToVault;
+
+  /// No description provided for @backupActionMarkOffline.
+  ///
+  /// In zh, this message translates to:
+  /// **'标记已离线备份'**
+  String get backupActionMarkOffline;
+
+  /// No description provided for @backupActionUnmarkOffline.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消离线备份标记'**
+  String get backupActionUnmarkOffline;
+
+  /// No description provided for @backupActionMarkKeyless.
+  ///
+  /// In zh, this message translates to:
+  /// **'标记为无助记词钱包'**
+  String get backupActionMarkKeyless;
+
+  /// No description provided for @backupActionUnmarkKeyless.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消无助记词标记'**
+  String get backupActionUnmarkKeyless;
+
+  /// No description provided for @backupActionVerifiedToday.
+  ///
+  /// In zh, this message translates to:
+  /// **'今天已核对'**
+  String get backupActionVerifiedToday;
+
+  /// No description provided for @backupActionResetStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'重新标记'**
+  String get backupActionResetStatus;
+
+  /// No description provided for @backupActionViewChecklist.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看完整备份清单'**
+  String get backupActionViewChecklist;
+
+  /// No description provided for @backupStatusSheetTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份状态管理'**
+  String get backupStatusSheetTitle;
+
+  /// No description provided for @backupStatusInVaultDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'已关联保险库中的密钥条目。'**
+  String get backupStatusInVaultDesc;
+
+  /// No description provided for @backupStatusOfflineDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'已标记为有纸质或其他离线备份。'**
+  String get backupStatusOfflineDesc;
+
+  /// No description provided for @backupStatusOfflineNeverVerified.
+  ///
+  /// In zh, this message translates to:
+  /// **'未记录核对日期'**
+  String get backupStatusOfflineNeverVerified;
+
+  /// No description provided for @backupStatusKeylessDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'无助记词钱包（MPC 或社交登录型，无法导出）。'**
+  String get backupStatusKeylessDesc;
+
+  /// No description provided for @backupStatusNoneDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未在保险库入库，也没有标记离线备份。'**
+  String get backupStatusNoneDesc;
 }
 
 class _AppLocalizationsDelegate

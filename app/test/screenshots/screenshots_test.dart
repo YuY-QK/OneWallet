@@ -139,7 +139,16 @@ TestRig _sampleRig() {
   final rig = TestRig();
 
   // 钱包一：Uni 钱包，EVM 地址，ETH（以太坊与 Base）和 USDC。
-  final uni = rig.addWallet('w1', 'Uni 钱包', source: WalletSource.uniswap);
+  final uni = rig.addWallet(
+    'w1',
+    'Uni 钱包',
+    source: WalletSource.uniswap,
+    vaultItemId: 'v1',
+    backup: BackupStatus(
+      offlineBackedUp: true,
+      offlineVerifiedAt: DateTime.utc(2026, 11, 10),
+    ),
+  );
   final uniAddr = rig.addAddress('d1', uni.id, _evmUni);
   rig.addHolding(uni.id, uniAddr.id, amount: '2.4', price: '3000');
   rig.addHolding(
@@ -174,7 +183,15 @@ TestRig _sampleRig() {
   );
 
   // 钱包三：冷钱包，比特币与 Solana 两条非 EVM 地址。
-  final cold = rig.addWallet('w3', '冷钱包', source: WalletSource.other);
+  final cold = rig.addWallet(
+    'w3',
+    '冷钱包',
+    source: WalletSource.other,
+    backup: BackupStatus(
+      offlineBackedUp: true,
+      offlineVerifiedAt: DateTime.utc(2026, 5, 1),
+    ),
+  );
   final btcAddr = rig.addAddress(
     'd3',
     cold.id,
@@ -282,6 +299,11 @@ TestRig _sampleRig() {
       ),
     ];
   }
+
+  rig.settings.feed.value = AppSettings(
+    lastBackupExportedAt: DateTime.utc(2026, 11, 2),
+    vaultChangedAt: DateTime.utc(2026, 11, 8),
+  );
 
   return rig;
 }
@@ -419,6 +441,7 @@ final _shots = <_Shot>[
   ),
   const _Shot('data_sources', '/settings/sources'),
   const _Shot('sync_status', '/settings/sync'), // P21
+  const _Shot('backup_checklist', '/vault/checklist'), // P11
   const _Shot('settings', '/settings'),
   // 宽屏：列表与详情并排（1280×900，像素比 1）。
   const _Shot(

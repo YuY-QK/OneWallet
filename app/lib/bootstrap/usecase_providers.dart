@@ -152,3 +152,21 @@ final searchAddressesProvider = Provider<SearchAddresses>(
 final updateAddressNoteProvider = Provider<UpdateAddressNote>(
   (ref) => UpdateAddressNote(addresses: ref.watch(addressRepositoryProvider)),
 );
+
+final updateBackupStatusProvider = Provider<UpdateBackupStatus>(
+  (ref) => UpdateBackupStatus(accounts: ref.watch(accountRepositoryProvider)),
+);
+
+final watchBackupChecklistProvider = Provider<WatchBackupChecklist>(
+  (ref) => WatchBackupChecklist(
+    accounts: ref.watch(accountRepositoryProvider),
+    holdings: ref.watch(holdingRepositoryProvider),
+    prices: ref.watch(priceRepositoryProvider),
+    settings: ref.watch(settingsRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+final backupChecklistProvider = StreamProvider.autoDispose<BackupChecklistData>(
+  (ref) => ref.watch(watchBackupChecklistProvider)(),
+);
