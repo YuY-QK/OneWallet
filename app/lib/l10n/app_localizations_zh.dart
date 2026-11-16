@@ -1226,4 +1226,199 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupStatusNoneDesc => '尚未在保险库入库，也没有标记离线备份。';
+
+  @override
+  String get bootstrapWipeAndRestart => '清除本地数据并重新开始';
+
+  @override
+  String get bootstrapWipeConfirmTitle => '清除本地数据并重新开始？';
+
+  @override
+  String get bootstrapWipeConfirmBody =>
+      '此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。';
+
+  @override
+  String get bootstrapWipeConfirmAction => '清除并重新开始';
+
+  @override
+  String get settingsSectionSecurity => '安全';
+
+  @override
+  String get settingsSectionOther => '其他';
+
+  @override
+  String get settingsSectionDanger => '危险区';
+
+  @override
+  String get settingsSecurity => '应用锁与生物识别';
+
+  @override
+  String get settingsSecurityBody => '修改 PIN、自动锁定时间与生物识别';
+
+  @override
+  String get settingsBackup => '加密备份';
+
+  @override
+  String get settingsBackupNever => '尚未导出过';
+
+  @override
+  String settingsBackupLastExported(String date) {
+    return '上次导出 $date';
+  }
+
+  @override
+  String get settingsQuote => '计价货币';
+
+  @override
+  String get settingsHideSmall => '隐藏小额币种';
+
+  @override
+  String get settingsHideSmallBody => '低于 1 USD 的资产不显示在列表中';
+
+  @override
+  String get settingsUnrecognizedTokens => '未识别代币';
+
+  @override
+  String get settingsUnrecognizedTokensEmpty => '暂无未识别代币';
+
+  @override
+  String get settingsUnrecognizedTokensDesc => '链上收到但未在价格源中识别的代币可以在此处管理显隐';
+
+  @override
+  String get settingsTheme => '外观';
+
+  @override
+  String get settingsThemeSystem => '跟随系统';
+
+  @override
+  String get settingsThemeLight => '浅色模式';
+
+  @override
+  String get settingsThemeDark => '深色模式';
+
+  @override
+  String get settingsAbout => '关于与帮助';
+
+  @override
+  String get settingsWipeAllData => '清除全部数据';
+
+  @override
+  String get settingsWipeConfirmTitle => '清除全部数据？';
+
+  @override
+  String get settingsWipeConfirmBody =>
+      '此操作将清除本地全部钱包、交易所、持仓、快照与保存的凭据，不可撤销。如果有加密备份文件（.owbak），可以在重新进入应用后恢复。';
+
+  @override
+  String get settingsWipeConfirmAction => '清除全部数据';
+
+  @override
+  String get securitySectionAppLock => '应用锁';
+
+  @override
+  String get securitySectionVault => '保险库';
+
+  @override
+  String get securitySectionDevice => '设备';
+
+  @override
+  String get securityPin => '修改 PIN';
+
+  @override
+  String get securityAppBiometrics => '生物识别解锁';
+
+  @override
+  String get securityAutoLock => '自动锁定时间';
+
+  @override
+  String get securityAutoLockImmediately => '立即';
+
+  @override
+  String get securityAutoLock1Min => '1 分钟';
+
+  @override
+  String get securityAutoLock5Min => '5 分钟';
+
+  @override
+  String get securityVaultBiometrics => '生物识别解锁保险库';
+
+  @override
+  String get securityVaultBiometricsDesc => '开启时需验证主密码';
+
+  @override
+  String get securityChangeMasterPassword => '修改主密码';
+
+  @override
+  String get securityDeviceStatus => '设备安全状态';
+
+  @override
+  String get securityDeviceNormal => '正常';
+
+  @override
+  String get securityDeviceNormalDesc => '未检测到越狱或 root';
+
+  @override
+  String get securityFeaturePending => '功能准备中';
+
+  @override
+  String get aboutTitle => '关于与帮助';
+
+  @override
+  String get aboutVersion => '版本';
+
+  @override
+  String get aboutSecurityDesign => '安全设计说明';
+
+  @override
+  String get aboutSecurityDesignBody => '本地优先、密钥不出设备、只看不动';
+
+  @override
+  String get aboutSecurityDesignDialogTitle => '安全设计原则';
+
+  @override
+  String get aboutSecurityDesignDetail =>
+      '1. 本地优先：你的资产数据和密钥仅保存在当前设备，不上传至任何服务器。\n\n2. 只看不动：OneWallet 不提供签名、转账或交易功能，杜绝被黑客恶意调用的可能。\n\n3. 离线保险库：助记词和私钥由独立的加密保险库保管，与联网环境物理隔离。';
+
+  @override
+  String get aboutBackupFormat => '备份文件格式与解密工具';
+
+  @override
+  String get aboutBackupFormatBody => '公开格式，支持电脑端开源离线解密';
+
+  @override
+  String get aboutBackupFormatDialogTitle => '加密备份与离线解密';
+
+  @override
+  String get aboutBackupFormatDetail =>
+      'OneWallet 的加密备份（.owbak）采用公开规范与标准算法（Argon2id + XChaCha20-Poly1305）。\n\n即使应用不可用，你也可以在断网电脑上使用官方提供的开源 Python 脚本解密并导出全部助记词与数据。';
+
+  @override
+  String get aboutFaq => '常见问题';
+
+  @override
+  String get aboutFaqDerivationTitle => '派生路径是什么？';
+
+  @override
+  String get aboutFaqDerivationAnswer =>
+      '派生路径是按照 BIP44/84/86 等加密货币标准，从同一套助记词计算出不同链和不同地址规则的算法路径。';
+
+  @override
+  String get aboutFaqMismatchTitle => '为什么链上地址与钱包软件显示的不一致？';
+
+  @override
+  String get aboutFaqMismatchAnswer =>
+      '不同钱包软件可能采用了不同的默认派生路径或地址格式（例如 Bitcoin 的 Legacy 1 开头、SegWit 3 开头或 Native SegWit bc1 开头）。在派生地址页面可以选择对应的路径预设。';
+
+  @override
+  String get aboutFaqApiKeyTitle => '如何创建只读 API Key？';
+
+  @override
+  String get aboutFaqApiKeyAnswer =>
+      '在交易所 API 管理页面创建密钥时，仅勾选「读取」或「Read-Only」权限，切勿开启「交易」或「提现」权限以保障资金绝对安全。';
+
+  @override
+  String get aboutLicenses => '开源许可';
+
+  @override
+  String get cancel => '取消';
 }

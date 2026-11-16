@@ -174,3 +174,9 @@ abstract interface class CredentialRepository {
   /// 不存在时什么也不做。
   Future<void> delete(String accountId);
 }
+
+/// 清除数据库中全部持久化数据的接口（P18 WipeAllData）。
+abstract interface class DatabaseWiper {
+  /// 清空或重置所有数据表。
+  Future<void> wipe();
+}

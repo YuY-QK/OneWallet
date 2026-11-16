@@ -19,6 +19,9 @@ abstract interface class DatabaseOpener {
   /// 失败会在那时以异常出现，由调用方（启动流程）捕获并显示错误页，
   /// 不得自动删除或重建数据库。异常信息不含密钥。
   Future<QueryExecutor> open({required String keyHex});
+
+  /// 删除数据库文件及相关日志文件（清除全部数据或启动失败重建用）。
+  Future<void> delete();
 }
 
 /// 数据库文件名，位于应用支持目录。
@@ -68,6 +71,22 @@ final class SqlCipherDatabaseOpener implements DatabaseOpener {
     return inBackground
         ? NativeDatabase.createInBackground(file, setup: setup)
         : NativeDatabase(file, setup: setup);
+  }
+
+  @override
+  Future<void> delete() async {
+    final file = await _file();
+    if (await file.exists()) {
+      await file.delete();
+    }
+    final wal = File('${file.path}-wal');
+    if (await wal.exists()) {
+      await wal.delete();
+    }
+    final shm = File('${file.path}-shm');
+    if (await shm.exists()) {
+      await shm.delete();
+    }
   }
 }
 

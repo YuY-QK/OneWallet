@@ -278,14 +278,24 @@ final class FakeSettingsRepository implements SettingsRepository {
 }
 
 final class FakeTokenVisibilityRepository implements TokenVisibilityRepository {
-  @override
-  Future<Set<String>> hidden() async => {};
+  final feed = ValueFeed<Set<String>>({});
 
   @override
-  Stream<Set<String>> watchHidden() => Stream.value(const {});
+  Future<Set<String>> hidden() async => Set.of(feed.value);
 
   @override
-  Future<void> setHidden(String tokenKey, bool hidden) async {}
+  Stream<Set<String>> watchHidden() => feed.stream();
+
+  @override
+  Future<void> setHidden(String tokenKey, bool hidden) async {
+    final next = Set<String>.of(feed.value);
+    if (hidden) {
+      next.add(tokenKey);
+    } else {
+      next.remove(tokenKey);
+    }
+    feed.value = next;
+  }
 }
 
 /// 脚本化的链适配器：按链家族返回预设结果，并记录调用次数。
@@ -463,6 +473,14 @@ final class FakePlatformCapabilities implements PlatformCapabilities {
 /// 页面测试的一套假依赖。`overrides` 直接用于 `ProviderScope`。
 const _unset = Object();
 
+final class _FakeRigDatabaseWiper implements DatabaseWiper {
+  _FakeRigDatabaseWiper(this.onWipe);
+  final void Function() onWipe;
+
+  @override
+  Future<void> wipe() async => onWipe();
+}
+
 final class TestRig {
   TestRig({DateTime? now})
     : clock = FixedClock(now ?? DateTime.utc(2026, 11, 12, 12));
@@ -478,8 +496,11 @@ final class TestRig {
   final registry = FakeAdapterRegistry();
   final priceSource = FakePriceSource();
   final secrets = FakeSecretStore();
+  final tokenVisibility = FakeTokenVisibilityRepository();
   final FixedClock clock;
   final ids = SequenceIds();
+
+  int wipeAllCalls = 0;
 
   /// 剪贴板内容（假）。
   String? clipboard;
@@ -502,8 +523,12 @@ final class TestRig {
     syncRecordRepositoryProvider.overrideWithValue(syncRecords),
     settingsRepositoryProvider.overrideWithValue(settings),
     assetRepositoryProvider.overrideWithValue(assetRepo),
-    tokenVisibilityRepositoryProvider.overrideWithValue(
-      FakeTokenVisibilityRepository(),
+    tokenVisibilityRepositoryProvider.overrideWithValue(tokenVisibility),
+    wipeAllDataProvider.overrideWith(
+      (ref) => WipeAllData(
+        databaseWiper: _FakeRigDatabaseWiper(() => wipeAllCalls++),
+        secrets: secrets,
+      ),
     ),
     adapterRegistryProvider.overrideWithValue(registry),
     priceSourceProvider.overrideWithValue(priceSource),

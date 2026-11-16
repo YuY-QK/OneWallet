@@ -85,4 +85,56 @@ void main() {
     expect(find.text('无法打开本地数据'), findsNothing);
     await unmount(tester);
   });
+
+  testWidgets('数据库打开失败_点击清除本地数据并确认后调用wipe并重试成功', (tester) async {
+    var wipeCalled = false;
+    var calls = 0;
+    Future<BootstrapResult> bootstrap() async {
+      calls++;
+      return calls == 1
+          ? const BootstrapFailure(BootstrapFailureKind.databaseOpenFailed)
+          : BootstrapSuccess(
+              database: OwDatabase(NativeDatabase.memory()),
+              secrets: FakeSecretStore(),
+            );
+    }
+
+    await tester.pumpWidget(
+      BootstrapHost(
+        bootstrap: bootstrap,
+        onWipeAndRestart: () async {
+          wipeCalled = true;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始'), findsOneWidget);
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始？'), findsOneWidget);
+    expect(find.textContaining('此操作将清除本地数据库与所有存储的凭据'), findsOneWidget);
+
+    // 点取消：不调用 wipe
+    await tester.tap(find.text('取消'));
+    await tester.pumpAndSettle();
+    expect(wipeCalled, isFalse);
+
+    // 再次点击并确认
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('清除并重新开始'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(wipeCalled, isTrue);
+    expect(calls, 2);
+    expect(find.text('总览'), findsWidgets);
+    await unmount(tester);
+  });
 }

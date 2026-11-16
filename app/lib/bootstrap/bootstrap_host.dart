@@ -15,9 +15,14 @@ import 'providers.dart';
 ///
 /// 启动流程用参数传入，测试中换成假的安全存储与内存数据库。
 class BootstrapHost extends StatefulWidget {
-  const BootstrapHost({super.key, required this.bootstrap});
+  const BootstrapHost({
+    super.key,
+    required this.bootstrap,
+    this.onWipeAndRestart,
+  });
 
   final Future<BootstrapResult> Function() bootstrap;
+  final Future<void> Function()? onWipeAndRestart;
 
   @override
   State<BootstrapHost> createState() => _BootstrapHostState();
@@ -41,6 +46,14 @@ class _BootstrapHostState extends State<BootstrapHost> {
     });
   }
 
+  Future<void> _wipeAndRestart() async {
+    final onWipe = widget.onWipeAndRestart;
+    if (onWipe != null) {
+      await onWipe();
+    }
+    _retry();
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<BootstrapResult>(
@@ -61,7 +74,13 @@ class _BootstrapHostState extends State<BootstrapHost> {
             );
           case BootstrapFailure(:final kind):
             return _BootstrapShell(
-              child: _BootstrapErrorPage(kind: kind, onRetry: _retry),
+              child: _BootstrapErrorPage(
+                kind: kind,
+                onRetry: _retry,
+                onWipeAndRestart: widget.onWipeAndRestart != null
+                    ? _wipeAndRestart
+                    : null,
+              ),
             );
           case null:
             return const _BootstrapShell(child: _BootstrapLoading());
@@ -104,14 +123,51 @@ class _BootstrapLoading extends StatelessWidget {
 }
 
 class _BootstrapErrorPage extends StatelessWidget {
-  const _BootstrapErrorPage({required this.kind, required this.onRetry});
+  const _BootstrapErrorPage({
+    required this.kind,
+    required this.onRetry,
+    this.onWipeAndRestart,
+  });
 
   final BootstrapFailureKind kind;
   final VoidCallback onRetry;
+  final Future<void> Function()? onWipeAndRestart;
+
+  Future<void> _confirmWipe(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.bootstrapWipeConfirmTitle),
+        content: Text(l10n.bootstrapWipeConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(
+              l10n.bootstrapWipeConfirmAction,
+              style: TextStyle(color: Theme.of(ctx).colorScheme.error),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && onWipeAndRestart != null) {
+      await onWipeAndRestart!();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final showWipe =
+        onWipeAndRestart != null &&
+        (kind == BootstrapFailureKind.databaseKeyMissing ||
+            kind == BootstrapFailureKind.databaseOpenFailed);
+
     return EmptyState(
       icon: Icons.error_outline,
       title: l10n.bootstrapErrorTitle,
@@ -125,6 +181,8 @@ class _BootstrapErrorPage extends StatelessWidget {
       },
       actionLabel: l10n.bootstrapRetry,
       onAction: onRetry,
+      secondaryActionLabel: showWipe ? l10n.bootstrapWipeAndRestart : null,
+      onSecondaryAction: showWipe ? () => _confirmWipe(context) : null,
     );
   }
 }

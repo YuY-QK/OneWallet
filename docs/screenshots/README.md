@@ -43,6 +43,8 @@ cp app/test/screenshots/goldens/*.png docs/screenshots/
 | `sync_status_light.png` / `sync_status_dark.png` | P21 同步状态 | 390×844，像素比 2 |
 | `backup_checklist_light.png` / `backup_checklist_dark.png` | P11 备份清单 | 390×844，像素比 2 |
 | `settings_light.png` / `settings_dark.png` | P18 设置首页 | 390×844，像素比 2 |
+| `security_settings_light.png` / `security_settings_dark.png` | P19 安全设置（应用锁部分） | 390×844，像素比 2 |
+| `about_light.png` / `about_dark.png` | P22 关于与帮助 | 390×844，像素比 2 |
 | `accounts_wide_light.png` | P03 账户列表与 P07 钱包详情并排（仅浅色） | 1280×900，像素比 1 |
 
 ## 字体

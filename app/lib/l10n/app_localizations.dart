@@ -2331,6 +2331,378 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'尚未在保险库入库，也没有标记离线备份。'**
   String get backupStatusNoneDesc;
+
+  /// No description provided for @bootstrapWipeAndRestart.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除本地数据并重新开始'**
+  String get bootstrapWipeAndRestart;
+
+  /// No description provided for @bootstrapWipeConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除本地数据并重新开始？'**
+  String get bootstrapWipeConfirmTitle;
+
+  /// No description provided for @bootstrapWipeConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。'**
+  String get bootstrapWipeConfirmBody;
+
+  /// No description provided for @bootstrapWipeConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除并重新开始'**
+  String get bootstrapWipeConfirmAction;
+
+  /// No description provided for @settingsSectionSecurity.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全'**
+  String get settingsSectionSecurity;
+
+  /// No description provided for @settingsSectionOther.
+  ///
+  /// In zh, this message translates to:
+  /// **'其他'**
+  String get settingsSectionOther;
+
+  /// No description provided for @settingsSectionDanger.
+  ///
+  /// In zh, this message translates to:
+  /// **'危险区'**
+  String get settingsSectionDanger;
+
+  /// No description provided for @settingsSecurity.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用锁与生物识别'**
+  String get settingsSecurity;
+
+  /// No description provided for @settingsSecurityBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改 PIN、自动锁定时间与生物识别'**
+  String get settingsSecurityBody;
+
+  /// No description provided for @settingsBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份'**
+  String get settingsBackup;
+
+  /// No description provided for @settingsBackupNever.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未导出过'**
+  String get settingsBackupNever;
+
+  /// No description provided for @settingsBackupLastExported.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次导出 {date}'**
+  String settingsBackupLastExported(String date);
+
+  /// No description provided for @settingsQuote.
+  ///
+  /// In zh, this message translates to:
+  /// **'计价货币'**
+  String get settingsQuote;
+
+  /// No description provided for @settingsHideSmall.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏小额币种'**
+  String get settingsHideSmall;
+
+  /// No description provided for @settingsHideSmallBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'低于 1 USD 的资产不显示在列表中'**
+  String get settingsHideSmallBody;
+
+  /// No description provided for @settingsUnrecognizedTokens.
+  ///
+  /// In zh, this message translates to:
+  /// **'未识别代币'**
+  String get settingsUnrecognizedTokens;
+
+  /// No description provided for @settingsUnrecognizedTokensEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无未识别代币'**
+  String get settingsUnrecognizedTokensEmpty;
+
+  /// No description provided for @settingsUnrecognizedTokensDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'链上收到但未在价格源中识别的代币可以在此处管理显隐'**
+  String get settingsUnrecognizedTokensDesc;
+
+  /// No description provided for @settingsTheme.
+  ///
+  /// In zh, this message translates to:
+  /// **'外观'**
+  String get settingsTheme;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In zh, this message translates to:
+  /// **'跟随系统'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In zh, this message translates to:
+  /// **'浅色模式'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In zh, this message translates to:
+  /// **'深色模式'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsAbout.
+  ///
+  /// In zh, this message translates to:
+  /// **'关于与帮助'**
+  String get settingsAbout;
+
+  /// No description provided for @settingsWipeAllData.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除全部数据'**
+  String get settingsWipeAllData;
+
+  /// No description provided for @settingsWipeConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除全部数据？'**
+  String get settingsWipeConfirmTitle;
+
+  /// No description provided for @settingsWipeConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'此操作将清除本地全部钱包、交易所、持仓、快照与保存的凭据，不可撤销。如果有加密备份文件（.owbak），可以在重新进入应用后恢复。'**
+  String get settingsWipeConfirmBody;
+
+  /// No description provided for @settingsWipeConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除全部数据'**
+  String get settingsWipeConfirmAction;
+
+  /// No description provided for @securitySectionAppLock.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用锁'**
+  String get securitySectionAppLock;
+
+  /// No description provided for @securitySectionVault.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库'**
+  String get securitySectionVault;
+
+  /// No description provided for @securitySectionDevice.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备'**
+  String get securitySectionDevice;
+
+  /// No description provided for @securityPin.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改 PIN'**
+  String get securityPin;
+
+  /// No description provided for @securityAppBiometrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物识别解锁'**
+  String get securityAppBiometrics;
+
+  /// No description provided for @securityAutoLock.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动锁定时间'**
+  String get securityAutoLock;
+
+  /// No description provided for @securityAutoLockImmediately.
+  ///
+  /// In zh, this message translates to:
+  /// **'立即'**
+  String get securityAutoLockImmediately;
+
+  /// No description provided for @securityAutoLock1Min.
+  ///
+  /// In zh, this message translates to:
+  /// **'1 分钟'**
+  String get securityAutoLock1Min;
+
+  /// No description provided for @securityAutoLock5Min.
+  ///
+  /// In zh, this message translates to:
+  /// **'5 分钟'**
+  String get securityAutoLock5Min;
+
+  /// No description provided for @securityVaultBiometrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物识别解锁保险库'**
+  String get securityVaultBiometrics;
+
+  /// No description provided for @securityVaultBiometricsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启时需验证主密码'**
+  String get securityVaultBiometricsDesc;
+
+  /// No description provided for @securityChangeMasterPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改主密码'**
+  String get securityChangeMasterPassword;
+
+  /// No description provided for @securityDeviceStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备安全状态'**
+  String get securityDeviceStatus;
+
+  /// No description provided for @securityDeviceNormal.
+  ///
+  /// In zh, this message translates to:
+  /// **'正常'**
+  String get securityDeviceNormal;
+
+  /// No description provided for @securityDeviceNormalDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'未检测到越狱或 root'**
+  String get securityDeviceNormalDesc;
+
+  /// No description provided for @securityFeaturePending.
+  ///
+  /// In zh, this message translates to:
+  /// **'功能准备中'**
+  String get securityFeaturePending;
+
+  /// No description provided for @aboutTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'关于与帮助'**
+  String get aboutTitle;
+
+  /// No description provided for @aboutVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'版本'**
+  String get aboutVersion;
+
+  /// No description provided for @aboutSecurityDesign.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设计说明'**
+  String get aboutSecurityDesign;
+
+  /// No description provided for @aboutSecurityDesignBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地优先、密钥不出设备、只看不动'**
+  String get aboutSecurityDesignBody;
+
+  /// No description provided for @aboutSecurityDesignDialogTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设计原则'**
+  String get aboutSecurityDesignDialogTitle;
+
+  /// No description provided for @aboutSecurityDesignDetail.
+  ///
+  /// In zh, this message translates to:
+  /// **'1. 本地优先：你的资产数据和密钥仅保存在当前设备，不上传至任何服务器。\n\n2. 只看不动：OneWallet 不提供签名、转账或交易功能，杜绝被黑客恶意调用的可能。\n\n3. 离线保险库：助记词和私钥由独立的加密保险库保管，与联网环境物理隔离。'**
+  String get aboutSecurityDesignDetail;
+
+  /// No description provided for @aboutBackupFormat.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份文件格式与解密工具'**
+  String get aboutBackupFormat;
+
+  /// No description provided for @aboutBackupFormatBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'公开格式，支持电脑端开源离线解密'**
+  String get aboutBackupFormatBody;
+
+  /// No description provided for @aboutBackupFormatDialogTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份与离线解密'**
+  String get aboutBackupFormatDialogTitle;
+
+  /// No description provided for @aboutBackupFormatDetail.
+  ///
+  /// In zh, this message translates to:
+  /// **'OneWallet 的加密备份（.owbak）采用公开规范与标准算法（Argon2id + XChaCha20-Poly1305）。\n\n即使应用不可用，你也可以在断网电脑上使用官方提供的开源 Python 脚本解密并导出全部助记词与数据。'**
+  String get aboutBackupFormatDetail;
+
+  /// No description provided for @aboutFaq.
+  ///
+  /// In zh, this message translates to:
+  /// **'常见问题'**
+  String get aboutFaq;
+
+  /// No description provided for @aboutFaqDerivationTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'派生路径是什么？'**
+  String get aboutFaqDerivationTitle;
+
+  /// No description provided for @aboutFaqDerivationAnswer.
+  ///
+  /// In zh, this message translates to:
+  /// **'派生路径是按照 BIP44/84/86 等加密货币标准，从同一套助记词计算出不同链和不同地址规则的算法路径。'**
+  String get aboutFaqDerivationAnswer;
+
+  /// No description provided for @aboutFaqMismatchTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'为什么链上地址与钱包软件显示的不一致？'**
+  String get aboutFaqMismatchTitle;
+
+  /// No description provided for @aboutFaqMismatchAnswer.
+  ///
+  /// In zh, this message translates to:
+  /// **'不同钱包软件可能采用了不同的默认派生路径或地址格式（例如 Bitcoin 的 Legacy 1 开头、SegWit 3 开头或 Native SegWit bc1 开头）。在派生地址页面可以选择对应的路径预设。'**
+  String get aboutFaqMismatchAnswer;
+
+  /// No description provided for @aboutFaqApiKeyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'如何创建只读 API Key？'**
+  String get aboutFaqApiKeyTitle;
+
+  /// No description provided for @aboutFaqApiKeyAnswer.
+  ///
+  /// In zh, this message translates to:
+  /// **'在交易所 API 管理页面创建密钥时，仅勾选「读取」或「Read-Only」权限，切勿开启「交易」或「提现」权限以保障资金绝对安全。'**
+  String get aboutFaqApiKeyAnswer;
+
+  /// No description provided for @aboutLicenses.
+  ///
+  /// In zh, this message translates to:
+  /// **'开源许可'**
+  String get aboutLicenses;
+
+  /// No description provided for @cancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get cancel;
 }
 
 class _AppLocalizationsDelegate

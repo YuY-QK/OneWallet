@@ -16,4 +16,6 @@ abstract final class RouteNames {
   static const addressBook = 'addressBook';
   static const backupChecklist = 'backupChecklist';
   static const backupExport = 'backupExport';
+  static const settingsSecurity = 'settingsSecurity';
+  static const settingsAbout = 'settingsAbout';
 }

@@ -15,6 +15,7 @@ export 'src/backup/update_backup_status.dart';
 export 'src/backup/watch_backup_checklist.dart';
 export 'src/portfolio/record_daily_snapshot.dart';
 export 'src/portfolio/watch_portfolio.dart';
+export 'src/settings/wipe_all_data.dart';
 export 'src/sync/failure_type_name.dart';
 export 'src/sync/holding_normalizer.dart';
 export 'src/sync/persistent_asset_catalog.dart';

@@ -170,3 +170,11 @@ final watchBackupChecklistProvider = Provider<WatchBackupChecklist>(
 final backupChecklistProvider = StreamProvider.autoDispose<BackupChecklistData>(
   (ref) => ref.watch(watchBackupChecklistProvider)(),
 );
+
+final wipeAllDataProvider = Provider<WipeAllData>(
+  (ref) => WipeAllData(
+    databaseWiper: ref.watch(databaseProvider),
+    vaultStorage: ref.watch(vaultStorageProvider),
+    secrets: ref.watch(secretStoreProvider),
+  ),
+);
