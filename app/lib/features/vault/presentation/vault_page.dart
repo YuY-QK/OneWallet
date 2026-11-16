@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:ow_application/ow_application.dart';
 import 'package:ow_domain/ow_domain.dart';
 
+import '../../../bootstrap/usecase_providers.dart';
 import '../../../bootstrap/vault_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../router/route_names.dart';
@@ -64,6 +65,15 @@ class VaultPage extends ConsumerWidget {
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text(e.toString())),
             data: (items) {
+              final settings =
+                  ref.watch(settingsProvider).asData?.value ??
+                  const AppSettings();
+              final lastExport = settings.lastBackupExportedAt;
+              final vaultChanged = settings.vaultChangedAt;
+              final hasUnbackedChanges =
+                  vaultChanged != null &&
+                  (lastExport == null || vaultChanged.isAfter(lastExport));
+
               if (items.isEmpty) {
                 return EmptyState(
                   icon: Icons.key_outlined,
@@ -78,6 +88,34 @@ class VaultPage extends ConsumerWidget {
                   vertical: 12,
                 ),
                 children: [
+                  if (hasUnbackedChanges) ...[
+                    OwCard(
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.warning_amber_rounded,
+                            color: c.warn,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l.backupUnbackedBanner,
+                              style: OwTextStyles.caption.copyWith(
+                                color: c.ink,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () => context.goNamed(RouteNames.backup),
+                            child: Text(l.backupGoBackup),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   OwCard(
                     padding: EdgeInsets.zero,
                     child: Column(

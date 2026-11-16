@@ -1708,4 +1708,243 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get securityCancel => '取消';
+
+  @override
+  String get settingsBackup => '加密备份';
+
+  @override
+  String get settingsBackupDesc => '导出为独立解密文件或从文件恢复';
+
+  @override
+  String settingsBackupLastExport(Object date) {
+    return '上次导出 $date';
+  }
+
+  @override
+  String get settingsBackupNever => '尚未备份';
+
+  @override
+  String get settingsBackupUnbacked => '有未备份的更改';
+
+  @override
+  String get backupTitle => '加密备份';
+
+  @override
+  String get backupSensitiveBadge => '敏感页面';
+
+  @override
+  String get backupExportSection => '导出';
+
+  @override
+  String get backupExportSummaryTitle => '确认内容';
+
+  @override
+  String get backupExportSummaryDesc =>
+      '全部账户、地址、标签、备份清单状态、全部密钥条目、设置。不包含余额缓存与快照。';
+
+  @override
+  String get backupExportIncludeExchange => '包含交易所 API Key';
+
+  @override
+  String get backupExportIncludeExchangeDesc =>
+      '默认不包含。若勾选，将导出所有已连接交易所的 API Key 与 Secret';
+
+  @override
+  String get backupExportStartButton => '开始导出';
+
+  @override
+  String get backupRestoreSection => '恢复';
+
+  @override
+  String get backupRestoreRowTitle => '从备份文件恢复';
+
+  @override
+  String get backupRestoreRowDesc => '选择 .owbak 文件并输入备份密码';
+
+  @override
+  String get backupFormatNote => '备份格式是公开的。即使没有这个 app，也能用独立的解密工具在电脑上解开。';
+
+  @override
+  String get backupUnbackedWarning => '保险库在上次导出之后有变化，建议及时导出最新备份。';
+
+  @override
+  String get backupExportTitle => '导出备份';
+
+  @override
+  String get backupExportMasterPasswordTitle => '输入主密码';
+
+  @override
+  String get backupExportMasterPasswordDesc => '导出备份需要验证主密码，此处不接受面容或指纹';
+
+  @override
+  String get backupExportMasterPasswordHint => '请输入主密码';
+
+  @override
+  String get backupExportPasswordTypeTitle => '设置备份密码';
+
+  @override
+  String get backupExportUseMasterPassword => '使用主密码作为备份密码';
+
+  @override
+  String get backupExportUseCustomPassword => '另设备份密码';
+
+  @override
+  String get backupExportCustomPasswordHint => '输入备份密码（至少 10 位）';
+
+  @override
+  String get backupExportCustomPasswordConfirmHint => '确认备份密码';
+
+  @override
+  String get backupExportPasswordMismatch => '两次输入的备份密码不一致';
+
+  @override
+  String get backupExportPasswordTooShort => '备份密码长度至少为 10 个字符';
+
+  @override
+  String get backupExportAsciiNotice => '建议使用英文字母、数字和符号，避免在跨平台独立解密工具中出现编码差异';
+
+  @override
+  String get backupExportGenerating => '正在生成加密备份文件...';
+
+  @override
+  String get backupExportSuccessTitle => '备份已生成';
+
+  @override
+  String get backupExportSaveAdvice =>
+      '通过系统分享面板保存。请存到手机以外的地方（如离线 U 盘、可信电脑或加密存储）。';
+
+  @override
+  String get backupExportSavedButton => '我已保存到安全位置';
+
+  @override
+  String get backupExportDoneNotice => '上次导出时间已更新';
+
+  @override
+  String get backupRestoreTitle => '恢复备份';
+
+  @override
+  String get backupRestoreSelectFile => '选择 .owbak 备份文件';
+
+  @override
+  String backupRestoreSelectedFile(Object name, Object size) {
+    return '已选文件：$name ($size)';
+  }
+
+  @override
+  String get backupRestorePasswordHint => '请输入备份密码';
+
+  @override
+  String get backupRestoreParseButton => '解析备份文件';
+
+  @override
+  String get backupRestoreParsing => '正在解析备份文件...';
+
+  @override
+  String get backupRestorePreviewTitle => '备份内容预览';
+
+  @override
+  String backupRestoreCreatedAt(Object date) {
+    return '创建时间：$date';
+  }
+
+  @override
+  String backupRestoreAppVersion(Object version) {
+    return '备份应用版本：$version';
+  }
+
+  @override
+  String backupRestoreAccountsCount(Object count) {
+    return '包含账户：$count 个';
+  }
+
+  @override
+  String backupRestoreAddressesCount(Object count) {
+    return '包含地址：$count 个';
+  }
+
+  @override
+  String backupRestoreVaultItemsCount(Object count) {
+    return '包含密钥条目：$count 个';
+  }
+
+  @override
+  String backupRestoreCredentialsCount(Object count) {
+    return '包含交易所凭据：$count 个';
+  }
+
+  @override
+  String backupRestoreSkippedUnreadable(Object count) {
+    return '有 $count 项数据格式无法读取，将被跳过';
+  }
+
+  @override
+  String get backupRestoreModeFreshTitle => '全新设备恢复';
+
+  @override
+  String get backupRestoreModeFreshDesc => '将在本地创建新保险库并导入备份中所有数据。';
+
+  @override
+  String get backupRestoreModeMergeTitle => '合并导入';
+
+  @override
+  String get backupRestoreModeMergeDesc =>
+      '将备份内容合并到当前数据中。相同条目与地址自动跳过，重名账户自动添加序号后缀。';
+
+  @override
+  String get backupRestoreMasterPasswordHint => '请输入本地保险库主密码';
+
+  @override
+  String get backupRestoreNewMasterPasswordHint => '为本机保险库设置主密码（至少 10 位）';
+
+  @override
+  String get backupRestoreSameAsBackupPassword => '沿用备份密码作为本机主密码';
+
+  @override
+  String get backupRestoreExecuteButton => '开始恢复';
+
+  @override
+  String get backupRestoreRestoring => '正在恢复数据...';
+
+  @override
+  String get backupRestoreResultTitle => '恢复完成';
+
+  @override
+  String backupRestoreResultAdded(
+    Object accounts,
+    Object addresses,
+    Object items,
+  ) {
+    return '成功导入：$accounts 个账户、$addresses 个地址、$items 个密钥';
+  }
+
+  @override
+  String backupRestoreResultSkipped(
+    Object accounts,
+    Object addresses,
+    Object items,
+  ) {
+    return '跳过重复：$accounts 个账户、$addresses 个地址、$items 个密钥';
+  }
+
+  @override
+  String get backupRestoreFinishButton => '完成';
+
+  @override
+  String get backupRestoreWrongPassword => '密码不正确或文件已损坏';
+
+  @override
+  String get backupRestoreCorrupted => '这不是 OneWallet 的备份文件，或文件已损坏，无法读取';
+
+  @override
+  String get backupRestoreUnsupportedVersion =>
+      '这个备份文件来自更新版本的 OneWallet，当前版本无法读取';
+
+  @override
+  String get backupRestoreTargetNotEmpty => '本地已有数据，无法以初始模式恢复';
+
+  @override
+  String get backupUnbackedBanner => '保险库有未备份的更改，建议及时导出备份';
+
+  @override
+  String get backupGoBackup => '去备份';
 }

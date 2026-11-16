@@ -9,6 +9,9 @@ import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/address_book_page.dart';
 import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
+import '../features/backup/presentation/backup_export_page.dart';
+import '../features/backup/presentation/backup_page.dart';
+import '../features/backup/presentation/backup_restore_page.dart';
 import '../features/lock/presentation/lock_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/overview/presentation/asset_detail_page.dart';
@@ -249,6 +252,35 @@ GoRouter buildAppRouter({
                 path: 'security',
                 name: RouteNames.settingsSecurity,
                 builder: (_, _) => const SecuritySettingsPage(),
+              ),
+              GoRoute(
+                path: 'backup',
+                name: RouteNames.backup,
+                builder: (_, _) => const BackupPage(),
+                routes: [
+                  GoRoute(
+                    path: 'export',
+                    name: RouteNames.backupExport,
+                    builder: (_, state) => BackupExportPage(
+                      includeExchangeCredentials:
+                          state.uri.queryParameters['includeExchange'] ==
+                          'true',
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'restore',
+                    name: RouteNames.backupRestore,
+                    builder: (_, state) {
+                      final lock = appLock?.call()?.current;
+                      final isUninit = lock is AppLockUninitialized;
+                      final modeParam = state.uri.queryParameters['mode'];
+                      final mode = modeParam == 'fresh' || isUninit
+                          ? RestoreMode.fresh
+                          : RestoreMode.merge;
+                      return BackupRestorePage(mode: mode);
+                    },
+                  ),
+                ],
               ),
               GoRoute(
                 path: 'sources',

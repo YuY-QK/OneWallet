@@ -3291,6 +3291,422 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'取消'**
   String get securityCancel;
+
+  /// No description provided for @settingsBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份'**
+  String get settingsBackup;
+
+  /// No description provided for @settingsBackupDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出为独立解密文件或从文件恢复'**
+  String get settingsBackupDesc;
+
+  /// No description provided for @settingsBackupLastExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次导出 {date}'**
+  String settingsBackupLastExport(Object date);
+
+  /// No description provided for @settingsBackupNever.
+  ///
+  /// In zh, this message translates to:
+  /// **'尚未备份'**
+  String get settingsBackupNever;
+
+  /// No description provided for @settingsBackupUnbacked.
+  ///
+  /// In zh, this message translates to:
+  /// **'有未备份的更改'**
+  String get settingsBackupUnbacked;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份'**
+  String get backupTitle;
+
+  /// No description provided for @backupSensitiveBadge.
+  ///
+  /// In zh, this message translates to:
+  /// **'敏感页面'**
+  String get backupSensitiveBadge;
+
+  /// No description provided for @backupExportSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出'**
+  String get backupExportSection;
+
+  /// No description provided for @backupExportSummaryTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认内容'**
+  String get backupExportSummaryTitle;
+
+  /// No description provided for @backupExportSummaryDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部账户、地址、标签、备份清单状态、全部密钥条目、设置。不包含余额缓存与快照。'**
+  String get backupExportSummaryDesc;
+
+  /// No description provided for @backupExportIncludeExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含交易所 API Key'**
+  String get backupExportIncludeExchange;
+
+  /// No description provided for @backupExportIncludeExchangeDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认不包含。若勾选，将导出所有已连接交易所的 API Key 与 Secret'**
+  String get backupExportIncludeExchangeDesc;
+
+  /// No description provided for @backupExportStartButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始导出'**
+  String get backupExportStartButton;
+
+  /// No description provided for @backupRestoreSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复'**
+  String get backupRestoreSection;
+
+  /// No description provided for @backupRestoreRowTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'从备份文件恢复'**
+  String get backupRestoreRowTitle;
+
+  /// No description provided for @backupRestoreRowDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 .owbak 文件并输入备份密码'**
+  String get backupRestoreRowDesc;
+
+  /// No description provided for @backupFormatNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份格式是公开的。即使没有这个 app，也能用独立的解密工具在电脑上解开。'**
+  String get backupFormatNote;
+
+  /// No description provided for @backupUnbackedWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库在上次导出之后有变化，建议及时导出最新备份。'**
+  String get backupUnbackedWarning;
+
+  /// No description provided for @backupExportTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出备份'**
+  String get backupExportTitle;
+
+  /// No description provided for @backupExportMasterPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入主密码'**
+  String get backupExportMasterPasswordTitle;
+
+  /// No description provided for @backupExportMasterPasswordDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出备份需要验证主密码，此处不接受面容或指纹'**
+  String get backupExportMasterPasswordDesc;
+
+  /// No description provided for @backupExportMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码'**
+  String get backupExportMasterPasswordHint;
+
+  /// No description provided for @backupExportPasswordTypeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置备份密码'**
+  String get backupExportPasswordTypeTitle;
+
+  /// No description provided for @backupExportUseMasterPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用主密码作为备份密码'**
+  String get backupExportUseMasterPassword;
+
+  /// No description provided for @backupExportUseCustomPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'另设备份密码'**
+  String get backupExportUseCustomPassword;
+
+  /// No description provided for @backupExportCustomPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入备份密码（至少 10 位）'**
+  String get backupExportCustomPasswordHint;
+
+  /// No description provided for @backupExportCustomPasswordConfirmHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认备份密码'**
+  String get backupExportCustomPasswordConfirmHint;
+
+  /// No description provided for @backupExportPasswordMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的备份密码不一致'**
+  String get backupExportPasswordMismatch;
+
+  /// No description provided for @backupExportPasswordTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份密码长度至少为 10 个字符'**
+  String get backupExportPasswordTooShort;
+
+  /// No description provided for @backupExportAsciiNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'建议使用英文字母、数字和符号，避免在跨平台独立解密工具中出现编码差异'**
+  String get backupExportAsciiNotice;
+
+  /// No description provided for @backupExportGenerating.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在生成加密备份文件...'**
+  String get backupExportGenerating;
+
+  /// No description provided for @backupExportSuccessTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份已生成'**
+  String get backupExportSuccessTitle;
+
+  /// No description provided for @backupExportSaveAdvice.
+  ///
+  /// In zh, this message translates to:
+  /// **'通过系统分享面板保存。请存到手机以外的地方（如离线 U 盘、可信电脑或加密存储）。'**
+  String get backupExportSaveAdvice;
+
+  /// No description provided for @backupExportSavedButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'我已保存到安全位置'**
+  String get backupExportSavedButton;
+
+  /// No description provided for @backupExportDoneNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次导出时间已更新'**
+  String get backupExportDoneNotice;
+
+  /// No description provided for @backupRestoreTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复备份'**
+  String get backupRestoreTitle;
+
+  /// No description provided for @backupRestoreSelectFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 .owbak 备份文件'**
+  String get backupRestoreSelectFile;
+
+  /// No description provided for @backupRestoreSelectedFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'已选文件：{name} ({size})'**
+  String backupRestoreSelectedFile(Object name, Object size);
+
+  /// No description provided for @backupRestorePasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入备份密码'**
+  String get backupRestorePasswordHint;
+
+  /// No description provided for @backupRestoreParseButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'解析备份文件'**
+  String get backupRestoreParseButton;
+
+  /// No description provided for @backupRestoreParsing.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在解析备份文件...'**
+  String get backupRestoreParsing;
+
+  /// No description provided for @backupRestorePreviewTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份内容预览'**
+  String get backupRestorePreviewTitle;
+
+  /// No description provided for @backupRestoreCreatedAt.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建时间：{date}'**
+  String backupRestoreCreatedAt(Object date);
+
+  /// No description provided for @backupRestoreAppVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份应用版本：{version}'**
+  String backupRestoreAppVersion(Object version);
+
+  /// No description provided for @backupRestoreAccountsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含账户：{count} 个'**
+  String backupRestoreAccountsCount(Object count);
+
+  /// No description provided for @backupRestoreAddressesCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含地址：{count} 个'**
+  String backupRestoreAddressesCount(Object count);
+
+  /// No description provided for @backupRestoreVaultItemsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含密钥条目：{count} 个'**
+  String backupRestoreVaultItemsCount(Object count);
+
+  /// No description provided for @backupRestoreCredentialsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含交易所凭据：{count} 个'**
+  String backupRestoreCredentialsCount(Object count);
+
+  /// No description provided for @backupRestoreSkippedUnreadable.
+  ///
+  /// In zh, this message translates to:
+  /// **'有 {count} 项数据格式无法读取，将被跳过'**
+  String backupRestoreSkippedUnreadable(Object count);
+
+  /// No description provided for @backupRestoreModeFreshTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'全新设备恢复'**
+  String get backupRestoreModeFreshTitle;
+
+  /// No description provided for @backupRestoreModeFreshDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'将在本地创建新保险库并导入备份中所有数据。'**
+  String get backupRestoreModeFreshDesc;
+
+  /// No description provided for @backupRestoreModeMergeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'合并导入'**
+  String get backupRestoreModeMergeTitle;
+
+  /// No description provided for @backupRestoreModeMergeDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'将备份内容合并到当前数据中。相同条目与地址自动跳过，重名账户自动添加序号后缀。'**
+  String get backupRestoreModeMergeDesc;
+
+  /// No description provided for @backupRestoreMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入本地保险库主密码'**
+  String get backupRestoreMasterPasswordHint;
+
+  /// No description provided for @backupRestoreNewMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'为本机保险库设置主密码（至少 10 位）'**
+  String get backupRestoreNewMasterPasswordHint;
+
+  /// No description provided for @backupRestoreSameAsBackupPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'沿用备份密码作为本机主密码'**
+  String get backupRestoreSameAsBackupPassword;
+
+  /// No description provided for @backupRestoreExecuteButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始恢复'**
+  String get backupRestoreExecuteButton;
+
+  /// No description provided for @backupRestoreRestoring.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在恢复数据...'**
+  String get backupRestoreRestoring;
+
+  /// No description provided for @backupRestoreResultTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复完成'**
+  String get backupRestoreResultTitle;
+
+  /// No description provided for @backupRestoreResultAdded.
+  ///
+  /// In zh, this message translates to:
+  /// **'成功导入：{accounts} 个账户、{addresses} 个地址、{items} 个密钥'**
+  String backupRestoreResultAdded(
+    Object accounts,
+    Object addresses,
+    Object items,
+  );
+
+  /// No description provided for @backupRestoreResultSkipped.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过重复：{accounts} 个账户、{addresses} 个地址、{items} 个密钥'**
+  String backupRestoreResultSkipped(
+    Object accounts,
+    Object addresses,
+    Object items,
+  );
+
+  /// No description provided for @backupRestoreFinishButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'完成'**
+  String get backupRestoreFinishButton;
+
+  /// No description provided for @backupRestoreWrongPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码不正确或文件已损坏'**
+  String get backupRestoreWrongPassword;
+
+  /// No description provided for @backupRestoreCorrupted.
+  ///
+  /// In zh, this message translates to:
+  /// **'这不是 OneWallet 的备份文件，或文件已损坏，无法读取'**
+  String get backupRestoreCorrupted;
+
+  /// No description provided for @backupRestoreUnsupportedVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'这个备份文件来自更新版本的 OneWallet，当前版本无法读取'**
+  String get backupRestoreUnsupportedVersion;
+
+  /// No description provided for @backupRestoreTargetNotEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地已有数据，无法以初始模式恢复'**
+  String get backupRestoreTargetNotEmpty;
+
+  /// No description provided for @backupUnbackedBanner.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库有未备份的更改，建议及时导出备份'**
+  String get backupUnbackedBanner;
+
+  /// No description provided for @backupGoBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'去备份'**
+  String get backupGoBackup;
 }
 
 class _AppLocalizationsDelegate
