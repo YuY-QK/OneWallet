@@ -125,16 +125,15 @@ void main() {
       expect(rig.wipeAllCalls, 1);
     });
 
-    testWidgets('导航测试_点击安全与关于可跳转对应页面', (tester) async {
-      final router = await pumpApp(tester, rig, location: '/settings');
+    testWidgets('导航测试_点击安全展示占位_点击关于跳转关于页', (tester) async {
+      await pumpApp(tester, rig, location: '/settings');
 
       await tester.tap(find.text('应用锁与生物识别'));
       await tester.pumpAndSettle();
-      expect(find.text('修改 PIN'), findsOneWidget);
+      expect(find.textContaining('等线 B 合并后接上'), findsOneWidget);
 
-      router.go('/settings');
+      await tester.drag(find.byType(ListView), const Offset(0, -200));
       await tester.pumpAndSettle();
-
       await tester.tap(find.text('关于与帮助'));
       await tester.pumpAndSettle();
       expect(find.text('版本 1.0.0'), findsOneWidget);

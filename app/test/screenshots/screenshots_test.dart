@@ -443,7 +443,6 @@ final _shots = <_Shot>[
   const _Shot('sync_status', '/settings/sync'), // P21
   const _Shot('backup_checklist', '/vault/checklist'), // P11
   const _Shot('settings', '/settings'), // P18
-  const _Shot('security_settings', '/settings/security'), // P19
   const _Shot('about', '/settings/about'), // P22
   // 宽屏：列表与详情并排（1280×900，像素比 1）。
   const _Shot(

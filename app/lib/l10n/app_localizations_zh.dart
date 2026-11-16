@@ -1313,54 +1313,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsWipeConfirmAction => '清除全部数据';
 
   @override
-  String get securitySectionAppLock => '应用锁';
-
-  @override
-  String get securitySectionVault => '保险库';
-
-  @override
-  String get securitySectionDevice => '设备';
-
-  @override
-  String get securityPin => '修改 PIN';
-
-  @override
-  String get securityAppBiometrics => '生物识别解锁';
-
-  @override
-  String get securityAutoLock => '自动锁定时间';
-
-  @override
-  String get securityAutoLockImmediately => '立即';
-
-  @override
-  String get securityAutoLock1Min => '1 分钟';
-
-  @override
-  String get securityAutoLock5Min => '5 分钟';
-
-  @override
-  String get securityVaultBiometrics => '生物识别解锁保险库';
-
-  @override
-  String get securityVaultBiometricsDesc => '开启时需验证主密码';
-
-  @override
-  String get securityChangeMasterPassword => '修改主密码';
-
-  @override
-  String get securityDeviceStatus => '设备安全状态';
-
-  @override
-  String get securityDeviceNormal => '正常';
-
-  @override
-  String get securityDeviceNormalDesc => '未检测到越狱或 root';
-
-  @override
-  String get securityFeaturePending => '功能准备中';
-
-  @override
   String get aboutTitle => '关于与帮助';
 
   @override

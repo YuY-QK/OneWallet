@@ -260,7 +260,14 @@ class SettingsPage extends ConsumerWidget {
                 title: l.settingsSecurity,
                 subtitle: l.settingsSecurityBody,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsSecurity),
+                // 占位：等线 B（P19 安全设置页）合并后接上正式路由
+                onTap: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${l.settingsSecurity}（即将推出，等线 B 合并后接上）'),
+                    ),
+                  );
+                },
               ),
               OwRow(
                 title: l.settingsBackup,
