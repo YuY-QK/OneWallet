@@ -1558,4 +1558,154 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get vaultDeriveItemNotFound => '未找到密钥条目';
+
+  @override
+  String get settingsSectionSecurity => '安全';
+
+  @override
+  String get settingsSecurity => '应用锁与生物识别';
+
+  @override
+  String get settingsSecuritySubtitle => 'PIN 码、面容/指纹解锁、自动锁定与保险库设置';
+
+  @override
+  String get securityTitle => '安全设置';
+
+  @override
+  String get securitySectionAppLock => '应用锁';
+
+  @override
+  String get securityChangePin => '修改 PIN';
+
+  @override
+  String get securityChangePinSuccess => 'PIN 码已修改';
+
+  @override
+  String get securityChangePinOldTitle => '输入当前 PIN';
+
+  @override
+  String get securityChangePinOldSubtitle => '请输入当前使用的 6 位数字 PIN';
+
+  @override
+  String get securityChangePinNewTitle => '输入新 PIN';
+
+  @override
+  String get securityChangePinNewSubtitle => '请输入新的 6 位数字 PIN';
+
+  @override
+  String get securityChangePinConfirmTitle => '确认新 PIN';
+
+  @override
+  String get securityChangePinConfirmSubtitle => '请再次输入新的 6 位数字 PIN';
+
+  @override
+  String get securityChangePinMismatch => '两次输入的 PIN 不一致，请重新输入';
+
+  @override
+  String get securityChangePinWrongOld => '原 PIN 码不正确';
+
+  @override
+  String get securityAppBiometrics => '面容 / 指纹解锁';
+
+  @override
+  String get securityAppBiometricsDesc => '解锁 OneWallet 时使用生物识别';
+
+  @override
+  String get securityAutoLock => '自动锁定';
+
+  @override
+  String get securityAutoLockImmediately => '立即';
+
+  @override
+  String get securityAutoLock1Min => '1 分钟后';
+
+  @override
+  String get securityAutoLock5Min => '5 分钟后';
+
+  @override
+  String get securitySectionVault => '保险库';
+
+  @override
+  String get securityVaultBiometrics => '面容 / 指纹解锁保险库';
+
+  @override
+  String get securityVaultBiometricsDesc => '开启时需输入主密码，由硬件安全芯片保护';
+
+  @override
+  String get securityVaultBiometricsUninitialized => '保险库尚未创建';
+
+  @override
+  String get securityVaultBiometricsUnsupported => '当前设备不支持硬件密钥保护';
+
+  @override
+  String get securityChangeMasterPassword => '修改主密码';
+
+  @override
+  String get securityChangeMasterPasswordTitle => '修改主密码';
+
+  @override
+  String get securityChangeMasterPasswordSuccess => '主密码已修改';
+
+  @override
+  String get securityChangeMasterPasswordCurrent => '当前主密码';
+
+  @override
+  String get securityChangeMasterPasswordCurrentHint => '请输入当前主密码';
+
+  @override
+  String get securityChangeMasterPasswordNew => '新主密码（至少 10 个字符）';
+
+  @override
+  String get securityChangeMasterPasswordNewHint => '请输入至少 10 位新主密码';
+
+  @override
+  String get securityChangeMasterPasswordConfirm => '确认新主密码';
+
+  @override
+  String get securityChangeMasterPasswordConfirmHint => '请再次输入新主密码';
+
+  @override
+  String get securityChangeMasterPasswordChanging => '正在重新加密保险库…';
+
+  @override
+  String get securityChangeMasterPasswordMismatch => '两次输入的主密码不一致';
+
+  @override
+  String get securityChangeMasterPasswordTooShort => '主密码长度至少为 10 个字符';
+
+  @override
+  String get securityChangeMasterPasswordWrongCurrent => '当前主密码不正确';
+
+  @override
+  String get securityChangeMasterPasswordConfirmAction => '确认修改';
+
+  @override
+  String get securitySectionDevice => '设备';
+
+  @override
+  String get securityDeviceStatus => '设备安全状态';
+
+  @override
+  String get securityDeviceNormal => '正常';
+
+  @override
+  String get securityDeviceNormalDesc => '未检测到越狱或 root';
+
+  @override
+  String get securityDeviceCompromised => '风险';
+
+  @override
+  String get securityDeviceCompromisedDesc => '检测到设备环境异常，可能已被越狱或 root';
+
+  @override
+  String get securityVerifyMasterPasswordTitle => '验证主密码';
+
+  @override
+  String get securityVerifyMasterPasswordHint => '请输入主密码以开启生物识别';
+
+  @override
+  String get securityVerifyMasterPasswordConfirm => '验证并开启';
+
+  @override
+  String get securityCancel => '取消';
 }

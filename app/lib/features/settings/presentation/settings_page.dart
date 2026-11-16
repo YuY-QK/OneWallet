@@ -29,6 +29,24 @@ class SettingsPage extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(2, 4, 2, 6),
             child: Text(
+              l.settingsSectionSecurity,
+              style: OwTextStyles.caption.copyWith(color: context.ow.muted),
+            ),
+          ),
+          OwListGroup(
+            children: [
+              OwRow(
+                title: l.settingsSecurity,
+                subtitle: l.settingsSecuritySubtitle,
+                trailing: const Icon(Icons.chevron_right_rounded),
+                onTap: () => context.goNamed(RouteNames.settingsSecurity),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(2, 4, 2, 6),
+            child: Text(
               l.settingsSectionData,
               style: OwTextStyles.caption.copyWith(color: context.ow.muted),
             ),

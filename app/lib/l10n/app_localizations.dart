@@ -2991,6 +2991,306 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'未找到密钥条目'**
   String get vaultDeriveItemNotFound;
+
+  /// No description provided for @settingsSectionSecurity.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全'**
+  String get settingsSectionSecurity;
+
+  /// No description provided for @settingsSecurity.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用锁与生物识别'**
+  String get settingsSecurity;
+
+  /// No description provided for @settingsSecuritySubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 码、面容/指纹解锁、自动锁定与保险库设置'**
+  String get settingsSecuritySubtitle;
+
+  /// No description provided for @securityTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设置'**
+  String get securityTitle;
+
+  /// No description provided for @securitySectionAppLock.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用锁'**
+  String get securitySectionAppLock;
+
+  /// No description provided for @securityChangePin.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改 PIN'**
+  String get securityChangePin;
+
+  /// No description provided for @securityChangePinSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 码已修改'**
+  String get securityChangePinSuccess;
+
+  /// No description provided for @securityChangePinOldTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入当前 PIN'**
+  String get securityChangePinOldTitle;
+
+  /// No description provided for @securityChangePinOldSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入当前使用的 6 位数字 PIN'**
+  String get securityChangePinOldSubtitle;
+
+  /// No description provided for @securityChangePinNewTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入新 PIN'**
+  String get securityChangePinNewTitle;
+
+  /// No description provided for @securityChangePinNewSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入新的 6 位数字 PIN'**
+  String get securityChangePinNewSubtitle;
+
+  /// No description provided for @securityChangePinConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认新 PIN'**
+  String get securityChangePinConfirmTitle;
+
+  /// No description provided for @securityChangePinConfirmSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入新的 6 位数字 PIN'**
+  String get securityChangePinConfirmSubtitle;
+
+  /// No description provided for @securityChangePinMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的 PIN 不一致，请重新输入'**
+  String get securityChangePinMismatch;
+
+  /// No description provided for @securityChangePinWrongOld.
+  ///
+  /// In zh, this message translates to:
+  /// **'原 PIN 码不正确'**
+  String get securityChangePinWrongOld;
+
+  /// No description provided for @securityAppBiometrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'面容 / 指纹解锁'**
+  String get securityAppBiometrics;
+
+  /// No description provided for @securityAppBiometricsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'解锁 OneWallet 时使用生物识别'**
+  String get securityAppBiometricsDesc;
+
+  /// No description provided for @securityAutoLock.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动锁定'**
+  String get securityAutoLock;
+
+  /// No description provided for @securityAutoLockImmediately.
+  ///
+  /// In zh, this message translates to:
+  /// **'立即'**
+  String get securityAutoLockImmediately;
+
+  /// No description provided for @securityAutoLock1Min.
+  ///
+  /// In zh, this message translates to:
+  /// **'1 分钟后'**
+  String get securityAutoLock1Min;
+
+  /// No description provided for @securityAutoLock5Min.
+  ///
+  /// In zh, this message translates to:
+  /// **'5 分钟后'**
+  String get securityAutoLock5Min;
+
+  /// No description provided for @securitySectionVault.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库'**
+  String get securitySectionVault;
+
+  /// No description provided for @securityVaultBiometrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'面容 / 指纹解锁保险库'**
+  String get securityVaultBiometrics;
+
+  /// No description provided for @securityVaultBiometricsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启时需输入主密码，由硬件安全芯片保护'**
+  String get securityVaultBiometricsDesc;
+
+  /// No description provided for @securityVaultBiometricsUninitialized.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库尚未创建'**
+  String get securityVaultBiometricsUninitialized;
+
+  /// No description provided for @securityVaultBiometricsUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前设备不支持硬件密钥保护'**
+  String get securityVaultBiometricsUnsupported;
+
+  /// No description provided for @securityChangeMasterPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改主密码'**
+  String get securityChangeMasterPassword;
+
+  /// No description provided for @securityChangeMasterPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改主密码'**
+  String get securityChangeMasterPasswordTitle;
+
+  /// No description provided for @securityChangeMasterPasswordSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码已修改'**
+  String get securityChangeMasterPasswordSuccess;
+
+  /// No description provided for @securityChangeMasterPasswordCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前主密码'**
+  String get securityChangeMasterPasswordCurrent;
+
+  /// No description provided for @securityChangeMasterPasswordCurrentHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入当前主密码'**
+  String get securityChangeMasterPasswordCurrentHint;
+
+  /// No description provided for @securityChangeMasterPasswordNew.
+  ///
+  /// In zh, this message translates to:
+  /// **'新主密码（至少 10 个字符）'**
+  String get securityChangeMasterPasswordNew;
+
+  /// No description provided for @securityChangeMasterPasswordNewHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入至少 10 位新主密码'**
+  String get securityChangeMasterPasswordNewHint;
+
+  /// No description provided for @securityChangeMasterPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认新主密码'**
+  String get securityChangeMasterPasswordConfirm;
+
+  /// No description provided for @securityChangeMasterPasswordConfirmHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入新主密码'**
+  String get securityChangeMasterPasswordConfirmHint;
+
+  /// No description provided for @securityChangeMasterPasswordChanging.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在重新加密保险库…'**
+  String get securityChangeMasterPasswordChanging;
+
+  /// No description provided for @securityChangeMasterPasswordMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的主密码不一致'**
+  String get securityChangeMasterPasswordMismatch;
+
+  /// No description provided for @securityChangeMasterPasswordTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码长度至少为 10 个字符'**
+  String get securityChangeMasterPasswordTooShort;
+
+  /// No description provided for @securityChangeMasterPasswordWrongCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前主密码不正确'**
+  String get securityChangeMasterPasswordWrongCurrent;
+
+  /// No description provided for @securityChangeMasterPasswordConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认修改'**
+  String get securityChangeMasterPasswordConfirmAction;
+
+  /// No description provided for @securitySectionDevice.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备'**
+  String get securitySectionDevice;
+
+  /// No description provided for @securityDeviceStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备安全状态'**
+  String get securityDeviceStatus;
+
+  /// No description provided for @securityDeviceNormal.
+  ///
+  /// In zh, this message translates to:
+  /// **'正常'**
+  String get securityDeviceNormal;
+
+  /// No description provided for @securityDeviceNormalDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'未检测到越狱或 root'**
+  String get securityDeviceNormalDesc;
+
+  /// No description provided for @securityDeviceCompromised.
+  ///
+  /// In zh, this message translates to:
+  /// **'风险'**
+  String get securityDeviceCompromised;
+
+  /// No description provided for @securityDeviceCompromisedDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到设备环境异常，可能已被越狱或 root'**
+  String get securityDeviceCompromisedDesc;
+
+  /// No description provided for @securityVerifyMasterPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证主密码'**
+  String get securityVerifyMasterPasswordTitle;
+
+  /// No description provided for @securityVerifyMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码以开启生物识别'**
+  String get securityVerifyMasterPasswordHint;
+
+  /// No description provided for @securityVerifyMasterPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证并开启'**
+  String get securityVerifyMasterPasswordConfirm;
+
+  /// No description provided for @securityCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get securityCancel;
 }
 
 class _AppLocalizationsDelegate

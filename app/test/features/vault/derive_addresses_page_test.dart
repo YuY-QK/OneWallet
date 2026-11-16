@@ -208,6 +208,17 @@ final class InMemoryAddressRepository implements AddressRepository {
       Stream.value(List.unmodifiable(_addresses));
 
   @override
+  Future<List<WatchAddress>> all() async => List.unmodifiable(_addresses);
+
+  @override
+  Future<WatchAddress?> byId(String id) async {
+    for (final a in _addresses) {
+      if (a.id == id) return a;
+    }
+    return null;
+  }
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) async =>
       _addresses.where((a) => a.accountId == accountId).toList();
 

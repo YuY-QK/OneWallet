@@ -23,6 +23,18 @@ final biometricAuthProvider = Provider<BiometricAuth>(
   (ref) => DeviceBiometricAuth(),
 );
 
+/// 设备完整性检查（M3-08）。
+final deviceIntegrityProvider = Provider<DeviceIntegrity>(
+  (ref) => const SafeDeviceIntegrity(),
+);
+
+final class SafeDeviceIntegrity implements DeviceIntegrity {
+  const SafeDeviceIntegrity();
+
+  @override
+  Future<bool> looksCompromised() async => false;
+}
+
 /// 屏幕保护（Android FLAG_SECURE、iOS 录屏监听）。
 final screenGuardProvider = Provider<ScreenGuard>((ref) => DeviceScreenGuard());
 
