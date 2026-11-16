@@ -97,7 +97,3 @@ final assetRepositoryProvider = Provider<AssetRepository>(
 final credentialRepositoryProvider = Provider<CredentialRepository>(
   (ref) => SecretStoreCredentialRepository(ref.watch(secretStoreProvider)),
 );
-
-final vaultStorageProvider = Provider<VaultStorage>(
-  (ref) => FileVaultStorage(),
-);

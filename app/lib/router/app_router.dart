@@ -300,17 +300,6 @@ GoRouter buildAppRouter({
                 builder: (_, _) => const SyncStatusPage(),
               ),
               GoRoute(
-                path: 'backup/export',
-                name: RouteNames.backupExport,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.backupChecklistExport),
-              ),
-              GoRoute(
-                path: 'security',
-                name: RouteNames.settingsSecurity,
-                builder: (_, _) => const SecuritySettingsPage(),
-              ),
-              GoRoute(
                 path: 'about',
                 name: RouteNames.settingsAbout,
                 builder: (_, _) => const AboutPage(),

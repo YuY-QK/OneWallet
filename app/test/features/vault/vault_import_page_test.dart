@@ -12,7 +12,6 @@ import 'package:onewallet/l10n/app_localizations.dart';
 import 'package:onewallet/theme/ow_theme.dart';
 import 'package:ow_application/ow_application.dart';
 import 'package:ow_domain/ow_domain.dart';
-import 'package:ow_platform/ow_platform.dart';
 import 'package:ow_vault/ow_vault.dart';
 
 // 测试使用的快速 KDF 参数
