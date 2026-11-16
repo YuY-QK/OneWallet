@@ -32,6 +32,17 @@ final syncAccountProvider = Provider<SyncAccount>(
   ),
 );
 
+/// 记录每日净值快照（全量同步结束后自动触发，也可手动触发）。
+final recordDailySnapshotProvider = Provider<RecordDailySnapshot>(
+  (ref) => RecordDailySnapshot(
+    accounts: ref.watch(accountRepositoryProvider),
+    holdings: ref.watch(holdingRepositoryProvider),
+    prices: ref.watch(priceRepositoryProvider),
+    snapshots: ref.watch(snapshotRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
 /// 同步全部账户并刷新价格。全应用共用一个实例（"同时只跑一轮"）。
 final syncAllAccountsProvider = Provider<SyncAllAccounts>(
   (ref) => SyncAllAccounts(
@@ -45,6 +56,8 @@ final syncAllAccountsProvider = Provider<SyncAllAccounts>(
     syncAccount: ref.watch(syncAccountProvider),
     retryPolicy: ref.watch(retryPolicyProvider),
     clock: ref.watch(clockProvider),
+    onFullSyncCompleted: (result) =>
+        ref.read(recordDailySnapshotProvider)(result),
   ),
 );
 
@@ -138,4 +151,30 @@ final searchAddressesProvider = Provider<SearchAddresses>(
 
 final updateAddressNoteProvider = Provider<UpdateAddressNote>(
   (ref) => UpdateAddressNote(addresses: ref.watch(addressRepositoryProvider)),
+);
+
+final updateBackupStatusProvider = Provider<UpdateBackupStatus>(
+  (ref) => UpdateBackupStatus(accounts: ref.watch(accountRepositoryProvider)),
+);
+
+final watchBackupChecklistProvider = Provider<WatchBackupChecklist>(
+  (ref) => WatchBackupChecklist(
+    accounts: ref.watch(accountRepositoryProvider),
+    holdings: ref.watch(holdingRepositoryProvider),
+    prices: ref.watch(priceRepositoryProvider),
+    settings: ref.watch(settingsRepositoryProvider),
+    clock: ref.watch(clockProvider),
+  ),
+);
+
+final backupChecklistProvider = StreamProvider.autoDispose<BackupChecklistData>(
+  (ref) => ref.watch(watchBackupChecklistProvider)(),
+);
+
+final wipeAllDataProvider = Provider<WipeAllData>(
+  (ref) => WipeAllData(
+    databaseWiper: ref.watch(databaseProvider),
+    vaultStorage: ref.watch(vaultStorageProvider),
+    secrets: ref.watch(secretStoreProvider),
+  ),
 );

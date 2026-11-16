@@ -205,6 +205,42 @@ final class FakeSyncRecordRepository implements SyncRecordRepository {
   }
 }
 
+final class FakeSnapshotRepository implements SnapshotRepository {
+  final feed = ValueFeed<List<Snapshot>>([]);
+
+  @override
+  Future<List<Snapshot>> range(DateTime from, DateTime to) async {
+    final fromUtc = DateTime.utc(from.year, from.month, from.day);
+    final toUtc = DateTime.utc(to.year, to.month, to.day);
+    return feed.value
+        .where((s) => !s.date.isBefore(fromUtc) && !s.date.isAfter(toUtc))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  @override
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to) {
+    final fromUtc = DateTime.utc(from.year, from.month, from.day);
+    final toUtc = DateTime.utc(to.year, to.month, to.day);
+    return feed.stream().map(
+      (list) =>
+          list
+              .where((s) => !s.date.isBefore(fromUtc) && !s.date.isAfter(toUtc))
+              .toList()
+            ..sort((a, b) => a.date.compareTo(b.date)),
+    );
+  }
+
+  @override
+  Future<void> upsert(Snapshot snapshot) async {
+    feed.value = [
+      for (final s in feed.value)
+        if (s.date != snapshot.date) s,
+      snapshot,
+    ];
+  }
+}
+
 final class FakeAssetRepository implements AssetRepository {
   final assets = <String, Asset>{};
   final contractMap = <ContractToken, String>{};
@@ -243,14 +279,24 @@ final class FakeSettingsRepository implements SettingsRepository {
 }
 
 final class FakeTokenVisibilityRepository implements TokenVisibilityRepository {
-  @override
-  Future<Set<String>> hidden() async => {};
+  final feed = ValueFeed<Set<String>>({});
 
   @override
-  Stream<Set<String>> watchHidden() => Stream.value(const {});
+  Future<Set<String>> hidden() async => Set.of(feed.value);
 
   @override
-  Future<void> setHidden(String tokenKey, bool hidden) async {}
+  Stream<Set<String>> watchHidden() => feed.stream();
+
+  @override
+  Future<void> setHidden(String tokenKey, bool hidden) async {
+    final next = Set<String>.of(feed.value);
+    if (hidden) {
+      next.add(tokenKey);
+    } else {
+      next.remove(tokenKey);
+    }
+    feed.value = next;
+  }
 }
 
 /// 脚本化的链适配器：按链家族返回预设结果，并记录调用次数。
@@ -428,6 +474,14 @@ final class FakePlatformCapabilities implements PlatformCapabilities {
 /// 页面测试的一套假依赖。`overrides` 直接用于 `ProviderScope`。
 const _unset = Object();
 
+final class _FakeRigDatabaseWiper implements DatabaseWiper {
+  _FakeRigDatabaseWiper(this.onWipe);
+  final void Function() onWipe;
+
+  @override
+  Future<void> wipe() async => onWipe();
+}
+
 final class TestRig {
   TestRig({DateTime? now})
     : clock = FixedClock(now ?? DateTime.utc(2026, 11, 12, 12));
@@ -436,14 +490,18 @@ final class TestRig {
   final addresses = FakeAddressRepository();
   final holdings = FakeHoldingRepository();
   final prices = FakePriceRepository();
+  final snapshots = FakeSnapshotRepository();
   final syncRecords = FakeSyncRecordRepository();
   final settings = FakeSettingsRepository();
   final assetRepo = FakeAssetRepository();
   final registry = FakeAdapterRegistry();
   final priceSource = FakePriceSource();
   final secrets = FakeSecretStore();
+  final tokenVisibility = FakeTokenVisibilityRepository();
   final FixedClock clock;
   final ids = SequenceIds();
+
+  int wipeAllCalls = 0;
 
   /// 剪贴板内容（假）。
   String? clipboard;
@@ -473,11 +531,16 @@ final class TestRig {
     addressRepositoryProvider.overrideWithValue(addresses),
     holdingRepositoryProvider.overrideWithValue(holdings),
     priceRepositoryProvider.overrideWithValue(prices),
+    snapshotRepositoryProvider.overrideWithValue(snapshots),
     syncRecordRepositoryProvider.overrideWithValue(syncRecords),
     settingsRepositoryProvider.overrideWithValue(settings),
     assetRepositoryProvider.overrideWithValue(assetRepo),
-    tokenVisibilityRepositoryProvider.overrideWithValue(
-      FakeTokenVisibilityRepository(),
+    tokenVisibilityRepositoryProvider.overrideWithValue(tokenVisibility),
+    wipeAllDataProvider.overrideWith(
+      (ref) => WipeAllData(
+        databaseWiper: _FakeRigDatabaseWiper(() => wipeAllCalls++),
+        secrets: secrets,
+      ),
     ),
     adapterRegistryProvider.overrideWithValue(registry),
     priceSourceProvider.overrideWithValue(priceSource),

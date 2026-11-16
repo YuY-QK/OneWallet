@@ -135,14 +135,6 @@ class AppLocalizationsZh extends AppLocalizations {
       '暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。';
 
   @override
-  String get failureBiometricUnavailable => '无法使用生物识别，请输入主密码。';
-
-  @override
-  String failureLockedOut(String time) {
-    return '输错次数过多，请在 $time 之后再试。';
-  }
-
-  @override
   String get failureUnknown => '出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。';
 
   @override
@@ -1106,6 +1098,339 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addressBookFooterTip => '粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。';
 
   @override
+  String get overviewChartRange7d => '7 天';
+
+  @override
+  String get overviewChartRange30d => '30 天';
+
+  @override
+  String get overviewChartRange90d => '90 天';
+
+  @override
+  String get overviewChartRangeAll => '全部';
+
+  @override
+  String get overviewChartEmpty => '至少需要两天的快照数据以绘制净值曲线';
+
+  @override
+  String overviewChartAriaLabel(int count) {
+    return '近 $count 天净值曲线';
+  }
+
+  @override
+  String get overviewChartAriaLabelAll => '全部净值曲线';
+
+  @override
+  String overviewChartDaysAgo(int count) {
+    return '$count 天前';
+  }
+
+  @override
+  String get overviewChartToday => '今天';
+
+  @override
+  String overviewBackupWarning(int count) {
+    return '$count 个钱包尚未备份';
+  }
+
+  @override
+  String get backupChecklistTitle => '备份清单';
+
+  @override
+  String backupChecklistProgress(int backedUp, int total) {
+    return '$backedUp / $total 个钱包已备份';
+  }
+
+  @override
+  String get backupChecklistAllBackedUp => '全部钱包已备份';
+
+  @override
+  String get backupChecklistNeverExported => '尚未导出过加密备份';
+
+  @override
+  String backupChecklistLastExport(String time) {
+    return '加密备份文件：$time 导出';
+  }
+
+  @override
+  String get backupChecklistUnexportedChanges => '之后保险库有更改，尚未导出';
+
+  @override
+  String get backupChecklistExport => '导出加密备份';
+
+  @override
+  String get backupChecklistPendingSection => '待处理';
+
+  @override
+  String get backupChecklistCompletedSection => '已完成';
+
+  @override
+  String get backupChecklistExchangeNote => '交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。';
+
+  @override
+  String get backupChecklistEmptyTitle => '暂无钱包账户';
+
+  @override
+  String get backupChecklistEmptyDesc => '添加钱包账户后，在此查看和管理各钱包的备份状况。';
+
+  @override
+  String get backupChecklistKeylessNote =>
+      '这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。';
+
+  @override
+  String get backupChecklistOverdueWarning => '超过 180 天未核对';
+
+  @override
+  String backupChecklistLastVerified(String date) {
+    return '上次核对 $date';
+  }
+
+  @override
+  String get backupActionGoToVault => '去入库';
+
+  @override
+  String get backupActionMarkOffline => '标记已离线备份';
+
+  @override
+  String get backupActionUnmarkOffline => '取消离线备份标记';
+
+  @override
+  String get backupActionMarkKeyless => '标记为无助记词钱包';
+
+  @override
+  String get backupActionUnmarkKeyless => '取消无助记词标记';
+
+  @override
+  String get backupActionVerifiedToday => '今天已核对';
+
+  @override
+  String get backupActionResetStatus => '重新标记';
+
+  @override
+  String get backupActionViewChecklist => '查看完整备份清单';
+
+  @override
+  String get backupStatusSheetTitle => '备份状态管理';
+
+  @override
+  String get backupStatusInVaultDesc => '已关联保险库中的密钥条目。';
+
+  @override
+  String get backupStatusOfflineDesc => '已标记为有纸质或其他离线备份。';
+
+  @override
+  String get backupStatusOfflineNeverVerified => '未记录核对日期';
+
+  @override
+  String get backupStatusKeylessDesc => '无助记词钱包（MPC 或社交登录型，无法导出）。';
+
+  @override
+  String get backupStatusNoneDesc => '尚未在保险库入库，也没有标记离线备份。';
+
+  @override
+  String get bootstrapWipeAndRestart => '清除本地数据并重新开始';
+
+  @override
+  String get bootstrapWipeConfirmTitle => '清除本地数据并重新开始？';
+
+  @override
+  String get bootstrapWipeConfirmBody =>
+      '此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。';
+
+  @override
+  String get bootstrapWipeConfirmAction => '清除并重新开始';
+
+  @override
+  String get settingsSectionSecurity => '安全';
+
+  @override
+  String get settingsSectionOther => '其他';
+
+  @override
+  String get settingsSectionDanger => '危险区';
+
+  @override
+  String get settingsSecurity => '应用锁与生物识别';
+
+  @override
+  String get settingsSecurityBody => '修改 PIN、自动锁定时间与生物识别';
+
+  @override
+  String get settingsBackup => '加密备份';
+
+  @override
+  String get settingsBackupNever => '尚未备份';
+
+  @override
+  String settingsBackupLastExported(String date) {
+    return '上次导出 $date';
+  }
+
+  @override
+  String get settingsQuote => '计价货币';
+
+  @override
+  String get settingsHideSmall => '隐藏小额币种';
+
+  @override
+  String get settingsHideSmallBody => '低于 1 USD 的资产不显示在列表中';
+
+  @override
+  String get settingsUnrecognizedTokens => '未识别代币';
+
+  @override
+  String get settingsUnrecognizedTokensEmpty => '暂无未识别代币';
+
+  @override
+  String get settingsUnrecognizedTokensDesc => '链上收到但未在价格源中识别的代币可以在此处管理显隐';
+
+  @override
+  String get settingsTheme => '外观';
+
+  @override
+  String get settingsThemeSystem => '跟随系统';
+
+  @override
+  String get settingsThemeLight => '浅色模式';
+
+  @override
+  String get settingsThemeDark => '深色模式';
+
+  @override
+  String get settingsAbout => '关于与帮助';
+
+  @override
+  String get settingsWipeAllData => '清除全部数据';
+
+  @override
+  String get settingsWipeConfirmTitle => '清除全部数据？';
+
+  @override
+  String get settingsWipeConfirmBody =>
+      '此操作将清除本地全部钱包、交易所、持仓、快照与保存的凭据，不可撤销。如果有加密备份文件（.owbak），可以在重新进入应用后恢复。';
+
+  @override
+  String get settingsWipeConfirmAction => '清除全部数据';
+
+  @override
+  String get securitySectionAppLock => '应用锁';
+
+  @override
+  String get securitySectionVault => '保险库';
+
+  @override
+  String get securitySectionDevice => '设备';
+
+  @override
+  String get securityPin => '修改 PIN';
+
+  @override
+  String get securityAppBiometrics => '面容 / 指纹解锁';
+
+  @override
+  String get securityAutoLock => '自动锁定';
+
+  @override
+  String get securityAutoLockImmediately => '立即';
+
+  @override
+  String get securityAutoLock1Min => '1 分钟后';
+
+  @override
+  String get securityAutoLock5Min => '5 分钟后';
+
+  @override
+  String get securityVaultBiometrics => '面容 / 指纹解锁保险库';
+
+  @override
+  String get securityVaultBiometricsDesc => '开启时需输入主密码，由硬件安全芯片保护';
+
+  @override
+  String get securityChangeMasterPassword => '修改主密码';
+
+  @override
+  String get securityDeviceStatus => '设备安全状态';
+
+  @override
+  String get securityDeviceNormal => '正常';
+
+  @override
+  String get securityDeviceNormalDesc => '未检测到越狱或 root';
+
+  @override
+  String get securityFeaturePending => '功能准备中';
+
+  @override
+  String get aboutTitle => '关于与帮助';
+
+  @override
+  String get aboutVersion => '版本';
+
+  @override
+  String get aboutSecurityDesign => '安全设计说明';
+
+  @override
+  String get aboutSecurityDesignBody => '本地优先、密钥不出设备、只看不动';
+
+  @override
+  String get aboutSecurityDesignDialogTitle => '安全设计原则';
+
+  @override
+  String get aboutSecurityDesignDetail =>
+      '1. 本地优先：你的资产数据和密钥仅保存在当前设备，不上传至任何服务器。\n\n2. 只看不动：OneWallet 不提供签名、转账或交易功能，杜绝被黑客恶意调用的可能。\n\n3. 离线保险库：助记词和私钥由独立的加密保险库保管，与联网环境物理隔离。';
+
+  @override
+  String get aboutBackupFormat => '备份文件格式与解密工具';
+
+  @override
+  String get aboutBackupFormatBody => '公开格式，支持电脑端开源离线解密';
+
+  @override
+  String get aboutBackupFormatDialogTitle => '加密备份与离线解密';
+
+  @override
+  String get aboutBackupFormatDetail =>
+      'OneWallet 的加密备份（.owbak）采用公开规范与标准算法（Argon2id + XChaCha20-Poly1305）。\n\n即使应用不可用，你也可以在断网电脑上使用官方提供的开源 Python 脚本解密并导出全部助记词与数据。';
+
+  @override
+  String get aboutFaq => '常见问题';
+
+  @override
+  String get aboutFaqDerivationTitle => '派生路径是什么？';
+
+  @override
+  String get aboutFaqDerivationAnswer =>
+      '派生路径是按照 BIP44/84/86 等加密货币标准，从同一套助记词计算出不同链和不同地址规则的算法路径。';
+
+  @override
+  String get aboutFaqMismatchTitle => '为什么链上地址与钱包软件显示的不一致？';
+
+  @override
+  String get aboutFaqMismatchAnswer =>
+      '不同钱包软件可能采用了不同的默认派生路径或地址格式（例如 Bitcoin 的 Legacy 1 开头、SegWit 3 开头或 Native SegWit bc1 开头）。在派生地址页面可以选择对应的路径预设。';
+
+  @override
+  String get aboutFaqApiKeyTitle => '如何创建只读 API Key？';
+
+  @override
+  String get aboutFaqApiKeyAnswer =>
+      '在交易所 API 管理页面创建密钥时，仅勾选「读取」或「Read-Only」权限，切勿开启「交易」或「提现」权限以保障资金绝对安全。';
+
+  @override
+  String get aboutLicenses => '开源许可';
+
+  @override
+  String get cancel => '取消';
+
+  @override
+  String get failureBiometricUnavailable => '无法使用生物识别，请输入主密码。';
+
+  @override
+  String failureLockedOut(String time) {
+    return '输错次数过多，请在 $time 之后再试。';
+  }
+
+  @override
   String get lockTitle => 'OneWallet';
 
   @override
@@ -1560,19 +1885,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get vaultDeriveItemNotFound => '未找到密钥条目';
 
   @override
-  String get settingsSectionSecurity => '安全';
-
-  @override
-  String get settingsSecurity => '应用锁与生物识别';
-
-  @override
   String get settingsSecuritySubtitle => 'PIN 码、面容/指纹解锁、自动锁定与保险库设置';
 
   @override
   String get securityTitle => '安全设置';
-
-  @override
-  String get securitySectionAppLock => '应用锁';
 
   @override
   String get securityChangePin => '修改 PIN';
@@ -1605,40 +1921,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityChangePinWrongOld => '原 PIN 码不正确';
 
   @override
-  String get securityAppBiometrics => '面容 / 指纹解锁';
-
-  @override
   String get securityAppBiometricsDesc => '解锁 OneWallet 时使用生物识别';
-
-  @override
-  String get securityAutoLock => '自动锁定';
-
-  @override
-  String get securityAutoLockImmediately => '立即';
-
-  @override
-  String get securityAutoLock1Min => '1 分钟后';
-
-  @override
-  String get securityAutoLock5Min => '5 分钟后';
-
-  @override
-  String get securitySectionVault => '保险库';
-
-  @override
-  String get securityVaultBiometrics => '面容 / 指纹解锁保险库';
-
-  @override
-  String get securityVaultBiometricsDesc => '开启时需输入主密码，由硬件安全芯片保护';
 
   @override
   String get securityVaultBiometricsUninitialized => '保险库尚未创建';
 
   @override
   String get securityVaultBiometricsUnsupported => '当前设备不支持硬件密钥保护';
-
-  @override
-  String get securityChangeMasterPassword => '修改主密码';
 
   @override
   String get securityChangeMasterPasswordTitle => '修改主密码';
@@ -1680,18 +1969,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityChangeMasterPasswordConfirmAction => '确认修改';
 
   @override
-  String get securitySectionDevice => '设备';
-
-  @override
-  String get securityDeviceStatus => '设备安全状态';
-
-  @override
-  String get securityDeviceNormal => '正常';
-
-  @override
-  String get securityDeviceNormalDesc => '未检测到越狱或 root';
-
-  @override
   String get securityDeviceCompromised => '风险';
 
   @override
@@ -1710,18 +1987,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityCancel => '取消';
 
   @override
-  String get settingsBackup => '加密备份';
-
-  @override
   String get settingsBackupDesc => '导出为独立解密文件或从文件恢复';
 
   @override
   String settingsBackupLastExport(Object date) {
     return '上次导出 $date';
   }
-
-  @override
-  String get settingsBackupNever => '尚未备份';
 
   @override
   String get settingsBackupUnbacked => '有未备份的更改';

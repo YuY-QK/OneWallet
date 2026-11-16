@@ -16,10 +16,12 @@ import '../features/lock/presentation/lock_page.dart';
 import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
+import '../features/settings/presentation/about_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/security_settings_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
+import '../features/vault/presentation/backup_checklist_page.dart';
 import '../features/vault/presentation/derive_addresses_page.dart';
 import '../features/vault/presentation/vault_import_page.dart';
 import '../features/vault/presentation/vault_item_detail_page.dart';
@@ -241,6 +243,11 @@ GoRouter buildAppRouter({
                 builder: (c, state) =>
                     DeriveAddressesPage(itemId: state.pathParameters['id']!),
               ),
+              GoRoute(
+                path: 'checklist',
+                name: RouteNames.backupChecklist,
+                builder: (c, _) => const BackupChecklistPage(),
+              ),
             ],
           ),
           branch(
@@ -291,6 +298,22 @@ GoRouter buildAppRouter({
                 path: 'sync',
                 name: RouteNames.settingsSync,
                 builder: (_, _) => const SyncStatusPage(),
+              ),
+              GoRoute(
+                path: 'backup/export',
+                name: RouteNames.backupExport,
+                builder: (c, _) =>
+                    soon(c, AppLocalizations.of(c)!.backupChecklistExport),
+              ),
+              GoRoute(
+                path: 'security',
+                name: RouteNames.settingsSecurity,
+                builder: (_, _) => const SecuritySettingsPage(),
+              ),
+              GoRoute(
+                path: 'about',
+                name: RouteNames.settingsAbout,
+                builder: (_, _) => const AboutPage(),
               ),
             ],
           ),

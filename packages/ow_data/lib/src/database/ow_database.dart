@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:ow_domain/ow_domain.dart';
 
 import 'tables.dart';
 
@@ -24,8 +25,20 @@ part 'ow_database.g.dart';
     AssetContracts,
   ],
 )
-final class OwDatabase extends _$OwDatabase {
+final class OwDatabase extends _$OwDatabase implements DatabaseWiper {
   OwDatabase(super.executor);
+
+  /// 清空所有表中的数据（P18 WipeAllData）。
+  @override
+  Future<void> wipe() async {
+    await transaction(() async {
+      await customStatement('PRAGMA foreign_keys = OFF');
+      for (final table in allTables) {
+        await delete(table).go();
+      }
+      await customStatement('PRAGMA foreign_keys = ON');
+    });
+  }
 
   /// 当前表结构版本。每次改表都要提升版本、写迁移并加迁移测试。
   static const int currentSchemaVersion = 3;

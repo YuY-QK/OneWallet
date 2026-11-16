@@ -17,6 +17,7 @@ import '../controllers/overview_controller.dart';
 import '../controllers/overview_view.dart';
 import 'widgets/distribution_section.dart';
 import 'widgets/failure_sheet.dart';
+import 'widgets/net_worth_card.dart';
 import 'widgets/total_card.dart';
 
 /// P02 总览：总资产、分布、同步状态。
@@ -135,6 +136,9 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
     final data = summary.value;
     if (data == null) return const OwSkeleton();
     final last = view.lastSyncedAt;
+    final pendingCount = ref.watch(
+      backupChecklistProvider.select((s) => s.value?.pendingCount ?? 0),
+    );
     return RefreshIndicator(
       onRefresh: _refresh,
       child: ListView(
@@ -175,6 +179,16 @@ class _OverviewPageState extends ConsumerState<OverviewPage> {
                     lastSyncedAt: last,
                     now: now,
                   ),
+                  const SizedBox(height: 12),
+                  const NetWorthCard(),
+                  if (pendingCount > 0) ...[
+                    const SizedBox(height: 12),
+                    OwNotice(
+                      tone: OwNoticeTone.warn,
+                      message: l.overviewBackupWarning(pendingCount),
+                      onTap: () => context.goNamed(RouteNames.backupChecklist),
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   DistributionSection(
                     summary: data,

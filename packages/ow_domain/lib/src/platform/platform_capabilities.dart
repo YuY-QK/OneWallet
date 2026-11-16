@@ -53,6 +53,12 @@ abstract interface class SecretStore {
   Future<void> delete(String key);
 }
 
+/// 能一次清除本应用全部条目的 [SecretStore]。
+abstract interface class ClearableSecretStore implements SecretStore {
+  /// 删除键名以 `ow.` 开头的全部条目。其他条目不动。
+  Future<void> clearAll();
+}
+
 /// 敏感页面的显示保护。
 abstract interface class ScreenGuard {
   Future<void> enable();

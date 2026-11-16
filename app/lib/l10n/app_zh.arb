@@ -46,15 +46,6 @@
   "failureBackupVersionUnsupported": "这个备份文件来自更新版本的 OneWallet，当前版本无法读取。请先升级应用再恢复。",
   "failureUnsupported": "当前设备不支持这个功能。",
   "failureUnsupportedNotIntegrated": "暂不支持这条链或这家交易所，将在后续版本提供，已有数据不受影响。",
-  "failureBiometricUnavailable": "无法使用生物识别，请输入主密码。",
-  "failureLockedOut": "输错次数过多，请在 {time} 之后再试。",
-  "@failureLockedOut": {
-    "placeholders": {
-      "time": {
-        "type": "String"
-      }
-    }
-  },
   "failureUnknown": "出现了未知问题。请稍后重试，反复出现时可在「同步状态」中查看记录。",
   "failureDuplicateAddress": "{kind, select, existing{地址 {address} 已在账户「{account}」中，同一地址不能重复添加。} ownerMissing{该地址已存在于本应用中。} other{地址 {address} 在本次输入中出现了不止一次，请删除重复的一项。}}",
   "@failureDuplicateAddress": {
@@ -562,6 +553,168 @@
   "addressBookSearchNoResultTitle": "不在你的地址簿中",
   "addressBookSearchNoResultDesc": "未在你的地址簿中找到此地址或相关信息",
   "addressBookFooterTip": "粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。",
+  "overviewChartRange7d": "7 天",
+  "overviewChartRange30d": "30 天",
+  "overviewChartRange90d": "90 天",
+  "overviewChartRangeAll": "全部",
+  "overviewChartEmpty": "至少需要两天的快照数据以绘制净值曲线",
+  "overviewChartAriaLabel": "近 {count} 天净值曲线",
+  "@overviewChartAriaLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewChartAriaLabelAll": "全部净值曲线",
+  "overviewChartDaysAgo": "{count} 天前",
+  "@overviewChartDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewChartToday": "今天",
+  "overviewBackupWarning": "{count} 个钱包尚未备份",
+  "@overviewBackupWarning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupChecklistTitle": "备份清单",
+  "backupChecklistProgress": "{backedUp} / {total} 个钱包已备份",
+  "@backupChecklistProgress": {
+    "placeholders": {
+      "backedUp": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "backupChecklistAllBackedUp": "全部钱包已备份",
+  "backupChecklistNeverExported": "尚未导出过加密备份",
+  "backupChecklistLastExport": "加密备份文件：{time} 导出",
+  "@backupChecklistLastExport": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupChecklistUnexportedChanges": "之后保险库有更改，尚未导出",
+  "backupChecklistExport": "导出加密备份",
+  "backupChecklistPendingSection": "待处理",
+  "backupChecklistCompletedSection": "已完成",
+  "backupChecklistExchangeNote": "交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。",
+  "backupChecklistEmptyTitle": "暂无钱包账户",
+  "backupChecklistEmptyDesc": "添加钱包账户后，在此查看和管理各钱包的备份状况。",
+  "backupChecklistKeylessNote": "这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。",
+  "backupChecklistOverdueWarning": "超过 180 天未核对",
+  "backupChecklistLastVerified": "上次核对 {date}",
+  "@backupChecklistLastVerified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupActionGoToVault": "去入库",
+  "backupActionMarkOffline": "标记已离线备份",
+  "backupActionUnmarkOffline": "取消离线备份标记",
+  "backupActionMarkKeyless": "标记为无助记词钱包",
+  "backupActionUnmarkKeyless": "取消无助记词标记",
+  "backupActionVerifiedToday": "今天已核对",
+  "backupActionResetStatus": "重新标记",
+  "backupActionViewChecklist": "查看完整备份清单",
+  "backupStatusSheetTitle": "备份状态管理",
+  "backupStatusInVaultDesc": "已关联保险库中的密钥条目。",
+  "backupStatusOfflineDesc": "已标记为有纸质或其他离线备份。",
+  "backupStatusOfflineNeverVerified": "未记录核对日期",
+  "backupStatusKeylessDesc": "无助记词钱包（MPC 或社交登录型，无法导出）。",
+  "backupStatusNoneDesc": "尚未在保险库入库，也没有标记离线备份。",
+  "bootstrapWipeAndRestart": "清除本地数据并重新开始",
+  "bootstrapWipeConfirmTitle": "清除本地数据并重新开始？",
+  "bootstrapWipeConfirmBody": "此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。",
+  "bootstrapWipeConfirmAction": "清除并重新开始",
+  "settingsSectionSecurity": "安全",
+  "settingsSectionOther": "其他",
+  "settingsSectionDanger": "危险区",
+  "settingsSecurity": "应用锁与生物识别",
+  "settingsSecurityBody": "修改 PIN、自动锁定时间与生物识别",
+  "settingsBackup": "加密备份",
+  "settingsBackupNever": "尚未备份",
+  "settingsBackupLastExported": "上次导出 {date}",
+  "@settingsBackupLastExported": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsQuote": "计价货币",
+  "settingsHideSmall": "隐藏小额币种",
+  "settingsHideSmallBody": "低于 1 USD 的资产不显示在列表中",
+  "settingsUnrecognizedTokens": "未识别代币",
+  "settingsUnrecognizedTokensEmpty": "暂无未识别代币",
+  "settingsUnrecognizedTokensDesc": "链上收到但未在价格源中识别的代币可以在此处管理显隐",
+  "settingsTheme": "外观",
+  "settingsThemeSystem": "跟随系统",
+  "settingsThemeLight": "浅色模式",
+  "settingsThemeDark": "深色模式",
+  "settingsAbout": "关于与帮助",
+  "settingsWipeAllData": "清除全部数据",
+  "settingsWipeConfirmTitle": "清除全部数据？",
+  "settingsWipeConfirmBody": "此操作将清除本地全部钱包、交易所、持仓、快照与保存的凭据，不可撤销。如果有加密备份文件（.owbak），可以在重新进入应用后恢复。",
+  "settingsWipeConfirmAction": "清除全部数据",
+  "securitySectionAppLock": "应用锁",
+  "securitySectionVault": "保险库",
+  "securitySectionDevice": "设备",
+  "securityPin": "修改 PIN",
+  "securityAppBiometrics": "面容 / 指纹解锁",
+  "securityAutoLock": "自动锁定",
+  "securityAutoLockImmediately": "立即",
+  "securityAutoLock1Min": "1 分钟后",
+  "securityAutoLock5Min": "5 分钟后",
+  "securityVaultBiometrics": "面容 / 指纹解锁保险库",
+  "securityVaultBiometricsDesc": "开启时需输入主密码，由硬件安全芯片保护",
+  "securityChangeMasterPassword": "修改主密码",
+  "securityDeviceStatus": "设备安全状态",
+  "securityDeviceNormal": "正常",
+  "securityDeviceNormalDesc": "未检测到越狱或 root",
+  "securityFeaturePending": "功能准备中",
+  "aboutTitle": "关于与帮助",
+  "aboutVersion": "版本",
+  "aboutSecurityDesign": "安全设计说明",
+  "aboutSecurityDesignBody": "本地优先、密钥不出设备、只看不动",
+  "aboutSecurityDesignDialogTitle": "安全设计原则",
+  "aboutSecurityDesignDetail": "1. 本地优先：你的资产数据和密钥仅保存在当前设备，不上传至任何服务器。\n\n2. 只看不动：OneWallet 不提供签名、转账或交易功能，杜绝被黑客恶意调用的可能。\n\n3. 离线保险库：助记词和私钥由独立的加密保险库保管，与联网环境物理隔离。",
+  "aboutBackupFormat": "备份文件格式与解密工具",
+  "aboutBackupFormatBody": "公开格式，支持电脑端开源离线解密",
+  "aboutBackupFormatDialogTitle": "加密备份与离线解密",
+  "aboutBackupFormatDetail": "OneWallet 的加密备份（.owbak）采用公开规范与标准算法（Argon2id + XChaCha20-Poly1305）。\n\n即使应用不可用，你也可以在断网电脑上使用官方提供的开源 Python 脚本解密并导出全部助记词与数据。",
+  "aboutFaq": "常见问题",
+  "aboutFaqDerivationTitle": "派生路径是什么？",
+  "aboutFaqDerivationAnswer": "派生路径是按照 BIP44/84/86 等加密货币标准，从同一套助记词计算出不同链和不同地址规则的算法路径。",
+  "aboutFaqMismatchTitle": "为什么链上地址与钱包软件显示的不一致？",
+  "aboutFaqMismatchAnswer": "不同钱包软件可能采用了不同的默认派生路径或地址格式（例如 Bitcoin 的 Legacy 1 开头、SegWit 3 开头或 Native SegWit bc1 开头）。在派生地址页面可以选择对应的路径预设。",
+  "aboutFaqApiKeyTitle": "如何创建只读 API Key？",
+  "aboutFaqApiKeyAnswer": "在交易所 API 管理页面创建密钥时，仅勾选「读取」或「Read-Only」权限，切勿开启「交易」或「提现」权限以保障资金绝对安全。",
+  "aboutLicenses": "开源许可",
+  "cancel": "取消",
+  "failureBiometricUnavailable": "无法使用生物识别，请输入主密码。",
+  "failureLockedOut": "输错次数过多，请在 {time} 之后再试。",
+  "@failureLockedOut": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "lockTitle": "OneWallet",
   "lockSubtitle": "输入 6 位 PIN",
   "lockWrongPin": "PIN 码不正确",
@@ -744,11 +897,8 @@
   "vaultDeriveDeriving": "正在派生地址...",
   "vaultDeriveEmpty": "暂无派生地址",
   "vaultDeriveItemNotFound": "未找到密钥条目",
-  "settingsSectionSecurity": "安全",
-  "settingsSecurity": "应用锁与生物识别",
   "settingsSecuritySubtitle": "PIN 码、面容/指纹解锁、自动锁定与保险库设置",
   "securityTitle": "安全设置",
-  "securitySectionAppLock": "应用锁",
   "securityChangePin": "修改 PIN",
   "securityChangePinSuccess": "PIN 码已修改",
   "securityChangePinOldTitle": "输入当前 PIN",
@@ -759,18 +909,9 @@
   "securityChangePinConfirmSubtitle": "请再次输入新的 6 位数字 PIN",
   "securityChangePinMismatch": "两次输入的 PIN 不一致，请重新输入",
   "securityChangePinWrongOld": "原 PIN 码不正确",
-  "securityAppBiometrics": "面容 / 指纹解锁",
   "securityAppBiometricsDesc": "解锁 OneWallet 时使用生物识别",
-  "securityAutoLock": "自动锁定",
-  "securityAutoLockImmediately": "立即",
-  "securityAutoLock1Min": "1 分钟后",
-  "securityAutoLock5Min": "5 分钟后",
-  "securitySectionVault": "保险库",
-  "securityVaultBiometrics": "面容 / 指纹解锁保险库",
-  "securityVaultBiometricsDesc": "开启时需输入主密码，由硬件安全芯片保护",
   "securityVaultBiometricsUninitialized": "保险库尚未创建",
   "securityVaultBiometricsUnsupported": "当前设备不支持硬件密钥保护",
-  "securityChangeMasterPassword": "修改主密码",
   "securityChangeMasterPasswordTitle": "修改主密码",
   "securityChangeMasterPasswordSuccess": "主密码已修改",
   "securityChangeMasterPasswordCurrent": "当前主密码",
@@ -784,20 +925,14 @@
   "securityChangeMasterPasswordTooShort": "主密码长度至少为 10 个字符",
   "securityChangeMasterPasswordWrongCurrent": "当前主密码不正确",
   "securityChangeMasterPasswordConfirmAction": "确认修改",
-  "securitySectionDevice": "设备",
-  "securityDeviceStatus": "设备安全状态",
-  "securityDeviceNormal": "正常",
-  "securityDeviceNormalDesc": "未检测到越狱或 root",
   "securityDeviceCompromised": "风险",
   "securityDeviceCompromisedDesc": "检测到设备环境异常，可能已被越狱或 root",
   "securityVerifyMasterPasswordTitle": "验证主密码",
   "securityVerifyMasterPasswordHint": "请输入主密码以开启生物识别",
   "securityVerifyMasterPasswordConfirm": "验证并开启",
   "securityCancel": "取消",
-  "settingsBackup": "加密备份",
   "settingsBackupDesc": "导出为独立解密文件或从文件恢复",
   "settingsBackupLastExport": "上次导出 {date}",
-  "settingsBackupNever": "尚未备份",
   "settingsBackupUnbacked": "有未备份的更改",
   "backupTitle": "加密备份",
   "backupSensitiveBadge": "敏感页面",

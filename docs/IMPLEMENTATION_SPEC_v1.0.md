@@ -338,6 +338,7 @@ abstract interface class PriceRepository {
 }
 abstract interface class SnapshotRepository {
   Future<List<Snapshot>> range(DateTime from, DateTime to);
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to);
   Future<void> upsert(Snapshot snapshot);                                   // 以 date 为键
 }
 abstract interface class SyncRecordRepository {
@@ -375,6 +376,9 @@ abstract interface class CredentialRepository {                             // �
   Future<void> save(String accountId, ExchangeCredentials c);
   Future<ExchangeCredentials?> load(String accountId);
   Future<void> delete(String accountId);
+}
+abstract interface class DatabaseWiper {
+  Future<void> wipe();                                                      // 清空所有表中的数据（P18 WipeAllData）
 }
 ```
 
@@ -421,9 +425,12 @@ abstract interface class DataSourceConfig {          // P20；Key 存 SecretStor
 }
 ```
 
-平台能力接口（`PlatformCapabilities`、`HardwareKeyStore`、`SecretStore`、`ScreenGuard`、`FileExporter`）已存在。M3 另加：
+平台能力接口（`PlatformCapabilities`、`HardwareKeyStore`、`SecretStore`、`ClearableSecretStore`、`ScreenGuard`、`FileExporter`）已存在。M3 另加：
 
 ```dart
+abstract interface class ClearableSecretStore implements SecretStore {
+  Future<void> clearAll();                                                  // 删除全部 ow. 前缀条目（M3 WipeAllData 与首次启动）
+}
 abstract interface class BiometricAuth {
   Future<bool> isAvailable();
   Future<Result<void>> authenticate({required String reason});
@@ -445,6 +452,10 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - `DeleteAccount` 删除指定账户：必须先调用 `CredentialRepository.delete` 清理可能存在的交易所凭据，再调用 `AccountRepository.delete` 级联删除地址、持仓与同步记录（操作幂等；若凭据删除失败则中止，避免账户已删而残留无法清理的 API 密钥）。
 - `SearchAddresses` 根据查询词（地址片段/完整地址、账户名、备注）与可选过滤条件（链家族 `family`、账户 `accountId`）搜索地址簿。构造函数需传入 `AccountRepository` 与 `AddressRepository`（非空必填），同时提供同步纯函数 `executeSearchAddresses`（及实例代理方法 `execute`）。精确匹配严格以 `AddressCodec.normalize(query, addr.family) == addr.address` 为准（Base58 区分大小写，EVM 与 Bech32 大小写规范化；符合时设置 `isExactMatch: true` 并稳定置顶，其余项保持原有顺序）；片段搜索不区分大小写；查询无匹配时返回空列表，界面呈现「不在你的地址簿中」。
 - `UpdateAddressNote` 更新观察地址备注：校验备注长度（首尾去空白后不超过 100 字 / 字符，否则返回 `ValidationFailure`）与地址存在性（不存在返回 `ValidationFailure`），经 `AddressRepository.upsert` 更新并返回最新地址。
+- `UpdateBackupStatus` 更新钱包账户的备份状态（R34–R36）：校验账户存在且为钱包账户（否则返回 `ValidationFailure`），通过 `AccountRepository.upsert` 更新账户的 `backup` 标记（支持更新 `offlineBackedUp`、`offlineVerifiedAt`、`keyless`，以及重置为未备份）并返回最新账户。
+- `WatchBackupChecklist` 备份清单只读聚合流（R34–R38）：汇集钱包账户、各账户估值与应用设置。返回 `Stream<BackupChecklistData>`（同时提供纯函数 `buildBackupChecklistData`）。待处理组（`pendingWallets`，状态为未备份 `none` 或无助记词 `keyless`）按当前估值降序排列（金额相同按名称升序）；已完成组（`completedWallets`，状态为已入库、已离线备份或两者兼具）标记对应状态标签，离线备份超过 180 天未核对时标记 `isOverdue: true`；汇总已备份钱包数与钱包总数；提取 `lastBackupExportedAt` 与保险库未备份更改标记 `hasUnexportedVaultChanges`（`vaultChangedAt != null && (lastBackupExportedAt == null || vaultChangedAt > lastBackupExportedAt)`）；交易所账户完全不计入清单条目（R37）。
+- `RecordDailySnapshot` 全量同步完成后的钩子用例（R16）：以当前 UTC 日期零点为键（`date`）统计各账户与标准币种的 USD 估值（金额均以 `Decimal` 高精度计算，不用浮点数），通过 `SnapshotRepository.upsert` 写入或覆盖当日快照。若任一账户同步失败或取消，该账户沿用上次余额计入快照并将快照标记为不完整（`complete: false`）；全量成功且价格更新成功时记录 `complete: true`；若当前无任何账户则不记录快照。
+- `WipeAllData` 清除全部数据用例（P18、PRD 第 10 节）：依次清空数据库所有数据表（`DatabaseWiper.wipe`）、删除本地保险库文件（`VaultStorage.delete`），并清空安全存储中全部 `ow.` 凭据与密钥（`ClearableSecretStore.clearAll`）。操作不可撤销，执行完毕后应用重置回到初始引导状态。
 - `SyncAccount.watchSyncingAccountIds()` 推送正在同步的账户 id 集合（订阅时先推送当前集合）；页面用它显示"同步中"。成功的同步记录写入时，仓储同时更新账户的最近成功时间。
 - `DuplicateAddressFailure.kind`：`existing`（带账户名）、`withinInput`（本次输入内重复）、`ownerMissing`（地址在库中但所属账户不存在，数据异常，界面提示"该地址已存在于本应用中"）。
 - `UnsupportedFailure.reason`：`platform`（当前设备不支持，默认）、`notIntegrated`（该链或交易所尚未接入，构造函数 `UnsupportedFailure.notIntegrated`）。`failureTypeName` 对后者返回 `UnsupportedFailure.notIntegrated`，使同步记录能还原原因。

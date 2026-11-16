@@ -64,4 +64,9 @@ final class MemoryDatabaseOpener implements DatabaseOpener {
     fileExists = true;
     return NativeDatabase.memory();
   }
+
+  @override
+  Future<void> delete() async {
+    fileExists = false;
+  }
 }

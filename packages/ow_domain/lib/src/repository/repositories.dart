@@ -85,6 +85,9 @@ abstract interface class SnapshotRepository {
   /// 日期在 [from] 与 [to] 之间（含两端）的快照，按日期升序。
   Future<List<Snapshot>> range(DateTime from, DateTime to);
 
+  /// 监听日期在 [from] 与 [to] 之间（含两端）的快照流，按日期升序。
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to);
+
   /// 以 date 为键新增或替换。
   Future<void> upsert(Snapshot snapshot);
 }
@@ -170,4 +173,10 @@ abstract interface class CredentialRepository {
 
   /// 不存在时什么也不做。
   Future<void> delete(String accountId);
+}
+
+/// 清除数据库中全部持久化数据的接口（P18 WipeAllData）。
+abstract interface class DatabaseWiper {
+  /// 清空或重置所有数据表。
+  Future<void> wipe();
 }
