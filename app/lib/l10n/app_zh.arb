@@ -646,6 +646,7 @@
   "settingsSectionDanger": "危险区",
   "settingsSecurity": "应用锁与生物识别",
   "settingsSecurityBody": "修改 PIN、自动锁定时间与生物识别",
+  "settingsSecuritySoon": "安全设置功能即将提供",
   "settingsBackup": "加密备份",
   "settingsBackupNever": "尚未备份",
   "settingsBackupLastExported": "上次导出 {date}",

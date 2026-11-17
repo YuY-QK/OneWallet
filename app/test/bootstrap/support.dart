@@ -1,5 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:drift/drift.dart' show QueryExecutor;
 import 'package:drift/native.dart';
+import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_platform/ow_platform.dart';
 
 /// 内存里的安全存储，行为与 [SecureSecretStore] 一致（键名必须以 `ow.` 开头）。
@@ -68,5 +71,24 @@ final class MemoryDatabaseOpener implements DatabaseOpener {
   @override
   Future<void> delete() async {
     fileExists = false;
+  }
+}
+
+final class FakeVaultStorage implements VaultStorage {
+  int deleteCount = 0;
+  Uint8List? data;
+
+  @override
+  Future<void> delete() async {
+    deleteCount++;
+    data = null;
+  }
+
+  @override
+  Future<Uint8List?> read() async => data;
+
+  @override
+  Future<void> writeAtomic(Uint8List bytes) async {
+    data = bytes;
   }
 }

@@ -174,9 +174,19 @@ final backupChecklistProvider = StreamProvider.autoDispose<BackupChecklistData>(
 
 final wipeAllDataProvider = Provider<WipeAllData>(
   (ref) => WipeAllData(
-    databaseWiper: ref.watch(databaseProvider),
+    closer: ref.watch(databaseProvider),
+    databaseDeleter: ref.watch(databaseOpenerProvider),
     vaultStorage: ref.watch(vaultStorageProvider),
     secrets: ref.watch(secretStoreProvider),
     hardwareKeyStore: ref.watch(hardwareKeyStoreProvider),
   ),
+);
+
+/// 全局清除全部数据并重新执行启动流程（回到初始引导状态）。
+/// 在进入应用后由 [BootstrapHost] 提供真实实现。
+final wipeAndRestartProvider = Provider<Future<void> Function()>(
+  (ref) => () async {
+    final wipeAll = ref.read(wipeAllDataProvider);
+    await wipeAll();
+  },
 );

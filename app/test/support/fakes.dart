@@ -474,12 +474,12 @@ final class FakePlatformCapabilities implements PlatformCapabilities {
 /// 页面测试的一套假依赖。`overrides` 直接用于 `ProviderScope`。
 const _unset = Object();
 
-final class _FakeRigDatabaseWiper implements DatabaseWiper {
-  _FakeRigDatabaseWiper(this.onWipe);
-  final void Function() onWipe;
+final class _FakeRigDatabaseDeleter implements DatabaseDeleter {
+  _FakeRigDatabaseDeleter(this.onDelete);
+  final void Function() onDelete;
 
   @override
-  Future<void> wipe() async => onWipe();
+  Future<void> delete() async => onDelete();
 }
 
 final class TestRig {
@@ -538,10 +538,13 @@ final class TestRig {
     tokenVisibilityRepositoryProvider.overrideWithValue(tokenVisibility),
     wipeAllDataProvider.overrideWith(
       (ref) => WipeAllData(
-        databaseWiper: _FakeRigDatabaseWiper(() => wipeAllCalls++),
+        databaseDeleter: _FakeRigDatabaseDeleter(() => wipeAllCalls++),
         secrets: secrets,
       ),
     ),
+    wipeAndRestartProvider.overrideWithValue(() async {
+      wipeAllCalls++;
+    }),
     adapterRegistryProvider.overrideWithValue(registry),
     priceSourceProvider.overrideWithValue(priceSource),
     secretStoreProvider.overrideWithValue(secrets),

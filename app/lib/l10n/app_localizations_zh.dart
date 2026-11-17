@@ -1256,6 +1256,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSecurityBody => '修改 PIN、自动锁定时间与生物识别';
 
   @override
+  String get settingsSecuritySoon => '安全设置功能即将提供';
+
+  @override
   String get settingsBackup => '加密备份';
 
   @override

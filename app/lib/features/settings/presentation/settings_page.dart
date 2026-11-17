@@ -212,11 +212,7 @@ class SettingsPage extends ConsumerWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      await ref.read(wipeAllDataProvider)();
-      if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(l.settingsWipeAllData)));
-      }
+      await ref.read(wipeAndRestartProvider)();
     }
   }
 
