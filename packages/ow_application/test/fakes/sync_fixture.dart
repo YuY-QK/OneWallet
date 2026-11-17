@@ -32,6 +32,7 @@ final class SyncFixture {
       normalizer: HoldingNormalizer(catalog: catalog, priceSource: priceSource),
       retryPolicy: retryPolicy,
       clock: clock,
+      credentials: credentials,
     );
     syncAll = SyncAllAccounts(
       accounts: accounts,
@@ -53,6 +54,7 @@ final class SyncFixture {
   final addresses = InMemoryAddressRepository();
   final holdings = InMemoryHoldingRepository();
   final syncRecords = InMemorySyncRecordRepository();
+  final credentials = FakeCredentialRepository();
   final settings = InMemorySettingsRepository();
   final prices = InMemoryPriceRepository();
   final adapters = FakeAdapterRegistry();
@@ -88,6 +90,27 @@ final class SyncFixture {
         enabledChainIds: chainIds,
       ),
     );
+    return id;
+  }
+
+  /// 建一个交易所账户并可选写入凭据，返回账户 id。
+  Future<String> addExchange(
+    String id,
+    ExchangeId exchange, {
+    ExchangeCredentials? creds,
+  }) async {
+    await accounts.upsert(
+      Account.exchange(
+        id: id,
+        name: '交易所 $id',
+        colorIndex: 1,
+        createdAt: clock.nowUtc(),
+        exchange: exchange,
+      ),
+    );
+    if (creds != null) {
+      await credentials.save(id, creds);
+    }
     return id;
   }
 

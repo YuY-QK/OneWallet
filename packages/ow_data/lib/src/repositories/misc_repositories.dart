@@ -40,6 +40,15 @@ final class DriftSyncRecordRepository implements SyncRecordRepository {
     );
   }
 
+  /// 最近的同步记录（按写入顺序从新到旧排列），最多 [limit] 条。
+  @override
+  Stream<List<SyncRecord>> watchRecent({int limit = maxSyncRecords}) {
+    final query = _db.select(_db.syncRecords)
+      ..orderBy([(t) => OrderingTerm.desc(t.id)])
+      ..limit(limit);
+    return query.watch().map((rows) => decodeRows(rows, syncRecordFromRow));
+  }
+
   /// 追加一条记录，并把全表裁剪到最近 [maxSyncRecords] 条（按写入顺序），同一事务内完成。
   /// 成功记录同时把账户的 `last_synced_at` 推进到 `finishedAt`（不会后退）。
   @override

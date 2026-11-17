@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ow_directory/ow_directory.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../../../l10n/app_localizations.dart';
@@ -7,6 +8,7 @@ import '../../../../theme/ow_colors.dart';
 import '../../../../theme/ow_text_styles.dart';
 import '../../../../widgets/failure_text.dart';
 import '../../../../widgets/ow_danger_button.dart';
+import '../../../../widgets/ow_external_link.dart';
 import '../../../../widgets/ow_input_decoration.dart';
 import '../../../../widgets/ow_notice.dart';
 import '../../../../widgets/ow_primary_button.dart';
@@ -136,6 +138,50 @@ class _DataSourceEditorState extends ConsumerState<DataSourceEditor> {
                 _requirement(l),
                 style: OwTextStyles.caption.copyWith(color: c.muted),
               ),
+              () {
+                final dirId = switch (widget.providerId) {
+                  DataSourceIds.alchemy => 'alchemy',
+                  DataSourceIds.coingecko => 'coingecko',
+                  DataSourceIds.helius => 'helius',
+                  DataSourceIds.trongrid => 'trongrid',
+                  DataSourceIds.mempool => 'mempool-space',
+                  _ => null,
+                };
+                final entry = dirId != null
+                    ? ThirdPartyDirectory.builtin().byId(dirId)
+                    : null;
+                if (entry == null) return const SizedBox.shrink();
+                final website = entry.link(LinkKind.website);
+                final guide = entry.link(LinkKind.apiKeyGuide);
+                final docs = entry.link(LinkKind.apiDocs);
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 4,
+                    children: [
+                      if (website != null)
+                        OwExternalLink(
+                          url: Uri.parse(website),
+                          label: l.directoryLinkWebsite,
+                          showHost: true,
+                        ),
+                      if (guide != null)
+                        OwExternalLink(
+                          url: Uri.parse(guide),
+                          label: l.directoryLinkApiKey,
+                          showHost: false,
+                        )
+                      else if (docs != null)
+                        OwExternalLink(
+                          url: Uri.parse(docs),
+                          label: l.directoryLinkDocs,
+                          showHost: false,
+                        ),
+                    ],
+                  ),
+                );
+              }(),
               const SizedBox(height: 12),
               if (!_isMempool) ...[
                 OwFieldLabel(l.sourcesKeyLabel),

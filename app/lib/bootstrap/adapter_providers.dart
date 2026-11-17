@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ow_application/ow_application.dart';
 import 'package:ow_chains/ow_chains.dart';
 import 'package:ow_domain/ow_domain.dart';
+import 'package:ow_exchanges/ow_exchanges.dart';
 import 'package:ow_net/ow_net.dart';
 import 'package:ow_pricing/ow_pricing.dart';
 
@@ -60,11 +61,12 @@ final priceSourceProvider = Provider<PriceSource>(
   ),
 );
 
-/// 适配器注册表。已接入四类链家族（EVM、Bitcoin、Solana、Tron），全部交易所仍为占位。
+/// 适配器注册表。已接入四类链家族（EVM、Bitcoin、Solana、Tron）及 Binance、OKX、Bybit；Bitget 为占位。
 final adapterRegistryProvider = Provider<AdapterRegistry>((ref) {
   final config = ref.watch(dataSourceConfigProvider);
   final onLog = ref.watch(netLogSinkProvider);
   final catalog = ref.watch(builtInAssetCatalogProvider);
+  final clock = ref.watch(clockProvider);
   return AppAdapterRegistry(
     evm: EvmChainAdapter(config: config, onLog: onLog),
     bitcoin: BitcoinChainAdapter(config: config, onLog: onLog),
@@ -74,5 +76,8 @@ final adapterRegistryProvider = Provider<AdapterRegistry>((ref) {
       knownDecimals: catalog.tronDecimals,
       onLog: onLog,
     ),
+    binance: BinanceAdapter(clock: clock, onLog: onLog),
+    okx: OkxAdapter(clock: clock, onLog: onLog),
+    bybit: BybitAdapter(clock: clock, onLog: onLog),
   );
 });

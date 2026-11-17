@@ -53,6 +53,12 @@ abstract interface class SecretStore {
   Future<void> delete(String key);
 }
 
+/// 能一次清除本应用全部条目的 [SecretStore]。
+abstract interface class ClearableSecretStore implements SecretStore {
+  /// 删除键名以 `ow.` 开头的全部条目。其他条目不动。
+  Future<void> clearAll();
+}
+
 /// 敏感页面的显示保护。
 abstract interface class ScreenGuard {
   Future<void> enable();
@@ -60,6 +66,16 @@ abstract interface class ScreenGuard {
 
   /// 是否正在录屏或投屏。
   Stream<bool> get captureActive;
+}
+
+/// 可关闭的数据库连接（用于数据重置时断开连接）。
+abstract interface class DatabaseCloser {
+  Future<void> close();
+}
+
+/// 数据库存储文件删除能力（用于数据重置时删除物理文件）。
+abstract interface class DatabaseDeleter {
+  Future<void> delete();
 }
 
 /// 文件的导出与选取。手机用系统分享面板，桌面用"另存为"对话框。

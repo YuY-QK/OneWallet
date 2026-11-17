@@ -53,6 +53,24 @@ String formatFiat(
   return '${negative ? '-' : ''}$symbol$grouped${unsigned.substring(dot)}';
 }
 
+/// 单价：价格大于等于 1 时保留 2 到 4 位小数（至少 2 位，若有更多小数最多显示 4 位）；
+/// 小于 1 时保留有效小数。千分位分隔。
+String formatPrice(Decimal price, {required String symbol}) {
+  if (price >= Decimal.one) {
+    final str = price.toString();
+    final parts = str.split('.');
+    if (parts.length > 1 && parts[1].length > 2) {
+      final frac = parts[1].length > 4 ? parts[1].substring(0, 4) : parts[1];
+      final trimmed = frac.replaceFirst(RegExp(r'0+$'), '');
+      final finalFrac = trimmed.length < 2 ? trimmed.padRight(2, '0') : trimmed;
+      final intPart = _groupThousands(parts[0]);
+      return '$symbol$intPart.$finalFrac';
+    }
+    return formatFiat(price, symbol: symbol);
+  }
+  return '$symbol${formatQuantity(price)}';
+}
+
 /// 数量：最多 8 位有效数字，去掉尾随零；非零且小于 `0.00000001` 显示
 /// `<0.00000001`；零显示 `0`。
 ///
@@ -134,6 +152,19 @@ String formatRelativeTime(
   final hm = '${_two(t.hour)}:${_two(t.minute)}';
   final sameDay = t.year == n.year && t.month == n.month && t.day == n.day;
   return sameDay ? hm : '${_two(t.month)}-${_two(t.day)} $hm';
+}
+
+/// 耗时格式化（例如 `用时 11 秒`、`用时 1.2 秒`、`用时 350 毫秒`）。
+String formatDuration(Duration duration, {required AppLocalizations l10n}) {
+  final ms = duration.inMilliseconds;
+  if (ms < 1000) {
+    return l10n.syncStatusDurationMs(ms);
+  }
+  final sec = ms / 1000.0;
+  final formattedSec = (ms % 1000 == 0)
+      ? (ms ~/ 1000).toString()
+      : sec.toStringAsFixed(1);
+  return l10n.syncStatusDurationSeconds(formattedSec);
 }
 
 String _two(int v) => v.toString().padLeft(2, '0');

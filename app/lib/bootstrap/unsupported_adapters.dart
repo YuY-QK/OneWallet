@@ -57,14 +57,20 @@ final class AppAdapterRegistry implements AdapterRegistry {
     this.bitcoin,
     this.solana,
     this.tron,
-    Map<ExchangeId, ExchangeAdapter>? exchanges,
-  }) : _exchanges = exchanges ?? const {};
+    this.binance,
+    this.okx,
+    this.bybit,
+    this.bitget,
+  });
 
   final ChainAdapter evm;
   final ChainAdapter? bitcoin;
   final ChainAdapter? solana;
   final ChainAdapter? tron;
-  final Map<ExchangeId, ExchangeAdapter> _exchanges;
+  final ExchangeAdapter? binance;
+  final ExchangeAdapter? okx;
+  final ExchangeAdapter? bybit;
+  final ExchangeAdapter? bitget;
 
   @override
   ChainAdapter chain(ChainFamily family) => switch (family) {
@@ -75,6 +81,10 @@ final class AppAdapterRegistry implements AdapterRegistry {
   };
 
   @override
-  ExchangeAdapter exchange(ExchangeId id) =>
-      _exchanges[id] ?? UnsupportedExchangeAdapter(id);
+  ExchangeAdapter exchange(ExchangeId id) => switch (id) {
+    ExchangeId.binance => binance ?? UnsupportedExchangeAdapter(id),
+    ExchangeId.okx => okx ?? UnsupportedExchangeAdapter(id),
+    ExchangeId.bybit => bybit ?? UnsupportedExchangeAdapter(id),
+    ExchangeId.bitget => bitget ?? UnsupportedExchangeAdapter(id),
+  };
 }

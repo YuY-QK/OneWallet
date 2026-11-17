@@ -68,6 +68,17 @@ class $AccountsTable extends Accounts
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _walletSourceIdMeta = const VerificationMeta(
+    'walletSourceId',
+  );
+  @override
+  late final GeneratedColumn<String> walletSourceId = GeneratedColumn<String>(
+    'wallet_source_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _exchangeMeta = const VerificationMeta(
     'exchange',
   );
@@ -162,6 +173,7 @@ class $AccountsTable extends Accounts
     colorIndex,
     note,
     walletSource,
+    walletSourceId,
     exchange,
     vaultItemId,
     offlineBackedUp,
@@ -223,6 +235,15 @@ class $AccountsTable extends Accounts
         walletSource.isAcceptableOrUnknown(
           data['wallet_source']!,
           _walletSourceMeta,
+        ),
+      );
+    }
+    if (data.containsKey('wallet_source_id')) {
+      context.handle(
+        _walletSourceIdMeta,
+        walletSourceId.isAcceptableOrUnknown(
+          data['wallet_source_id']!,
+          _walletSourceIdMeta,
         ),
       );
     }
@@ -315,6 +336,10 @@ class $AccountsTable extends Accounts
         DriftSqlType.string,
         data['${effectivePrefix}wallet_source'],
       ),
+      walletSourceId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}wallet_source_id'],
+      ),
       exchange: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}exchange'],
@@ -359,6 +384,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
   final int colorIndex;
   final String note;
   final String? walletSource;
+  final String? walletSourceId;
   final String? exchange;
   final String? vaultItemId;
   final bool offlineBackedUp;
@@ -376,6 +402,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     required this.colorIndex,
     required this.note,
     this.walletSource,
+    this.walletSourceId,
     this.exchange,
     this.vaultItemId,
     required this.offlineBackedUp,
@@ -394,6 +421,9 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     map['note'] = Variable<String>(note);
     if (!nullToAbsent || walletSource != null) {
       map['wallet_source'] = Variable<String>(walletSource);
+    }
+    if (!nullToAbsent || walletSourceId != null) {
+      map['wallet_source_id'] = Variable<String>(walletSourceId);
     }
     if (!nullToAbsent || exchange != null) {
       map['exchange'] = Variable<String>(exchange);
@@ -423,6 +453,9 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       walletSource: walletSource == null && nullToAbsent
           ? const Value.absent()
           : Value(walletSource),
+      walletSourceId: walletSourceId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(walletSourceId),
       exchange: exchange == null && nullToAbsent
           ? const Value.absent()
           : Value(exchange),
@@ -453,6 +486,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       colorIndex: serializer.fromJson<int>(json['colorIndex']),
       note: serializer.fromJson<String>(json['note']),
       walletSource: serializer.fromJson<String?>(json['walletSource']),
+      walletSourceId: serializer.fromJson<String?>(json['walletSourceId']),
       exchange: serializer.fromJson<String?>(json['exchange']),
       vaultItemId: serializer.fromJson<String?>(json['vaultItemId']),
       offlineBackedUp: serializer.fromJson<bool>(json['offlineBackedUp']),
@@ -474,6 +508,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       'colorIndex': serializer.toJson<int>(colorIndex),
       'note': serializer.toJson<String>(note),
       'walletSource': serializer.toJson<String?>(walletSource),
+      'walletSourceId': serializer.toJson<String?>(walletSourceId),
       'exchange': serializer.toJson<String?>(exchange),
       'vaultItemId': serializer.toJson<String?>(vaultItemId),
       'offlineBackedUp': serializer.toJson<bool>(offlineBackedUp),
@@ -491,6 +526,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     int? colorIndex,
     String? note,
     Value<String?> walletSource = const Value.absent(),
+    Value<String?> walletSourceId = const Value.absent(),
     Value<String?> exchange = const Value.absent(),
     Value<String?> vaultItemId = const Value.absent(),
     bool? offlineBackedUp,
@@ -505,6 +541,9 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     colorIndex: colorIndex ?? this.colorIndex,
     note: note ?? this.note,
     walletSource: walletSource.present ? walletSource.value : this.walletSource,
+    walletSourceId: walletSourceId.present
+        ? walletSourceId.value
+        : this.walletSourceId,
     exchange: exchange.present ? exchange.value : this.exchange,
     vaultItemId: vaultItemId.present ? vaultItemId.value : this.vaultItemId,
     offlineBackedUp: offlineBackedUp ?? this.offlineBackedUp,
@@ -527,6 +566,9 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
       walletSource: data.walletSource.present
           ? data.walletSource.value
           : this.walletSource,
+      walletSourceId: data.walletSourceId.present
+          ? data.walletSourceId.value
+          : this.walletSourceId,
       exchange: data.exchange.present ? data.exchange.value : this.exchange,
       vaultItemId: data.vaultItemId.present
           ? data.vaultItemId.value
@@ -554,6 +596,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
           ..write('colorIndex: $colorIndex, ')
           ..write('note: $note, ')
           ..write('walletSource: $walletSource, ')
+          ..write('walletSourceId: $walletSourceId, ')
           ..write('exchange: $exchange, ')
           ..write('vaultItemId: $vaultItemId, ')
           ..write('offlineBackedUp: $offlineBackedUp, ')
@@ -573,6 +616,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
     colorIndex,
     note,
     walletSource,
+    walletSourceId,
     exchange,
     vaultItemId,
     offlineBackedUp,
@@ -591,6 +635,7 @@ class AccountRow extends DataClass implements Insertable<AccountRow> {
           other.colorIndex == this.colorIndex &&
           other.note == this.note &&
           other.walletSource == this.walletSource &&
+          other.walletSourceId == this.walletSourceId &&
           other.exchange == this.exchange &&
           other.vaultItemId == this.vaultItemId &&
           other.offlineBackedUp == this.offlineBackedUp &&
@@ -607,6 +652,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
   final Value<int> colorIndex;
   final Value<String> note;
   final Value<String?> walletSource;
+  final Value<String?> walletSourceId;
   final Value<String?> exchange;
   final Value<String?> vaultItemId;
   final Value<bool> offlineBackedUp;
@@ -622,6 +668,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     this.colorIndex = const Value.absent(),
     this.note = const Value.absent(),
     this.walletSource = const Value.absent(),
+    this.walletSourceId = const Value.absent(),
     this.exchange = const Value.absent(),
     this.vaultItemId = const Value.absent(),
     this.offlineBackedUp = const Value.absent(),
@@ -638,6 +685,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     required int colorIndex,
     this.note = const Value.absent(),
     this.walletSource = const Value.absent(),
+    this.walletSourceId = const Value.absent(),
     this.exchange = const Value.absent(),
     this.vaultItemId = const Value.absent(),
     this.offlineBackedUp = const Value.absent(),
@@ -658,6 +706,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     Expression<int>? colorIndex,
     Expression<String>? note,
     Expression<String>? walletSource,
+    Expression<String>? walletSourceId,
     Expression<String>? exchange,
     Expression<String>? vaultItemId,
     Expression<bool>? offlineBackedUp,
@@ -674,6 +723,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
       if (colorIndex != null) 'color_index': colorIndex,
       if (note != null) 'note': note,
       if (walletSource != null) 'wallet_source': walletSource,
+      if (walletSourceId != null) 'wallet_source_id': walletSourceId,
       if (exchange != null) 'exchange': exchange,
       if (vaultItemId != null) 'vault_item_id': vaultItemId,
       if (offlineBackedUp != null) 'offline_backed_up': offlineBackedUp,
@@ -692,6 +742,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     Value<int>? colorIndex,
     Value<String>? note,
     Value<String?>? walletSource,
+    Value<String?>? walletSourceId,
     Value<String?>? exchange,
     Value<String?>? vaultItemId,
     Value<bool>? offlineBackedUp,
@@ -708,6 +759,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
       colorIndex: colorIndex ?? this.colorIndex,
       note: note ?? this.note,
       walletSource: walletSource ?? this.walletSource,
+      walletSourceId: walletSourceId ?? this.walletSourceId,
       exchange: exchange ?? this.exchange,
       vaultItemId: vaultItemId ?? this.vaultItemId,
       offlineBackedUp: offlineBackedUp ?? this.offlineBackedUp,
@@ -739,6 +791,9 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
     }
     if (walletSource.present) {
       map['wallet_source'] = Variable<String>(walletSource.value);
+    }
+    if (walletSourceId.present) {
+      map['wallet_source_id'] = Variable<String>(walletSourceId.value);
     }
     if (exchange.present) {
       map['exchange'] = Variable<String>(exchange.value);
@@ -776,6 +831,7 @@ class AccountsCompanion extends UpdateCompanion<AccountRow> {
           ..write('colorIndex: $colorIndex, ')
           ..write('note: $note, ')
           ..write('walletSource: $walletSource, ')
+          ..write('walletSourceId: $walletSourceId, ')
           ..write('exchange: $exchange, ')
           ..write('vaultItemId: $vaultItemId, ')
           ..write('offlineBackedUp: $offlineBackedUp, ')
@@ -5174,6 +5230,7 @@ typedef $$AccountsTableCreateCompanionBuilder = AccountsCompanion Function({
   required int colorIndex,
   Value<String> note,
   Value<String?> walletSource,
+  Value<String?> walletSourceId,
   Value<String?> exchange,
   Value<String?> vaultItemId,
   Value<bool> offlineBackedUp,
@@ -5190,6 +5247,7 @@ typedef $$AccountsTableUpdateCompanionBuilder = AccountsCompanion Function({
   Value<int> colorIndex,
   Value<String> note,
   Value<String?> walletSource,
+  Value<String?> walletSourceId,
   Value<String?> exchange,
   Value<String?> vaultItemId,
   Value<bool> offlineBackedUp,
@@ -5295,6 +5353,11 @@ class $$AccountsTableFilterComposer
 
   ColumnFilters<String> get walletSource => $composableBuilder(
     column: $table.walletSource,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get walletSourceId => $composableBuilder(
+    column: $table.walletSourceId,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5448,6 +5511,11 @@ class $$AccountsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get walletSourceId => $composableBuilder(
+    column: $table.walletSourceId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get exchange => $composableBuilder(
     column: $table.exchange,
     builder: (column) => ColumnOrderings(column),
@@ -5512,6 +5580,11 @@ class $$AccountsTableAnnotationComposer
 
   GeneratedColumn<String> get walletSource => $composableBuilder(
     column: $table.walletSource,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get walletSourceId => $composableBuilder(
+    column: $table.walletSourceId,
     builder: (column) => column,
   );
 
@@ -5658,6 +5731,7 @@ class $$AccountsTableTableManager
                 Value<int> colorIndex = const Value.absent(),
                 Value<String> note = const Value.absent(),
                 Value<String?> walletSource = const Value.absent(),
+                Value<String?> walletSourceId = const Value.absent(),
                 Value<String?> exchange = const Value.absent(),
                 Value<String?> vaultItemId = const Value.absent(),
                 Value<bool> offlineBackedUp = const Value.absent(),
@@ -5673,6 +5747,7 @@ class $$AccountsTableTableManager
                 colorIndex: colorIndex,
                 note: note,
                 walletSource: walletSource,
+                walletSourceId: walletSourceId,
                 exchange: exchange,
                 vaultItemId: vaultItemId,
                 offlineBackedUp: offlineBackedUp,
@@ -5690,6 +5765,7 @@ class $$AccountsTableTableManager
                 required int colorIndex,
                 Value<String> note = const Value.absent(),
                 Value<String?> walletSource = const Value.absent(),
+                Value<String?> walletSourceId = const Value.absent(),
                 Value<String?> exchange = const Value.absent(),
                 Value<String?> vaultItemId = const Value.absent(),
                 Value<bool> offlineBackedUp = const Value.absent(),
@@ -5705,6 +5781,7 @@ class $$AccountsTableTableManager
                 colorIndex: colorIndex,
                 note: note,
                 walletSource: walletSource,
+                walletSourceId: walletSourceId,
                 exchange: exchange,
                 vaultItemId: vaultItemId,
                 offlineBackedUp: offlineBackedUp,

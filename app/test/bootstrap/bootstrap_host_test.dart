@@ -1,8 +1,11 @@
 import 'package:drift/native.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onewallet/app.dart';
 import 'package:onewallet/bootstrap/app_bootstrap.dart';
 import 'package:onewallet/bootstrap/bootstrap_host.dart';
+import 'package:onewallet/bootstrap/providers.dart';
 import 'package:ow_data/ow_data.dart';
 
 import 'support.dart';
@@ -83,6 +86,99 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('还没有账户'), findsOneWidget);
     expect(find.text('无法打开本地数据'), findsNothing);
+    await unmount(tester);
+  });
+
+  testWidgets('数据库打开失败_点击清除本地数据并确认后调用wipe并重试成功', (tester) async {
+    var wipeCalled = false;
+    var calls = 0;
+    Future<BootstrapResult> bootstrap() async {
+      calls++;
+      return calls == 1
+          ? const BootstrapFailure(BootstrapFailureKind.databaseOpenFailed)
+          : BootstrapSuccess(
+              database: OwDatabase(NativeDatabase.memory()),
+              secrets: FakeSecretStore(),
+            );
+    }
+
+    await tester.pumpWidget(
+      BootstrapHost(
+        bootstrap: bootstrap,
+        onWipeAndRestart: () async {
+          wipeCalled = true;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始'), findsOneWidget);
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始？'), findsOneWidget);
+    expect(find.textContaining('此操作将清除本地数据库与所有存储的凭据'), findsOneWidget);
+
+    // 点取消：不调用 wipe
+    await tester.tap(find.text('取消'));
+    await tester.pumpAndSettle();
+    expect(wipeCalled, isFalse);
+
+    // 再次点击并确认
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('清除并重新开始'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(wipeCalled, isTrue);
+    expect(calls, 2);
+    expect(find.text('总览'), findsWidgets);
+    await unmount(tester);
+  });
+
+  testWidgets('运行中通过 wipeAndRestartProvider 触发重置_清空并重启', (tester) async {
+    int calls = 0;
+    bool wipeCalled = false;
+    Future<BootstrapResult> bootstrap() async {
+      calls++;
+      return BootstrapSuccess(
+        database: OwDatabase(NativeDatabase.memory()),
+        secrets: FakeSecretStore(),
+      );
+    }
+
+    await tester.pumpWidget(
+      BootstrapHost(
+        bootstrap: bootstrap,
+        onWipeAndRestart: () async {
+          wipeCalled = true;
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('总览'), findsWidgets);
+    expect(calls, 1);
+
+    // 从 ProviderScope 中调用 wipeAndRestartProvider
+    final element = tester.element(find.byType(OneWalletApp));
+    final container = ProviderScope.containerOf(element);
+    await container.read(wipeAndRestartProvider)();
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(wipeCalled, isTrue);
+    expect(calls, 2);
+    expect(find.text('总览'), findsWidgets);
     await unmount(tester);
   });
 }

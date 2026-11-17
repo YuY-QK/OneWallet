@@ -12,4 +12,9 @@ abstract final class RouteNames {
   static const vaultImport = 'vaultImport';
   static const settings = 'settings';
   static const settingsSources = 'settingsSources';
+  static const settingsSync = 'settingsSync';
+  static const addressBook = 'addressBook';
+  static const backupChecklist = 'backupChecklist';
+  static const backupExport = 'backupExport';
+  static const settingsAbout = 'settingsAbout';
 }

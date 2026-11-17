@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../../../l10n/app_localizations.dart';
+import '../../../../router/route_names.dart';
 import '../../../../theme/ow_colors.dart';
 import '../../../../theme/ow_text_styles.dart';
 import '../../../../widgets/failure_text.dart';
 import '../../../../widgets/ow_list_group.dart';
+import '../../../../widgets/ow_secondary_button.dart';
 import '../../../shared/sync_failure.dart';
 
 /// 同步失败账户的简单列表弹层（完整的同步状态页 P21 属于后续任务）。
@@ -53,6 +56,14 @@ Future<void> showSyncFailureSheet(
                       ),
                     ),
                 ],
+              ),
+              const SizedBox(height: 14),
+              OwSecondaryButton(
+                label: l.syncStatusViewFullStatus,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  context.pushNamed(RouteNames.settingsSync);
+                },
               ),
             ],
           ),

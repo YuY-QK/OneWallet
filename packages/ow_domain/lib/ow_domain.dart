@@ -6,6 +6,7 @@ library;
 export 'src/account/account.dart';
 export 'src/account/backup_status.dart';
 export 'src/account/exchange_id.dart';
+export 'src/account/wallet_source_mapping.dart';
 export 'src/account/watch_address.dart';
 export 'src/adapter/adapters.dart';
 export 'src/asset/asset.dart';

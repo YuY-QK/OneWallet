@@ -96,10 +96,21 @@ final class FakeAddressRepository implements AddressRepository {
   Stream<List<WatchAddress>> watchAll() => feed.stream();
 
   @override
+  Future<List<WatchAddress>> all() async => List.of(feed.value);
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) async => [
     for (final a in feed.value)
       if (a.accountId == accountId) a,
   ];
+
+  @override
+  Future<WatchAddress?> byId(String id) async {
+    for (final a in feed.value) {
+      if (a.id == id) return a;
+    }
+    return null;
+  }
 
   @override
   Future<WatchAddress?> find(
@@ -165,6 +176,7 @@ final class FakePriceRepository implements PriceRepository {
 final class FakeSyncRecordRepository implements SyncRecordRepository {
   final feed = ValueFeed<List<SyncRecord>>([]);
   final lastSuccess = ValueFeed<Map<String, DateTime>>({});
+  final allRecords = ValueFeed<List<SyncRecord>>([]);
 
   @override
   Stream<List<SyncRecord>> watchLatestPerAccount() => feed.stream();
@@ -172,6 +184,10 @@ final class FakeSyncRecordRepository implements SyncRecordRepository {
   @override
   Stream<Map<String, DateTime>> watchLastSuccessPerAccount() =>
       lastSuccess.stream();
+
+  @override
+  Stream<List<SyncRecord>> watchRecent({int limit = 50}) =>
+      allRecords.stream().map((list) => list.take(limit).toList());
 
   @override
   Future<void> add(SyncRecord record) async {
@@ -183,6 +199,43 @@ final class FakeSyncRecordRepository implements SyncRecordRepository {
       for (final r in feed.value)
         if (r.accountId != record.accountId) r,
       record,
+    ];
+    allRecords.value = [record, ...allRecords.value].take(50).toList();
+  }
+}
+
+final class FakeSnapshotRepository implements SnapshotRepository {
+  final feed = ValueFeed<List<Snapshot>>([]);
+
+  @override
+  Future<List<Snapshot>> range(DateTime from, DateTime to) async {
+    final fromUtc = DateTime.utc(from.year, from.month, from.day);
+    final toUtc = DateTime.utc(to.year, to.month, to.day);
+    return feed.value
+        .where((s) => !s.date.isBefore(fromUtc) && !s.date.isAfter(toUtc))
+        .toList()
+      ..sort((a, b) => a.date.compareTo(b.date));
+  }
+
+  @override
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to) {
+    final fromUtc = DateTime.utc(from.year, from.month, from.day);
+    final toUtc = DateTime.utc(to.year, to.month, to.day);
+    return feed.stream().map(
+      (list) =>
+          list
+              .where((s) => !s.date.isBefore(fromUtc) && !s.date.isAfter(toUtc))
+              .toList()
+            ..sort((a, b) => a.date.compareTo(b.date)),
+    );
+  }
+
+  @override
+  Future<void> upsert(Snapshot snapshot) async {
+    feed.value = [
+      for (final s in feed.value)
+        if (s.date != snapshot.date) s,
+      snapshot,
     ];
   }
 }
@@ -225,14 +278,24 @@ final class FakeSettingsRepository implements SettingsRepository {
 }
 
 final class FakeTokenVisibilityRepository implements TokenVisibilityRepository {
-  @override
-  Future<Set<String>> hidden() async => {};
+  final feed = ValueFeed<Set<String>>({});
 
   @override
-  Stream<Set<String>> watchHidden() => Stream.value(const {});
+  Future<Set<String>> hidden() async => Set.of(feed.value);
 
   @override
-  Future<void> setHidden(String tokenKey, bool hidden) async {}
+  Stream<Set<String>> watchHidden() => feed.stream();
+
+  @override
+  Future<void> setHidden(String tokenKey, bool hidden) async {
+    final next = Set<String>.of(feed.value);
+    if (hidden) {
+      next.add(tokenKey);
+    } else {
+      next.remove(tokenKey);
+    }
+    feed.value = next;
+  }
 }
 
 /// 脚本化的链适配器：按链家族返回预设结果，并记录调用次数。
@@ -275,16 +338,73 @@ final class FakeChainAdapter implements ChainAdapter {
   }
 }
 
+final class FakeExchangeAdapter implements ExchangeAdapter {
+  FakeExchangeAdapter(this.id, {this.needsPassphrase = false});
+
+  @override
+  final ExchangeId id;
+
+  @override
+  final bool needsPassphrase;
+
+  Result<CredentialCheck> verifyResult = const Ok(
+    CredentialCheck(permission: KeyPermission.readOnly),
+  );
+
+  final List<ExchangeCredentials> verifyCalls = [];
+  final List<ExchangeCredentials> fetchHoldingsCalls = [];
+
+  Completer<void>? gate;
+
+  List<Result<List<(ExchangeSubAccount, RawHolding)>>> holdingsResponses = [];
+  List<Result<List<DepositAddress>>> depositAddressesResponses = [];
+
+  @override
+  Future<Result<CredentialCheck>> verify(ExchangeCredentials c) async {
+    verifyCalls.add(c);
+    return verifyResult;
+  }
+
+  @override
+  Future<Result<List<(ExchangeSubAccount, RawHolding)>>> fetchHoldings(
+    ExchangeCredentials c,
+  ) async {
+    fetchHoldingsCalls.add(c);
+    await gate?.future;
+    if (holdingsResponses.isEmpty) return const Ok([]);
+    final callIndex = fetchHoldingsCalls.length - 1;
+    return holdingsResponses[callIndex < holdingsResponses.length
+        ? callIndex
+        : holdingsResponses.length - 1];
+  }
+
+  @override
+  Future<Result<List<DepositAddress>>> fetchDepositAddresses(
+    ExchangeCredentials c,
+  ) async {
+    if (depositAddressesResponses.isEmpty) return const Ok([]);
+    return depositAddressesResponses.removeAt(0);
+  }
+}
+
 final class FakeAdapterRegistry implements AdapterRegistry {
   final adapters = {for (final f in ChainFamily.values) f: FakeChainAdapter(f)};
+  final exchanges = {
+    for (final id in ExchangeId.values)
+      id: FakeExchangeAdapter(
+        id,
+        needsPassphrase: id == ExchangeId.okx || id == ExchangeId.bitget,
+      ),
+  };
 
   FakeChainAdapter operator [](ChainFamily f) => adapters[f]!;
+  FakeExchangeAdapter exchangeFake(ExchangeId id) => exchanges[id]!;
 
   @override
   ChainAdapter chain(ChainFamily family) => adapters[family]!;
 
   @override
-  ExchangeAdapter exchange(ExchangeId id) => throw UnimplementedError();
+  ExchangeAdapter exchange(ExchangeId id) => exchanges[id]!;
 }
 
 /// 对任何币种报固定价格的价格源；[failure] 非空时失败。
@@ -351,6 +471,16 @@ final class FakePlatformCapabilities implements PlatformCapabilities {
 }
 
 /// 页面测试的一套假依赖。`overrides` 直接用于 `ProviderScope`。
+const _unset = Object();
+
+final class _FakeRigDatabaseDeleter implements DatabaseDeleter {
+  _FakeRigDatabaseDeleter(this.onDelete);
+  final void Function() onDelete;
+
+  @override
+  Future<void> delete() async => onDelete();
+}
+
 final class TestRig {
   TestRig({DateTime? now})
     : clock = FixedClock(now ?? DateTime.utc(2026, 11, 12, 12));
@@ -359,14 +489,18 @@ final class TestRig {
   final addresses = FakeAddressRepository();
   final holdings = FakeHoldingRepository();
   final prices = FakePriceRepository();
+  final snapshots = FakeSnapshotRepository();
   final syncRecords = FakeSyncRecordRepository();
   final settings = FakeSettingsRepository();
   final assetRepo = FakeAssetRepository();
   final registry = FakeAdapterRegistry();
   final priceSource = FakePriceSource();
   final secrets = FakeSecretStore();
+  final tokenVisibility = FakeTokenVisibilityRepository();
   final FixedClock clock;
   final ids = SequenceIds();
+
+  int wipeAllCalls = 0;
 
   /// 剪贴板内容（假）。
   String? clipboard;
@@ -385,12 +519,20 @@ final class TestRig {
     addressRepositoryProvider.overrideWithValue(addresses),
     holdingRepositoryProvider.overrideWithValue(holdings),
     priceRepositoryProvider.overrideWithValue(prices),
+    snapshotRepositoryProvider.overrideWithValue(snapshots),
     syncRecordRepositoryProvider.overrideWithValue(syncRecords),
     settingsRepositoryProvider.overrideWithValue(settings),
     assetRepositoryProvider.overrideWithValue(assetRepo),
-    tokenVisibilityRepositoryProvider.overrideWithValue(
-      FakeTokenVisibilityRepository(),
+    tokenVisibilityRepositoryProvider.overrideWithValue(tokenVisibility),
+    wipeAllDataProvider.overrideWith(
+      (ref) => WipeAllData(
+        databaseDeleter: _FakeRigDatabaseDeleter(() => wipeAllCalls++),
+        secrets: secrets,
+      ),
     ),
+    wipeAndRestartProvider.overrideWithValue(() async {
+      wipeAllCalls++;
+    }),
     adapterRegistryProvider.overrideWithValue(registry),
     priceSourceProvider.overrideWithValue(priceSource),
     secretStoreProvider.overrideWithValue(secrets),
@@ -409,17 +551,20 @@ final class TestRig {
   Account addWallet(
     String id,
     String name, {
+    String? walletSourceId,
     WalletSource? source,
     BackupStatus? backup,
     String? vaultItemId,
   }) {
-    final a = Account(
+    final effectiveSourceId =
+        walletSourceId ??
+        (source != null ? WalletSourceMapping.toDirectoryId(source) : null);
+    final a = Account.wallet(
       id: id,
-      type: AccountType.wallet,
       name: name,
       colorIndex: 0,
       createdAt: DateTime.utc(2026, 11, 1),
-      walletSource: source,
+      walletSourceId: effectiveSourceId,
       backup: backup ?? const BackupStatus(),
       vaultItemId: vaultItemId,
     );
@@ -446,6 +591,9 @@ final class TestRig {
     String address, {
     ChainFamily family = ChainFamily.evm,
     Set<String>? chains,
+    DerivationScheme? scheme,
+    int? derivationIndex,
+    String note = '',
   }) {
     final a = WatchAddress(
       id: id,
@@ -454,6 +602,9 @@ final class TestRig {
       address: address,
       enabledChainIds:
           chains ?? {for (final c in Chains.ofFamily(family)) c.id},
+      scheme: scheme,
+      derivationIndex: derivationIndex,
+      note: note,
     );
     addresses.feed.value = [...addresses.feed.value, a];
     return a;
@@ -495,6 +646,43 @@ final class TestRig {
     }
   }
 
+  void addExchangeHolding(
+    String accountId, {
+    ExchangeSubAccount sub = ExchangeSubAccount.spot,
+    String symbol = 'BTC',
+    Object? assetId = _unset,
+    String amount = '1',
+    String? price,
+    TokenRef? token,
+  }) {
+    final effectiveAssetId = identical(assetId, _unset)
+        ? symbol
+        : assetId as String?;
+    holdings.feed.value = [
+      ...holdings.feed.value,
+      Holding(
+        accountId: accountId,
+        location: ExchangeLocation(sub),
+        token: token ?? NativeToken(symbol),
+        assetId: effectiveAssetId,
+        displaySymbol: symbol,
+        amount: Decimal.parse(amount),
+        updatedAt: DateTime.utc(2026, 11, 12, 11, 57),
+      ),
+    ];
+    if (effectiveAssetId != null && price != null) {
+      prices.feed.value = {
+        ...prices.feed.value,
+        effectiveAssetId: Price(
+          assetId: effectiveAssetId,
+          quote: Quote.usd,
+          price: Decimal.parse(price),
+          updatedAt: DateTime.utc(2026, 11, 12, 11, 57),
+        ),
+      };
+    }
+  }
+
   void record(
     String accountId, {
     bool success = true,
@@ -508,16 +696,21 @@ final class TestRig {
         accountId: t,
       };
     }
+    final rec = SyncRecord(
+      accountId: accountId,
+      startedAt: t,
+      finishedAt: t,
+      status: success ? SyncStatus.success : SyncStatus.failed,
+      failureType: success ? null : (failureType ?? 'UnknownFailure'),
+    );
     syncRecords.feed.value = [
       for (final r in syncRecords.feed.value)
         if (r.accountId != accountId) r,
-      SyncRecord(
-        accountId: accountId,
-        startedAt: t,
-        finishedAt: t,
-        status: success ? SyncStatus.success : SyncStatus.failed,
-        failureType: success ? null : (failureType ?? 'UnknownFailure'),
-      ),
+      rec,
     ];
+    syncRecords.allRecords.value = [
+      rec,
+      ...syncRecords.allRecords.value,
+    ].take(50).toList();
   }
 }

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:onewallet/features/overview/presentation/asset_detail_page.dart';
 import 'package:onewallet/widgets/ow_skeleton.dart';
 import 'package:ow_domain/ow_domain.dart';
 
@@ -179,7 +180,7 @@ void main() {
       expect(find.text('交易所'), findsOneWidget);
     });
 
-    testWidgets('点击账户行进入P07_点击币种行进入币种说明页', (tester) async {
+    testWidgets('点击账户行进入P07_点击币种行进入P09币种详情页', (tester) async {
       final rig = _richRig();
       final router = await pumpApp(tester, rig);
       await tester.tap(find.text('按账户'));
@@ -194,7 +195,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('ETH').first);
       await tester.pumpAndSettle();
-      expect(find.text('此功能将在后续版本提供。'), findsOneWidget);
+      expect(locationOf(router), '/overview/asset/ETH');
+      expect(find.byType(AssetDetailPage), findsOneWidget);
     });
 
     testWidgets('隐藏金额_开关写入设置_金额显示为星号', (tester) async {
@@ -233,6 +235,16 @@ void main() {
       rig.record('a1', at: DateTime.utc(2026, 11, 12, 11, 50));
       await pumpApp(tester, rig);
       expect(rig.registry[ChainFamily.evm].fetchCount, greaterThan(0));
+    });
+
+    testWidgets('未备份钱包提醒_点击跳转到备份清单', (tester) async {
+      final rig = _richRig();
+      final router = await pumpApp(tester, rig);
+      expect(find.text('1 个钱包尚未备份'), findsOneWidget);
+
+      await tester.tap(find.text('1 个钱包尚未备份'));
+      await tester.pumpAndSettle();
+      expect(locationOf(router), '/vault/checklist');
     });
   });
 

@@ -278,6 +278,16 @@
   "settingsSectionData": "数据",
   "settingsSources": "数据源",
   "settingsSourcesBody": "配置链上数据与价格服务的 API Key",
+  "settingsSync": "同步状态",
+  "settingsSyncBody": "各账户同步情况与日志",
+  "settingsSyncFailedCount": "{count, plural, other{{count} 个账户失败}}",
+  "@settingsSyncFailedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sourcesTitle": "数据源",
   "sourcesAlchemyName": "Alchemy",
   "sourcesAlchemyBody": "EVM 六条链的余额",
@@ -342,5 +352,356 @@
   "sourcesEndpointDefault": "使用默认端点",
   "sourcesEndpointSave": "保存端点",
   "sourcesEndpointClear": "恢复默认",
-  "sourcesDone": "完成"
+  "sourcesDone": "完成",
+  "sourcesCoingeckoAttribution": "价格数据来自 CoinGecko",
+  "externalLinkConfirmTitle": "即将离开 OneWallet",
+  "externalLinkConfirmBody": "将用系统浏览器打开以下网址，请核对域名：\n\n{url}",
+  "@externalLinkConfirmBody": {
+    "placeholders": {
+      "url": {
+        "type": "String"
+      }
+    }
+  },
+  "externalLinkConfirmOpen": "继续访问",
+  "externalLinkCancel": "取消",
+  "directoryLinkWebsite": "官网",
+  "directoryLinkDocs": "帮助文档",
+  "directoryLinkApiKey": "获取 API Key",
+  "walletAddSourceSearch": "搜索钱包…",
+  "walletAddSourceOther": "其他",
+  "exchangeAddTitle": "连接交易所",
+  "exchangeReplaceKeyTitle": "更换 API Key",
+  "exchangeAddExchange": "交易所",
+  "exchangeAddAccountName": "账户名称",
+  "exchangeAddAccountNameHint": "例如：Binance 主账户",
+  "exchangeAddAccountNameRequired": "请输入账户名称，最多 30 个字。",
+  "exchangeAddApiKey": "API Key",
+  "exchangeAddApiKeyHint": "粘贴或输入 API Key",
+  "exchangeAddApiKeyRequired": "请输入 API Key。",
+  "exchangeAddApiSecret": "API Secret",
+  "exchangeAddApiSecretHint": "粘贴或输入 API Secret",
+  "exchangeAddApiSecretRequired": "请输入 API Secret。",
+  "exchangeAddPassphrase": "Passphrase",
+  "exchangeAddPassphraseHint": "创建 API Key 时设置的口令",
+  "exchangeAddPassphraseRequired": "请输入 Passphrase。",
+  "exchangeAddPaste": "粘贴",
+  "exchangeAddSecurityNote": "请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。",
+  "exchangeAddGuideTitle": "如何创建只读 API Key",
+  "exchangeAddGuideSubtitle": "分步图文与官方指引",
+  "exchangeAddGuideOfficialLink": "前往官方创建指引",
+  "exchangeAddGuideApiManagementLink": "前往 API 管理",
+  "exchangeAddTestAndSave": "测试并保存",
+  "exchangeAddVerifying": "正在验证凭据…",
+  "exchangeAddSaving": "正在保存…",
+  "exchangeAddComingSoon": "即将支持",
+  "exchangeAddBitgetNotice": "Bitget 暂未接入，即将支持。",
+  "exchangeAddPermWarningTitle": "权限超出只读",
+  "exchangeAddPermWarningBody": "检测到此 Key 包含交易或提现权限，存在资金安全风险。建议在交易所后台重新创建只读 Key。",
+  "exchangeAddPermWarningModify": "返回修改",
+  "exchangeAddPermWarningProceed": "仍然保存",
+  "exchangeAddErrCredential": "API Key、Secret 或 Passphrase 不正确，服务商拒绝了请求。",
+  "exchangeAddErrNetwork": "网络不可用或请求超时。请检查网络连接后重试。",
+  "exchangeAddErrClockSkew": "设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。",
+  "exchangeAddErrIpRestricted": "该 API Key 限制了访问 IP，请检查交易所后台的 IP 白名单设置。",
+  "exchangeAddErrAccountMissing": "找不到这个账户，它可能已被删除。",
+  "exchangeAddErrUnknown": "验证失败：{detail}",
+  "@exchangeAddErrUnknown": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailTotal": "账户总估值",
+  "exchangeDetailTabAssets": "按币种",
+  "exchangeDetailTabSubAccounts": "按子账户",
+  "exchangeDetailKeyStatusNormal": "API Key 正常 · 只读",
+  "exchangeDetailKeyStatusExpired": "API Key 已失效",
+  "exchangeDetailKeyExpiredNotice": "API Key 已失效，无法同步最新资产，请尽快更换。",
+  "exchangeDetailNoAssets": "该交易所目前没有可显示的资产",
+  "exchangeDetailNotFound": "找不到这个交易所账户，它可能已被删除。",
+  "exchangeDetailFailedTitle": "同步失败",
+  "exchangeDetailLastSuccess": "上次成功同步：{time}",
+  "@exchangeDetailLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailNeverSucceeded": "还没有成功同步过，下面没有缓存数据。",
+  "exchangeDetailUnpriced": "{count} 个未识别或无估值的币种",
+  "@exchangeDetailUnpriced": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "exchangeDetailNotIncluded": "未包含：{items}",
+  "@exchangeDetailNotIncluded": {
+    "placeholders": {
+      "items": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailDepositAddressesTitle": "充值地址",
+  "exchangeDetailDepositAddressesSubtitle": "由交易所控制，仅供查看",
+  "exchangeDetailDepositAddressesNotice": "此地址由交易所控制，仅供查看。为避免在交易所自动创建新地址，仅展示已有地址。",
+  "exchangeDetailDepositAddressesEmpty": "暂无充值地址",
+  "exchangeDetailDepositAddressMemo": "备注/Tag: {memo}",
+  "@exchangeDetailDepositAddressMemo": {
+    "placeholders": {
+      "memo": {
+        "type": "String"
+      }
+    }
+  },
+  "exchangeDetailReplaceKey": "更换 API Key",
+  "exchangeDetailDeleteAccount": "删除账户",
+  "exchangeDetailDeleteConfirmTitle": "删除交易所账户",
+  "exchangeDetailDeleteConfirmBody": "确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。",
+  "exchangeDetailDeleteConfirmAction": "删除",
+  "exchangeDetailDeleteCancelAction": "取消",
+  "subAccountSpot": "现货",
+  "subAccountFunding": "资金",
+  "subAccountFutures": "合约",
+  "subAccountMargin": "杠杆",
+  "subAccountEarn": "理财",
+  "subAccountOther": "其他",
+  "assetDetailTitle": "币种详情",
+  "assetDetailCurrentPrice": "当前价格",
+  "assetDetailHoldings": "持有",
+  "assetDetailValuation": "估值",
+  "assetDetailDistributionTitle": "分布",
+  "assetDetailDistributionEmpty": "暂无账户持有该币种",
+  "assetDetailContractsTitle": "合约地址",
+  "assetDetailCopyContract": "复制",
+  "assetDetailCopied": "已复制合约地址",
+  "assetDetailNoPrice": "估值缺失",
+  "assetDetailNotFound": "未找到该币种信息",
+  "assetDetailViewDistribution": "查看币种分布",
+  "syncStatusTitle": "同步状态",
+  "syncStatusLastFullSync": "上次全量同步",
+  "syncStatusNeverFullSynced": "尚未进行过全量同步",
+  "syncStatusSyncNow": "立即同步",
+  "syncStatusSyncing": "正在同步...",
+  "syncStatusDurationSeconds": "用时 {seconds} 秒",
+  "@syncStatusDurationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "String"
+      }
+    }
+  },
+  "syncStatusDurationMs": "用时 {ms} 毫秒",
+  "@syncStatusDurationMs": {
+    "placeholders": {
+      "ms": {
+        "type": "int"
+      }
+    }
+  },
+  "syncStatusAccountsSection": "各账户状态",
+  "syncStatusLogsSection": "最近同步记录（最多 50 条）",
+  "syncStatusLogsEmpty": "暂无同步记录",
+  "syncStatusSuccess": "成功",
+  "syncStatusFailed": "失败",
+  "syncStatusRunning": "同步中",
+  "syncStatusLastSuccess": "上次成功 {time}",
+  "@syncStatusLastSuccess": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "syncStatusNeverSuccess": "从未成功同步",
+  "syncStatusKeyExpiredHint": "API Key 已失效，请更换",
+  "syncStatusViewFullStatus": "查看完整同步状态",
+  "syncStatusDeletedAccount": "已删除的账户",
+  "accountsTabAccounts": "账户",
+  "accountsTabAddressBook": "地址簿",
+  "accountsSort": "排序",
+  "accountsSortByValuation": "按估值排序",
+  "accountsSortByName": "按名称排序",
+  "accountsMoreActions": "更多操作",
+  "accountsMenuRename": "重命名",
+  "accountsMenuDelete": "删除",
+  "accountsRenameTitle": "重命名账户",
+  "accountsRenameHint": "请输入账户名称",
+  "accountsRenameCancel": "取消",
+  "accountsRenameSave": "保存",
+  "accountsDeleteWalletTitle": "删除钱包账户",
+  "accountsDeleteWalletMessage": "确定删除此账户？将删除其地址、持仓缓存与历史快照中的该账户明细。如果关联了保险库密钥，密钥不会被删除，仅解除关联。此操作无法撤销。",
+  "accountsDeleteExchangeTitle": "删除交易所账户",
+  "accountsDeleteExchangeMessage": "确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。此操作无法撤销。",
+  "accountsDeleteCancelAction": "取消",
+  "accountsDeleteConfirmAction": "删除",
+  "accountsFooterHint": "长按账户可重命名或删除",
+  "addressSheetNoteLabel": "备注",
+  "addressSheetNoNote": "添加备注",
+  "addressSheetEditNoteTitle": "编辑备注",
+  "addressSheetEditNoteHint": "请输入地址备注（如：长期持有、主要收款）",
+  "addressSheetEditNoteTooLong": "备注长度不能超过 100 个字符",
+  "addressSheetSave": "保存",
+  "addressBookSearchHint": "搜索地址、账户、备注",
+  "addressBookChainAll": "全部链",
+  "addressBookAccountAll": "全部账户",
+  "addressBookExactMatch": "是你的地址",
+  "addressBookVaultDerived": "保险库派生",
+  "addressBookNote": "备注：{note}",
+  "@addressBookNote": {
+    "placeholders": {
+      "note": {
+        "type": "String"
+      }
+    }
+  },
+  "addressBookEmptyTitle": "暂无地址",
+  "addressBookEmptyDesc": "添加钱包账户后，此处将集中管理你的所有地址",
+  "addressBookSearchNoResultTitle": "不在你的地址簿中",
+  "addressBookSearchNoResultDesc": "未在你的地址簿中找到此地址或相关信息",
+  "addressBookFooterTip": "粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。",
+  "overviewChartRange7d": "7 天",
+  "overviewChartRange30d": "30 天",
+  "overviewChartRange90d": "90 天",
+  "overviewChartRangeAll": "全部",
+  "overviewChartEmpty": "至少需要两天的快照数据以绘制净值曲线",
+  "overviewChartAriaLabel": "近 {count} 天净值曲线",
+  "@overviewChartAriaLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewChartAriaLabelAll": "全部净值曲线",
+  "overviewChartDaysAgo": "{count} 天前",
+  "@overviewChartDaysAgo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "overviewChartToday": "今天",
+  "overviewBackupWarning": "{count} 个钱包尚未备份",
+  "@overviewBackupWarning": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "backupChecklistTitle": "备份清单",
+  "backupChecklistProgress": "{backedUp} / {total} 个钱包已备份",
+  "@backupChecklistProgress": {
+    "placeholders": {
+      "backedUp": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "backupChecklistAllBackedUp": "全部钱包已备份",
+  "backupChecklistNeverExported": "尚未导出过加密备份",
+  "backupChecklistLastExport": "加密备份文件：{time} 导出",
+  "@backupChecklistLastExport": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "backupChecklistUnexportedChanges": "之后保险库有更改，尚未导出",
+  "backupChecklistExport": "导出加密备份",
+  "backupChecklistPendingSection": "待处理",
+  "backupChecklistCompletedSection": "已完成",
+  "backupChecklistExchangeNote": "交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。",
+  "backupChecklistEmptyTitle": "暂无钱包账户",
+  "backupChecklistEmptyDesc": "添加钱包账户后，在此查看和管理各钱包的备份状况。",
+  "backupChecklistKeylessNote": "这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。",
+  "backupChecklistOverdueWarning": "超过 180 天未核对",
+  "backupChecklistLastVerified": "上次核对 {date}",
+  "@backupChecklistLastVerified": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "backupActionGoToVault": "去入库",
+  "backupActionMarkOffline": "标记已离线备份",
+  "backupActionUnmarkOffline": "取消离线备份标记",
+  "backupActionMarkKeyless": "标记为无助记词钱包",
+  "backupActionUnmarkKeyless": "取消无助记词标记",
+  "backupActionVerifiedToday": "今天已核对",
+  "backupActionResetStatus": "重新标记",
+  "backupActionViewChecklist": "查看完整备份清单",
+  "backupStatusSheetTitle": "备份状态管理",
+  "backupStatusInVaultDesc": "已关联保险库中的密钥条目。",
+  "backupStatusOfflineDesc": "已标记为有纸质或其他离线备份。",
+  "backupStatusOfflineNeverVerified": "未记录核对日期",
+  "backupStatusKeylessDesc": "无助记词钱包（MPC 或社交登录型，无法导出）。",
+  "backupStatusNoneDesc": "尚未在保险库入库，也没有标记离线备份。",
+  "bootstrapWipeAndRestart": "清除本地数据并重新开始",
+  "bootstrapWipeConfirmTitle": "清除本地数据并重新开始？",
+  "bootstrapWipeConfirmBody": "此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。",
+  "bootstrapWipeConfirmAction": "清除并重新开始",
+  "settingsSectionSecurity": "安全",
+  "settingsSectionOther": "其他",
+  "settingsSectionDanger": "危险区",
+  "settingsSecurity": "应用锁与生物识别",
+  "settingsSecurityBody": "修改 PIN、自动锁定时间与生物识别",
+  "settingsSecuritySoon": "安全设置功能即将提供",
+  "settingsBackup": "加密备份",
+  "settingsBackupNever": "尚未导出过",
+  "settingsBackupLastExported": "上次导出 {date}",
+  "@settingsBackupLastExported": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "settingsQuote": "计价货币",
+  "settingsHideSmall": "隐藏小额币种",
+  "settingsHideSmallBody": "低于 1 USD 的资产不显示在列表中",
+  "settingsUnrecognizedTokens": "未识别代币",
+  "settingsUnrecognizedTokensEmpty": "暂无未识别代币",
+  "settingsUnrecognizedTokensDesc": "链上收到但未在价格源中识别的代币可以在此处管理显隐",
+  "settingsTheme": "外观",
+  "settingsThemeSystem": "跟随系统",
+  "settingsThemeLight": "浅色模式",
+  "settingsThemeDark": "深色模式",
+  "settingsAbout": "关于与帮助",
+  "settingsWipeAllData": "清除全部数据",
+  "settingsWipeConfirmTitle": "清除全部数据？",
+  "settingsWipeConfirmBody": "此操作将清除本地全部钱包、交易所、持仓、快照与保存的凭据，不可撤销。如果有加密备份文件（.owbak），可以在重新进入应用后恢复。",
+  "settingsWipeConfirmAction": "清除全部数据",
+  "aboutTitle": "关于与帮助",
+  "aboutVersion": "版本",
+  "aboutSecurityDesign": "安全设计说明",
+  "aboutSecurityDesignBody": "本地优先、密钥不出设备、只看不动",
+  "aboutSecurityDesignDialogTitle": "安全设计原则",
+  "aboutSecurityDesignDetail": "1. 本地优先：你的资产数据和密钥仅保存在当前设备，不上传至任何服务器。\n\n2. 只看不动：OneWallet 不提供签名、转账或交易功能，杜绝被黑客恶意调用的可能。\n\n3. 离线保险库：助记词和私钥由独立的加密保险库保管，与联网环境物理隔离。",
+  "aboutBackupFormat": "备份文件格式与解密工具",
+  "aboutBackupFormatBody": "公开格式，支持电脑端开源离线解密",
+  "aboutBackupFormatDialogTitle": "加密备份与离线解密",
+  "aboutBackupFormatDetail": "OneWallet 的加密备份（.owbak）采用公开规范与标准算法（Argon2id + XChaCha20-Poly1305）。\n\n即使应用不可用，你也可以在断网电脑上使用官方提供的开源 Python 脚本解密并导出全部助记词与数据。",
+  "aboutFaq": "常见问题",
+  "aboutFaqDerivationTitle": "派生路径是什么？",
+  "aboutFaqDerivationAnswer": "派生路径是按照 BIP44/84/86 等加密货币标准，从同一套助记词计算出不同链和不同地址规则的算法路径。",
+  "aboutFaqMismatchTitle": "为什么链上地址与钱包软件显示的不一致？"
+  ,
+  "aboutFaqMismatchAnswer": "不同钱包软件可能采用了不同的默认派生路径或地址格式（例如 Bitcoin 的 Legacy 1 开头、SegWit 3 开头或 Native SegWit bc1 开头）。在派生地址页面可以选择对应的路径预设。",
+  "aboutFaqApiKeyTitle": "如何创建只读 API Key？",
+  "aboutFaqApiKeyAnswer": "在交易所 API 管理页面创建密钥时，仅勾选「读取」或「Read-Only」权限，切勿开启「交易」或「提现」权限以保障资金绝对安全。",
+  "aboutLicenses": "开源许可",
+  "cancel": "取消"
 }

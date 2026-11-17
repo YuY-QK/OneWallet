@@ -26,6 +26,11 @@ final latestSyncRecordsProvider = StreamProvider<List<SyncRecord>>(
   (ref) => ref.watch(syncRecordRepositoryProvider).watchLatestPerAccount(),
 );
 
+/// 最近的同步记录（最多 50 条）。
+final recentSyncRecordsProvider = StreamProvider<List<SyncRecord>>(
+  (ref) => ref.watch(syncRecordRepositoryProvider).watchRecent(),
+);
+
 /// 每个账户最近一次成功同步的时间（账户 id → 时间）。
 final lastSuccessPerAccountProvider = StreamProvider<Map<String, DateTime>>(
   (ref) => ref.watch(syncRecordRepositoryProvider).watchLastSuccessPerAccount(),
@@ -53,3 +58,8 @@ final quotePricesProvider = StreamProvider<Map<String, Price>>((ref) {
   final quote = ref.watch(quoteProvider);
   return ref.watch(priceRepositoryProvider).watch(quote);
 });
+
+/// 手动隐藏的代币键集合。
+final hiddenTokensProvider = StreamProvider<Set<String>>(
+  (ref) => ref.watch(tokenVisibilityRepositoryProvider).watchHidden(),
+);

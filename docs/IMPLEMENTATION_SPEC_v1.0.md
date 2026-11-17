@@ -117,7 +117,8 @@ final class Account {
   final String name;                 // 1–30 字
   final int colorIndex;              // 0–7，对应设计规范中的头像色
   final String note;
-  final WalletSource? walletSource;  // 仅钱包
+  final String? walletSourceId;      // 仅钱包：第三方目录条目 id（M1-15；null 表示"其他"）
+  final WalletSource? walletSource;  // 仅钱包：由 walletSourceId 派生，供备份载荷读写与兼容
   final ExchangeId? exchange;        // 仅交易所
   final String? vaultItemId;         // 仅钱包；关联的密钥条目
   final BackupStatus backup;         // 仅钱包有意义
@@ -320,7 +321,9 @@ abstract interface class AccountRepository {
 }
 abstract interface class AddressRepository {
   Stream<List<WatchAddress>> watchAll();
+  Future<List<WatchAddress>> all();
   Future<List<WatchAddress>> byAccount(String accountId);
+  Future<WatchAddress?> byId(String id);
   Future<WatchAddress?> find(ChainFamily family, String normalizedAddress); // R2
   Future<void> upsert(WatchAddress address);
   Future<void> delete(String id);
@@ -335,11 +338,13 @@ abstract interface class PriceRepository {
 }
 abstract interface class SnapshotRepository {
   Future<List<Snapshot>> range(DateTime from, DateTime to);
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to);
   Future<void> upsert(Snapshot snapshot);                                   // 以 date 为键
 }
 abstract interface class SyncRecordRepository {
   Stream<List<SyncRecord>> watchLatestPerAccount();
   Stream<Map<String, DateTime>> watchLastSuccessPerAccount();               // 账户 id → 最近一次成功的结束时间；读 accounts.last_synced_at
+  Stream<List<SyncRecord>> watchRecent({int limit = 50});                   // 最近的同步记录（按写入时间降序），最多返回 limit 条
   Future<void> add(SyncRecord record);                                      // 只保留最近 50 条；成功记录同时把 last_synced_at 推进到 finishedAt
 }
 // 价格源查到的币种与"合约 → 币种"对应（M1-18）
@@ -417,9 +422,18 @@ abstract interface class DataSourceConfig {          // P20；Key 存 SecretStor
 }
 ```
 
-平台能力接口（`PlatformCapabilities`、`HardwareKeyStore`、`SecretStore`、`ScreenGuard`、`FileExporter`）已存在。M3 另加：
+平台能力接口（`PlatformCapabilities`、`HardwareKeyStore`、`SecretStore`、`ClearableSecretStore`、`ScreenGuard`、`FileExporter`）已存在。M3 另加：
 
 ```dart
+abstract interface class DatabaseCloser {
+  Future<void> close();                                                     // 断开当前数据库连接
+}
+abstract interface class DatabaseDeleter {
+  Future<void> delete();                                                    // 删除数据库物理文件（.db, -wal, -shm）
+}
+abstract interface class ClearableSecretStore implements SecretStore {
+  Future<void> clearAll();                                                  // 删除全部 ow. 前缀条目（M3 WipeAllData 与首次启动）
+}
 abstract interface class BiometricAuth {
   Future<bool> isAvailable();
   Future<Result<void>> authenticate({required String reason});
@@ -437,6 +451,14 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - 每个账户每次同步只在结束时写一条 `SyncRecord`；`failureType` 用 `failureTypeName(Failure)` 生成稳定的名称（不用 `runtimeType`，混淆后会变）。
 - `AddWalletAccount`、`AddAddressesToAccount` 不触发同步，由调用它们的控制器在成功后调用 `SyncAccount`。
 - `AddWalletAccount` 经 `AccountRepository.insertWithAddresses` 在一个事务里写入账户与地址；`DeleteAddress` 保证账户至少保留一个地址（否则 `ValidationFailure`），删除地址时同事务清掉它的持仓，不触发同步（P07 的控制器随后重新同步该账户）。
+- `RenameAccount` 校验账户是否存在（不存在返回 `ValidationFailure`）与新名称（1–30 字，首尾去空白，否则返回 `ValidationFailure`），通过 `AccountRepository.upsert` 更新账户名称并返回更新后的账户。
+- `DeleteAccount` 删除指定账户：必须先调用 `CredentialRepository.delete` 清理可能存在的交易所凭据，再调用 `AccountRepository.delete` 级联删除地址、持仓与同步记录（操作幂等；若凭据删除失败则中止，避免账户已删而残留无法清理的 API 密钥）。
+- `SearchAddresses` 根据查询词（地址片段/完整地址、账户名、备注）与可选过滤条件（链家族 `family`、账户 `accountId`）搜索地址簿。构造函数需传入 `AccountRepository` 与 `AddressRepository`（非空必填），同时提供同步纯函数 `executeSearchAddresses`（及实例代理方法 `execute`）。精确匹配严格以 `AddressCodec.normalize(query, addr.family) == addr.address` 为准（Base58 区分大小写，EVM 与 Bech32 大小写规范化；符合时设置 `isExactMatch: true` 并稳定置顶，其余项保持原有顺序）；片段搜索不区分大小写；查询无匹配时返回空列表，界面呈现「不在你的地址簿中」。
+- `UpdateAddressNote` 更新观察地址备注：校验备注长度（首尾去空白后不超过 100 字 / 字符，否则返回 `ValidationFailure`）与地址存在性（不存在返回 `ValidationFailure`），经 `AddressRepository.upsert` 更新并返回最新地址。
+- `UpdateBackupStatus` 更新钱包账户的备份状态（R34–R36）：校验账户存在且为钱包账户（否则返回 `ValidationFailure`），通过 `AccountRepository.upsert` 更新账户的 `backup` 标记（支持更新 `offlineBackedUp`、`offlineVerifiedAt`、`keyless`，以及重置为未备份）并返回最新账户。
+- `WatchBackupChecklist` 备份清单只读聚合流（R34–R38）：汇集钱包账户、各账户估值与应用设置。返回 `Stream<BackupChecklistData>`（同时提供纯函数 `buildBackupChecklistData`）。待处理组（`pendingWallets`，状态为未备份 `none` 或无助记词 `keyless`）按当前估值降序排列（金额相同按名称升序）；已完成组（`completedWallets`，状态为已入库、已离线备份或两者兼具）标记对应状态标签，离线备份超过 180 天未核对时标记 `isOverdue: true`；汇总已备份钱包数与钱包总数；提取 `lastBackupExportedAt` 与保险库未备份更改标记 `hasUnexportedVaultChanges`（`vaultChangedAt != null && (lastBackupExportedAt == null || vaultChangedAt > lastBackupExportedAt)`）；交易所账户完全不计入清单条目（R37）。
+- `RecordDailySnapshot` 全量同步完成后的钩子用例（R16）：以当前 UTC 日期零点为键（`date`）统计各账户与标准币种的 USD 估值（金额均以 `Decimal` 高精度计算，不用浮点数），通过 `SnapshotRepository.upsert` 写入或覆盖当日快照。若任一账户同步失败或取消，该账户沿用上次余额计入快照并将快照标记为不完整（`complete: false`）；全量成功且价格更新成功时记录 `complete: true`；若当前无任何账户则不记录快照。
+- `WipeAllData` 清除全部数据用例（P18、PRD 第 10 节）：执行本地数据的彻底清除。设置页危险区与启动失败页两处清除入口共用此逻辑。步骤严格按序执行：① 关闭数据库连接（若存在当前已打开的连接，经 `DatabaseCloser.close`）；② 删除数据库物理文件（经 `DatabaseDeleter.delete`，删除 .db、-wal、-shm）；③ 删除本地保险库文件（`VaultStorage.delete`）；④ 清空安全存储中全部 `ow.` 凭据与密钥（`ClearableSecretStore.clearAll`）。操作不可撤销，执行完毕后触发应用重新执行启动流程回到初始引导状态（重新执行 `bootstrapApp`，因数据库文件已删除，走全新初始化流程生成新密钥并创建新库）。
 - `SyncAccount.watchSyncingAccountIds()` 推送正在同步的账户 id 集合（订阅时先推送当前集合）；页面用它显示"同步中"。成功的同步记录写入时，仓储同时更新账户的最近成功时间。
 - `DuplicateAddressFailure.kind`：`existing`（带账户名）、`withinInput`（本次输入内重复）、`ownerMissing`（地址在库中但所属账户不存在，数据异常，界面提示"该地址已存在于本应用中"）。
 - `UnsupportedFailure.reason`：`platform`（当前设备不支持，默认）、`notIntegrated`（该链或交易所尚未接入，构造函数 `UnsupportedFailure.notIntegrated`）。`failureTypeName` 对后者返回 `UnsupportedFailure.notIntegrated`，使同步记录能还原原因。
@@ -458,7 +480,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 
 | 表 | 列（主键加粗） |
 |---|---|
-| `accounts` | **id**, type, name, color_index, note, wallet_source, exchange, vault_item_id, offline_backed_up, offline_verified_at, keyless, created_at, last_synced_at（v2；最近一次成功同步的结束时间，可空；`Account` 实体不含） |
+| `accounts` | **id**, type, name, color_index, note, wallet_source, wallet_source_id（v3；第三方目录 id，可空）, exchange, vault_item_id, offline_backed_up, offline_verified_at, keyless, created_at, last_synced_at（v2；最近一次成功同步的结束时间，可空；`Account` 实体不含） |
 | `addresses` | **id**, account_id→accounts, family, address, enabled_chain_ids（JSON 数组）, scheme, derivation_index, note；唯一索引 (family, address) |
 | `holdings` | **id**（自增）, account_id→accounts, location_kind, chain_id, address_id, exchange_sub, token_kind, token_chain_id, token_contract, token_symbol, asset_id, display_symbol, amount（文本）, updated_at |
 | `prices` | **asset_id**, **quote**, price（文本）, change_24h_percent（文本）, updated_at |
@@ -480,6 +502,7 @@ abstract interface class DeviceIntegrity { Future<bool> looksCompromised(); }
 - 生成的 `ow_database.g.dart` 纳入版本控制；改表后运行 `cd packages/ow_data && dart run build_runner build`。
 - 数据库 `schemaVersion` 从 1 开始；每次改表都写迁移并加迁移测试。
 - 版本 2（M1-18）：新建 `assets`、`asset_contracts`，`accounts` 加 `last_synced_at`。迁移 1 → 2 只做这三件事，旧数据保持不变，`last_synced_at` 为空，下一次成功同步后写入。`last_synced_at` 由 `SyncRecordRepository.add` 在写入成功记录的同一事务内更新（只前进不后退），因此不受 `sync_records` 只保留 50 条的影响；`AccountRepository.upsert` 不触碰该列。
+- 版本 3（M1-15）：`accounts` 表新增 `wallet_source_id` 列，迁移 2 → 3 按固定映射表（uniswap-wallet↔uniswap、metamask↔metamask、okx-web3-wallet↔okxWeb3、bitget-wallet↔bitgetWallet、trust-wallet↔trustWallet，其余为 NULL）回填已有数据。数据库以 `wallet_source_id` 为准，读出时 `walletSource` 始终由其派生。
 - 文件名 `onewallet.db`，位于应用支持目录。
 
 ## 6. 保险库（`packages/ow_vault`）

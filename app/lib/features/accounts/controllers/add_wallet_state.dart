@@ -74,7 +74,7 @@ final class AddWalletState {
     this.existing,
     this.existingLoaded = false,
     this.name = '',
-    this.source = WalletSource.other,
+    this.walletSourceId,
     this.backup = BackupChoice.none,
     this.saving = false,
     this.showErrors = false,
@@ -92,7 +92,13 @@ final class AddWalletState {
   final bool existingLoaded;
 
   final String name;
-  final WalletSource source;
+
+  /// 来源钱包在 `ow_directory` 中的条目 ID（null 表示"其他"）。
+  final String? walletSourceId;
+
+  /// 来源钱包枚举（由 [walletSourceId] 派生，用于向后兼容）。
+  WalletSource get source => WalletSourceMapping.toWalletSource(walletSourceId);
+
   final List<AddressEntry> entries;
   final BackupChoice backup;
 
@@ -132,7 +138,8 @@ final class AddWalletState {
     Account? existing,
     bool? existingLoaded,
     String? name,
-    WalletSource? source,
+    Object? walletSourceId = _unset,
+    Object? source = _unset,
     List<AddressEntry>? entries,
     BackupChoice? backup,
     bool? saving,
@@ -144,7 +151,11 @@ final class AddWalletState {
     existing: existing ?? this.existing,
     existingLoaded: existingLoaded ?? this.existingLoaded,
     name: name ?? this.name,
-    source: source ?? this.source,
+    walletSourceId: !identical(walletSourceId, _unset)
+        ? walletSourceId as String?
+        : (!identical(source, _unset)
+              ? WalletSourceMapping.toDirectoryId(source as WalletSource?)
+              : this.walletSourceId),
     entries: entries ?? this.entries,
     backup: backup ?? this.backup,
     saving: saving ?? this.saving,

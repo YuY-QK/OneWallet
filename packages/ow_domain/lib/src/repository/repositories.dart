@@ -44,7 +44,13 @@ abstract interface class AccountRepository {
 abstract interface class AddressRepository {
   Stream<List<WatchAddress>> watchAll();
 
+  /// 获取全部观察地址。
+  Future<List<WatchAddress>> all();
+
   Future<List<WatchAddress>> byAccount(String accountId);
+
+  /// 按 id 查找地址。不存在时返回 null。
+  Future<WatchAddress?> byId(String id);
 
   /// 按家族与规范化地址查找，用于全局唯一检查（R2）。不存在时返回 null。
   Future<WatchAddress?> find(ChainFamily family, String normalizedAddress);
@@ -79,6 +85,9 @@ abstract interface class SnapshotRepository {
   /// 日期在 [from] 与 [to] 之间（含两端）的快照，按日期升序。
   Future<List<Snapshot>> range(DateTime from, DateTime to);
 
+  /// 监听日期在 [from] 与 [to] 之间（含两端）的快照流，按日期升序。
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to);
+
   /// 以 date 为键新增或替换。
   Future<void> upsert(Snapshot snapshot);
 }
@@ -97,6 +106,9 @@ abstract interface class SyncRecordRepository {
   /// 追加一条记录；总数只保留最近 50 条。成功记录（`finishedAt` 非空）同时把
   /// 该账户的"最近一次成功时间"更新为 `finishedAt`（只前进不后退）。
   Future<void> add(SyncRecord record);
+
+  /// 最近的同步记录（按写入时间降序），最多返回 [limit] 条。
+  Stream<List<SyncRecord>> watchRecent({int limit = 50});
 }
 
 /// 价格源查到并持久化的币种，以及"合约 → 币种"的对应关系（M1-18）。

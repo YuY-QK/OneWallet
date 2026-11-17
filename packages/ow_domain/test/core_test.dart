@@ -23,6 +23,13 @@ void main() {
   });
 
   group('Sensitive', () {
+    test('fromString与useString_读写字符串_原样返回', () {
+      final s = Sensitive.fromString('my-secret-key-123');
+      expect(s.useString((text) => text), 'my-secret-key-123');
+      s.wipe();
+      expect(() => s.useString((text) => text), throwsStateError);
+    });
+
     test('toString_任何时候_不泄露内容', () {
       final s = Sensitive(Uint8List.fromList('legal winner'.codeUnits));
       expect(s.toString(), '***');

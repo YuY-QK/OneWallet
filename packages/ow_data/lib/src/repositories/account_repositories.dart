@@ -86,6 +86,14 @@ final class DriftAddressRepository implements AddressRepository {
   }
 
   @override
+  Future<List<WatchAddress>> all() async {
+    final rows = await (_db.select(
+      _db.addresses,
+    )..orderBy([(t) => OrderingTerm.asc(t.rowId)])).get();
+    return decodeRows(rows, addressFromRow);
+  }
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) async {
     final rows =
         await (_db.select(_db.addresses)
@@ -93,6 +101,14 @@ final class DriftAddressRepository implements AddressRepository {
               ..orderBy([(t) => OrderingTerm.asc(t.rowId)]))
             .get();
     return decodeRows(rows, addressFromRow);
+  }
+
+  @override
+  Future<WatchAddress?> byId(String id) async {
+    final row = await (_db.select(
+      _db.addresses,
+    )..where((t) => t.id.equals(id))).getSingleOrNull();
+    return row == null ? null : tryDecode(row, addressFromRow);
   }
 
   @override

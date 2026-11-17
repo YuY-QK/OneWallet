@@ -139,7 +139,16 @@ TestRig _sampleRig() {
   final rig = TestRig();
 
   // 钱包一：Uni 钱包，EVM 地址，ETH（以太坊与 Base）和 USDC。
-  final uni = rig.addWallet('w1', 'Uni 钱包', source: WalletSource.uniswap);
+  final uni = rig.addWallet(
+    'w1',
+    'Uni 钱包',
+    source: WalletSource.uniswap,
+    vaultItemId: 'v1',
+    backup: BackupStatus(
+      offlineBackedUp: true,
+      offlineVerifiedAt: DateTime.utc(2026, 11, 10),
+    ),
+  );
   final uniAddr = rig.addAddress('d1', uni.id, _evmUni);
   rig.addHolding(uni.id, uniAddr.id, amount: '2.4', price: '3000');
   rig.addHolding(
@@ -174,7 +183,15 @@ TestRig _sampleRig() {
   );
 
   // 钱包三：冷钱包，比特币与 Solana 两条非 EVM 地址。
-  final cold = rig.addWallet('w3', '冷钱包', source: WalletSource.other);
+  final cold = rig.addWallet(
+    'w3',
+    '冷钱包',
+    source: WalletSource.other,
+    backup: BackupStatus(
+      offlineBackedUp: true,
+      offlineVerifiedAt: DateTime.utc(2026, 5, 1),
+    ),
+  );
   final btcAddr = rig.addAddress(
     'd3',
     cold.id,
@@ -256,6 +273,38 @@ TestRig _sampleRig() {
     failureType: 'ServiceDownFailure',
     at: DateTime.utc(2026, 11, 12, 11, 58),
   );
+
+  // 30 天净值快照（展示净值走势曲线）。
+  const baseVal = 46000.0;
+  const targetVal = 53900.5;
+  for (var i = 0; i < 30; i++) {
+    final d = DateTime.utc(2026, 11, 12).subtract(Duration(days: 29 - i));
+    final double v;
+    if (i == 29) {
+      v = targetVal;
+    } else {
+      v =
+          baseVal +
+          (targetVal - baseVal) * (i / 29.0) +
+          (i % 3 == 0 ? 800 : (i % 2 == 0 ? -600 : 400));
+    }
+    rig.snapshots.feed.value = [
+      ...rig.snapshots.feed.value,
+      Snapshot(
+        date: d,
+        totalUsd: Decimal.parse(v.toStringAsFixed(2)),
+        complete: true,
+        byAccountUsd: {},
+        byAssetUsd: {},
+      ),
+    ];
+  }
+
+  rig.settings.feed.value = AppSettings(
+    lastBackupExportedAt: DateTime.utc(2026, 11, 2),
+    vaultChangedAt: DateTime.utc(2026, 11, 8),
+  );
+
   return rig;
 }
 
@@ -364,7 +413,9 @@ final _shots = <_Shot>[
   const _Shot('overview', '/overview'),
   _Shot('overview_by_account', '/overview', after: (t) => _tapText(t, '按账户')),
   const _Shot('overview_empty', '/overview', seeded: false),
+  const _Shot('asset_detail', '/overview/asset/ETH'), // P09
   const _Shot('accounts', '/accounts'), // P03
+  const _Shot('address_book', '/accounts/addresses'), // P10
   const _Shot('wallet_detail_assets', '/accounts/wallet/w1'),
   _Shot(
     'wallet_detail_addresses',
@@ -381,8 +432,18 @@ final _shots = <_Shot>[
       await t.pumpAndSettle();
     },
   ),
+  const _Shot('add_exchange', '/accounts/add/exchange'),
+  const _Shot('exchange_detail_assets', '/accounts/exchange/e1'),
+  _Shot(
+    'exchange_detail_subaccounts',
+    '/accounts/exchange/e1',
+    after: (t) => _tapText(t, '按子账户'),
+  ),
   const _Shot('data_sources', '/settings/sources'),
-  const _Shot('settings', '/settings'),
+  const _Shot('sync_status', '/settings/sync'), // P21
+  const _Shot('backup_checklist', '/vault/checklist'), // P11
+  const _Shot('settings', '/settings'), // P18
+  const _Shot('about', '/settings/about'), // P22
   // 宽屏：列表与详情并排（1280×900，像素比 1）。
   const _Shot(
     'accounts_wide',

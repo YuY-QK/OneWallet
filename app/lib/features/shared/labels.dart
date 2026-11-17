@@ -1,3 +1,4 @@
+import 'package:ow_directory/ow_directory.dart';
 import 'package:ow_domain/ow_domain.dart';
 
 import '../../l10n/app_localizations.dart';
@@ -6,16 +7,25 @@ import '../../widgets/ow_pill.dart';
 // 枚举到界面文案的映射，供多个页面共用。
 
 /// 来源钱包的显示名；未设置时返回 null。
-String? walletSourceLabel(AppLocalizations l, WalletSource? source) =>
-    switch (source) {
-      null => null,
-      WalletSource.uniswap => l.walletSourceUniswap,
-      WalletSource.metamask => l.walletSourceMetamask,
-      WalletSource.okxWeb3 => l.walletSourceOkxWeb3,
-      WalletSource.bitgetWallet => l.walletSourceBitgetWallet,
-      WalletSource.trustWallet => l.walletSourceTrustWallet,
-      WalletSource.other => l.walletSourceOther,
-    };
+String? walletSourceLabel(
+  AppLocalizations l,
+  WalletSource? source, {
+  String? walletSourceId,
+}) {
+  if (walletSourceId != null) {
+    final entry = ThirdPartyDirectory.builtin().byId(walletSourceId);
+    if (entry != null) return entry.name;
+  }
+  return switch (source) {
+    null => null,
+    WalletSource.uniswap => l.walletSourceUniswap,
+    WalletSource.metamask => l.walletSourceMetamask,
+    WalletSource.okxWeb3 => l.walletSourceOkxWeb3,
+    WalletSource.bitgetWallet => l.walletSourceBitgetWallet,
+    WalletSource.trustWallet => l.walletSourceTrustWallet,
+    WalletSource.other => l.walletSourceOther,
+  };
+}
 
 /// 交易所的显示名。
 String exchangeLabel(AppLocalizations l, ExchangeId id) => switch (id) {
@@ -24,6 +34,17 @@ String exchangeLabel(AppLocalizations l, ExchangeId id) => switch (id) {
   ExchangeId.bybit => l.exchangeBybit,
   ExchangeId.bitget => l.exchangeBitget,
 };
+
+/// 交易所子账户的显示名。
+String subAccountLabel(AppLocalizations l, ExchangeSubAccount sub) =>
+    switch (sub) {
+      ExchangeSubAccount.spot => l.subAccountSpot,
+      ExchangeSubAccount.funding => l.subAccountFunding,
+      ExchangeSubAccount.futures => l.subAccountFutures,
+      ExchangeSubAccount.margin => l.subAccountMargin,
+      ExchangeSubAccount.earn => l.subAccountEarn,
+      ExchangeSubAccount.other => l.subAccountOther,
+    };
 
 /// 链家族的显示名。
 String chainFamilyLabel(AppLocalizations l, ChainFamily family) =>

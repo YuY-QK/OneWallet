@@ -525,6 +525,22 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSourcesBody => '配置链上数据与价格服务的 API Key';
 
   @override
+  String get settingsSync => '同步状态';
+
+  @override
+  String get settingsSyncBody => '各账户同步情况与日志';
+
+  @override
+  String settingsSyncFailedCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 个账户失败',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sourcesTitle => '数据源';
 
   @override
@@ -663,4 +679,738 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sourcesDone => '完成';
+
+  @override
+  String get sourcesCoingeckoAttribution => '价格数据来自 CoinGecko';
+
+  @override
+  String get externalLinkConfirmTitle => '即将离开 OneWallet';
+
+  @override
+  String externalLinkConfirmBody(String url) {
+    return '将用系统浏览器打开以下网址，请核对域名：\n\n$url';
+  }
+
+  @override
+  String get externalLinkConfirmOpen => '继续访问';
+
+  @override
+  String get externalLinkCancel => '取消';
+
+  @override
+  String get directoryLinkWebsite => '官网';
+
+  @override
+  String get directoryLinkDocs => '帮助文档';
+
+  @override
+  String get directoryLinkApiKey => '获取 API Key';
+
+  @override
+  String get walletAddSourceSearch => '搜索钱包…';
+
+  @override
+  String get walletAddSourceOther => '其他';
+
+  @override
+  String get exchangeAddTitle => '连接交易所';
+
+  @override
+  String get exchangeReplaceKeyTitle => '更换 API Key';
+
+  @override
+  String get exchangeAddExchange => '交易所';
+
+  @override
+  String get exchangeAddAccountName => '账户名称';
+
+  @override
+  String get exchangeAddAccountNameHint => '例如：Binance 主账户';
+
+  @override
+  String get exchangeAddAccountNameRequired => '请输入账户名称，最多 30 个字。';
+
+  @override
+  String get exchangeAddApiKey => 'API Key';
+
+  @override
+  String get exchangeAddApiKeyHint => '粘贴或输入 API Key';
+
+  @override
+  String get exchangeAddApiKeyRequired => '请输入 API Key。';
+
+  @override
+  String get exchangeAddApiSecret => 'API Secret';
+
+  @override
+  String get exchangeAddApiSecretHint => '粘贴或输入 API Secret';
+
+  @override
+  String get exchangeAddApiSecretRequired => '请输入 API Secret。';
+
+  @override
+  String get exchangeAddPassphrase => 'Passphrase';
+
+  @override
+  String get exchangeAddPassphraseHint => '创建 API Key 时设置的口令';
+
+  @override
+  String get exchangeAddPassphraseRequired => '请输入 Passphrase。';
+
+  @override
+  String get exchangeAddPaste => '粘贴';
+
+  @override
+  String get exchangeAddSecurityNote =>
+      '请只勾选「读取」权限，不要开启交易和提现。保存前会检查这个 Key 的权限。';
+
+  @override
+  String get exchangeAddGuideTitle => '如何创建只读 API Key';
+
+  @override
+  String get exchangeAddGuideSubtitle => '分步图文与官方指引';
+
+  @override
+  String get exchangeAddGuideOfficialLink => '前往官方创建指引';
+
+  @override
+  String get exchangeAddGuideApiManagementLink => '前往 API 管理';
+
+  @override
+  String get exchangeAddTestAndSave => '测试并保存';
+
+  @override
+  String get exchangeAddVerifying => '正在验证凭据…';
+
+  @override
+  String get exchangeAddSaving => '正在保存…';
+
+  @override
+  String get exchangeAddComingSoon => '即将支持';
+
+  @override
+  String get exchangeAddBitgetNotice => 'Bitget 暂未接入，即将支持。';
+
+  @override
+  String get exchangeAddPermWarningTitle => '权限超出只读';
+
+  @override
+  String get exchangeAddPermWarningBody =>
+      '检测到此 Key 包含交易或提现权限，存在资金安全风险。建议在交易所后台重新创建只读 Key。';
+
+  @override
+  String get exchangeAddPermWarningModify => '返回修改';
+
+  @override
+  String get exchangeAddPermWarningProceed => '仍然保存';
+
+  @override
+  String get exchangeAddErrCredential =>
+      'API Key、Secret 或 Passphrase 不正确，服务商拒绝了请求。';
+
+  @override
+  String get exchangeAddErrNetwork => '网络不可用或请求超时。请检查网络连接后重试。';
+
+  @override
+  String get exchangeAddErrClockSkew => '设备时间与服务器相差过大，请求被拒绝。请在系统设置中开启自动校时后重试。';
+
+  @override
+  String get exchangeAddErrIpRestricted =>
+      '该 API Key 限制了访问 IP，请检查交易所后台的 IP 白名单设置。';
+
+  @override
+  String get exchangeAddErrAccountMissing => '找不到这个账户，它可能已被删除。';
+
+  @override
+  String exchangeAddErrUnknown(String detail) {
+    return '验证失败：$detail';
+  }
+
+  @override
+  String get exchangeDetailTotal => '账户总估值';
+
+  @override
+  String get exchangeDetailTabAssets => '按币种';
+
+  @override
+  String get exchangeDetailTabSubAccounts => '按子账户';
+
+  @override
+  String get exchangeDetailKeyStatusNormal => 'API Key 正常 · 只读';
+
+  @override
+  String get exchangeDetailKeyStatusExpired => 'API Key 已失效';
+
+  @override
+  String get exchangeDetailKeyExpiredNotice => 'API Key 已失效，无法同步最新资产，请尽快更换。';
+
+  @override
+  String get exchangeDetailNoAssets => '该交易所目前没有可显示的资产';
+
+  @override
+  String get exchangeDetailNotFound => '找不到这个交易所账户，它可能已被删除。';
+
+  @override
+  String get exchangeDetailFailedTitle => '同步失败';
+
+  @override
+  String exchangeDetailLastSuccess(String time) {
+    return '上次成功同步：$time';
+  }
+
+  @override
+  String get exchangeDetailNeverSucceeded => '还没有成功同步过，下面没有缓存数据。';
+
+  @override
+  String exchangeDetailUnpriced(int count) {
+    return '$count 个未识别或无估值的币种';
+  }
+
+  @override
+  String exchangeDetailNotIncluded(String items) {
+    return '未包含：$items';
+  }
+
+  @override
+  String get exchangeDetailDepositAddressesTitle => '充值地址';
+
+  @override
+  String get exchangeDetailDepositAddressesSubtitle => '由交易所控制，仅供查看';
+
+  @override
+  String get exchangeDetailDepositAddressesNotice =>
+      '此地址由交易所控制，仅供查看。为避免在交易所自动创建新地址，仅展示已有地址。';
+
+  @override
+  String get exchangeDetailDepositAddressesEmpty => '暂无充值地址';
+
+  @override
+  String exchangeDetailDepositAddressMemo(String memo) {
+    return '备注/Tag: $memo';
+  }
+
+  @override
+  String get exchangeDetailReplaceKey => '更换 API Key';
+
+  @override
+  String get exchangeDetailDeleteAccount => '删除账户';
+
+  @override
+  String get exchangeDetailDeleteConfirmTitle => '删除交易所账户';
+
+  @override
+  String get exchangeDetailDeleteConfirmBody =>
+      '确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。';
+
+  @override
+  String get exchangeDetailDeleteConfirmAction => '删除';
+
+  @override
+  String get exchangeDetailDeleteCancelAction => '取消';
+
+  @override
+  String get subAccountSpot => '现货';
+
+  @override
+  String get subAccountFunding => '资金';
+
+  @override
+  String get subAccountFutures => '合约';
+
+  @override
+  String get subAccountMargin => '杠杆';
+
+  @override
+  String get subAccountEarn => '理财';
+
+  @override
+  String get subAccountOther => '其他';
+
+  @override
+  String get assetDetailTitle => '币种详情';
+
+  @override
+  String get assetDetailCurrentPrice => '当前价格';
+
+  @override
+  String get assetDetailHoldings => '持有';
+
+  @override
+  String get assetDetailValuation => '估值';
+
+  @override
+  String get assetDetailDistributionTitle => '分布';
+
+  @override
+  String get assetDetailDistributionEmpty => '暂无账户持有该币种';
+
+  @override
+  String get assetDetailContractsTitle => '合约地址';
+
+  @override
+  String get assetDetailCopyContract => '复制';
+
+  @override
+  String get assetDetailCopied => '已复制合约地址';
+
+  @override
+  String get assetDetailNoPrice => '估值缺失';
+
+  @override
+  String get assetDetailNotFound => '未找到该币种信息';
+
+  @override
+  String get assetDetailViewDistribution => '查看币种分布';
+
+  @override
+  String get syncStatusTitle => '同步状态';
+
+  @override
+  String get syncStatusLastFullSync => '上次全量同步';
+
+  @override
+  String get syncStatusNeverFullSynced => '尚未进行过全量同步';
+
+  @override
+  String get syncStatusSyncNow => '立即同步';
+
+  @override
+  String get syncStatusSyncing => '正在同步...';
+
+  @override
+  String syncStatusDurationSeconds(String seconds) {
+    return '用时 $seconds 秒';
+  }
+
+  @override
+  String syncStatusDurationMs(int ms) {
+    return '用时 $ms 毫秒';
+  }
+
+  @override
+  String get syncStatusAccountsSection => '各账户状态';
+
+  @override
+  String get syncStatusLogsSection => '最近同步记录（最多 50 条）';
+
+  @override
+  String get syncStatusLogsEmpty => '暂无同步记录';
+
+  @override
+  String get syncStatusSuccess => '成功';
+
+  @override
+  String get syncStatusFailed => '失败';
+
+  @override
+  String get syncStatusRunning => '同步中';
+
+  @override
+  String syncStatusLastSuccess(String time) {
+    return '上次成功 $time';
+  }
+
+  @override
+  String get syncStatusNeverSuccess => '从未成功同步';
+
+  @override
+  String get syncStatusKeyExpiredHint => 'API Key 已失效，请更换';
+
+  @override
+  String get syncStatusViewFullStatus => '查看完整同步状态';
+
+  @override
+  String get syncStatusDeletedAccount => '已删除的账户';
+
+  @override
+  String get accountsTabAccounts => '账户';
+
+  @override
+  String get accountsTabAddressBook => '地址簿';
+
+  @override
+  String get accountsSort => '排序';
+
+  @override
+  String get accountsSortByValuation => '按估值排序';
+
+  @override
+  String get accountsSortByName => '按名称排序';
+
+  @override
+  String get accountsMoreActions => '更多操作';
+
+  @override
+  String get accountsMenuRename => '重命名';
+
+  @override
+  String get accountsMenuDelete => '删除';
+
+  @override
+  String get accountsRenameTitle => '重命名账户';
+
+  @override
+  String get accountsRenameHint => '请输入账户名称';
+
+  @override
+  String get accountsRenameCancel => '取消';
+
+  @override
+  String get accountsRenameSave => '保存';
+
+  @override
+  String get accountsDeleteWalletTitle => '删除钱包账户';
+
+  @override
+  String get accountsDeleteWalletMessage =>
+      '确定删除此账户？将删除其地址、持仓缓存与历史快照中的该账户明细。如果关联了保险库密钥，密钥不会被删除，仅解除关联。此操作无法撤销。';
+
+  @override
+  String get accountsDeleteExchangeTitle => '删除交易所账户';
+
+  @override
+  String get accountsDeleteExchangeMessage =>
+      '确定删除此交易所账户？删除后将同时清除存储的 API 凭据，本地持仓与同步记录也将被移除。此操作无法撤销。';
+
+  @override
+  String get accountsDeleteCancelAction => '取消';
+
+  @override
+  String get accountsDeleteConfirmAction => '删除';
+
+  @override
+  String get accountsFooterHint => '长按账户可重命名或删除';
+
+  @override
+  String get addressSheetNoteLabel => '备注';
+
+  @override
+  String get addressSheetNoNote => '添加备注';
+
+  @override
+  String get addressSheetEditNoteTitle => '编辑备注';
+
+  @override
+  String get addressSheetEditNoteHint => '请输入地址备注（如：长期持有、主要收款）';
+
+  @override
+  String get addressSheetEditNoteTooLong => '备注长度不能超过 100 个字符';
+
+  @override
+  String get addressSheetSave => '保存';
+
+  @override
+  String get addressBookSearchHint => '搜索地址、账户、备注';
+
+  @override
+  String get addressBookChainAll => '全部链';
+
+  @override
+  String get addressBookAccountAll => '全部账户';
+
+  @override
+  String get addressBookExactMatch => '是你的地址';
+
+  @override
+  String get addressBookVaultDerived => '保险库派生';
+
+  @override
+  String addressBookNote(String note) {
+    return '备注：$note';
+  }
+
+  @override
+  String get addressBookEmptyTitle => '暂无地址';
+
+  @override
+  String get addressBookEmptyDesc => '添加钱包账户后，此处将集中管理你的所有地址';
+
+  @override
+  String get addressBookSearchNoResultTitle => '不在你的地址簿中';
+
+  @override
+  String get addressBookSearchNoResultDesc => '未在你的地址簿中找到此地址或相关信息';
+
+  @override
+  String get addressBookFooterTip => '粘贴一个完整地址，可以查它是不是你的。没有匹配时会显示「不在你的地址簿中」。';
+
+  @override
+  String get overviewChartRange7d => '7 天';
+
+  @override
+  String get overviewChartRange30d => '30 天';
+
+  @override
+  String get overviewChartRange90d => '90 天';
+
+  @override
+  String get overviewChartRangeAll => '全部';
+
+  @override
+  String get overviewChartEmpty => '至少需要两天的快照数据以绘制净值曲线';
+
+  @override
+  String overviewChartAriaLabel(int count) {
+    return '近 $count 天净值曲线';
+  }
+
+  @override
+  String get overviewChartAriaLabelAll => '全部净值曲线';
+
+  @override
+  String overviewChartDaysAgo(int count) {
+    return '$count 天前';
+  }
+
+  @override
+  String get overviewChartToday => '今天';
+
+  @override
+  String overviewBackupWarning(int count) {
+    return '$count 个钱包尚未备份';
+  }
+
+  @override
+  String get backupChecklistTitle => '备份清单';
+
+  @override
+  String backupChecklistProgress(int backedUp, int total) {
+    return '$backedUp / $total 个钱包已备份';
+  }
+
+  @override
+  String get backupChecklistAllBackedUp => '全部钱包已备份';
+
+  @override
+  String get backupChecklistNeverExported => '尚未导出过加密备份';
+
+  @override
+  String backupChecklistLastExport(String time) {
+    return '加密备份文件：$time 导出';
+  }
+
+  @override
+  String get backupChecklistUnexportedChanges => '之后保险库有更改，尚未导出';
+
+  @override
+  String get backupChecklistExport => '导出加密备份';
+
+  @override
+  String get backupChecklistPendingSection => '待处理';
+
+  @override
+  String get backupChecklistCompletedSection => '已完成';
+
+  @override
+  String get backupChecklistExchangeNote => '交易所资产没有私钥可备份。请启用二次验证，并保管好账号凭据。';
+
+  @override
+  String get backupChecklistEmptyTitle => '暂无钱包账户';
+
+  @override
+  String get backupChecklistEmptyDesc => '添加钱包账户后，在此查看和管理各钱包的备份状况。';
+
+  @override
+  String get backupChecklistKeylessNote =>
+      '这类钱包依赖服务商。建议趁服务可用时导出私钥，或把资产转到普通助记词钱包。';
+
+  @override
+  String get backupChecklistOverdueWarning => '超过 180 天未核对';
+
+  @override
+  String backupChecklistLastVerified(String date) {
+    return '上次核对 $date';
+  }
+
+  @override
+  String get backupActionGoToVault => '去入库';
+
+  @override
+  String get backupActionMarkOffline => '标记已离线备份';
+
+  @override
+  String get backupActionUnmarkOffline => '取消离线备份标记';
+
+  @override
+  String get backupActionMarkKeyless => '标记为无助记词钱包';
+
+  @override
+  String get backupActionUnmarkKeyless => '取消无助记词标记';
+
+  @override
+  String get backupActionVerifiedToday => '今天已核对';
+
+  @override
+  String get backupActionResetStatus => '重新标记';
+
+  @override
+  String get backupActionViewChecklist => '查看完整备份清单';
+
+  @override
+  String get backupStatusSheetTitle => '备份状态管理';
+
+  @override
+  String get backupStatusInVaultDesc => '已关联保险库中的密钥条目。';
+
+  @override
+  String get backupStatusOfflineDesc => '已标记为有纸质或其他离线备份。';
+
+  @override
+  String get backupStatusOfflineNeverVerified => '未记录核对日期';
+
+  @override
+  String get backupStatusKeylessDesc => '无助记词钱包（MPC 或社交登录型，无法导出）。';
+
+  @override
+  String get backupStatusNoneDesc => '尚未在保险库入库，也没有标记离线备份。';
+
+  @override
+  String get bootstrapWipeAndRestart => '清除本地数据并重新开始';
+
+  @override
+  String get bootstrapWipeConfirmTitle => '清除本地数据并重新开始？';
+
+  @override
+  String get bootstrapWipeConfirmBody =>
+      '此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。';
+
+  @override
+  String get bootstrapWipeConfirmAction => '清除并重新开始';
+
+  @override
+  String get settingsSectionSecurity => '安全';
+
+  @override
+  String get settingsSectionOther => '其他';
+
+  @override
+  String get settingsSectionDanger => '危险区';
+
+  @override
+  String get settingsSecurity => '应用锁与生物识别';
+
+  @override
+  String get settingsSecurityBody => '修改 PIN、自动锁定时间与生物识别';
+
+  @override
+  String get settingsSecuritySoon => '安全设置功能即将提供';
+
+  @override
+  String get settingsBackup => '加密备份';
+
+  @override
+  String get settingsBackupNever => '尚未导出过';
+
+  @override
+  String settingsBackupLastExported(String date) {
+    return '上次导出 $date';
+  }
+
+  @override
+  String get settingsQuote => '计价货币';
+
+  @override
+  String get settingsHideSmall => '隐藏小额币种';
+
+  @override
+  String get settingsHideSmallBody => '低于 1 USD 的资产不显示在列表中';
+
+  @override
+  String get settingsUnrecognizedTokens => '未识别代币';
+
+  @override
+  String get settingsUnrecognizedTokensEmpty => '暂无未识别代币';
+
+  @override
+  String get settingsUnrecognizedTokensDesc => '链上收到但未在价格源中识别的代币可以在此处管理显隐';
+
+  @override
+  String get settingsTheme => '外观';
+
+  @override
+  String get settingsThemeSystem => '跟随系统';
+
+  @override
+  String get settingsThemeLight => '浅色模式';
+
+  @override
+  String get settingsThemeDark => '深色模式';
+
+  @override
+  String get settingsAbout => '关于与帮助';
+
+  @override
+  String get settingsWipeAllData => '清除全部数据';
+
+  @override
+  String get settingsWipeConfirmTitle => '清除全部数据？';
+
+  @override
+  String get settingsWipeConfirmBody =>
+      '此操作将清除本地全部钱包、交易所、持仓、快照与保存的凭据，不可撤销。如果有加密备份文件（.owbak），可以在重新进入应用后恢复。';
+
+  @override
+  String get settingsWipeConfirmAction => '清除全部数据';
+
+  @override
+  String get aboutTitle => '关于与帮助';
+
+  @override
+  String get aboutVersion => '版本';
+
+  @override
+  String get aboutSecurityDesign => '安全设计说明';
+
+  @override
+  String get aboutSecurityDesignBody => '本地优先、密钥不出设备、只看不动';
+
+  @override
+  String get aboutSecurityDesignDialogTitle => '安全设计原则';
+
+  @override
+  String get aboutSecurityDesignDetail =>
+      '1. 本地优先：你的资产数据和密钥仅保存在当前设备，不上传至任何服务器。\n\n2. 只看不动：OneWallet 不提供签名、转账或交易功能，杜绝被黑客恶意调用的可能。\n\n3. 离线保险库：助记词和私钥由独立的加密保险库保管，与联网环境物理隔离。';
+
+  @override
+  String get aboutBackupFormat => '备份文件格式与解密工具';
+
+  @override
+  String get aboutBackupFormatBody => '公开格式，支持电脑端开源离线解密';
+
+  @override
+  String get aboutBackupFormatDialogTitle => '加密备份与离线解密';
+
+  @override
+  String get aboutBackupFormatDetail =>
+      'OneWallet 的加密备份（.owbak）采用公开规范与标准算法（Argon2id + XChaCha20-Poly1305）。\n\n即使应用不可用，你也可以在断网电脑上使用官方提供的开源 Python 脚本解密并导出全部助记词与数据。';
+
+  @override
+  String get aboutFaq => '常见问题';
+
+  @override
+  String get aboutFaqDerivationTitle => '派生路径是什么？';
+
+  @override
+  String get aboutFaqDerivationAnswer =>
+      '派生路径是按照 BIP44/84/86 等加密货币标准，从同一套助记词计算出不同链和不同地址规则的算法路径。';
+
+  @override
+  String get aboutFaqMismatchTitle => '为什么链上地址与钱包软件显示的不一致？';
+
+  @override
+  String get aboutFaqMismatchAnswer =>
+      '不同钱包软件可能采用了不同的默认派生路径或地址格式（例如 Bitcoin 的 Legacy 1 开头、SegWit 3 开头或 Native SegWit bc1 开头）。在派生地址页面可以选择对应的路径预设。';
+
+  @override
+  String get aboutFaqApiKeyTitle => '如何创建只读 API Key？';
+
+  @override
+  String get aboutFaqApiKeyAnswer =>
+      '在交易所 API 管理页面创建密钥时，仅勾选「读取」或「Read-Only」权限，切勿开启「交易」或「提现」权限以保障资金绝对安全。';
+
+  @override
+  String get aboutLicenses => '开源许可';
+
+  @override
+  String get cancel => '取消';
 }

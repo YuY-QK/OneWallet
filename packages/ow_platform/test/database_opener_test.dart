@@ -36,6 +36,13 @@ void main() {
     expect(await opener.exists(), isTrue);
   });
 
+  test('delete_删除数据库文件及相关日志', () async {
+    await writeRow(key);
+    expect(await opener.exists(), isTrue);
+    await opener.delete();
+    expect(await opener.exists(), isFalse);
+  });
+
   test('加密_文件头不是明文SQLite且搜不到写入的内容', () async {
     await writeRow(key);
     final bytes = File('${dir.path}/$databaseFileName').readAsBytesSync();

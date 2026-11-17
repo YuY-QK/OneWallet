@@ -29,13 +29,21 @@ cp app/test/screenshots/goldens/*.png docs/screenshots/
 | `overview_light.png` / `overview_dark.png` | P02 总览（有数据，按币种） | 390×844，像素比 2 |
 | `overview_by_account_light.png` / `overview_by_account_dark.png` | P02 总览，切换到"按账户" | 390×844，像素比 2 |
 | `overview_empty_light.png` / `overview_empty_dark.png` | P02 总览（没有账户） | 390×844，像素比 2 |
+| `asset_detail_light.png` / `asset_detail_dark.png` | P09 币种详情 | 390×844，像素比 2 |
 | `accounts_light.png` / `accounts_dark.png` | P03 账户列表 | 390×844，像素比 2 |
+| `address_book_light.png` / `address_book_dark.png` | P10 地址簿 | 390×844，像素比 2 |
 | `wallet_detail_assets_light.png` / `wallet_detail_assets_dark.png` | P07 钱包详情，"资产"分段 | 390×844，像素比 2 |
 | `wallet_detail_addresses_light.png` / `wallet_detail_addresses_dark.png` | P07 钱包详情，"地址"分段 | 390×844，像素比 2 |
 | `add_account_light.png` / `add_account_dark.png` | P04 添加账户（三个选项） | 390×844，像素比 2 |
 | `add_wallet_light.png` / `add_wallet_dark.png` | P05 添加钱包账户（输入 EVM 地址，显示六条链） | 390×844，像素比 2 |
+| `add_exchange_light.png` / `add_exchange_dark.png` | P06 添加交易所账户（连接交易所） | 390×844，像素比 2 |
+| `exchange_detail_assets_light.png` / `exchange_detail_assets_dark.png` | P08 交易所账户详情，"按币种"分段 | 390×844，像素比 2 |
+| `exchange_detail_subaccounts_light.png` / `exchange_detail_subaccounts_dark.png` | P08 交易所账户详情，"按子账户"分段 | 390×844，像素比 2 |
 | `data_sources_light.png` / `data_sources_dark.png` | P20 数据源设置 | 390×844，像素比 2 |
+| `sync_status_light.png` / `sync_status_dark.png` | P21 同步状态 | 390×844，像素比 2 |
+| `backup_checklist_light.png` / `backup_checklist_dark.png` | P11 备份清单 | 390×844，像素比 2 |
 | `settings_light.png` / `settings_dark.png` | P18 设置首页 | 390×844，像素比 2 |
+| `about_light.png` / `about_dark.png` | P22 关于与帮助 | 390×844，像素比 2 |
 | `accounts_wide_light.png` | P03 账户列表与 P07 钱包详情并排（仅浅色） | 1280×900，像素比 1 |
 
 ## 字体

@@ -295,5 +295,34 @@ void main() {
       expect(rig.addresses.feed.value.map((a) => a.id), ['d1']);
       expect(find.text('1A1zP1…vfNa'), findsNothing);
     });
+
+    testWidgets('点击备份状态标签呼出操作面板并修改离线备份状态', (tester) async {
+      final rig = TestRig();
+      final a = rig.addWallet('a1', '测试钱包');
+      rig.addAddress('d1', a.id, _lower);
+      rig.record(a.id);
+
+      await pumpApp(tester, rig, location: '/accounts/wallet/a1');
+      expect(find.text('未备份'), findsOneWidget);
+
+      // 点击"未备份"标签
+      await tester.tap(find.text('未备份'));
+      await tester.pumpAndSettle();
+
+      // 面板弹出
+      expect(find.text('备份状态管理'), findsOneWidget);
+      expect(find.text('标记已离线备份'), findsOneWidget);
+      expect(find.text('去入库'), findsOneWidget);
+      expect(find.text('标记为无助记词钱包'), findsOneWidget);
+
+      // 点击"标记已离线备份"
+      await tester.tap(find.text('标记已离线备份'));
+      await tester.pumpAndSettle();
+
+      // 面板关闭，页面状态更新为"已离线备份"
+      expect(find.text('备份状态管理'), findsNothing);
+      expect(find.text('已离线备份'), findsOneWidget);
+      expect(rig.accounts.feed.value.first.backup.offlineBackedUp, isTrue);
+    });
   });
 }

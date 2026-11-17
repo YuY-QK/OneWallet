@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:ow_domain/ow_domain.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqlite3/sqlite3.dart' as sqlite;
@@ -9,7 +10,7 @@ import 'package:sqlite3/sqlite3.dart' as sqlite;
 /// 打开主数据库 `onewallet.db`（SQLCipher 加密）。
 ///
 /// 抽成接口是为了让启动流程在测试中换成内存数据库。
-abstract interface class DatabaseOpener {
+abstract interface class DatabaseOpener implements DatabaseDeleter {
   /// 数据库文件是否已经存在。首次启动判断（清理钥匙串残留）用。
   Future<bool> exists();
 
@@ -19,6 +20,10 @@ abstract interface class DatabaseOpener {
   /// 失败会在那时以异常出现，由调用方（启动流程）捕获并显示错误页，
   /// 不得自动删除或重建数据库。异常信息不含密钥。
   Future<QueryExecutor> open({required String keyHex});
+
+  /// 删除数据库文件及相关日志文件（清除全部数据或启动失败重建用）。
+  @override
+  Future<void> delete();
 }
 
 /// 数据库文件名，位于应用支持目录。
@@ -68,6 +73,22 @@ final class SqlCipherDatabaseOpener implements DatabaseOpener {
     return inBackground
         ? NativeDatabase.createInBackground(file, setup: setup)
         : NativeDatabase(file, setup: setup);
+  }
+
+  @override
+  Future<void> delete() async {
+    final file = await _file();
+    if (await file.exists()) {
+      await file.delete();
+    }
+    final wal = File('${file.path}-wal');
+    if (await wal.exists()) {
+      await wal.delete();
+    }
+    final shm = File('${file.path}-shm');
+    if (await shm.exists()) {
+      await shm.delete();
+    }
   }
 }
 

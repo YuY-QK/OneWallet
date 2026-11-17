@@ -3,12 +3,19 @@ import 'package:go_router/go_router.dart';
 
 import '../features/accounts/presentation/accounts_page.dart';
 import '../features/accounts/presentation/add_account_page.dart';
+import '../features/accounts/presentation/add_exchange_page.dart';
 import '../features/accounts/presentation/add_wallet_page.dart';
+import '../features/accounts/presentation/address_book_page.dart';
+import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
 import '../features/common/presentation/coming_soon_page.dart';
+import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
+import '../features/settings/presentation/about_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
 import '../features/settings/presentation/settings_page.dart';
+import '../features/settings/presentation/sync_status_page.dart';
+import '../features/vault/presentation/backup_checklist_page.dart';
 import '../features/vault/presentation/vault_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shell/adaptive_scaffold.dart';
@@ -95,7 +102,8 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
               GoRoute(
                 path: 'asset/:assetId',
                 name: RouteNames.assetDetail,
-                builder: (c, _) => soon(c, AppLocalizations.of(c)!.tabOverview),
+                builder: (c, state) =>
+                    AssetDetailPage(assetId: state.pathParameters['assetId']!),
               ),
             ],
           ),
@@ -120,8 +128,10 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
               GoRoute(
                 path: 'add/exchange',
                 name: RouteNames.exchangeAdd,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.accountAddExchangeTitle),
+                builder: (_, state) => AddExchangePage(
+                  key: ValueKey(state.uri.toString()),
+                  accountId: state.uri.queryParameters['accountId'],
+                ),
               ),
               GoRoute(
                 path: 'wallet/:id',
@@ -136,9 +146,17 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
               GoRoute(
                 path: 'exchange/:id',
                 name: RouteNames.exchangeDetail,
-                builder: (c, _) => AccountsPage(
-                  detail: soon(c, AppLocalizations.of(c)!.tabAccounts),
+                builder: (c, state) => AccountsPage(
+                  detail: ExchangeDetailPage(
+                    key: ValueKey(state.pathParameters['id']),
+                    accountId: state.pathParameters['id']!,
+                  ),
                 ),
+              ),
+              GoRoute(
+                path: 'addresses',
+                name: RouteNames.addressBook,
+                builder: (c, state) => const AddressBookPage(),
               ),
             ],
           ),
@@ -153,6 +171,11 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                 builder: (c, _) =>
                     soon(c, AppLocalizations.of(c)!.accountAddImportTitle),
               ),
+              GoRoute(
+                path: 'checklist',
+                name: RouteNames.backupChecklist,
+                builder: (c, _) => const BackupChecklistPage(),
+              ),
             ],
           ),
           branch(
@@ -164,6 +187,22 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                 path: 'sources',
                 name: RouteNames.settingsSources,
                 builder: (_, _) => const DataSourcesPage(),
+              ),
+              GoRoute(
+                path: 'sync',
+                name: RouteNames.settingsSync,
+                builder: (_, _) => const SyncStatusPage(),
+              ),
+              GoRoute(
+                path: 'backup/export',
+                name: RouteNames.backupExport,
+                builder: (c, _) =>
+                    soon(c, AppLocalizations.of(c)!.backupChecklistExport),
+              ),
+              GoRoute(
+                path: 'about',
+                name: RouteNames.settingsAbout,
+                builder: (_, _) => const AboutPage(),
               ),
             ],
           ),

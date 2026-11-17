@@ -9,7 +9,7 @@ import 'dart:io';
 /// 每个包允许依赖的内部包。
 const internalAllowed = <String, Set<String>>{
   'ow_domain': {},
-  'ow_application': {'ow_domain'},
+  'ow_application': {'ow_domain', 'ow_vault'},
   'ow_data': {'ow_domain'},
   'ow_net': {'ow_domain'},
   'ow_directory': {'ow_domain'},

@@ -13,6 +13,8 @@ class EmptyState extends StatelessWidget {
     required this.body,
     this.actionLabel,
     this.onAction,
+    this.secondaryActionLabel,
+    this.onSecondaryAction,
   });
 
   final IconData icon;
@@ -20,6 +22,8 @@ class EmptyState extends StatelessWidget {
   final String body;
   final String? actionLabel;
   final VoidCallback? onAction;
+  final String? secondaryActionLabel;
+  final VoidCallback? onSecondaryAction;
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +52,16 @@ class EmptyState extends StatelessWidget {
               if (actionLabel != null) ...[
                 const SizedBox(height: 20),
                 OwPrimaryButton(label: actionLabel!, onPressed: onAction),
+              ],
+              if (secondaryActionLabel != null) ...[
+                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: onSecondaryAction,
+                  child: Text(
+                    secondaryActionLabel!,
+                    style: OwTextStyles.body.copyWith(color: c.down),
+                  ),
+                ),
               ],
             ],
           ),

@@ -10,13 +10,24 @@ import 'overview_view.dart';
 /// 全量同步的界面状态。
 @immutable
 final class SyncUiState {
-  const SyncUiState({this.running = false, this.progress});
+  const SyncUiState({
+    this.running = false,
+    this.progress,
+    this.lastFullSyncFinishedAt,
+    this.lastFullSyncDuration,
+  });
 
   /// 是否有全量同步在进行。
   final bool running;
 
   /// 已结束的账户数 / 总数；刚开始时为 null。
   final SyncProgress? progress;
+
+  /// 最近一次全量同步结束时间（UTC）。
+  final DateTime? lastFullSyncFinishedAt;
+
+  /// 最近一次全量同步耗时。
+  final Duration? lastFullSyncDuration;
 }
 
 /// 全量同步的控制器：进入页面时的自动同步（R13）、下拉刷新、重试。
@@ -30,7 +41,14 @@ class OverviewSyncController extends Notifier<SyncUiState> {
   SyncUiState build() {
     final syncAll = ref.watch(syncAllAccountsProvider);
     final sub = syncAll.progress.listen((p) {
-      if (ref.mounted) state = SyncUiState(running: true, progress: p);
+      if (ref.mounted) {
+        state = SyncUiState(
+          running: true,
+          progress: p,
+          lastFullSyncFinishedAt: state.lastFullSyncFinishedAt,
+          lastFullSyncDuration: state.lastFullSyncDuration,
+        );
+      }
     });
     ref.onDispose(sub.cancel);
     return SyncUiState(running: syncAll.isRunning);
@@ -39,11 +57,30 @@ class OverviewSyncController extends Notifier<SyncUiState> {
   /// 触发一次全量同步并等待结束。已在进行中时直接等待同一次。
   Future<void> refresh() async {
     final syncAll = ref.read(syncAllAccountsProvider);
-    state = const SyncUiState(running: true);
+    final started = ref.read(clockProvider).nowUtc();
+    state = SyncUiState(
+      running: true,
+      lastFullSyncFinishedAt: state.lastFullSyncFinishedAt,
+      lastFullSyncDuration: state.lastFullSyncDuration,
+    );
     try {
       await syncAll();
+      final finished = ref.read(clockProvider).nowUtc();
+      if (ref.mounted) {
+        state = SyncUiState(
+          running: false,
+          lastFullSyncFinishedAt: finished,
+          lastFullSyncDuration: finished.difference(started),
+        );
+      }
     } finally {
-      if (ref.mounted) state = const SyncUiState();
+      if (ref.mounted && state.running) {
+        state = SyncUiState(
+          running: false,
+          lastFullSyncFinishedAt: state.lastFullSyncFinishedAt,
+          lastFullSyncDuration: state.lastFullSyncDuration,
+        );
+      }
     }
   }
 

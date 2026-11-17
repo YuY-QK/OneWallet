@@ -95,10 +95,21 @@ final class InMemoryAddressRepository implements AddressRepository {
   Stream<List<WatchAddress>> watchAll() => store.watch();
 
   @override
+  Future<List<WatchAddress>> all() async => List.of(store.value);
+
+  @override
   Future<List<WatchAddress>> byAccount(String accountId) async => [
     for (final a in store.value)
       if (a.accountId == accountId) a,
   ];
+
+  @override
+  Future<WatchAddress?> byId(String id) async {
+    for (final a in store.value) {
+      if (a.id == id) return a;
+    }
+    return null;
+  }
 
   @override
   Future<WatchAddress?> find(ChainFamily family, String normalized) async {
@@ -203,6 +214,10 @@ final class InMemorySyncRecordRepository implements SyncRecordRepository {
       _lastSuccess.watch();
 
   @override
+  Stream<List<SyncRecord>> watchRecent({int limit = 50}) =>
+      _store.watch().map((list) => list.reversed.take(limit).toList());
+
+  @override
   Future<void> add(SyncRecord record) async {
     final all = [..._store.value, record];
     _store.value = all.length > 50 ? all.sublist(all.length - 50) : all;
@@ -283,4 +298,57 @@ final class InMemoryAssetRepository implements AssetRepository {
 
   @override
   Future<Map<ContractToken, String>> contracts() async => Map.of(contractMap);
+}
+
+final class FakeCredentialRepository implements CredentialRepository {
+  final Map<String, ExchangeCredentials> _creds = {};
+  Object? deleteError;
+
+  @override
+  Future<void> save(String accountId, ExchangeCredentials c) async {
+    _creds[accountId] = c;
+  }
+
+  @override
+  Future<ExchangeCredentials?> load(String accountId) async =>
+      _creds[accountId];
+
+  @override
+  Future<void> delete(String accountId) async {
+    final err = deleteError;
+    if (err != null) throw err;
+    _creds.remove(accountId);
+  }
+
+  void seed(String accountId, ExchangeCredentials c) => _creds[accountId] = c;
+}
+
+final class InMemorySnapshotRepository implements SnapshotRepository {
+  final store = Watchable<Map<DateTime, Snapshot>>({});
+
+  @override
+  Future<List<Snapshot>> range(DateTime from, DateTime to) async =>
+      _filter(from, to);
+
+  @override
+  Stream<List<Snapshot>> watchRange(DateTime from, DateTime to) =>
+      store.watch().map((_) => _filter(from, to));
+
+  @override
+  Future<void> upsert(Snapshot snapshot) async {
+    final next = Map<DateTime, Snapshot>.from(store.value);
+    next[snapshot.date.toUtc()] = snapshot;
+    store.value = next;
+  }
+
+  List<Snapshot> _filter(DateTime from, DateTime to) {
+    final f = from.toUtc();
+    final t = to.toUtc();
+    final list =
+        store.value.values
+            .where((s) => !s.date.isBefore(f) && !s.date.isAfter(t))
+            .toList()
+          ..sort((a, b) => a.date.compareTo(b.date));
+    return list;
+  }
 }

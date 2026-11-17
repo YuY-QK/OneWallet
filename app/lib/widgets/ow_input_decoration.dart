@@ -8,6 +8,7 @@ import '../theme/ow_text_styles.dart';
 InputDecoration owInputDecoration(
   BuildContext context, {
   String? hint,
+  Widget? prefixIcon,
   Widget? suffixIcon,
   bool readOnly = false,
   bool error = false,
@@ -24,6 +25,7 @@ InputDecoration owInputDecoration(
     fillColor: readOnly ? c.brandSoft : c.surface,
     isDense: true,
     contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+    prefixIcon: prefixIcon,
     suffixIcon: suffixIcon,
     enabledBorder: border(error ? c.down : c.line),
     focusedBorder: border(error ? c.down : c.brand),

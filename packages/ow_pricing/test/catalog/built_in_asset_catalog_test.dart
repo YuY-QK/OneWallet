@@ -141,6 +141,36 @@ void main() {
       expect(catalog.resolve(const ExchangeToken(ExchangeId.okx, '')), isNull);
     });
 
+    test('四家交易所的 MATIC 归一化为 POL，XBT 归一化为 BTC', () {
+      for (final exchange in [
+        ExchangeId.binance,
+        ExchangeId.okx,
+        ExchangeId.bybit,
+        ExchangeId.bitget,
+      ]) {
+        expect(
+          catalog.resolve(ExchangeToken(exchange, 'MATIC'))?.id,
+          'POL',
+          reason: '${exchange.name} MATIC -> POL',
+        );
+        expect(
+          catalog.resolve(ExchangeToken(exchange, 'matic'))?.id,
+          'POL',
+          reason: '${exchange.name} matic -> POL',
+        );
+        expect(
+          catalog.resolve(ExchangeToken(exchange, 'XBT'))?.id,
+          'BTC',
+          reason: '${exchange.name} XBT -> BTC',
+        );
+        expect(
+          catalog.resolve(ExchangeToken(exchange, 'xbt'))?.id,
+          'BTC',
+          reason: '${exchange.name} xbt -> BTC',
+        );
+      }
+    });
+
     test('交易所别名优先于默认规则', () {
       final custom = BuiltInAssetCatalog.fromJson(
         jsonEncode({
