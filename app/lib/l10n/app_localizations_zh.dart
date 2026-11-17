@@ -1278,6 +1278,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bootstrapWipeConfirmAction => '清除并重新开始';
 
   @override
+  String get bootstrapWipeFailed => '清除未完成，请重试';
+
+  @override
+  String get bootstrapWipeFailedBody => '部分本地数据未能成功清除，请重试。';
+
+  @override
   String get settingsSectionSecurity => '安全';
 
   @override

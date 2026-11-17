@@ -2428,6 +2428,18 @@ abstract class AppLocalizations {
   /// **'清除并重新开始'**
   String get bootstrapWipeConfirmAction;
 
+  /// No description provided for @bootstrapWipeFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'清除未完成，请重试'**
+  String get bootstrapWipeFailed;
+
+  /// No description provided for @bootstrapWipeFailedBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'部分本地数据未能成功清除，请重试。'**
+  String get bootstrapWipeFailedBody;
+
   /// No description provided for @settingsSectionSecurity.
   ///
   /// In zh, this message translates to:

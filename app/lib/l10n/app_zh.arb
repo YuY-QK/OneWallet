@@ -653,6 +653,8 @@
   "bootstrapWipeConfirmTitle": "清除本地数据并重新开始？",
   "bootstrapWipeConfirmBody": "此操作将清除本地数据库与所有存储的凭据，无法撤销。如果您有加密备份文件（.owbak），可以在重新进入应用后恢复。",
   "bootstrapWipeConfirmAction": "清除并重新开始",
+  "bootstrapWipeFailed": "清除未完成，请重试",
+  "bootstrapWipeFailedBody": "部分本地数据未能成功清除，请重试。",
   "settingsSectionSecurity": "安全",
   "settingsSectionOther": "其他",
   "settingsSectionDanger": "危险区",

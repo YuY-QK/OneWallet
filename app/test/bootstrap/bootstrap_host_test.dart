@@ -6,6 +6,7 @@ import 'package:onewallet/app.dart';
 import 'package:onewallet/bootstrap/app_bootstrap.dart';
 import 'package:onewallet/bootstrap/bootstrap_host.dart';
 import 'package:onewallet/bootstrap/providers.dart';
+import 'package:ow_application/ow_application.dart';
 import 'package:ow_data/ow_data.dart';
 
 import 'support.dart';
@@ -177,6 +178,61 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(wipeCalled, isTrue);
+    expect(calls, 2);
+    expect(find.text('总览'), findsWidgets);
+    await unmount(tester);
+  });
+
+  testWidgets('删除保险库文件失败时不会进入重启_显示错误与重试入口', (tester) async {
+    int calls = 0;
+    Future<BootstrapResult> bootstrap() async {
+      calls++;
+      return calls == 1
+          ? const BootstrapFailure(BootstrapFailureKind.databaseOpenFailed)
+          : BootstrapSuccess(
+              database: OwDatabase(NativeDatabase.memory()),
+              secrets: FakeSecretStore(),
+            );
+    }
+
+    final fakeVault = FakeVaultStorage()
+      ..failDeleteWith = StateError('模拟删除保险库失败');
+    final wipeAllData = WipeAllData(
+      databaseDeleter: MemoryDatabaseOpener(),
+      vaultStorage: fakeVault,
+      secrets: FakeSecretStore(),
+    );
+
+    await tester.pumpWidget(
+      BootstrapHost(bootstrap: bootstrap, wipeAllData: wipeAllData),
+    );
+    await tester.pumpAndSettle();
+
+    // 初始处于启动失败页，点击清除数据
+    expect(find.text('清除本地数据并重新开始'), findsOneWidget);
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始？'), findsOneWidget);
+    await tester.tap(find.text('清除并重新开始'));
+    await tester.pumpAndSettle();
+
+    // 验证：未进入重启（calls 仍为 1）
+    expect(calls, 1);
+    // 显示"清除未完成，请重试"
+    expect(find.text('清除未完成，请重试'), findsOneWidget);
+    expect(find.text('重试'), findsOneWidget);
+
+    // 修复故障后点击重试，可完成清除并进入重启
+    fakeVault.failDeleteWith = null;
+    await tester.tap(find.text('重试'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+
     expect(calls, 2);
     expect(find.text('总览'), findsWidgets);
     await unmount(tester);

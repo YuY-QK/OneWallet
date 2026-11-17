@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ow_application/ow_application.dart';
+import 'package:ow_domain/ow_domain.dart';
 
 import '../app.dart';
 import '../l10n/app_localizations.dart';
@@ -34,6 +35,7 @@ class BootstrapHost extends StatefulWidget {
 class _BootstrapHostState extends State<BootstrapHost> {
   late Future<BootstrapResult> _future = widget.bootstrap();
   BootstrapSuccess? _opened;
+  bool _wipeFailed = false;
 
   @override
   void dispose() {
@@ -45,6 +47,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
 
   void _retry() {
     setState(() {
+      _wipeFailed = false;
       _future = widget.bootstrap();
     });
   }
@@ -57,12 +60,29 @@ class _BootstrapHostState extends State<BootstrapHost> {
     }
     final wipeAll = widget.wipeAllData;
     if (wipeAll != null) {
-      await wipeAll(closer: closer);
+      final res = await wipeAll(closer: closer);
+      if (res case Err()) {
+        if (mounted) {
+          setState(() {
+            _wipeFailed = true;
+          });
+        }
+        return;
+      }
     } else {
       final onWipe = widget.onWipeAndRestart;
       if (onWipe != null) {
         if (closer != null) await closer.close();
-        await onWipe();
+        try {
+          await onWipe();
+        } catch (_) {
+          if (mounted) {
+            setState(() {
+              _wipeFailed = true;
+            });
+          }
+          return;
+        }
       }
     }
     _retry();
@@ -70,6 +90,11 @@ class _BootstrapHostState extends State<BootstrapHost> {
 
   @override
   Widget build(BuildContext context) {
+    if (_wipeFailed) {
+      return _BootstrapShell(
+        child: _BootstrapWipeErrorPage(onRetry: _wipeAndRestart),
+      );
+    }
     return FutureBuilder<BootstrapResult>(
       future: _future,
       builder: (context, snapshot) {
@@ -200,6 +225,24 @@ class _BootstrapErrorPage extends StatelessWidget {
       onAction: onRetry,
       secondaryActionLabel: showWipe ? l10n.bootstrapWipeAndRestart : null,
       onSecondaryAction: showWipe ? () => _confirmWipe(context) : null,
+    );
+  }
+}
+
+class _BootstrapWipeErrorPage extends StatelessWidget {
+  const _BootstrapWipeErrorPage({required this.onRetry});
+
+  final Future<void> Function() onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return EmptyState(
+      icon: Icons.error_outline,
+      title: l10n.bootstrapWipeFailed,
+      body: l10n.bootstrapWipeFailedBody,
+      actionLabel: l10n.bootstrapRetry,
+      onAction: () => unawaited(onRetry()),
     );
   }
 }
