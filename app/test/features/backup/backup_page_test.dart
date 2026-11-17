@@ -109,6 +109,7 @@ final class FakeHardwareKeyStore implements HardwareKeyStore {
 final class FakeBackupFileHandler implements BackupFileHandler {
   SelectedBackupFile? fileToPick;
   final sharedFiles = <({Uint8List bytes, String filename})>[];
+  bool shareResult = true;
 
   @override
   Future<SelectedBackupFile?> pickBackupFile() async => fileToPick;
@@ -119,7 +120,7 @@ final class FakeBackupFileHandler implements BackupFileHandler {
     required String filename,
   }) async {
     sharedFiles.add((bytes: bytes, filename: filename));
-    return true;
+    return shareResult;
   }
 }
 
@@ -495,6 +496,32 @@ void main() {
         rig.settings.feed.value.lastBackupExportedAt,
         equals(rig.clock.nowUtc()),
       );
+    });
+
+    testWidgets('分享或保存失败时展示错误提示且不进入我已保存步骤也不更新导出时间 (R41)', (tester) async {
+      fileHandler.shareResult = false;
+
+      await tester.pumpWidget(
+        buildAppWithRouter(initialLocation: '/settings/backup/export'),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField).first, masterPassword);
+
+      await tester.tap(find.text('开始导出'));
+      await tester.pump();
+      await tester.runAsync(() async {
+        for (var i = 0; i < 50; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          if (find.text('导出或分享文件失败，请重试').evaluate().isNotEmpty) break;
+        }
+      });
+      await tester.pumpAndSettle();
+
+      expect(find.text('导出或分享文件失败，请重试'), findsOneWidget);
+      expect(find.text('备份已生成'), findsNothing);
+      expect(find.text('我已保存到安全位置'), findsNothing);
+      expect(rig.settings.feed.value.lastBackupExportedAt, isNull);
     });
   });
 

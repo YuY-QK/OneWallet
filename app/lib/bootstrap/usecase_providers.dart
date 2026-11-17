@@ -177,5 +177,6 @@ final wipeAllDataProvider = Provider<WipeAllData>(
     databaseWiper: ref.watch(databaseProvider),
     vaultStorage: ref.watch(vaultStorageProvider),
     secrets: ref.watch(secretStoreProvider),
+    hardwareKeyStore: ref.watch(hardwareKeyStoreProvider),
   ),
 );

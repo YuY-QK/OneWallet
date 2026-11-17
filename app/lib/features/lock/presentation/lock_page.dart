@@ -86,7 +86,7 @@ class LockPage extends ConsumerWidget {
                   Column(
                     children: [
                       PinDots(
-                        length: state.enteredDigits.length,
+                        length: state.enteredCount,
                         shake: state.shake,
                         onShakeEnd: controller.resetShake,
                       ),

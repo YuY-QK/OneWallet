@@ -12,6 +12,7 @@ import '../../../bootstrap/vault_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_list_group.dart';
 import '../../../widgets/ow_pill.dart';
 import '../../../widgets/ow_row.dart';
@@ -23,12 +24,16 @@ String _failureToMessage(Failure failure, AppLocalizations l) {
     return l.securityChangePinWrongOld;
   }
   if (failure is LockedOutFailure) {
-    return l.lockCountdown(failure.until.toLocal().toString());
+    final remaining = failure.until.difference(DateTime.now().toUtc());
+    final mins = remaining.inMinutes;
+    final secs = remaining.inSeconds % 60;
+    final timeStr = mins > 0 ? '$mins 分 $secs 秒' : '$secs 秒';
+    return l.lockCountdown(timeStr);
   }
   if (failure is ValidationFailure) {
-    return failure.detail ?? 'validation_error';
+    return l.failureValidation;
   }
-  return failure.toString();
+  return failureText(l, failure);
 }
 
 /// P19 安全设置页（应用锁与保险库设置）。
@@ -340,6 +345,14 @@ class _ChangePinSheetState extends ConsumerState<_ChangePinSheet> {
   String? _errorMessage;
   bool _isLoading = false;
 
+  @override
+  void dispose() {
+    _digits = '';
+    _oldPin = '';
+    _newPin = '';
+    super.dispose();
+  }
+
   void _onDigit(String d) {
     if (_digits.length >= 6 || _isLoading) return;
     setState(() {
@@ -636,7 +649,7 @@ class _ChangeMasterPasswordDialogState
     } catch (e) {
       if (!mounted) return;
       setState(() {
-        _error = e.toString();
+        _error = l.failureUnknown;
         _isLoading = false;
       });
     } finally {

@@ -13,7 +13,7 @@ final class VaultSetupState {
     this.isAgreed = false,
     this.isBiometricsEnabled = true,
     this.isSubmitting = false,
-    this.errorMessage,
+    this.failure,
   });
 
   /// 是否勾选"我明白主密码丢失后无法恢复"。
@@ -25,21 +25,21 @@ final class VaultSetupState {
   /// 是否正在派生密钥并创建。
   final bool isSubmitting;
 
-  /// 错误信息。
-  final String? errorMessage;
+  /// 失败信息（若有）。
+  final Failure? failure;
 
   VaultSetupState copyWith({
     bool? isAgreed,
     bool? isBiometricsEnabled,
     bool? isSubmitting,
-    String? errorMessage,
+    Failure? failure,
     bool clearError = false,
   }) {
     return VaultSetupState(
       isAgreed: isAgreed ?? this.isAgreed,
       isBiometricsEnabled: isBiometricsEnabled ?? this.isBiometricsEnabled,
       isSubmitting: isSubmitting ?? this.isSubmitting,
-      errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
+      failure: clearError ? null : (failure ?? this.failure),
     );
   }
 }
@@ -75,22 +75,16 @@ final class VaultSetupController extends Notifier<VaultSetupState> {
         enableBiometrics: state.isBiometricsEnabled,
       );
       if (res case Err(:final failure)) {
-        state = state.copyWith(
-          isSubmitting: false,
-          errorMessage: failure.toString(),
-        );
+        state = state.copyWith(isSubmitting: false, failure: failure);
       } else {
         state = state.copyWith(isSubmitting: false);
         ref.invalidate(isVaultInitializedProvider);
       }
       return res;
-    } catch (e) {
-      final failure = UnknownFailure(e.toString());
-      state = state.copyWith(
-        isSubmitting: false,
-        errorMessage: failure.toString(),
-      );
-      return Err(failure);
+    } catch (_) {
+      const failure = UnknownFailure();
+      state = state.copyWith(isSubmitting: false, failure: failure);
+      return const Err(failure);
     }
   }
 }

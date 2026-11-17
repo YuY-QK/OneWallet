@@ -12,6 +12,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../router/app_router.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_card.dart';
 import '../../../widgets/ow_pill.dart';
 import '../../../widgets/ow_primary_button.dart';
@@ -112,7 +113,7 @@ class _BackupRestorePageState extends ConsumerState<BackupRestorePage> {
             BackupCorruptedFailure() => l.backupRestoreCorrupted,
             BackupVersionUnsupportedFailure() =>
               l.backupRestoreUnsupportedVersion,
-            _ => failure.detail ?? failure.toString(),
+            _ => failureText(l, failure),
           };
         });
         return;
@@ -205,7 +206,7 @@ class _BackupRestorePageState extends ConsumerState<BackupRestorePage> {
             ValidationFailure(:final detail)
                 when detail == 'restore_target_not_empty' =>
               l.backupRestoreTargetNotEmpty,
-            _ => failure.detail ?? failure.toString(),
+            _ => failureText(l, failure),
           };
         });
         return;

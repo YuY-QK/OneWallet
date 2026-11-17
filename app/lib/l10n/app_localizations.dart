@@ -3994,6 +3994,12 @@ abstract class AppLocalizations {
   /// **'我已保存到安全位置'**
   String get backupExportSavedButton;
 
+  /// No description provided for @backupExportShareFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出或分享文件失败，请重试'**
+  String get backupExportShareFailed;
+
   /// No description provided for @backupExportDoneNotice.
   ///
   /// In zh, this message translates to:

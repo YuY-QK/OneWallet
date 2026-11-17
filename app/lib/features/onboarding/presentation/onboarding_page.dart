@@ -201,7 +201,7 @@ class OnboardingPage extends ConsumerWidget {
               ),
               // PIN 点位
               PinDots(
-                length: state.currentDigits.length,
+                length: state.currentLength,
                 shake: state.shake,
                 onShakeEnd: controller.resetShake,
               ),

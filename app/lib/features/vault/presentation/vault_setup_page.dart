@@ -9,6 +9,7 @@ import '../../../bootstrap/foundation_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_card.dart';
 import '../../../widgets/ow_input_decoration.dart';
 import '../../../widgets/ow_notice.dart';
@@ -101,7 +102,7 @@ class _VaultSetupPageState extends ConsumerState<VaultSetupPage> {
       if (!mounted) return;
       if (res case Err(:final failure)) {
         ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(failure.toString())));
+            .showSnackBar(SnackBar(content: Text(failureText(l, failure))));
       } else {
         ScaffoldMessenger.of(context)
             .showSnackBar(SnackBar(content: Text(l.vaultSetupSuccess)));

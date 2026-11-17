@@ -319,14 +319,19 @@
 
 依据：SECURITY_DESIGN 第 6.1、6.3、6.4、8 节。
 自动化测试已覆盖 Dart 侧通道调用、各种失败映射与平台能力探测（`packages/ow_platform/test/`）。
-原生代码状态：Android (`MainActivity.kt`) 与 iOS (`AppDelegate.swift`) 已实现最小原生通道，**原生代码未在手机上编译过（未编译）**，需在真机或模拟器上联调验证：
+原生代码状态：Android (`MainActivity.kt`) 与 iOS (`AppDelegate.swift`) 已实现原生通道（Android 引入 `androidx.biometric:biometric:1.2.0-alpha05`，MainActivity 继承 `FlutterFragmentActivity`；iOS 补齐 `NSFaceIDUsageDescription`），**原生代码未经真机验证（未编译/未在真机运行）**，需在真机上联调走查：
 
-- [ ] Android 硬件密钥（M0-11）：
-  - [ ] AndroidKeyStore 生成 AES-256-GCM 密钥，绑定生物识别（`setUserAuthenticationRequired(true)` 与 `setInvalidatedByBiometricEnrollment(true)`）
-  - [ ] `wrap` 成功加密保险库主密钥 VMK，密文可持久化
-  - [ ] `unwrap` 触发系统验证并成功解密原始主密钥
-  - [ ] 设备新增指纹/面容后，旧包裹解包触发 `KeyPermanentlyInvalidatedException`，正确回退到主密码解锁
+- [ ] Android 生物识别与指纹弹窗走查（M0-11、M3-02，P00/P01/P19）：
+  - [ ] `MainActivity` 继承 `FlutterFragmentActivity`，使用 `androidx.biometric:biometric:1.2.0-alpha05` 的 `BiometricPrompt` 弹出真实指纹验证弹窗
+  - [ ] `isAvailable` 使用 `BiometricManager.canAuthenticate(BIOMETRIC_STRONG)` 严格判断硬件级强生物识别能力（不仅检查是否有锁屏）
+  - [ ] 真实指纹验证交互：弹窗包含标题、取消按钮，支持指纹感应与系统震动；指纹识别成功返回 true，取消或验证失败回退到 PIN 输入，不崩溃
+- [ ] Android 硬件密钥与 BiometricPrompt.CryptoObject 走查（M0-11）：
+  - [ ] AndroidKeyStore 生成 AES-256-GCM 密钥，设置 `setUserAuthenticationRequired(true)` 与 `setInvalidatedByBiometricEnrollment(true)`
+  - [ ] `wrap` 与 `unwrap` 均由 `BiometricPrompt.CryptoObject(cipher)` 包裹，在系统验证成功回调（`onAuthenticationSucceeded`）中执行 `doFinal`，防止无验证触发 `UserNotAuthenticatedException`
+  - [ ] 新增指纹后硬件包裹失效：设备在系统设置中新增一枚指纹后，再次调用解密旧 VMK 包裹触发 `KeyPermanentlyInvalidatedException`，明确报错并安全回退到主密码验证
+  - [ ] 关闭锁屏密码后硬件密钥不可用：关闭系统锁屏密码后，硬件包裹密钥失效，无法解密
 - [ ] iOS 硬件密钥（M0-11）：
+  - [ ] Info.plist 已包含中文 `NSFaceIDUsageDescription`（"使用面容识别解锁 OneWallet 及保险库"），避免调用面容时被系统终止应用
   - [ ] Keychain 写入条目带 `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly` 与 `.biometryCurrentSet`
   - [ ] `wrap` 成功保存；`unwrap` 触发系统 Face ID / Touch ID 提示并正确读出 VMK
   - [ ] 设备新增面容/指纹后，旧条目解密失败（`errSecAuthFailed`），正确回退到主密码
@@ -409,10 +414,11 @@
 依据：PRD 第 4.17 节（P17）、第 4.01 节（P01 恢复入口）；SECURITY_DESIGN 第 5 节。
 自动化测试已覆盖导出流程（当前主密码鉴权、沿用主密码/另设密码校验、ASCII 提示、分享调起、我已保存时间更新）、恢复流程（P01 首次引导 fresh 模式、P17 设置内 merge 模式、文件损坏/密码错误/高版本拦截、预览摘要卡片、主密码重设与恢复执行）以及未备份提醒（P18 徽标、P12 保险库未备份横幅、P17 未备份卡片）（`app/test/features/backup/backup_page_test.dart`）。真机验证项：
 
-- [ ] 系统分享与文件选取原生通道：
-  - [ ] 原生分享与选取通道状态：`io.onewallet/backup_file` 平台通道在 Android / iOS 上的真实系统分享面板（Share Sheet / ACTION_SEND）与文件选取（UIDocumentPickerViewController / Intent.ACTION_OPEN_DOCUMENT）**未在真机上联调（未编译/未联调）**
-  - [ ] 导出后调起系统分享，成功将 `.owbak` 导出保存至系统"文件"或发送到隔空投送 (AirDrop) / 安全介质
-  - [ ] 恢复时通过系统文件选择器选取外部 `.owbak` 文件，成功读入文件字节
+- [ ] 系统分享与文件选取成熟插件（share_plus 13.3.1 / file_picker 13.4.0）走查：
+  - [ ] 导出文件能在"文件"应用里看到（M5-03，P17）：使用 `share_plus 13.3.1` 调起系统分享面板（Android `ACTION_SEND` / iOS `UIActivityViewController`），选择"存储到文件"（Files app），保存后打开系统"文件"应用，能在指定目录看到导出的 `.owbak` 文件
+  - [ ] 明文不得落盘与临时文件生命周期：导出的加密备份字节写入应用私有临时目录，分享结束后在 `finally` 中立即删除，明文绝不落盘；临时文件未泄漏
+  - [ ] 插件异常容错（R41）：通道不存在、未安装或抛出 `MissingPluginException`/`PlatformException` 时，界面展示"导出或分享文件失败，请重试"，绝不进入"我已保存"步骤，且不更新上次导出时间
+  - [ ] 从文件恢复走查（M5-04，P17 与 P01 恢复入口）：使用 `file_picker 13.4.0` 调起系统文件选择器，在"文件"应用中选取之前导出的 `.owbak` 文件，成功读入文件字节并展示预览卡片，输入密码后完成恢复
 - [ ] 导出流程（P17，M5-03）：
   - [ ] 验证主密码：仅支持手动输入主密码，不提供生物识别绕过（PRD P17 规定）
   - [ ] 备份密码选项：选择"另设置备份密码"时，输入非 ASCII 字符（如中文或特殊全角字符）时展示醒目提示，密码短于 10 位或两次输入不一致时阻止提交

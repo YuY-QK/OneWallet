@@ -963,6 +963,7 @@
   "backupExportSuccessTitle": "备份已生成",
   "backupExportSaveAdvice": "通过系统分享面板保存。请存到手机以外的地方（如离线 U 盘、可信电脑或加密存储）。",
   "backupExportSavedButton": "我已保存到安全位置",
+  "backupExportShareFailed": "导出或分享文件失败，请重试",
   "backupExportDoneNotice": "上次导出时间已更新",
   "backupRestoreTitle": "恢复备份",
   "backupRestoreSelectFile": "选择 .owbak 备份文件",

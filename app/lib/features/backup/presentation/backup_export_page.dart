@@ -10,6 +10,7 @@ import '../../../bootstrap/vault_providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_card.dart';
 import '../../../widgets/ow_pill.dart';
 import '../../../widgets/ow_primary_button.dart';
@@ -105,7 +106,7 @@ class _BackupExportPageState extends ConsumerState<BackupExportPage> {
           _errorMessage = switch (failure) {
             WrongPasswordFailure() =>
               l.securityChangeMasterPasswordWrongCurrent,
-            _ => failure.detail ?? failure.toString(),
+            _ => failureText(l, failure),
           };
         });
         return;
@@ -114,12 +115,20 @@ class _BackupExportPageState extends ConsumerState<BackupExportPage> {
       final exported = (res as Ok<ExportedBackup>).value;
 
       // 调起系统分享面板或保存
-      await fileHandler.shareFile(
+      final shareSuccess = await fileHandler.shareFile(
         bytes: exported.bytes,
         filename: exported.suggestedFileName,
       );
 
       if (!mounted) return;
+      if (!shareSuccess) {
+        setState(() {
+          _isLoading = false;
+          _errorMessage = l.backupExportShareFailed;
+        });
+        return;
+      }
+
       setState(() {
         _isLoading = false;
         _exportedResult = exported;
@@ -229,35 +238,31 @@ class _BackupExportPageState extends ConsumerState<BackupExportPage> {
                 ),
               ),
               const SizedBox(height: 12),
-              // ignore: deprecated_member_use
-              RadioListTile<bool>(
-                title: Text(
-                  l.backupExportUseMasterPassword,
-                  style: OwTextStyles.body.copyWith(color: colors.ink),
-                ),
-                value: true,
-                // ignore: deprecated_member_use
+              RadioGroup<bool>(
                 groupValue: _useMasterPassword,
-                contentPadding: EdgeInsets.zero,
-                // ignore: deprecated_member_use
                 onChanged: (val) {
                   if (val != null) setState(() => _useMasterPassword = val);
                 },
-              ),
-              // ignore: deprecated_member_use
-              RadioListTile<bool>(
-                title: Text(
-                  l.backupExportUseCustomPassword,
-                  style: OwTextStyles.body.copyWith(color: colors.ink),
+                child: Column(
+                  children: [
+                    RadioListTile<bool>(
+                      title: Text(
+                        l.backupExportUseMasterPassword,
+                        style: OwTextStyles.body.copyWith(color: colors.ink),
+                      ),
+                      value: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    RadioListTile<bool>(
+                      title: Text(
+                        l.backupExportUseCustomPassword,
+                        style: OwTextStyles.body.copyWith(color: colors.ink),
+                      ),
+                      value: false,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ],
                 ),
-                value: false,
-                // ignore: deprecated_member_use
-                groupValue: _useMasterPassword,
-                contentPadding: EdgeInsets.zero,
-                // ignore: deprecated_member_use
-                onChanged: (val) {
-                  if (val != null) setState(() => _useMasterPassword = val);
-                },
               ),
               if (!_useMasterPassword) ...[
                 const SizedBox(height: 8),

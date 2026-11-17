@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -11,7 +10,7 @@ import '../../../bootstrap/foundation_providers.dart';
 
 class LockViewState {
   const LockViewState({
-    this.enteredDigits = '',
+    this.enteredCount = 0,
     this.shake = false,
     this.errorMessage,
     this.lockedUntil,
@@ -19,7 +18,8 @@ class LockViewState {
     this.canUseBiometric = false,
   });
 
-  final String enteredDigits;
+  /// 已输入的 PIN 位数（状态对象中不保留明文数字）。
+  final int enteredCount;
   final bool shake;
   final String? errorMessage;
   final DateTime? lockedUntil;
@@ -29,14 +29,14 @@ class LockViewState {
   bool get isLockedOut => remainingSeconds > 0;
 
   LockViewState copyWith({
-    String? enteredDigits,
+    int? enteredCount,
     bool? shake,
     Object? errorMessage = _unset,
     Object? lockedUntil = _unset,
     int? remainingSeconds,
     bool? canUseBiometric,
   }) => LockViewState(
-    enteredDigits: enteredDigits ?? this.enteredDigits,
+    enteredCount: enteredCount ?? this.enteredCount,
     shake: shake ?? this.shake,
     errorMessage: identical(errorMessage, _unset)
         ? this.errorMessage
@@ -58,11 +58,13 @@ final lockControllerProvider =
 
 class LockController extends Notifier<LockViewState> {
   Timer? _countdownTimer;
+  final List<int> _digits = [];
 
   @override
   LockViewState build() {
     ref.onDispose(() {
       _countdownTimer?.cancel();
+      _digits.clear();
     });
 
     _checkInitialStatus();
@@ -124,27 +126,25 @@ class LockController extends Notifier<LockViewState> {
   }
 
   void addDigit(int digit) {
-    if (state.isLockedOut || state.enteredDigits.length >= 6) return;
+    if (state.isLockedOut || _digits.length >= 6) return;
 
-    final next = '${state.enteredDigits}$digit';
+    _digits.add(digit);
     state = state.copyWith(
-      enteredDigits: next,
+      enteredCount: _digits.length,
       errorMessage: null,
       shake: false,
     );
 
-    if (next.length == 6) {
-      _submitPin(next);
+    if (_digits.length == 6) {
+      _submitPin();
     }
   }
 
   void backspace() {
-    if (state.enteredDigits.isEmpty || state.isLockedOut) return;
+    if (_digits.isEmpty || state.isLockedOut) return;
+    _digits.removeLast();
     state = state.copyWith(
-      enteredDigits: state.enteredDigits.substring(
-        0,
-        state.enteredDigits.length - 1,
-      ),
+      enteredCount: _digits.length,
       errorMessage: null,
       shake: false,
     );
@@ -154,19 +154,17 @@ class LockController extends Notifier<LockViewState> {
     state = state.copyWith(shake: false);
   }
 
-  Future<void> _submitPin(String pinStr) async {
-    final machine = await ref.read(appLockStateMachineProvider.future);
-    final pin = Sensitive(Uint8List.fromList(utf8.encode(pinStr)));
+  Future<void> _submitPin() async {
+    final pinBytes = Uint8List.fromList(_digits.map((d) => d + 48).toList());
+    _digits.clear();
+    final pin = Sensitive(pinBytes);
 
+    final machine = await ref.read(appLockStateMachineProvider.future);
     final res = await machine.unlockWithPin(pin);
     pin.wipe();
 
     if (res.isOk) {
-      state = state.copyWith(
-        enteredDigits: '',
-        errorMessage: null,
-        shake: false,
-      );
+      state = state.copyWith(enteredCount: 0, errorMessage: null, shake: false);
       return;
     }
 
@@ -175,7 +173,7 @@ class LockController extends Notifier<LockViewState> {
         final clock = ref.read(clockProvider);
         final diff = failure.until.difference(clock.nowUtc()).inSeconds;
         state = state.copyWith(
-          enteredDigits: '',
+          enteredCount: 0,
           shake: true,
           lockedUntil: failure.until,
           remainingSeconds: diff > 0 ? diff : 0,
@@ -184,7 +182,7 @@ class LockController extends Notifier<LockViewState> {
         _startCountdown();
       } else {
         state = state.copyWith(
-          enteredDigits: '',
+          enteredCount: 0,
           shake: true,
           errorMessage: 'wrong_pin',
         );

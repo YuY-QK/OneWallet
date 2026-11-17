@@ -17,6 +17,7 @@ import '../../../router/route_names.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
 import '../../../widgets/empty_state.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_card.dart';
 import '../../../widgets/ow_danger_button.dart';
 import '../../../widgets/ow_input_decoration.dart';
@@ -263,7 +264,7 @@ class _VaultItemDetailPageState extends ConsumerState<VaultItemDetailPage>
               .showSnackBar(SnackBar(content: Text(l.lockWrongPin)));
         } else {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(failure.toString())));
+              .showSnackBar(SnackBar(content: Text(failureText(l, failure))));
         }
       }
     } finally {
@@ -367,11 +368,15 @@ class _VaultItemDetailPageState extends ConsumerState<VaultItemDetailPage>
           ScaffoldMessenger.of(context)
               .showSnackBar(SnackBar(content: Text(l.lockWrongPin)));
         } else if (failure is LockedOutFailure) {
+          final remaining = failure.until.difference(DateTime.now().toUtc());
+          final mins = remaining.inMinutes;
+          final secs = remaining.inSeconds % 60;
+          final timeStr = mins > 0 ? '$mins 分 $secs 秒' : '$secs 秒';
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(failure.toString())));
+              .showSnackBar(SnackBar(content: Text(l.lockCountdown(timeStr))));
         } else {
           ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(failure.toString())));
+              .showSnackBar(SnackBar(content: Text(failureText(l, failure))));
         }
       }
     } finally {

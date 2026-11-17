@@ -32,7 +32,7 @@ class VaultPage extends ConsumerWidget {
       ),
       error: (e, _) => Scaffold(
         appBar: AppBar(title: Text(l.tabVault)),
-        body: Center(child: Text(e.toString())),
+        body: Center(child: Text(l.failureUnknown)),
       ),
       data: (isInitialized) {
         if (!isInitialized) {
@@ -63,7 +63,7 @@ class VaultPage extends ConsumerWidget {
           ),
           body: itemsAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(e.toString())),
+            error: (e, _) => Center(child: Text(l.failureUnknown)),
             data: (items) {
               final settings =
                   ref.watch(settingsProvider).asData?.value ??

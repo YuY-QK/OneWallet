@@ -1,13 +1,16 @@
 package app.onewallet.onewallet
 
-import android.app.KeyguardManager
 import android.content.Context
 import android.os.Build
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyPermanentlyInvalidatedException
 import android.security.keystore.KeyProperties
 import android.view.WindowManager
-import io.flutter.embedding.android.FlutterActivity
+import androidx.biometric.BiometricManager
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricPrompt
+import androidx.core.content.ContextCompat
+import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.security.KeyStore
@@ -16,7 +19,7 @@ import javax.crypto.KeyGenerator
 import javax.crypto.SecretKey
 import javax.crypto.spec.GCMParameterSpec
 
-class MainActivity : FlutterActivity() {
+class MainActivity : FlutterFragmentActivity() {
     private val biometricsChannelName = "ow.platform/biometrics"
     private val screenGuardChannelName = "ow.platform/screen_guard"
     private val hardwareKeyStoreChannelName = "ow.platform/hardware_key_store"
@@ -41,34 +44,63 @@ class MainActivity : FlutterActivity() {
                 }
             }
 
-        // 2. Biometrics
+        // 2. Biometrics (真实使用 BiometricPrompt 与 BIOMETRIC_STRONG)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, biometricsChannelName)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "isAvailable" -> {
-                        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
-                        val isSecure = keyguardManager?.isDeviceSecure ?: false
-                        result.success(isSecure)
+                        val biometricManager = BiometricManager.from(this)
+                        val canAuthenticate = biometricManager.canAuthenticate(BIOMETRIC_STRONG)
+                        result.success(canAuthenticate == BiometricManager.BIOMETRIC_SUCCESS)
                     }
                     "authenticate" -> {
-                        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
-                        if (keyguardManager?.isDeviceSecure == true) {
-                            result.success(true)
-                        } else {
-                            result.error("NOT_AVAILABLE", "Device lock not configured", null)
+                        val biometricManager = BiometricManager.from(this)
+                        if (biometricManager.canAuthenticate(BIOMETRIC_STRONG) != BiometricManager.BIOMETRIC_SUCCESS) {
+                            result.error("NOT_AVAILABLE", "Strong biometric not available", null)
+                            return@setMethodCallHandler
                         }
+
+                        val reason = call.argument<String>("reason") ?: "解锁 OneWallet"
+                        val executor = ContextCompat.getMainExecutor(this)
+                        val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                            .setTitle(reason)
+                            .setNegativeButtonText("取消")
+                            .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                            .build()
+
+                        val prompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+                            override fun onAuthenticationSucceeded(authResult: BiometricPrompt.AuthenticationResult) {
+                                result.success(true)
+                            }
+
+                            override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+                                    errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                                ) {
+                                    result.success(false)
+                                } else {
+                                    result.error("AUTH_ERROR", errString.toString(), null)
+                                }
+                            }
+
+                            override fun onAuthenticationFailed() {
+                                // 识别不匹配，等待用户重试或点击取消
+                            }
+                        })
+                        prompt.authenticate(promptInfo)
                     }
                     else -> result.notImplemented()
                 }
             }
 
-        // 3. HardwareKeyStore
+        // 3. HardwareKeyStore (使用 BiometricPrompt.CryptoObject 保护密钥解包裹)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, hardwareKeyStoreChannelName)
             .setMethodCallHandler { call, result ->
                 when (call.method) {
                     "isAvailable" -> {
-                        val keyguardManager = getSystemService(Context.KEYGUARD_SERVICE) as? KeyguardManager
-                        result.success(keyguardManager?.isDeviceSecure ?: false)
+                        val biometricManager = BiometricManager.from(this)
+                        val canBio = biometricManager.canAuthenticate(BIOMETRIC_STRONG) == BiometricManager.BIOMETRIC_SUCCESS
+                        result.success(canBio)
                     }
                     "wrap" -> {
                         try {
@@ -99,14 +131,48 @@ class MainActivity : FlutterActivity() {
                             val secretKey = keyStore.getKey(alias, null) as SecretKey
                             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
                             cipher.init(Cipher.ENCRYPT_MODE, secretKey)
-                            val iv = cipher.iv
-                            val ciphertext = cipher.doFinal(plaintext)
 
-                            val wrapped = ByteArray(iv.size + ciphertext.size)
-                            System.arraycopy(iv, 0, wrapped, 0, iv.size)
-                            System.arraycopy(ciphertext, 0, wrapped, iv.size, ciphertext.size)
+                            val executor = ContextCompat.getMainExecutor(this)
+                            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                                .setTitle("开启保险库生物识别")
+                                .setSubtitle("请验证面容或指纹以绑定硬件保护")
+                                .setNegativeButtonText("取消")
+                                .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                                .build()
 
-                            result.success(wrapped)
+                            val prompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+                                override fun onAuthenticationSucceeded(authResult: BiometricPrompt.AuthenticationResult) {
+                                    try {
+                                        val authenticatedCipher = authResult.cryptoObject?.cipher ?: cipher
+                                        val iv = authenticatedCipher.iv
+                                        val ciphertext = authenticatedCipher.doFinal(plaintext)
+
+                                        val wrapped = ByteArray(iv.size + ciphertext.size)
+                                        System.arraycopy(iv, 0, wrapped, 0, iv.size)
+                                        System.arraycopy(ciphertext, 0, wrapped, iv.size, ciphertext.size)
+                                        result.success(wrapped)
+                                    } catch (e: Exception) {
+                                        result.error("WRAP_FAILED", e.message, null)
+                                    }
+                                }
+
+                                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                    if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+                                        errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                                    ) {
+                                        result.error("USER_CANCELED", errString.toString(), null)
+                                    } else {
+                                        result.error("BIOMETRIC_UNAVAILABLE", errString.toString(), null)
+                                    }
+                                }
+
+                                override fun onAuthenticationFailed() {
+                                    // 识别不匹配，等待重试
+                                }
+                            })
+                            prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
+                        } catch (e: KeyPermanentlyInvalidatedException) {
+                            result.error("KEY_PERMANENTLY_INVALIDATED", "Biometrics changed", null)
                         } catch (e: Exception) {
                             result.error("WRAP_FAILED", e.message, null)
                         }
@@ -117,6 +183,7 @@ class MainActivity : FlutterActivity() {
                                 ?: return@setMethodCallHandler result.error("INVALID_ARGS", "Missing alias", null)
                             val wrapped = call.argument<ByteArray>("wrapped")
                                 ?: return@setMethodCallHandler result.error("INVALID_ARGS", "Missing wrapped", null)
+                            val reason = call.argument<String>("reason") ?: "解锁保险库"
 
                             if (wrapped.size < 12) {
                                 return@setMethodCallHandler result.error("INVALID_DATA", "Wrapped data too short", null)
@@ -136,9 +203,41 @@ class MainActivity : FlutterActivity() {
                             val cipher = Cipher.getInstance("AES/GCM/NoPadding")
                             val spec = GCMParameterSpec(128, iv)
                             cipher.init(Cipher.DECRYPT_MODE, secretKey, spec)
-                            val plaintext = cipher.doFinal(ciphertext)
 
-                            result.success(plaintext)
+                            val executor = ContextCompat.getMainExecutor(this)
+                            val promptInfo = BiometricPrompt.PromptInfo.Builder()
+                                .setTitle(reason)
+                                .setSubtitle("请验证面容或指纹以解锁保险库")
+                                .setNegativeButtonText("取消")
+                                .setAllowedAuthenticators(BIOMETRIC_STRONG)
+                                .build()
+
+                            val prompt = BiometricPrompt(this, executor, object : BiometricPrompt.AuthenticationCallback() {
+                                override fun onAuthenticationSucceeded(authResult: BiometricPrompt.AuthenticationResult) {
+                                    try {
+                                        val authenticatedCipher = authResult.cryptoObject?.cipher ?: cipher
+                                        val plaintext = authenticatedCipher.doFinal(ciphertext)
+                                        result.success(plaintext)
+                                    } catch (e: Exception) {
+                                        result.error("UNWRAP_FAILED", e.message, null)
+                                    }
+                                }
+
+                                override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
+                                    if (errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+                                        errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                                    ) {
+                                        result.error("USER_CANCELED", errString.toString(), null)
+                                    } else {
+                                        result.error("BIOMETRIC_UNAVAILABLE", errString.toString(), null)
+                                    }
+                                }
+
+                                override fun onAuthenticationFailed() {
+                                    // 识别不匹配，等待重试
+                                }
+                            })
+                            prompt.authenticate(promptInfo, BiometricPrompt.CryptoObject(cipher))
                         } catch (e: KeyPermanentlyInvalidatedException) {
                             result.error("KEY_PERMANENTLY_INVALIDATED", "Biometrics changed", null)
                         } catch (e: Exception) {

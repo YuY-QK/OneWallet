@@ -2088,6 +2088,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupExportSavedButton => '我已保存到安全位置';
 
   @override
+  String get backupExportShareFailed => '导出或分享文件失败，请重试';
+
+  @override
   String get backupExportDoneNotice => '上次导出时间已更新';
 
   @override

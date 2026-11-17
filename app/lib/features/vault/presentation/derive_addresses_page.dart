@@ -13,6 +13,7 @@ import '../../../l10n/app_localizations.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
 import '../../../widgets/empty_state.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/ow_card.dart';
 import '../../../widgets/ow_input_decoration.dart';
 import '../../../widgets/ow_notice.dart';
@@ -174,7 +175,7 @@ class _DeriveAddressesPageState extends ConsumerState<DeriveAddressesPage> {
       } else if (res case Err(:final failure)) {
         setState(() {
           _isDeriving = false;
-          _errorMessage = failure.toString();
+          _errorMessage = failureText(l, failure);
         });
       }
     } finally {
@@ -268,7 +269,7 @@ class _DeriveAddressesPageState extends ConsumerState<DeriveAddressesPage> {
       }
     } else if (res case Err(:final failure)) {
       ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text(failure.toString())));
+          .showSnackBar(SnackBar(content: Text(failureText(l, failure))));
     }
   }
 

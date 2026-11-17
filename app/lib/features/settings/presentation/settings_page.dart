@@ -266,7 +266,7 @@ class SettingsPage extends ConsumerWidget {
                 title: l.settingsSecurity,
                 subtitle: l.settingsSecurityBody,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsSecurity),
+                onTap: () => context.goNamed(RouteNames.settingsSecurity),
               ),
               OwRow(
                 title: l.settingsBackup,
@@ -284,7 +284,7 @@ class SettingsPage extends ConsumerWidget {
                         ],
                       )
                     : const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.backup),
+                onTap: () => context.goNamed(RouteNames.backup),
               ),
             ],
           ),
@@ -303,7 +303,7 @@ class SettingsPage extends ConsumerWidget {
                 title: l.settingsSources,
                 subtitle: l.settingsSourcesBody,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsSources),
+                onTap: () => context.goNamed(RouteNames.settingsSources),
               ),
               OwRow(
                 title: l.settingsSync,
@@ -323,7 +323,7 @@ class SettingsPage extends ConsumerWidget {
                         ],
                       )
                     : const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsSync),
+                onTap: () => context.goNamed(RouteNames.settingsSync),
               ),
               OwRow(
                 title: l.settingsQuote,
@@ -401,7 +401,7 @@ class SettingsPage extends ConsumerWidget {
               OwRow(
                 title: l.settingsAbout,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsAbout),
+                onTap: () => context.goNamed(RouteNames.settingsAbout),
               ),
             ],
           ),
