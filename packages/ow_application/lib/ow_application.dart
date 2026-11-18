@@ -43,5 +43,6 @@ export 'src/vault/mnemonic_input.dart';
 export 'src/vault/reveal_vault_item.dart';
 export 'src/vault/set_vault_biometrics.dart';
 export 'src/vault/vault_access.dart';
+export 'src/vault/vault_constants.dart';
 export 'src/vault/vault_credential.dart';
 export 'src/vault/watch_vault_items.dart';

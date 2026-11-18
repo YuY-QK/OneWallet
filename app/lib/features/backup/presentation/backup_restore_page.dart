@@ -67,9 +67,24 @@ class _BackupRestorePageState extends ConsumerState<BackupRestorePage> {
   }
 
   Future<void> _pickFile() async {
+    final l = AppLocalizations.of(context)!;
     final fileHandler = ref.read(backupFileHandlerProvider);
     final picked = await fileHandler.pickBackupFile();
     if (picked != null && mounted) {
+      final hasOwbakExt = picked.name.toLowerCase().endsWith('.owbak');
+      final hasOwbakMagic =
+          picked.bytes.length >= 4 &&
+          picked.bytes[0] == 0x4f &&
+          picked.bytes[1] == 0x57 &&
+          picked.bytes[2] == 0x42 &&
+          picked.bytes[3] == 0x4b;
+      if (!hasOwbakExt || !hasOwbakMagic) {
+        setState(() {
+          _selectedFile = null;
+          _errorMessage = l.backupRestoreCorrupted;
+        });
+        return;
+      }
       setState(() {
         _selectedFile = picked;
         _errorMessage = null;

@@ -1,5 +1,7 @@
 import 'package:ow_domain/ow_domain.dart';
 
+import '../vault/vault_constants.dart';
+
 /// 清除本应用全部本地数据（P18、PRD 第 10 节）。
 ///
 /// 严格按顺序执行：
@@ -26,7 +28,7 @@ final class WipeAllData {
   final ClearableSecretStore? secrets;
   final HardwareKeyStore? hardwareKeyStore;
 
-  static const String _keyAlias = 'ow.vault.vmk';
+  static const String _keyAlias = vaultMasterKeyHardwareAlias;
 
   Future<Result<void>> call({DatabaseCloser? closer}) async {
     try {

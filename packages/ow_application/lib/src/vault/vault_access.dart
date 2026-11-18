@@ -5,6 +5,7 @@ import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_vault/ow_vault.dart';
 
 import '../security/attempt_limiter.dart';
+import 'vault_constants.dart';
 import 'vault_credential.dart';
 
 /// 会话访问控制器（规格 3.2 节）。
@@ -28,7 +29,7 @@ final class VaultAccess {
   final SettingsRepository settings;
   final AttemptLimiter passwordLimiter;
 
-  static const String _keyAlias = 'ow.vault.vmk';
+  static const String _keyAlias = vaultMasterKeyHardwareAlias;
   static const String _secretKeyHwWrapped = 'ow.vault.hw_wrapped';
 
   /// 保险库文件是否存在。

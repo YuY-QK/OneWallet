@@ -195,7 +195,9 @@ void main() {
     // 从 ProviderScope 中调用 wipeAndRestartProvider
     final element = tester.element(find.byType(OneWalletApp));
     final container = ProviderScope.containerOf(element);
-    await container.read(wipeAndRestartProvider)();
+    final wipeFuture = container.read(wipeAndRestartProvider)();
+    await tester.pump();
+    await wipeFuture;
     await tester.pump();
     await tester.runAsync(
       () => Future<void>.delayed(const Duration(milliseconds: 100)),
@@ -267,7 +269,59 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
 
     expect(calls, 2);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
+    await unmount(tester);
+  });
+
+  testWidgets('启动失败页点击清除全部数据调用WipeAllData同时删除硬件密钥库中的别名', (tester) async {
+    int calls = 0;
+    Future<BootstrapResult> bootstrap() async {
+      calls++;
+      return calls == 1
+          ? const BootstrapFailure(BootstrapFailureKind.databaseOpenFailed)
+          : BootstrapSuccess(
+              database: OwDatabase(NativeDatabase.memory()),
+              secrets: FakeSecretStore(),
+            );
+    }
+
+    final fakeVault = FakeVaultStorage();
+    final fakeSecrets = FakeSecretStore({'ow.db.key': 'test'});
+    final fakeHw = FakeHardwareKeyStore();
+    final wipeAllData = WipeAllData(
+      databaseDeleter: MemoryDatabaseOpener(),
+      vaultStorage: fakeVault,
+      secrets: fakeSecrets,
+      hardwareKeyStore: fakeHw,
+    );
+
+    await tester.pumpWidget(
+      BootstrapHost(bootstrap: bootstrap, wipeAllData: wipeAllData),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始'), findsOneWidget);
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始？'), findsOneWidget);
+    await tester.tap(find.text('清除并重新开始'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
+    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pump(const Duration(milliseconds: 100));
+
+    expect(fakeHw.deletedKeys, contains('ow.vault.vmk'));
+    expect(calls, 2);
     await unmount(tester);
   });
 }

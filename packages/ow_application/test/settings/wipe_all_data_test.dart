@@ -111,7 +111,7 @@ void main() {
         'clearSecrets',
         'deleteHardwareKey',
       ]);
-      expect(hw.deletedKeys, contains('ow.vault.vmk'));
+      expect(hw.deletedKeys, contains(vaultMasterKeyHardwareAlias));
     });
 
     test('closer为空时_正常执行删库、删保险库、清安全存储与删硬件密钥', () async {

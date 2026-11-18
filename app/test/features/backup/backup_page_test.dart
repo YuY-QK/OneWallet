@@ -604,6 +604,41 @@ void main() {
       await tester.pumpAndSettle();
     });
 
+    testWidgets('选取扩展名非.owbak或魔数损坏的文件时提示文件损坏', (tester) async {
+      // 1. 扩展名非 .owbak
+      fileHandler.fileToPick = SelectedBackupFile(
+        bytes: validBackupBytes,
+        name: 'test.txt',
+      );
+
+      await tester.pumpWidget(
+        buildAppWithRouter(
+          initialLocation: '/settings/backup/restore?mode=merge',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('选择 .owbak 备份文件'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('这不是 OneWallet 的备份文件，或文件已损坏，无法读取'), findsOneWidget);
+      expect(find.textContaining('test.txt'), findsNothing);
+
+      // 2. 文件头魔数损坏
+      final corruptedBytes = Uint8List.fromList(validBackupBytes);
+      corruptedBytes[0] = 0x00;
+      fileHandler.fileToPick = SelectedBackupFile(
+        bytes: corruptedBytes,
+        name: 'bad_magic.owbak',
+      );
+
+      await tester.tap(find.text('选择 .owbak 备份文件'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('这不是 OneWallet 的备份文件，或文件已损坏，无法读取'), findsOneWidget);
+      expect(find.textContaining('bad_magic.owbak'), findsNothing);
+    });
+
     testWidgets('全新模式：首次引导模式恢复', (tester) async {
       fileHandler.fileToPick = SelectedBackupFile(
         bytes: validBackupBytes,

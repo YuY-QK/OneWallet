@@ -68,7 +68,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
           _wipeFailed = false;
         });
       }
-      await Future<void>.delayed(Duration.zero);
+      await Future.microtask(() {});
     }
 
     final wipeAll = widget.wipeAllData;
@@ -112,9 +112,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
     }
     if (_wiping) {
       return const _BootstrapShell(
-        child: Center(
-          child: CircularProgressIndicator(),
-        ),
+        child: Center(child: CircularProgressIndicator()),
       );
     }
     return FutureBuilder<BootstrapResult>(
