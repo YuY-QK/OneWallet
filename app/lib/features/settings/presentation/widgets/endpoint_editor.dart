@@ -9,16 +9,19 @@ import '../../../../widgets/ow_input_decoration.dart';
 import '../../../../widgets/ow_secondary_button.dart';
 import '../../controllers/data_sources_controller.dart';
 
-/// 六条 EVM 链各一行的自定义 RPC 端点编辑（高级选项）。
+/// 自定义 RPC 端点编辑（高级选项）。[chains] 缺省时显示六条 EVM 链。
 class EndpointEditors extends StatelessWidget {
-  const EndpointEditors({super.key});
+  const EndpointEditors({super.key, this.chains});
+
+  final List<ChainInfo>? chains;
 
   @override
   Widget build(BuildContext context) {
+    final list = chains ?? Chains.ofFamily(ChainFamily.evm);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        for (final chain in Chains.ofFamily(ChainFamily.evm))
+        for (final chain in list)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
             child: _EndpointRow(chain: chain),

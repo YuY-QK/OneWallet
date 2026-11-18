@@ -15,11 +15,12 @@ class InsecureUrlException implements Exception {
 
 /// 把 HTTP 状态码映射为 [Failure]；2xx 不应传入。
 ///
-/// 429 → [RateLimitedFailure]；401、403 → [UnauthorizedFailure]；
-/// 5xx → [ServiceDownFailure]；其余 → [UnknownFailure]。
+/// 400 → [ValidationFailure]；429 → [RateLimitedFailure]；
+/// 401、403 → [UnauthorizedFailure]；5xx → [ServiceDownFailure]；其余 → [UnknownFailure]。
 /// `detail` 只含状态码和主机。
 Failure mapHttpStatus(int status, String host) {
   final detail = 'HTTP $status host=$host';
+  if (status == 400) return ValidationFailure(detail);
   if (status == 429) return RateLimitedFailure(detail);
   if (status == 401 || status == 403) return UnauthorizedFailure(detail);
   if (status >= 500 && status <= 599) return ServiceDownFailure(detail);

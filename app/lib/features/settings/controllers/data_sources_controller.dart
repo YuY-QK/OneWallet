@@ -9,6 +9,9 @@ import '../../../bootstrap/providers.dart';
 /// 数据服务商的标识（与 `SecretStore` 键名中的 `<providerId>` 一致）。
 abstract final class DataSourceIds {
   static const alchemy = EvmChainAdapter.providerId;
+  static const mempool = 'mempool';
+  static const helius = SolanaChainAdapter.providerId;
+  static const trongrid = TronChainAdapter.providerId;
   static const coingecko = CoinGeckoPriceSource.providerId;
 }
 
@@ -80,6 +83,15 @@ final class DataSourcesState {
 /// 以太坊零地址：众所周知的公开地址，测试连接时用它查询。
 const String zeroAddress = '0x0000000000000000000000000000000000000000';
 
+/// 比特币创世区块地址：众所周知的公开地址。
+const String btcGenesisAddress = '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa';
+
+/// Solana 系统程序地址：众所周知的公开地址。
+const String solSystemProgram = '11111111111111111111111111111111';
+
+/// Tron 黑洞地址：众所周知的公开地址。
+const String tronZeroAddress = 'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb';
+
 /// Key 的提示至少需要这么长才显示前 4 位，避免短 Key 暴露过半。
 const int _previewMinLength = 12;
 
@@ -91,7 +103,13 @@ final dataSourcesProvider =
     );
 
 class DataSourcesController extends AsyncNotifier<DataSourcesState> {
-  static const _providers = [DataSourceIds.alchemy, DataSourceIds.coingecko];
+  static const _providers = [
+    DataSourceIds.alchemy,
+    DataSourceIds.mempool,
+    DataSourceIds.helius,
+    DataSourceIds.trongrid,
+    DataSourceIds.coingecko,
+  ];
 
   @override
   Future<DataSourcesState> build() async {
@@ -101,8 +119,17 @@ class DataSourcesController extends AsyncNotifier<DataSourcesState> {
 
   Future<(Map<String, DataSourceStatus>, Map<String, String>)> _load() async {
     final config = ref.read(dataSourceConfigProvider);
+    final hosts = <String, String>{};
+    for (final chain in Chains.all) {
+      final uri = await config.customEndpoint(chain.id);
+      if (uri != null) hosts[chain.id] = uri.host;
+    }
     final statuses = <String, DataSourceStatus>{};
     for (final id in _providers) {
+      if (id == DataSourceIds.mempool) {
+        statuses[id] = const DataSourceStatus(configured: true);
+        continue;
+      }
       final key = await config.apiKey(id);
       statuses[id] = DataSourceStatus(
         configured: key != null,
@@ -110,11 +137,6 @@ class DataSourcesController extends AsyncNotifier<DataSourcesState> {
             ? '${key.substring(0, 4)}***'
             : null,
       );
-    }
-    final hosts = <String, String>{};
-    for (final chain in Chains.ofFamily(ChainFamily.evm)) {
-      final uri = await config.customEndpoint(chain.id);
-      if (uri != null) hosts[chain.id] = uri.host;
     }
     return (statuses, hosts);
   }
@@ -185,6 +207,21 @@ class DataSourcesController extends AsyncNotifier<DataSourcesState> {
             .read(adapterRegistryProvider)
             .chain(ChainFamily.evm)
             .hasActivity(zeroAddress, Chains.byId('ethereum'));
+      case DataSourceIds.mempool:
+        result = await ref
+            .read(adapterRegistryProvider)
+            .chain(ChainFamily.bitcoin)
+            .hasActivity(btcGenesisAddress, Chains.byId('bitcoin'));
+      case DataSourceIds.helius:
+        result = await ref
+            .read(adapterRegistryProvider)
+            .chain(ChainFamily.solana)
+            .hasActivity(solSystemProgram, Chains.byId('solana'));
+      case DataSourceIds.trongrid:
+        result = await ref
+            .read(adapterRegistryProvider)
+            .chain(ChainFamily.tron)
+            .hasActivity(tronZeroAddress, Chains.byId('tron'));
       case DataSourceIds.coingecko:
         final btc = ref.read(assetCatalogProvider).byId('BTC');
         if (btc == null) return const TestFailed(UnknownFailure('BTC 币种缺失'));

@@ -44,6 +44,7 @@ class BuiltInAssetCatalog implements AssetCatalog {
       }
 
       final contracts = _map(item['contracts'] ?? const {}, 'contracts');
+      final decimalsMap = _map(item['decimals'] ?? const {}, 'decimals');
       for (final entry in contracts.entries) {
         final chain = _chain(entry.key, asset.id);
         final contract = entry.value;
@@ -55,8 +56,23 @@ class BuiltInAssetCatalog implements AssetCatalog {
           throw FormatException('合约重复：${chain.id} $contract');
         }
         _contracts[key] = asset;
+        int? dec;
+        if (decimalsMap.containsKey(chain.id)) {
+          final val = decimalsMap[chain.id];
+          if (val is! int || val < 0 || val > 36) {
+            throw FormatException(
+              '${asset.id} 在 ${chain.id} 的 decimals 必须是 0–36 的整数',
+            );
+          }
+          dec = val;
+          _contractDecimals[key] = val;
+        }
         _contractList.add(
-          CatalogContract(ContractToken(chain.id, contract), asset),
+          CatalogContract(
+            ContractToken(chain.id, contract),
+            asset,
+            decimals: dec,
+          ),
         );
       }
     }
@@ -85,6 +101,7 @@ class BuiltInAssetCatalog implements AssetCatalog {
   final Map<String, Asset> _byPriceId = {};
   final Map<String, Asset> _native = {};
   final Map<String, Asset> _contracts = {};
+  final Map<String, int> _contractDecimals = {};
   final List<CatalogContract> _contractList = [];
   final Map<ExchangeId, Map<String, Asset>> _aliases = {};
 
@@ -93,6 +110,24 @@ class BuiltInAssetCatalog implements AssetCatalog {
 
   /// 全部内置合约条目（合约为规范化形式）。
   List<CatalogContract> get contracts => List.unmodifiable(_contractList);
+
+  /// 查询合约代币的小数位（未在内置表指定时为 null）。
+  int? decimalsOf(ContractToken token) =>
+      _contractDecimals[_contractKey(token.chainId, token.contract)];
+
+  /// 内置 TRC-20 合约的小数位数（合约 Base58 地址 → 小数位），供 `TronChainAdapter` 使用。
+  Map<String, int> get tronDecimals {
+    final result = <String, int>{};
+    for (final c in _contractList) {
+      if (c.token.chainId == 'tron') {
+        final d = decimalsOf(c.token);
+        if (d != null) {
+          result[c.token.contract] = d;
+        }
+      }
+    }
+    return Map.unmodifiable(result);
+  }
 
   @override
   Asset? byId(String assetId) => _byId[assetId];
@@ -152,7 +187,8 @@ class BuiltInAssetCatalog implements AssetCatalog {
 
 /// 内置合约条目：一个合约代币及其标准币种。
 final class CatalogContract {
-  const CatalogContract(this.token, this.asset);
+  const CatalogContract(this.token, this.asset, {this.decimals});
   final ContractToken token;
   final Asset asset;
+  final int? decimals;
 }

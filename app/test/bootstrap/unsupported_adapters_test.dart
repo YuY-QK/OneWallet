@@ -101,4 +101,21 @@ void main() {
     expect(withEx.exchange(ExchangeId.binance), same(binance));
     expect(withEx.exchange(ExchangeId.okx), isA<UnsupportedExchangeAdapter>());
   });
+
+  test('注册表_注入全部四类链适配器_各自返回对应实例', () {
+    final evm = _EvmStub();
+    final btc = _EvmStub();
+    final sol = _EvmStub();
+    final trx = _EvmStub();
+    final registry = AppAdapterRegistry(
+      evm: evm,
+      bitcoin: btc,
+      solana: sol,
+      tron: trx,
+    );
+    expect(registry.chain(ChainFamily.evm), same(evm));
+    expect(registry.chain(ChainFamily.bitcoin), same(btc));
+    expect(registry.chain(ChainFamily.solana), same(sol));
+    expect(registry.chain(ChainFamily.tron), same(trx));
+  });
 }

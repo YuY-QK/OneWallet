@@ -61,24 +61,23 @@ final priceSourceProvider = Provider<PriceSource>(
   ),
 );
 
-/// 适配器注册表。EVM 及 Binance、OKX、Bybit 已实现；其余家族与 Bitget 是占位。
-final adapterRegistryProvider = Provider<AdapterRegistry>(
-  (ref) => AppAdapterRegistry(
-    evm: EvmChainAdapter(
-      config: ref.watch(dataSourceConfigProvider),
-      onLog: ref.watch(netLogSinkProvider),
+/// 适配器注册表。已接入四类链家族（EVM、Bitcoin、Solana、Tron）及 Binance、OKX、Bybit；Bitget 为占位。
+final adapterRegistryProvider = Provider<AdapterRegistry>((ref) {
+  final config = ref.watch(dataSourceConfigProvider);
+  final onLog = ref.watch(netLogSinkProvider);
+  final catalog = ref.watch(builtInAssetCatalogProvider);
+  final clock = ref.watch(clockProvider);
+  return AppAdapterRegistry(
+    evm: EvmChainAdapter(config: config, onLog: onLog),
+    bitcoin: BitcoinChainAdapter(config: config, onLog: onLog),
+    solana: SolanaChainAdapter(config: config, onLog: onLog),
+    tron: TronChainAdapter(
+      config: config,
+      knownDecimals: catalog.tronDecimals,
+      onLog: onLog,
     ),
-    binance: BinanceAdapter(
-      clock: ref.watch(clockProvider),
-      onLog: ref.watch(netLogSinkProvider),
-    ),
-    okx: OkxAdapter(
-      clock: ref.watch(clockProvider),
-      onLog: ref.watch(netLogSinkProvider),
-    ),
-    bybit: BybitAdapter(
-      clock: ref.watch(clockProvider),
-      onLog: ref.watch(netLogSinkProvider),
-    ),
-  ),
-);
+    binance: BinanceAdapter(clock: clock, onLog: onLog),
+    okx: OkxAdapter(clock: clock, onLog: onLog),
+    bybit: BybitAdapter(clock: clock, onLog: onLog),
+  );
+});

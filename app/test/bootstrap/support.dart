@@ -77,9 +77,11 @@ final class MemoryDatabaseOpener implements DatabaseOpener {
 final class FakeVaultStorage implements VaultStorage {
   int deleteCount = 0;
   Uint8List? data;
+  Object? failDeleteWith;
 
   @override
   Future<void> delete() async {
+    if (failDeleteWith != null) throw failDeleteWith!;
     deleteCount++;
     data = null;
   }

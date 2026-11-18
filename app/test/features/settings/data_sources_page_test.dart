@@ -41,20 +41,22 @@ void main() {
   });
 
   group('P20 显示', () {
-    testWidgets('未配置_服务商显示未配置_其余链即将支持且不可点_隐私说明', (tester) async {
+    testWidgets('未配置_四类链与价格源全部列出_mempool默认就绪其余未配置_隐私说明', (tester) async {
       await pumpApp(tester, rig, location: '/settings/sources');
-      expect(find.text('未配置'), findsNWidgets(2));
-      expect(find.text('即将支持'), findsNWidgets(3));
+      expect(find.text('已配置'), findsOneWidget);
+      expect(find.text('未配置'), findsNWidgets(4));
+      expect(find.text('即将支持'), findsNothing);
       expect(find.text('查询余额时，你的地址和 IP 会被发送给所选的数据服务商。'), findsOneWidget);
-      await tester.tap(find.text('Solana'));
+      await tester.tap(find.text('Helius'));
       await tester.pumpAndSettle();
-      expect(find.text('API Key'), findsNothing);
+      expect(find.text('API Key'), findsOneWidget);
     });
 
     testWidgets('已配置_只显示已配置和前4位_不出现完整Key', (tester) async {
       rig.secrets.data[_alchemyKeyStore] = _fullKey;
       await pumpApp(tester, rig, location: '/settings/sources');
-      expect(find.text('已配置'), findsOneWidget);
+      // Alchemy 与 mempool.space 两个已配置
+      expect(find.text('已配置'), findsNWidgets(2));
       expect(find.text('abcd***'), findsOneWidget);
       expect(_treeContains(tester, _fullKey), isFalse);
       await _openEditor(tester, 'Alchemy');
@@ -66,7 +68,8 @@ void main() {
     testWidgets('Key太短_不显示任何字符', (tester) async {
       rig.secrets.data[_alchemyKeyStore] = 'short1';
       await pumpApp(tester, rig, location: '/settings/sources');
-      expect(find.text('已配置'), findsOneWidget);
+      // Alchemy 与 mempool.space 两个已配置
+      expect(find.text('已配置'), findsNWidgets(2));
       expect(_treeContains(tester, 'shor'), isFalse);
     });
   });
@@ -171,6 +174,40 @@ void main() {
       expect(find.textContaining('网络不可用'), findsOneWidget);
     });
 
+    testWidgets('mempool测试连接_用创世地址查询', (tester) async {
+      await pumpApp(tester, rig, location: '/settings/sources');
+      await _openEditor(tester, 'mempool.space');
+      expect(find.text('API Key'), findsNothing);
+      await tester.tap(find.text('测试连接'));
+      await tester.pumpAndSettle();
+      expect(find.text('连接正常。'), findsOneWidget);
+      expect(rig.registry[ChainFamily.bitcoin].fetched, [
+        '1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa',
+      ]);
+    });
+
+    testWidgets('Helius测试连接_用系统程序查询', (tester) async {
+      await pumpApp(tester, rig, location: '/settings/sources');
+      await _openEditor(tester, 'Helius');
+      await tester.tap(find.text('测试连接'));
+      await tester.pumpAndSettle();
+      expect(find.text('连接正常。'), findsOneWidget);
+      expect(rig.registry[ChainFamily.solana].fetched, [
+        '11111111111111111111111111111111',
+      ]);
+    });
+
+    testWidgets('TronGrid测试连接_用黑洞地址查询', (tester) async {
+      await pumpApp(tester, rig, location: '/settings/sources');
+      await _openEditor(tester, 'TronGrid');
+      await tester.tap(find.text('测试连接'));
+      await tester.pumpAndSettle();
+      expect(find.text('连接正常。'), findsOneWidget);
+      expect(rig.registry[ChainFamily.tron].fetched, [
+        'T9yD14Nj9j7xAB4dbGeiX9h8unkKHxuWwb',
+      ]);
+    });
+
     testWidgets('输入框有未保存内容_测试按钮禁用并提示', (tester) async {
       await pumpApp(tester, rig, location: '/settings/sources');
       await _openEditor(tester, 'Alchemy');
@@ -241,6 +278,24 @@ void main() {
         isFalse,
       );
       expect(find.text('使用默认端点'), findsNWidgets(6));
+    });
+
+    testWidgets('Bitcoin高级选项_支持设置与清除自定义端点', (tester) async {
+      await pumpApp(tester, rig, location: '/settings/sources');
+      await _openEditor(tester, 'mempool.space');
+      await tester.ensureVisible(find.text('高级：自定义 RPC 端点'));
+      await tester.tap(find.text('高级：自定义 RPC 端点'));
+      await tester.pumpAndSettle();
+      expect(find.text('Bitcoin'), findsOneWidget);
+      final field = find.byType(TextField).first;
+      await tester.enterText(field, 'https://esplora.myhost.com/api');
+      await tester.tap(find.text('保存端点'));
+      await tester.pumpAndSettle();
+      expect(
+        rig.secrets.data['ow.datasource.bitcoin.endpoint'],
+        'https://esplora.myhost.com/api',
+      );
+      expect(find.text('已设置自定义端点：esplora.myhost.com'), findsOneWidget);
     });
   });
 

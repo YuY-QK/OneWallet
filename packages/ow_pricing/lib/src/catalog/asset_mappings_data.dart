@@ -66,6 +66,9 @@ const String builtInAssetMappingsJson = r'''{
       "symbol": "USDT",
       "name": "Tether USD",
       "priceId": "tether",
+      "decimals": {
+        "tron": 6
+      },
       "contracts": {
         "ethereum": "0xdac17f958d2ee523a2206206994597c13d831ec7",
         "bsc": "0x55d398326f99059ff775485246999027b3197955",

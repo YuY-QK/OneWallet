@@ -225,7 +225,7 @@ void main() {
       final (adapter, _) = build();
       final r = await adapter.fetchHoldings('bc1qinvalid', btc);
       final f = r.failureOrNull!;
-      expect(f, isA<UnknownFailure>());
+      expect(f, isA<ValidationFailure>());
       expect(f.detail, isNot(contains('bc1qinvalid')));
     });
 
