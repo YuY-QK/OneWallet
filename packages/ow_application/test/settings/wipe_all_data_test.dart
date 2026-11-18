@@ -77,8 +77,7 @@ final class FakeHardwareKeyStore implements HardwareKeyStore {
     String keyAlias,
     Uint8List wrapped, {
     required String reason,
-  }) async =>
-      Ok(Uint8List(0));
+  }) async => Ok(Uint8List(0));
 
   @override
   Future<Result<Uint8List>> wrap(String keyAlias, Uint8List plaintext) async =>

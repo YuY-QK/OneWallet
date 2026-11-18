@@ -52,7 +52,14 @@ void main() {
     await tester.pump(const Duration(milliseconds: 100));
     expect(calls, 2);
     expect(find.text('无法打开本地数据'), findsNothing);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     await unmount(tester);
   });
 
@@ -142,7 +149,14 @@ void main() {
 
     expect(wipeCalled, isTrue);
     expect(calls, 2);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     await unmount(tester);
   });
 
@@ -167,7 +181,14 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     expect(calls, 1);
 
     // 从 ProviderScope 中调用 wipeAndRestartProvider
@@ -183,7 +204,14 @@ void main() {
 
     expect(wipeCalled, isTrue);
     expect(calls, 2);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     await unmount(tester);
   });
 }

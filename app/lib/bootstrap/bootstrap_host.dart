@@ -61,7 +61,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
     } else {
       final onWipe = widget.onWipeAndRestart;
       if (onWipe != null) {
-        if (closer != null) await closer.close();
+        if (closer != null) unawaited(closer.close());
         await onWipe();
       }
     }

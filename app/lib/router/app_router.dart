@@ -18,6 +18,7 @@ import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/about_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
+import '../features/settings/presentation/security_settings_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
 import '../features/vault/presentation/backup_checklist_page.dart';
