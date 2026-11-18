@@ -13,6 +13,7 @@ import '../../../shell/list_detail_layout.dart';
 import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_text_styles.dart';
 import '../../../widgets/empty_state.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/formatters.dart';
 import '../../../widgets/ow_amount_text.dart';
 import '../../../widgets/ow_avatar.dart';
@@ -407,8 +408,8 @@ Future<void> _showRenameDialog(
             case Err(:final failure):
               setState(() {
                 errorText = failure is ValidationFailure
-                    ? (failure.detail ?? l.accountsRenameHint)
-                    : failure.toString();
+                    ? l.accountsRenameHint
+                    : failureText(l, failure);
               });
           }
         }
