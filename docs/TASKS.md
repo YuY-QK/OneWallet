@@ -176,6 +176,7 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 - [ ] **M1-13** M1 集成测试与验收 〔设备〕〔用户〕
   - 页面截图测试已完成（2026-11-12）：21 张图在 `docs/screenshots/`，重新生成的命令见其中的 README。后续每做完一批页面，把新页面加进 `app/test/screenshots/screenshots_test.dart` 并重新生成。
   - 做什么：`integration_test` 走通"添加 EVM 地址 → 总览显示资产"（用假适配器）；用户用真实地址和自己的 Key 试用，核对余额与区块浏览器一致。
+  - 进度：离线集成测试已实现并通过（`app/test/integration/add_evm_wallet_flow_test.dart` 及设备测试入口 `app/integration_test/add_evm_wallet_flow_test.dart`），用假适配器与假价格源完整走通"添加 EVM 地址 → 钱包详情 → 总览显示 2.5 ETH / $5,000.00 资产"；用户用真实地址和自己的 Key 试用及核对留给用户在设备上完成。
   - 验收：PRD 第 11 节"账户与同步"前两条；更新 `progress.md`。
 
 ---
