@@ -225,11 +225,17 @@ class SettingsPage extends ConsumerWidget {
     final syncView = ref.watch(syncStatusViewProvider);
     final failedCount = syncView.asData?.value.failedCount ?? 0;
 
-    final backupSubtitle = settings.lastBackupExportedAt != null
-        ? l.settingsBackupLastExported(
-            _formatDate(settings.lastBackupExportedAt!),
-          )
-        : l.settingsBackupNever;
+    final lastExport = settings.lastBackupExportedAt;
+    final vaultChanged = settings.vaultChangedAt;
+    final hasUnbackedChanges =
+        vaultChanged != null &&
+        (lastExport == null || vaultChanged.isAfter(lastExport));
+
+    final backupSubtitle = hasUnbackedChanges
+        ? l.settingsBackupUnbacked
+        : (lastExport != null
+              ? l.settingsBackupLastExported(_formatDate(lastExport))
+              : l.settingsBackupNever);
 
     final themeLabel = switch (settings.theme) {
       ThemePreference.system => l.settingsThemeSystem,
@@ -256,17 +262,25 @@ class SettingsPage extends ConsumerWidget {
                 title: l.settingsSecurity,
                 subtitle: l.settingsSecurityBody,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l.settingsSecuritySoon)),
-                  );
-                },
+                onTap: () => context.goNamed(RouteNames.settingsSecurity),
               ),
               OwRow(
                 title: l.settingsBackup,
                 subtitle: backupSubtitle,
-                trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.backupExport),
+                trailing: hasUnbackedChanges
+                    ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          OwPill(
+                            label: l.settingsBackupUnbacked,
+                            tone: OwPillTone.orange,
+                          ),
+                          const SizedBox(width: 4),
+                          const Icon(Icons.chevron_right_rounded),
+                        ],
+                      )
+                    : const Icon(Icons.chevron_right_rounded),
+                onTap: () => context.goNamed(RouteNames.backup),
               ),
             ],
           ),
@@ -285,7 +299,7 @@ class SettingsPage extends ConsumerWidget {
                 title: l.settingsSources,
                 subtitle: l.settingsSourcesBody,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsSources),
+                onTap: () => context.goNamed(RouteNames.settingsSources),
               ),
               OwRow(
                 title: l.settingsSync,
@@ -383,7 +397,7 @@ class SettingsPage extends ConsumerWidget {
               OwRow(
                 title: l.settingsAbout,
                 trailing: const Icon(Icons.chevron_right_rounded),
-                onTap: () => context.pushNamed(RouteNames.settingsAbout),
+                onTap: () => context.goNamed(RouteNames.settingsAbout),
               ),
             ],
           ),

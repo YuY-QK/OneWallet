@@ -1305,7 +1305,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsBackup => '加密备份';
 
   @override
-  String get settingsBackupNever => '尚未导出过';
+  String get settingsBackupNever => '尚未备份';
 
   @override
   String settingsBackupLastExported(String date) {
@@ -1357,6 +1357,54 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsWipeConfirmAction => '清除全部数据';
+
+  @override
+  String get securitySectionAppLock => '应用锁';
+
+  @override
+  String get securitySectionVault => '保险库';
+
+  @override
+  String get securitySectionDevice => '设备';
+
+  @override
+  String get securityPin => '修改 PIN';
+
+  @override
+  String get securityAppBiometrics => '面容 / 指纹解锁';
+
+  @override
+  String get securityAutoLock => '自动锁定';
+
+  @override
+  String get securityAutoLockImmediately => '立即';
+
+  @override
+  String get securityAutoLock1Min => '1 分钟后';
+
+  @override
+  String get securityAutoLock5Min => '5 分钟后';
+
+  @override
+  String get securityVaultBiometrics => '面容 / 指纹解锁保险库';
+
+  @override
+  String get securityVaultBiometricsDesc => '开启时需输入主密码，由硬件安全芯片保护';
+
+  @override
+  String get securityChangeMasterPassword => '修改主密码';
+
+  @override
+  String get securityDeviceStatus => '设备安全状态';
+
+  @override
+  String get securityDeviceNormal => '正常';
+
+  @override
+  String get securityDeviceNormalDesc => '未检测到越狱或 root';
+
+  @override
+  String get securityFeaturePending => '功能准备中';
 
   @override
   String get aboutTitle => '关于与帮助';
@@ -1419,4 +1467,804 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get cancel => '取消';
+
+  @override
+  String get failureBiometricUnavailable => '无法使用生物识别，请输入主密码。';
+
+  @override
+  String failureLockedOut(String time) {
+    return '输错次数过多，请在 $time 之后再试。';
+  }
+
+  @override
+  String get lockTitle => 'OneWallet';
+
+  @override
+  String get lockSubtitle => '输入 6 位 PIN';
+
+  @override
+  String get lockWrongPin => 'PIN 码不正确';
+
+  @override
+  String lockCountdown(String time) {
+    return '错误次数过多，请在 $time 后重试';
+  }
+
+  @override
+  String get lockBiometricsButton => '生物识别';
+
+  @override
+  String get lockBiometricReason => '解锁 OneWallet';
+
+  @override
+  String get lockDeleteKey => '⌫';
+
+  @override
+  String get onboardingWelcomeTitle => '一处看全，备份不丢';
+
+  @override
+  String get onboardingWelcomeSubtitle => '查看所有链上钱包和交易所的资产，并把助记词存进本机的加密保险库。';
+
+  @override
+  String get onboardingSecurityTitle => '开始前请了解';
+
+  @override
+  String get onboardingSecurity1Title => '只读，不转账';
+
+  @override
+  String get onboardingSecurity1Desc => 'app 不会发起任何交易';
+
+  @override
+  String get onboardingSecurity2Title => '密钥只存在这台手机';
+
+  @override
+  String get onboardingSecurity2Desc => '不上传到任何服务器';
+
+  @override
+  String get onboardingSecurity3Title => 'PIN 和主密码无法找回';
+
+  @override
+  String get onboardingSecurity3Desc => '请务必记牢，并导出加密备份';
+
+  @override
+  String get onboardingStartButton => '我已了解，开始使用';
+
+  @override
+  String get onboardingRestoreButton => '从备份恢复';
+
+  @override
+  String get onboardingSetPinTitle => '设置 6 位 PIN';
+
+  @override
+  String get onboardingSetPinSubtitle => '用于每次打开应用时验证身份';
+
+  @override
+  String get onboardingConfirmPinTitle => '请再次输入以确认';
+
+  @override
+  String get onboardingConfirmPinSubtitle => '两次输入的 PIN 必须一致';
+
+  @override
+  String get onboardingPinMismatch => '两次输入的 PIN 不一致，请重新输入';
+
+  @override
+  String get onboardingBiometricTitle => '开启生物识别';
+
+  @override
+  String get onboardingBiometricSubtitle => '使用面容或指纹更快捷地解锁 OneWallet';
+
+  @override
+  String get onboardingEnableBiometric => '开启';
+
+  @override
+  String get onboardingSkipBiometric => '稍后再说';
+
+  @override
+  String get vaultTitle => '保险库';
+
+  @override
+  String get vaultFooterNote => '保险库内容仅存于本机。请定期导出加密备份。';
+
+  @override
+  String vaultChecklistNotice(int count) {
+    return '备份清单：$count 个钱包未备份';
+  }
+
+  @override
+  String get vaultEmptyItemsTitle => '暂无密钥条目';
+
+  @override
+  String get vaultEmptyItemsBody => '点击右上角「＋」导入第一个助记词或私钥。';
+
+  @override
+  String get vaultItemKindMnemonic => '助记词';
+
+  @override
+  String get vaultItemKindPrivateKey => '私钥';
+
+  @override
+  String get vaultItemPassphrase => '含密码';
+
+  @override
+  String get vaultImportAction => '导入密钥';
+
+  @override
+  String get vaultSetupTitle => '创建保险库';
+
+  @override
+  String get vaultSetupIntro => '主密码用于保护你的助记词，换手机恢复时也需要它。';
+
+  @override
+  String get vaultSetupWarningTitle => '主密码无法找回';
+
+  @override
+  String get vaultSetupWarningBody =>
+      'OneWallet 不在任何服务器保存你的密码。如果遗忘主密码，保险库内的全部密钥将永远无法恢复。';
+
+  @override
+  String get vaultSetupPasswordLabel => '主密码（至少 10 个字符）';
+
+  @override
+  String get vaultSetupPasswordHint => '请输入至少 10 位主密码';
+
+  @override
+  String get vaultSetupPasswordConfirmLabel => '再次输入';
+
+  @override
+  String get vaultSetupPasswordConfirmHint => '请再次输入主密码';
+
+  @override
+  String get vaultSetupAgreeRisk => '我明白主密码丢失后，保险库内容无法恢复。';
+
+  @override
+  String get vaultSetupBiometricsTitle => '使用面容或指纹解锁保险库';
+
+  @override
+  String get vaultSetupBiometricsSubtitle => '日常查看更方便，硬件安全芯片保护';
+
+  @override
+  String get vaultSetupCreateButton => '创建保险库';
+
+  @override
+  String get vaultSetupCreating => '正在生成保险库与加密密钥…';
+
+  @override
+  String get vaultSetupTooShort => '主密码长度至少为 10 个字符';
+
+  @override
+  String get vaultSetupMismatch => '两次输入的密码不一致';
+
+  @override
+  String vaultSetupStrengthLabel(String strength) {
+    return '强度：$strength';
+  }
+
+  @override
+  String get vaultSetupStrengthWeak => '弱';
+
+  @override
+  String get vaultSetupStrengthMedium => '中等';
+
+  @override
+  String get vaultSetupStrengthStrong => '强';
+
+  @override
+  String get vaultSetupWeakConfirmTitle => '密码强度较弱';
+
+  @override
+  String get vaultSetupWeakConfirmBody =>
+      '当前主密码强度较弱。为了资金安全，建议使用包含大小写字母、数字或符号的复杂密码。是否确认使用当前密码？';
+
+  @override
+  String get vaultSetupWeakConfirmContinue => '仍然使用';
+
+  @override
+  String get vaultSetupWeakConfirmCancel => '返回修改';
+
+  @override
+  String get vaultSetupSuccess => '保险库已成功创建';
+
+  @override
+  String get vaultImportTitle => '导入到保险库';
+
+  @override
+  String get vaultImportTypeMnemonic => '助记词';
+
+  @override
+  String get vaultImportTypePrivateKey => '私钥';
+
+  @override
+  String get vaultImportNameLabel => '名称';
+
+  @override
+  String get vaultImportNameHint => '如：小狐狸主号';
+
+  @override
+  String get vaultImportWordCountLabel => '词数';
+
+  @override
+  String get vaultImportPasteFullPhrase => '粘贴整段';
+
+  @override
+  String get vaultImportPasteInvalid => '剪贴板中的内容词数不匹配（支持 12/15/18/21/24 词）';
+
+  @override
+  String get vaultImportWordSuggestions => '联想词';
+
+  @override
+  String get vaultImportMnemonicChecksumFailed => '助记词校验失败，请检查拼写和顺序';
+
+  @override
+  String get vaultImportAdvancedPassphrase => '高级：BIP39 附加密码 (Passphrase)';
+
+  @override
+  String get vaultImportPassphraseHint => '可选，通常为空';
+
+  @override
+  String get vaultImportChainFamilyLabel => '链类型';
+
+  @override
+  String get vaultImportPrivateKeyLabel => '私钥';
+
+  @override
+  String get vaultImportPrivateKeyHintEvm => '64 位十六进制私钥，可带 0x';
+
+  @override
+  String get vaultImportPrivateKeyHintBtc => 'WIF 格式私钥（以 5、K 或 L 开头）';
+
+  @override
+  String get vaultImportPrivateKeyHintSol => 'Base58 编码的私钥';
+
+  @override
+  String get vaultImportPrivateKeyHintTrx => '64 位十六进制私钥，可带 0x';
+
+  @override
+  String get vaultImportPrivateKeyFormatError => '私钥格式不正确';
+
+  @override
+  String get vaultImportLinkAccountLabel => '关联账户';
+
+  @override
+  String get vaultImportLinkAccountNone => '不关联（稍后在派生地址页处理）';
+
+  @override
+  String get vaultImportSubmitButton => '保存到保险库';
+
+  @override
+  String get vaultImportVerifyPasswordTitle => '输入主密码';
+
+  @override
+  String get vaultImportVerifyPasswordMessage => '请先输入主密码验证身份后保存密钥';
+
+  @override
+  String get vaultImportVerifyPasswordCancel => '取消';
+
+  @override
+  String get vaultImportVerifyPasswordConfirm => '验证并保存';
+
+  @override
+  String get vaultImportSuccess => '密钥已成功保存到保险库';
+
+  @override
+  String get vaultImportDuplicateError => '该密钥已存在于保险库中';
+
+  @override
+  String get vaultItemDetailTitle => '密钥详情';
+
+  @override
+  String get vaultItemType => '类型';
+
+  @override
+  String get vaultItemCreatedAt => '创建于';
+
+  @override
+  String get vaultItemLinkedAccount => '关联账户';
+
+  @override
+  String get vaultItemLinkedAccountNone => '未关联';
+
+  @override
+  String get vaultItemVeilMessage => '每次查看都需要面容或主密码验证';
+
+  @override
+  String get vaultItemVeilAction => '验证后查看';
+
+  @override
+  String get vaultItemPassphraseLabel => 'BIP39 附加密码 (Passphrase)';
+
+  @override
+  String get vaultItemPrivateKey => '私钥';
+
+  @override
+  String get vaultItemShowQrCode => '以二维码显示';
+
+  @override
+  String get vaultItemHideQrCode => '以文字显示';
+
+  @override
+  String vaultItemCountdown(int seconds) {
+    return '$seconds 秒后自动隐藏';
+  }
+
+  @override
+  String get vaultItemHideAction => '隐藏';
+
+  @override
+  String get vaultItemDerivedAddresses => '已派生地址';
+
+  @override
+  String vaultItemDerivedAddressesCount(int count) {
+    return '$count 个地址已在观察中';
+  }
+
+  @override
+  String get vaultItemDeleteButton => '删除此密钥';
+
+  @override
+  String get vaultItemDeleteDialogTitle => '删除此密钥';
+
+  @override
+  String get vaultItemDeleteDialogMessage =>
+      '确定删除此密钥条目？删除后，关联钱包的备份状态将变为未备份。若未另行备份，将无法再查看或导出此密钥。此操作无法撤销。';
+
+  @override
+  String get vaultItemDeleteAgreeRisk => '我明白此操作无法撤销，且我已另有备份。';
+
+  @override
+  String get vaultItemDeletePasswordHint => '请输入主密码以确认删除';
+
+  @override
+  String get vaultItemDeleteConfirm => '删除';
+
+  @override
+  String get vaultItemDeleteSuccess => '密钥已删除';
+
+  @override
+  String get vaultItemFooterNote => '不提供复制；本页禁止截屏';
+
+  @override
+  String get vaultItemRecordingWarning => '检测到录屏，已隐藏敏感内容';
+
+  @override
+  String get vaultItemEditNameTitle => '修改条目名称';
+
+  @override
+  String get vaultItemEditNameLabel => '名称';
+
+  @override
+  String get vaultDeriveTitle => '派生地址';
+
+  @override
+  String get vaultDeriveNotice => '以下地址由你的密钥计算得出，仅地址会被用于查询余额，密钥不会离开保险库。';
+
+  @override
+  String get vaultDeriveSchemeEvmStandard => '标准（MetaMask 等）';
+
+  @override
+  String get vaultDeriveSchemeEvmLedgerLive => 'Ledger Live';
+
+  @override
+  String get vaultDeriveSchemeBtcNativeSegwit => '原生隔离见证 bc1q（默认）';
+
+  @override
+  String get vaultDeriveSchemeBtcTaproot => 'Taproot bc1p';
+
+  @override
+  String get vaultDeriveSchemeBtcNestedSegwit => '嵌套隔离见证 3 开头';
+
+  @override
+  String get vaultDeriveSchemeBtcLegacy => '传统 1 开头';
+
+  @override
+  String get vaultDeriveSchemeSolanaStandard => '标准（Phantom 等）';
+
+  @override
+  String get vaultDeriveSchemeSolanaLegacy => '旧式';
+
+  @override
+  String get vaultDeriveSchemeTronStandard => '标准';
+
+  @override
+  String get vaultDeriveAlreadyWatched => '已在观察';
+
+  @override
+  String get vaultDeriveShowMore => '显示更多';
+
+  @override
+  String get vaultDeriveCheckBalance => '检测余额';
+
+  @override
+  String get vaultDeriveCheckingBalance => '正在检测...';
+
+  @override
+  String get vaultDeriveActive => '有活动';
+
+  @override
+  String get vaultDeriveInactive => '无活动';
+
+  @override
+  String get vaultDeriveCheckNotice => '检测余额将向公开节点查询该地址是否有交易活动或余额，密钥不会离开设备。';
+
+  @override
+  String get vaultDeriveTargetAccount => '目标账户';
+
+  @override
+  String get vaultDeriveNewAccount => '新建钱包账户';
+
+  @override
+  String get vaultDeriveExistingAccount => '加入已有账户';
+
+  @override
+  String get vaultDeriveNewAccountNameLabel => '账户名称';
+
+  @override
+  String get vaultDeriveSelectAccountHint => '选择已有钱包账户';
+
+  @override
+  String get vaultDeriveAttachAction => '加入观察';
+
+  @override
+  String get vaultDeriveSkipAction => '跳过';
+
+  @override
+  String get vaultDeriveSuccess => '已成功加入观察';
+
+  @override
+  String get vaultDeriveNoSelection => '请至少选择一个地址';
+
+  @override
+  String get vaultDeriveAuthPrompt => '请输入主密码以计算派生地址';
+
+  @override
+  String get vaultDeriveVerifyTitle => '验证主密码';
+
+  @override
+  String get vaultDeriveVerifyConfirm => '开始派生';
+
+  @override
+  String get vaultDeriveDeriving => '正在派生地址...';
+
+  @override
+  String get vaultDeriveEmpty => '暂无派生地址';
+
+  @override
+  String get vaultDeriveItemNotFound => '未找到密钥条目';
+
+  @override
+  String get settingsSecuritySubtitle => 'PIN 码、面容/指纹解锁、自动锁定与保险库设置';
+
+  @override
+  String get securityTitle => '安全设置';
+
+  @override
+  String get securityChangePin => '修改 PIN';
+
+  @override
+  String get securityChangePinSuccess => 'PIN 码已修改';
+
+  @override
+  String get securityChangePinOldTitle => '输入当前 PIN';
+
+  @override
+  String get securityChangePinOldSubtitle => '请输入当前使用的 6 位数字 PIN';
+
+  @override
+  String get securityChangePinNewTitle => '输入新 PIN';
+
+  @override
+  String get securityChangePinNewSubtitle => '请输入新的 6 位数字 PIN';
+
+  @override
+  String get securityChangePinConfirmTitle => '确认新 PIN';
+
+  @override
+  String get securityChangePinConfirmSubtitle => '请再次输入新的 6 位数字 PIN';
+
+  @override
+  String get securityChangePinMismatch => '两次输入的 PIN 不一致，请重新输入';
+
+  @override
+  String get securityChangePinWrongOld => '原 PIN 码不正确';
+
+  @override
+  String get securityAppBiometricsDesc => '解锁 OneWallet 时使用生物识别';
+
+  @override
+  String get securityVaultBiometricsUninitialized => '保险库尚未创建';
+
+  @override
+  String get securityVaultBiometricsUnsupported => '当前设备不支持硬件密钥保护';
+
+  @override
+  String get securityChangeMasterPasswordTitle => '修改主密码';
+
+  @override
+  String get securityChangeMasterPasswordSuccess => '主密码已修改';
+
+  @override
+  String get securityChangeMasterPasswordCurrent => '当前主密码';
+
+  @override
+  String get securityChangeMasterPasswordCurrentHint => '请输入当前主密码';
+
+  @override
+  String get securityChangeMasterPasswordNew => '新主密码（至少 10 个字符）';
+
+  @override
+  String get securityChangeMasterPasswordNewHint => '请输入至少 10 位新主密码';
+
+  @override
+  String get securityChangeMasterPasswordConfirm => '确认新主密码';
+
+  @override
+  String get securityChangeMasterPasswordConfirmHint => '请再次输入新主密码';
+
+  @override
+  String get securityChangeMasterPasswordChanging => '正在重新加密保险库…';
+
+  @override
+  String get securityChangeMasterPasswordMismatch => '两次输入的主密码不一致';
+
+  @override
+  String get securityChangeMasterPasswordTooShort => '主密码长度至少为 10 个字符';
+
+  @override
+  String get securityChangeMasterPasswordWrongCurrent => '当前主密码不正确';
+
+  @override
+  String get securityChangeMasterPasswordConfirmAction => '确认修改';
+
+  @override
+  String get securityDeviceCompromised => '风险';
+
+  @override
+  String get securityDeviceCompromisedDesc => '检测到设备环境异常，可能已被越狱或 root';
+
+  @override
+  String get securityVerifyMasterPasswordTitle => '验证主密码';
+
+  @override
+  String get securityVerifyMasterPasswordHint => '请输入主密码以开启生物识别';
+
+  @override
+  String get securityVerifyMasterPasswordConfirm => '验证并开启';
+
+  @override
+  String get securityCancel => '取消';
+
+  @override
+  String get settingsBackupDesc => '导出为独立解密文件或从文件恢复';
+
+  @override
+  String settingsBackupLastExport(Object date) {
+    return '上次导出 $date';
+  }
+
+  @override
+  String get settingsBackupUnbacked => '有未备份的更改';
+
+  @override
+  String get backupTitle => '加密备份';
+
+  @override
+  String get backupSensitiveBadge => '敏感页面';
+
+  @override
+  String get backupExportSection => '导出';
+
+  @override
+  String get backupExportSummaryTitle => '确认内容';
+
+  @override
+  String get backupExportSummaryDesc =>
+      '全部账户、地址、标签、备份清单状态、全部密钥条目、设置。不包含余额缓存与快照。';
+
+  @override
+  String get backupExportIncludeExchange => '包含交易所 API Key';
+
+  @override
+  String get backupExportIncludeExchangeDesc =>
+      '默认不包含。若勾选，将导出所有已连接交易所的 API Key 与 Secret';
+
+  @override
+  String get backupExportStartButton => '开始导出';
+
+  @override
+  String get backupRestoreSection => '恢复';
+
+  @override
+  String get backupRestoreRowTitle => '从备份文件恢复';
+
+  @override
+  String get backupRestoreRowDesc => '选择 .owbak 文件并输入备份密码';
+
+  @override
+  String get backupFormatNote => '备份格式是公开的。即使没有这个 app，也能用独立的解密工具在电脑上解开。';
+
+  @override
+  String get backupUnbackedWarning => '保险库在上次导出之后有变化，建议及时导出最新备份。';
+
+  @override
+  String get backupExportTitle => '导出备份';
+
+  @override
+  String get backupExportMasterPasswordTitle => '输入主密码';
+
+  @override
+  String get backupExportMasterPasswordDesc => '导出备份需要验证主密码，此处不接受面容或指纹';
+
+  @override
+  String get backupExportMasterPasswordHint => '请输入主密码';
+
+  @override
+  String get backupExportPasswordTypeTitle => '设置备份密码';
+
+  @override
+  String get backupExportUseMasterPassword => '使用主密码作为备份密码';
+
+  @override
+  String get backupExportUseCustomPassword => '另设备份密码';
+
+  @override
+  String get backupExportCustomPasswordHint => '输入备份密码（至少 10 位）';
+
+  @override
+  String get backupExportCustomPasswordConfirmHint => '确认备份密码';
+
+  @override
+  String get backupExportPasswordMismatch => '两次输入的备份密码不一致';
+
+  @override
+  String get backupExportPasswordTooShort => '备份密码长度至少为 10 个字符';
+
+  @override
+  String get backupExportAsciiNotice => '建议使用英文字母、数字和符号，避免在跨平台独立解密工具中出现编码差异';
+
+  @override
+  String get backupExportGenerating => '正在生成加密备份文件...';
+
+  @override
+  String get backupExportSuccessTitle => '备份已生成';
+
+  @override
+  String get backupExportSaveAdvice =>
+      '通过系统分享面板保存。请存到手机以外的地方（如离线 U 盘、可信电脑或加密存储）。';
+
+  @override
+  String get backupExportSavedButton => '我已保存到安全位置';
+
+  @override
+  String get backupExportShareFailed => '导出或分享文件失败，请重试';
+
+  @override
+  String get backupExportDoneNotice => '上次导出时间已更新';
+
+  @override
+  String get backupRestoreTitle => '恢复备份';
+
+  @override
+  String get backupRestoreSelectFile => '选择 .owbak 备份文件';
+
+  @override
+  String backupRestoreSelectedFile(Object name, Object size) {
+    return '已选文件：$name ($size)';
+  }
+
+  @override
+  String get backupRestorePasswordHint => '请输入备份密码';
+
+  @override
+  String get backupRestoreParseButton => '解析备份文件';
+
+  @override
+  String get backupRestoreParsing => '正在解析备份文件...';
+
+  @override
+  String get backupRestorePreviewTitle => '备份内容预览';
+
+  @override
+  String backupRestoreCreatedAt(Object date) {
+    return '创建时间：$date';
+  }
+
+  @override
+  String backupRestoreAppVersion(Object version) {
+    return '备份应用版本：$version';
+  }
+
+  @override
+  String backupRestoreAccountsCount(Object count) {
+    return '包含账户：$count 个';
+  }
+
+  @override
+  String backupRestoreAddressesCount(Object count) {
+    return '包含地址：$count 个';
+  }
+
+  @override
+  String backupRestoreVaultItemsCount(Object count) {
+    return '包含密钥条目：$count 个';
+  }
+
+  @override
+  String backupRestoreCredentialsCount(Object count) {
+    return '包含交易所凭据：$count 个';
+  }
+
+  @override
+  String backupRestoreSkippedUnreadable(Object count) {
+    return '有 $count 项数据格式无法读取，将被跳过';
+  }
+
+  @override
+  String get backupRestoreModeFreshTitle => '全新设备恢复';
+
+  @override
+  String get backupRestoreModeFreshDesc => '将在本地创建新保险库并导入备份中所有数据。';
+
+  @override
+  String get backupRestoreModeMergeTitle => '合并导入';
+
+  @override
+  String get backupRestoreModeMergeDesc =>
+      '将备份内容合并到当前数据中。相同条目与地址自动跳过，重名账户自动添加序号后缀。';
+
+  @override
+  String get backupRestoreMasterPasswordHint => '请输入本地保险库主密码';
+
+  @override
+  String get backupRestoreNewMasterPasswordHint => '为本机保险库设置主密码（至少 10 位）';
+
+  @override
+  String get backupRestoreSameAsBackupPassword => '沿用备份密码作为本机主密码';
+
+  @override
+  String get backupRestoreExecuteButton => '开始恢复';
+
+  @override
+  String get backupRestoreRestoring => '正在恢复数据...';
+
+  @override
+  String get backupRestoreResultTitle => '恢复完成';
+
+  @override
+  String backupRestoreResultAdded(
+    Object accounts,
+    Object addresses,
+    Object items,
+  ) {
+    return '成功导入：$accounts 个账户、$addresses 个地址、$items 个密钥';
+  }
+
+  @override
+  String backupRestoreResultSkipped(
+    Object accounts,
+    Object addresses,
+    Object items,
+  ) {
+    return '跳过重复：$accounts 个账户、$addresses 个地址、$items 个密钥';
+  }
+
+  @override
+  String get backupRestoreFinishButton => '完成';
+
+  @override
+  String get backupRestoreWrongPassword => '密码不正确或文件已损坏';
+
+  @override
+  String get backupRestoreCorrupted => '这不是 OneWallet 的备份文件，或文件已损坏，无法读取';
+
+  @override
+  String get backupRestoreUnsupportedVersion =>
+      '这个备份文件来自更新版本的 OneWallet，当前版本无法读取';
+
+  @override
+  String get backupRestoreTargetNotEmpty => '本地已有数据，无法以初始模式恢复';
+
+  @override
+  String get backupUnbackedBanner => '保险库有未备份的更改，建议及时导出备份';
+
+  @override
+  String get backupGoBackup => '去备份';
 }

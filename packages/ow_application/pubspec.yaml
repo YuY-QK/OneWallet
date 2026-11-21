@@ -11,6 +11,8 @@ dependencies:
   decimal: 3.2.6
   ow_domain:
     path: ../ow_domain
+  ow_vault:
+    path: ../ow_vault
 
 dev_dependencies:
   lints: ^6.0.0

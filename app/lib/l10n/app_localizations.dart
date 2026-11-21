@@ -2485,7 +2485,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsBackupNever.
   ///
   /// In zh, this message translates to:
-  /// **'尚未导出过'**
+  /// **'尚未备份'**
   String get settingsBackupNever;
 
   /// No description provided for @settingsBackupLastExported.
@@ -2583,6 +2583,102 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'清除全部数据'**
   String get settingsWipeConfirmAction;
+
+  /// No description provided for @securitySectionAppLock.
+  ///
+  /// In zh, this message translates to:
+  /// **'应用锁'**
+  String get securitySectionAppLock;
+
+  /// No description provided for @securitySectionVault.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库'**
+  String get securitySectionVault;
+
+  /// No description provided for @securitySectionDevice.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备'**
+  String get securitySectionDevice;
+
+  /// No description provided for @securityPin.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改 PIN'**
+  String get securityPin;
+
+  /// No description provided for @securityAppBiometrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'面容 / 指纹解锁'**
+  String get securityAppBiometrics;
+
+  /// No description provided for @securityAutoLock.
+  ///
+  /// In zh, this message translates to:
+  /// **'自动锁定'**
+  String get securityAutoLock;
+
+  /// No description provided for @securityAutoLockImmediately.
+  ///
+  /// In zh, this message translates to:
+  /// **'立即'**
+  String get securityAutoLockImmediately;
+
+  /// No description provided for @securityAutoLock1Min.
+  ///
+  /// In zh, this message translates to:
+  /// **'1 分钟后'**
+  String get securityAutoLock1Min;
+
+  /// No description provided for @securityAutoLock5Min.
+  ///
+  /// In zh, this message translates to:
+  /// **'5 分钟后'**
+  String get securityAutoLock5Min;
+
+  /// No description provided for @securityVaultBiometrics.
+  ///
+  /// In zh, this message translates to:
+  /// **'面容 / 指纹解锁保险库'**
+  String get securityVaultBiometrics;
+
+  /// No description provided for @securityVaultBiometricsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启时需输入主密码，由硬件安全芯片保护'**
+  String get securityVaultBiometricsDesc;
+
+  /// No description provided for @securityChangeMasterPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改主密码'**
+  String get securityChangeMasterPassword;
+
+  /// No description provided for @securityDeviceStatus.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备安全状态'**
+  String get securityDeviceStatus;
+
+  /// No description provided for @securityDeviceNormal.
+  ///
+  /// In zh, this message translates to:
+  /// **'正常'**
+  String get securityDeviceNormal;
+
+  /// No description provided for @securityDeviceNormalDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'未检测到越狱或 root'**
+  String get securityDeviceNormalDesc;
+
+  /// No description provided for @securityFeaturePending.
+  ///
+  /// In zh, this message translates to:
+  /// **'功能准备中'**
+  String get securityFeaturePending;
 
   /// No description provided for @aboutTitle.
   ///
@@ -2697,6 +2793,1514 @@ abstract class AppLocalizations {
   /// In zh, this message translates to:
   /// **'取消'**
   String get cancel;
+
+  /// No description provided for @failureBiometricUnavailable.
+  ///
+  /// In zh, this message translates to:
+  /// **'无法使用生物识别，请输入主密码。'**
+  String get failureBiometricUnavailable;
+
+  /// No description provided for @failureLockedOut.
+  ///
+  /// In zh, this message translates to:
+  /// **'输错次数过多，请在 {time} 之后再试。'**
+  String failureLockedOut(String time);
+
+  /// No description provided for @lockTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'OneWallet'**
+  String get lockTitle;
+
+  /// No description provided for @lockSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入 6 位 PIN'**
+  String get lockSubtitle;
+
+  /// No description provided for @lockWrongPin.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 码不正确'**
+  String get lockWrongPin;
+
+  /// No description provided for @lockCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'错误次数过多，请在 {time} 后重试'**
+  String lockCountdown(String time);
+
+  /// No description provided for @lockBiometricsButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'生物识别'**
+  String get lockBiometricsButton;
+
+  /// No description provided for @lockBiometricReason.
+  ///
+  /// In zh, this message translates to:
+  /// **'解锁 OneWallet'**
+  String get lockBiometricReason;
+
+  /// No description provided for @lockDeleteKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'⌫'**
+  String get lockDeleteKey;
+
+  /// No description provided for @onboardingWelcomeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'一处看全，备份不丢'**
+  String get onboardingWelcomeTitle;
+
+  /// No description provided for @onboardingWelcomeSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'查看所有链上钱包和交易所的资产，并把助记词存进本机的加密保险库。'**
+  String get onboardingWelcomeSubtitle;
+
+  /// No description provided for @onboardingSecurityTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始前请了解'**
+  String get onboardingSecurityTitle;
+
+  /// No description provided for @onboardingSecurity1Title.
+  ///
+  /// In zh, this message translates to:
+  /// **'只读，不转账'**
+  String get onboardingSecurity1Title;
+
+  /// No description provided for @onboardingSecurity1Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'app 不会发起任何交易'**
+  String get onboardingSecurity1Desc;
+
+  /// No description provided for @onboardingSecurity2Title.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥只存在这台手机'**
+  String get onboardingSecurity2Title;
+
+  /// No description provided for @onboardingSecurity2Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'不上传到任何服务器'**
+  String get onboardingSecurity2Desc;
+
+  /// No description provided for @onboardingSecurity3Title.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 和主密码无法找回'**
+  String get onboardingSecurity3Title;
+
+  /// No description provided for @onboardingSecurity3Desc.
+  ///
+  /// In zh, this message translates to:
+  /// **'请务必记牢，并导出加密备份'**
+  String get onboardingSecurity3Desc;
+
+  /// No description provided for @onboardingStartButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'我已了解，开始使用'**
+  String get onboardingStartButton;
+
+  /// No description provided for @onboardingRestoreButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'从备份恢复'**
+  String get onboardingRestoreButton;
+
+  /// No description provided for @onboardingSetPinTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置 6 位 PIN'**
+  String get onboardingSetPinTitle;
+
+  /// No description provided for @onboardingSetPinSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'用于每次打开应用时验证身份'**
+  String get onboardingSetPinSubtitle;
+
+  /// No description provided for @onboardingConfirmPinTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入以确认'**
+  String get onboardingConfirmPinTitle;
+
+  /// No description provided for @onboardingConfirmPinSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的 PIN 必须一致'**
+  String get onboardingConfirmPinSubtitle;
+
+  /// No description provided for @onboardingPinMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的 PIN 不一致，请重新输入'**
+  String get onboardingPinMismatch;
+
+  /// No description provided for @onboardingBiometricTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启生物识别'**
+  String get onboardingBiometricTitle;
+
+  /// No description provided for @onboardingBiometricSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用面容或指纹更快捷地解锁 OneWallet'**
+  String get onboardingBiometricSubtitle;
+
+  /// No description provided for @onboardingEnableBiometric.
+  ///
+  /// In zh, this message translates to:
+  /// **'开启'**
+  String get onboardingEnableBiometric;
+
+  /// No description provided for @onboardingSkipBiometric.
+  ///
+  /// In zh, this message translates to:
+  /// **'稍后再说'**
+  String get onboardingSkipBiometric;
+
+  /// No description provided for @vaultTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库'**
+  String get vaultTitle;
+
+  /// No description provided for @vaultFooterNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库内容仅存于本机。请定期导出加密备份。'**
+  String get vaultFooterNote;
+
+  /// No description provided for @vaultChecklistNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份清单：{count} 个钱包未备份'**
+  String vaultChecklistNotice(int count);
+
+  /// No description provided for @vaultEmptyItemsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无密钥条目'**
+  String get vaultEmptyItemsTitle;
+
+  /// No description provided for @vaultEmptyItemsBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'点击右上角「＋」导入第一个助记词或私钥。'**
+  String get vaultEmptyItemsBody;
+
+  /// No description provided for @vaultItemKindMnemonic.
+  ///
+  /// In zh, this message translates to:
+  /// **'助记词'**
+  String get vaultItemKindMnemonic;
+
+  /// No description provided for @vaultItemKindPrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultItemKindPrivateKey;
+
+  /// No description provided for @vaultItemPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'含密码'**
+  String get vaultItemPassphrase;
+
+  /// No description provided for @vaultImportAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入密钥'**
+  String get vaultImportAction;
+
+  /// No description provided for @vaultSetupTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建保险库'**
+  String get vaultSetupTitle;
+
+  /// No description provided for @vaultSetupIntro.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码用于保护你的助记词，换手机恢复时也需要它。'**
+  String get vaultSetupIntro;
+
+  /// No description provided for @vaultSetupWarningTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码无法找回'**
+  String get vaultSetupWarningTitle;
+
+  /// No description provided for @vaultSetupWarningBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'OneWallet 不在任何服务器保存你的密码。如果遗忘主密码，保险库内的全部密钥将永远无法恢复。'**
+  String get vaultSetupWarningBody;
+
+  /// No description provided for @vaultSetupPasswordLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码（至少 10 个字符）'**
+  String get vaultSetupPasswordLabel;
+
+  /// No description provided for @vaultSetupPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入至少 10 位主密码'**
+  String get vaultSetupPasswordHint;
+
+  /// No description provided for @vaultSetupPasswordConfirmLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'再次输入'**
+  String get vaultSetupPasswordConfirmLabel;
+
+  /// No description provided for @vaultSetupPasswordConfirmHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入主密码'**
+  String get vaultSetupPasswordConfirmHint;
+
+  /// No description provided for @vaultSetupAgreeRisk.
+  ///
+  /// In zh, this message translates to:
+  /// **'我明白主密码丢失后，保险库内容无法恢复。'**
+  String get vaultSetupAgreeRisk;
+
+  /// No description provided for @vaultSetupBiometricsTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用面容或指纹解锁保险库'**
+  String get vaultSetupBiometricsTitle;
+
+  /// No description provided for @vaultSetupBiometricsSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'日常查看更方便，硬件安全芯片保护'**
+  String get vaultSetupBiometricsSubtitle;
+
+  /// No description provided for @vaultSetupCreateButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建保险库'**
+  String get vaultSetupCreateButton;
+
+  /// No description provided for @vaultSetupCreating.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在生成保险库与加密密钥…'**
+  String get vaultSetupCreating;
+
+  /// No description provided for @vaultSetupTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码长度至少为 10 个字符'**
+  String get vaultSetupTooShort;
+
+  /// No description provided for @vaultSetupMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的密码不一致'**
+  String get vaultSetupMismatch;
+
+  /// No description provided for @vaultSetupStrengthLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'强度：{strength}'**
+  String vaultSetupStrengthLabel(String strength);
+
+  /// No description provided for @vaultSetupStrengthWeak.
+  ///
+  /// In zh, this message translates to:
+  /// **'弱'**
+  String get vaultSetupStrengthWeak;
+
+  /// No description provided for @vaultSetupStrengthMedium.
+  ///
+  /// In zh, this message translates to:
+  /// **'中等'**
+  String get vaultSetupStrengthMedium;
+
+  /// No description provided for @vaultSetupStrengthStrong.
+  ///
+  /// In zh, this message translates to:
+  /// **'强'**
+  String get vaultSetupStrengthStrong;
+
+  /// No description provided for @vaultSetupWeakConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码强度较弱'**
+  String get vaultSetupWeakConfirmTitle;
+
+  /// No description provided for @vaultSetupWeakConfirmBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前主密码强度较弱。为了资金安全，建议使用包含大小写字母、数字或符号的复杂密码。是否确认使用当前密码？'**
+  String get vaultSetupWeakConfirmBody;
+
+  /// No description provided for @vaultSetupWeakConfirmContinue.
+  ///
+  /// In zh, this message translates to:
+  /// **'仍然使用'**
+  String get vaultSetupWeakConfirmContinue;
+
+  /// No description provided for @vaultSetupWeakConfirmCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'返回修改'**
+  String get vaultSetupWeakConfirmCancel;
+
+  /// No description provided for @vaultSetupSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库已成功创建'**
+  String get vaultSetupSuccess;
+
+  /// No description provided for @vaultImportTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'导入到保险库'**
+  String get vaultImportTitle;
+
+  /// No description provided for @vaultImportTypeMnemonic.
+  ///
+  /// In zh, this message translates to:
+  /// **'助记词'**
+  String get vaultImportTypeMnemonic;
+
+  /// No description provided for @vaultImportTypePrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultImportTypePrivateKey;
+
+  /// No description provided for @vaultImportNameLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get vaultImportNameLabel;
+
+  /// No description provided for @vaultImportNameHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'如：小狐狸主号'**
+  String get vaultImportNameHint;
+
+  /// No description provided for @vaultImportWordCountLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'词数'**
+  String get vaultImportWordCountLabel;
+
+  /// No description provided for @vaultImportPasteFullPhrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'粘贴整段'**
+  String get vaultImportPasteFullPhrase;
+
+  /// No description provided for @vaultImportPasteInvalid.
+  ///
+  /// In zh, this message translates to:
+  /// **'剪贴板中的内容词数不匹配（支持 12/15/18/21/24 词）'**
+  String get vaultImportPasteInvalid;
+
+  /// No description provided for @vaultImportWordSuggestions.
+  ///
+  /// In zh, this message translates to:
+  /// **'联想词'**
+  String get vaultImportWordSuggestions;
+
+  /// No description provided for @vaultImportMnemonicChecksumFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'助记词校验失败，请检查拼写和顺序'**
+  String get vaultImportMnemonicChecksumFailed;
+
+  /// No description provided for @vaultImportAdvancedPassphrase.
+  ///
+  /// In zh, this message translates to:
+  /// **'高级：BIP39 附加密码 (Passphrase)'**
+  String get vaultImportAdvancedPassphrase;
+
+  /// No description provided for @vaultImportPassphraseHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'可选，通常为空'**
+  String get vaultImportPassphraseHint;
+
+  /// No description provided for @vaultImportChainFamilyLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'链类型'**
+  String get vaultImportChainFamilyLabel;
+
+  /// No description provided for @vaultImportPrivateKeyLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultImportPrivateKeyLabel;
+
+  /// No description provided for @vaultImportPrivateKeyHintEvm.
+  ///
+  /// In zh, this message translates to:
+  /// **'64 位十六进制私钥，可带 0x'**
+  String get vaultImportPrivateKeyHintEvm;
+
+  /// No description provided for @vaultImportPrivateKeyHintBtc.
+  ///
+  /// In zh, this message translates to:
+  /// **'WIF 格式私钥（以 5、K 或 L 开头）'**
+  String get vaultImportPrivateKeyHintBtc;
+
+  /// No description provided for @vaultImportPrivateKeyHintSol.
+  ///
+  /// In zh, this message translates to:
+  /// **'Base58 编码的私钥'**
+  String get vaultImportPrivateKeyHintSol;
+
+  /// No description provided for @vaultImportPrivateKeyHintTrx.
+  ///
+  /// In zh, this message translates to:
+  /// **'64 位十六进制私钥，可带 0x'**
+  String get vaultImportPrivateKeyHintTrx;
+
+  /// No description provided for @vaultImportPrivateKeyFormatError.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥格式不正确'**
+  String get vaultImportPrivateKeyFormatError;
+
+  /// No description provided for @vaultImportLinkAccountLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'关联账户'**
+  String get vaultImportLinkAccountLabel;
+
+  /// No description provided for @vaultImportLinkAccountNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'不关联（稍后在派生地址页处理）'**
+  String get vaultImportLinkAccountNone;
+
+  /// No description provided for @vaultImportSubmitButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'保存到保险库'**
+  String get vaultImportSubmitButton;
+
+  /// No description provided for @vaultImportVerifyPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入主密码'**
+  String get vaultImportVerifyPasswordTitle;
+
+  /// No description provided for @vaultImportVerifyPasswordMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'请先输入主密码验证身份后保存密钥'**
+  String get vaultImportVerifyPasswordMessage;
+
+  /// No description provided for @vaultImportVerifyPasswordCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get vaultImportVerifyPasswordCancel;
+
+  /// No description provided for @vaultImportVerifyPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证并保存'**
+  String get vaultImportVerifyPasswordConfirm;
+
+  /// No description provided for @vaultImportSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥已成功保存到保险库'**
+  String get vaultImportSuccess;
+
+  /// No description provided for @vaultImportDuplicateError.
+  ///
+  /// In zh, this message translates to:
+  /// **'该密钥已存在于保险库中'**
+  String get vaultImportDuplicateError;
+
+  /// No description provided for @vaultItemDetailTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥详情'**
+  String get vaultItemDetailTitle;
+
+  /// No description provided for @vaultItemType.
+  ///
+  /// In zh, this message translates to:
+  /// **'类型'**
+  String get vaultItemType;
+
+  /// No description provided for @vaultItemCreatedAt.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建于'**
+  String get vaultItemCreatedAt;
+
+  /// No description provided for @vaultItemLinkedAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'关联账户'**
+  String get vaultItemLinkedAccount;
+
+  /// No description provided for @vaultItemLinkedAccountNone.
+  ///
+  /// In zh, this message translates to:
+  /// **'未关联'**
+  String get vaultItemLinkedAccountNone;
+
+  /// No description provided for @vaultItemVeilMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'每次查看都需要面容或主密码验证'**
+  String get vaultItemVeilMessage;
+
+  /// No description provided for @vaultItemVeilAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证后查看'**
+  String get vaultItemVeilAction;
+
+  /// No description provided for @vaultItemPassphraseLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'BIP39 附加密码 (Passphrase)'**
+  String get vaultItemPassphraseLabel;
+
+  /// No description provided for @vaultItemPrivateKey.
+  ///
+  /// In zh, this message translates to:
+  /// **'私钥'**
+  String get vaultItemPrivateKey;
+
+  /// No description provided for @vaultItemShowQrCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'以二维码显示'**
+  String get vaultItemShowQrCode;
+
+  /// No description provided for @vaultItemHideQrCode.
+  ///
+  /// In zh, this message translates to:
+  /// **'以文字显示'**
+  String get vaultItemHideQrCode;
+
+  /// No description provided for @vaultItemCountdown.
+  ///
+  /// In zh, this message translates to:
+  /// **'{seconds} 秒后自动隐藏'**
+  String vaultItemCountdown(int seconds);
+
+  /// No description provided for @vaultItemHideAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'隐藏'**
+  String get vaultItemHideAction;
+
+  /// No description provided for @vaultItemDerivedAddresses.
+  ///
+  /// In zh, this message translates to:
+  /// **'已派生地址'**
+  String get vaultItemDerivedAddresses;
+
+  /// No description provided for @vaultItemDerivedAddressesCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'{count} 个地址已在观察中'**
+  String vaultItemDerivedAddressesCount(int count);
+
+  /// No description provided for @vaultItemDeleteButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此密钥'**
+  String get vaultItemDeleteButton;
+
+  /// No description provided for @vaultItemDeleteDialogTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除此密钥'**
+  String get vaultItemDeleteDialogTitle;
+
+  /// No description provided for @vaultItemDeleteDialogMessage.
+  ///
+  /// In zh, this message translates to:
+  /// **'确定删除此密钥条目？删除后，关联钱包的备份状态将变为未备份。若未另行备份，将无法再查看或导出此密钥。此操作无法撤销。'**
+  String get vaultItemDeleteDialogMessage;
+
+  /// No description provided for @vaultItemDeleteAgreeRisk.
+  ///
+  /// In zh, this message translates to:
+  /// **'我明白此操作无法撤销，且我已另有备份。'**
+  String get vaultItemDeleteAgreeRisk;
+
+  /// No description provided for @vaultItemDeletePasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码以确认删除'**
+  String get vaultItemDeletePasswordHint;
+
+  /// No description provided for @vaultItemDeleteConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'删除'**
+  String get vaultItemDeleteConfirm;
+
+  /// No description provided for @vaultItemDeleteSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'密钥已删除'**
+  String get vaultItemDeleteSuccess;
+
+  /// No description provided for @vaultItemFooterNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'不提供复制；本页禁止截屏'**
+  String get vaultItemFooterNote;
+
+  /// No description provided for @vaultItemRecordingWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到录屏，已隐藏敏感内容'**
+  String get vaultItemRecordingWarning;
+
+  /// No description provided for @vaultItemEditNameTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改条目名称'**
+  String get vaultItemEditNameTitle;
+
+  /// No description provided for @vaultItemEditNameLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'名称'**
+  String get vaultItemEditNameLabel;
+
+  /// No description provided for @vaultDeriveTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'派生地址'**
+  String get vaultDeriveTitle;
+
+  /// No description provided for @vaultDeriveNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'以下地址由你的密钥计算得出，仅地址会被用于查询余额，密钥不会离开保险库。'**
+  String get vaultDeriveNotice;
+
+  /// No description provided for @vaultDeriveSchemeEvmStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准（MetaMask 等）'**
+  String get vaultDeriveSchemeEvmStandard;
+
+  /// No description provided for @vaultDeriveSchemeEvmLedgerLive.
+  ///
+  /// In zh, this message translates to:
+  /// **'Ledger Live'**
+  String get vaultDeriveSchemeEvmLedgerLive;
+
+  /// No description provided for @vaultDeriveSchemeBtcNativeSegwit.
+  ///
+  /// In zh, this message translates to:
+  /// **'原生隔离见证 bc1q（默认）'**
+  String get vaultDeriveSchemeBtcNativeSegwit;
+
+  /// No description provided for @vaultDeriveSchemeBtcTaproot.
+  ///
+  /// In zh, this message translates to:
+  /// **'Taproot bc1p'**
+  String get vaultDeriveSchemeBtcTaproot;
+
+  /// No description provided for @vaultDeriveSchemeBtcNestedSegwit.
+  ///
+  /// In zh, this message translates to:
+  /// **'嵌套隔离见证 3 开头'**
+  String get vaultDeriveSchemeBtcNestedSegwit;
+
+  /// No description provided for @vaultDeriveSchemeBtcLegacy.
+  ///
+  /// In zh, this message translates to:
+  /// **'传统 1 开头'**
+  String get vaultDeriveSchemeBtcLegacy;
+
+  /// No description provided for @vaultDeriveSchemeSolanaStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准（Phantom 等）'**
+  String get vaultDeriveSchemeSolanaStandard;
+
+  /// No description provided for @vaultDeriveSchemeSolanaLegacy.
+  ///
+  /// In zh, this message translates to:
+  /// **'旧式'**
+  String get vaultDeriveSchemeSolanaLegacy;
+
+  /// No description provided for @vaultDeriveSchemeTronStandard.
+  ///
+  /// In zh, this message translates to:
+  /// **'标准'**
+  String get vaultDeriveSchemeTronStandard;
+
+  /// No description provided for @vaultDeriveAlreadyWatched.
+  ///
+  /// In zh, this message translates to:
+  /// **'已在观察'**
+  String get vaultDeriveAlreadyWatched;
+
+  /// No description provided for @vaultDeriveShowMore.
+  ///
+  /// In zh, this message translates to:
+  /// **'显示更多'**
+  String get vaultDeriveShowMore;
+
+  /// No description provided for @vaultDeriveCheckBalance.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测余额'**
+  String get vaultDeriveCheckBalance;
+
+  /// No description provided for @vaultDeriveCheckingBalance.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在检测...'**
+  String get vaultDeriveCheckingBalance;
+
+  /// No description provided for @vaultDeriveActive.
+  ///
+  /// In zh, this message translates to:
+  /// **'有活动'**
+  String get vaultDeriveActive;
+
+  /// No description provided for @vaultDeriveInactive.
+  ///
+  /// In zh, this message translates to:
+  /// **'无活动'**
+  String get vaultDeriveInactive;
+
+  /// No description provided for @vaultDeriveCheckNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测余额将向公开节点查询该地址是否有交易活动或余额，密钥不会离开设备。'**
+  String get vaultDeriveCheckNotice;
+
+  /// No description provided for @vaultDeriveTargetAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'目标账户'**
+  String get vaultDeriveTargetAccount;
+
+  /// No description provided for @vaultDeriveNewAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'新建钱包账户'**
+  String get vaultDeriveNewAccount;
+
+  /// No description provided for @vaultDeriveExistingAccount.
+  ///
+  /// In zh, this message translates to:
+  /// **'加入已有账户'**
+  String get vaultDeriveExistingAccount;
+
+  /// No description provided for @vaultDeriveNewAccountNameLabel.
+  ///
+  /// In zh, this message translates to:
+  /// **'账户名称'**
+  String get vaultDeriveNewAccountNameLabel;
+
+  /// No description provided for @vaultDeriveSelectAccountHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择已有钱包账户'**
+  String get vaultDeriveSelectAccountHint;
+
+  /// No description provided for @vaultDeriveAttachAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'加入观察'**
+  String get vaultDeriveAttachAction;
+
+  /// No description provided for @vaultDeriveSkipAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过'**
+  String get vaultDeriveSkipAction;
+
+  /// No description provided for @vaultDeriveSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'已成功加入观察'**
+  String get vaultDeriveSuccess;
+
+  /// No description provided for @vaultDeriveNoSelection.
+  ///
+  /// In zh, this message translates to:
+  /// **'请至少选择一个地址'**
+  String get vaultDeriveNoSelection;
+
+  /// No description provided for @vaultDeriveAuthPrompt.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码以计算派生地址'**
+  String get vaultDeriveAuthPrompt;
+
+  /// No description provided for @vaultDeriveVerifyTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证主密码'**
+  String get vaultDeriveVerifyTitle;
+
+  /// No description provided for @vaultDeriveVerifyConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始派生'**
+  String get vaultDeriveVerifyConfirm;
+
+  /// No description provided for @vaultDeriveDeriving.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在派生地址...'**
+  String get vaultDeriveDeriving;
+
+  /// No description provided for @vaultDeriveEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'暂无派生地址'**
+  String get vaultDeriveEmpty;
+
+  /// No description provided for @vaultDeriveItemNotFound.
+  ///
+  /// In zh, this message translates to:
+  /// **'未找到密钥条目'**
+  String get vaultDeriveItemNotFound;
+
+  /// No description provided for @settingsSecuritySubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 码、面容/指纹解锁、自动锁定与保险库设置'**
+  String get settingsSecuritySubtitle;
+
+  /// No description provided for @securityTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'安全设置'**
+  String get securityTitle;
+
+  /// No description provided for @securityChangePin.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改 PIN'**
+  String get securityChangePin;
+
+  /// No description provided for @securityChangePinSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'PIN 码已修改'**
+  String get securityChangePinSuccess;
+
+  /// No description provided for @securityChangePinOldTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入当前 PIN'**
+  String get securityChangePinOldTitle;
+
+  /// No description provided for @securityChangePinOldSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入当前使用的 6 位数字 PIN'**
+  String get securityChangePinOldSubtitle;
+
+  /// No description provided for @securityChangePinNewTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入新 PIN'**
+  String get securityChangePinNewTitle;
+
+  /// No description provided for @securityChangePinNewSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入新的 6 位数字 PIN'**
+  String get securityChangePinNewSubtitle;
+
+  /// No description provided for @securityChangePinConfirmTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认新 PIN'**
+  String get securityChangePinConfirmTitle;
+
+  /// No description provided for @securityChangePinConfirmSubtitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入新的 6 位数字 PIN'**
+  String get securityChangePinConfirmSubtitle;
+
+  /// No description provided for @securityChangePinMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的 PIN 不一致，请重新输入'**
+  String get securityChangePinMismatch;
+
+  /// No description provided for @securityChangePinWrongOld.
+  ///
+  /// In zh, this message translates to:
+  /// **'原 PIN 码不正确'**
+  String get securityChangePinWrongOld;
+
+  /// No description provided for @securityAppBiometricsDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'解锁 OneWallet 时使用生物识别'**
+  String get securityAppBiometricsDesc;
+
+  /// No description provided for @securityVaultBiometricsUninitialized.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库尚未创建'**
+  String get securityVaultBiometricsUninitialized;
+
+  /// No description provided for @securityVaultBiometricsUnsupported.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前设备不支持硬件密钥保护'**
+  String get securityVaultBiometricsUnsupported;
+
+  /// No description provided for @securityChangeMasterPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'修改主密码'**
+  String get securityChangeMasterPasswordTitle;
+
+  /// No description provided for @securityChangeMasterPasswordSuccess.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码已修改'**
+  String get securityChangeMasterPasswordSuccess;
+
+  /// No description provided for @securityChangeMasterPasswordCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前主密码'**
+  String get securityChangeMasterPasswordCurrent;
+
+  /// No description provided for @securityChangeMasterPasswordCurrentHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入当前主密码'**
+  String get securityChangeMasterPasswordCurrentHint;
+
+  /// No description provided for @securityChangeMasterPasswordNew.
+  ///
+  /// In zh, this message translates to:
+  /// **'新主密码（至少 10 个字符）'**
+  String get securityChangeMasterPasswordNew;
+
+  /// No description provided for @securityChangeMasterPasswordNewHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入至少 10 位新主密码'**
+  String get securityChangeMasterPasswordNewHint;
+
+  /// No description provided for @securityChangeMasterPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认新主密码'**
+  String get securityChangeMasterPasswordConfirm;
+
+  /// No description provided for @securityChangeMasterPasswordConfirmHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请再次输入新主密码'**
+  String get securityChangeMasterPasswordConfirmHint;
+
+  /// No description provided for @securityChangeMasterPasswordChanging.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在重新加密保险库…'**
+  String get securityChangeMasterPasswordChanging;
+
+  /// No description provided for @securityChangeMasterPasswordMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的主密码不一致'**
+  String get securityChangeMasterPasswordMismatch;
+
+  /// No description provided for @securityChangeMasterPasswordTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'主密码长度至少为 10 个字符'**
+  String get securityChangeMasterPasswordTooShort;
+
+  /// No description provided for @securityChangeMasterPasswordWrongCurrent.
+  ///
+  /// In zh, this message translates to:
+  /// **'当前主密码不正确'**
+  String get securityChangeMasterPasswordWrongCurrent;
+
+  /// No description provided for @securityChangeMasterPasswordConfirmAction.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认修改'**
+  String get securityChangeMasterPasswordConfirmAction;
+
+  /// No description provided for @securityDeviceCompromised.
+  ///
+  /// In zh, this message translates to:
+  /// **'风险'**
+  String get securityDeviceCompromised;
+
+  /// No description provided for @securityDeviceCompromisedDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到设备环境异常，可能已被越狱或 root'**
+  String get securityDeviceCompromisedDesc;
+
+  /// No description provided for @securityVerifyMasterPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证主密码'**
+  String get securityVerifyMasterPasswordTitle;
+
+  /// No description provided for @securityVerifyMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码以开启生物识别'**
+  String get securityVerifyMasterPasswordHint;
+
+  /// No description provided for @securityVerifyMasterPasswordConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'验证并开启'**
+  String get securityVerifyMasterPasswordConfirm;
+
+  /// No description provided for @securityCancel.
+  ///
+  /// In zh, this message translates to:
+  /// **'取消'**
+  String get securityCancel;
+
+  /// No description provided for @settingsBackupDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出为独立解密文件或从文件恢复'**
+  String get settingsBackupDesc;
+
+  /// No description provided for @settingsBackupLastExport.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次导出 {date}'**
+  String settingsBackupLastExport(Object date);
+
+  /// No description provided for @settingsBackupUnbacked.
+  ///
+  /// In zh, this message translates to:
+  /// **'有未备份的更改'**
+  String get settingsBackupUnbacked;
+
+  /// No description provided for @backupTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'加密备份'**
+  String get backupTitle;
+
+  /// No description provided for @backupSensitiveBadge.
+  ///
+  /// In zh, this message translates to:
+  /// **'敏感页面'**
+  String get backupSensitiveBadge;
+
+  /// No description provided for @backupExportSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出'**
+  String get backupExportSection;
+
+  /// No description provided for @backupExportSummaryTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认内容'**
+  String get backupExportSummaryTitle;
+
+  /// No description provided for @backupExportSummaryDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'全部账户、地址、标签、备份清单状态、全部密钥条目、设置。不包含余额缓存与快照。'**
+  String get backupExportSummaryDesc;
+
+  /// No description provided for @backupExportIncludeExchange.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含交易所 API Key'**
+  String get backupExportIncludeExchange;
+
+  /// No description provided for @backupExportIncludeExchangeDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'默认不包含。若勾选，将导出所有已连接交易所的 API Key 与 Secret'**
+  String get backupExportIncludeExchangeDesc;
+
+  /// No description provided for @backupExportStartButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始导出'**
+  String get backupExportStartButton;
+
+  /// No description provided for @backupRestoreSection.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复'**
+  String get backupRestoreSection;
+
+  /// No description provided for @backupRestoreRowTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'从备份文件恢复'**
+  String get backupRestoreRowTitle;
+
+  /// No description provided for @backupRestoreRowDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 .owbak 文件并输入备份密码'**
+  String get backupRestoreRowDesc;
+
+  /// No description provided for @backupFormatNote.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份格式是公开的。即使没有这个 app，也能用独立的解密工具在电脑上解开。'**
+  String get backupFormatNote;
+
+  /// No description provided for @backupUnbackedWarning.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库在上次导出之后有变化，建议及时导出最新备份。'**
+  String get backupUnbackedWarning;
+
+  /// No description provided for @backupExportTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出备份'**
+  String get backupExportTitle;
+
+  /// No description provided for @backupExportMasterPasswordTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入主密码'**
+  String get backupExportMasterPasswordTitle;
+
+  /// No description provided for @backupExportMasterPasswordDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出备份需要验证主密码，此处不接受面容或指纹'**
+  String get backupExportMasterPasswordDesc;
+
+  /// No description provided for @backupExportMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入主密码'**
+  String get backupExportMasterPasswordHint;
+
+  /// No description provided for @backupExportPasswordTypeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设置备份密码'**
+  String get backupExportPasswordTypeTitle;
+
+  /// No description provided for @backupExportUseMasterPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'使用主密码作为备份密码'**
+  String get backupExportUseMasterPassword;
+
+  /// No description provided for @backupExportUseCustomPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'另设备份密码'**
+  String get backupExportUseCustomPassword;
+
+  /// No description provided for @backupExportCustomPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'输入备份密码（至少 10 位）'**
+  String get backupExportCustomPasswordHint;
+
+  /// No description provided for @backupExportCustomPasswordConfirmHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'确认备份密码'**
+  String get backupExportCustomPasswordConfirmHint;
+
+  /// No description provided for @backupExportPasswordMismatch.
+  ///
+  /// In zh, this message translates to:
+  /// **'两次输入的备份密码不一致'**
+  String get backupExportPasswordMismatch;
+
+  /// No description provided for @backupExportPasswordTooShort.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份密码长度至少为 10 个字符'**
+  String get backupExportPasswordTooShort;
+
+  /// No description provided for @backupExportAsciiNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'建议使用英文字母、数字和符号，避免在跨平台独立解密工具中出现编码差异'**
+  String get backupExportAsciiNotice;
+
+  /// No description provided for @backupExportGenerating.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在生成加密备份文件...'**
+  String get backupExportGenerating;
+
+  /// No description provided for @backupExportSuccessTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份已生成'**
+  String get backupExportSuccessTitle;
+
+  /// No description provided for @backupExportSaveAdvice.
+  ///
+  /// In zh, this message translates to:
+  /// **'通过系统分享面板保存。请存到手机以外的地方（如离线 U 盘、可信电脑或加密存储）。'**
+  String get backupExportSaveAdvice;
+
+  /// No description provided for @backupExportSavedButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'我已保存到安全位置'**
+  String get backupExportSavedButton;
+
+  /// No description provided for @backupExportShareFailed.
+  ///
+  /// In zh, this message translates to:
+  /// **'导出或分享文件失败，请重试'**
+  String get backupExportShareFailed;
+
+  /// No description provided for @backupExportDoneNotice.
+  ///
+  /// In zh, this message translates to:
+  /// **'上次导出时间已更新'**
+  String get backupExportDoneNotice;
+
+  /// No description provided for @backupRestoreTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复备份'**
+  String get backupRestoreTitle;
+
+  /// No description provided for @backupRestoreSelectFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'选择 .owbak 备份文件'**
+  String get backupRestoreSelectFile;
+
+  /// No description provided for @backupRestoreSelectedFile.
+  ///
+  /// In zh, this message translates to:
+  /// **'已选文件：{name} ({size})'**
+  String backupRestoreSelectedFile(Object name, Object size);
+
+  /// No description provided for @backupRestorePasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入备份密码'**
+  String get backupRestorePasswordHint;
+
+  /// No description provided for @backupRestoreParseButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'解析备份文件'**
+  String get backupRestoreParseButton;
+
+  /// No description provided for @backupRestoreParsing.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在解析备份文件...'**
+  String get backupRestoreParsing;
+
+  /// No description provided for @backupRestorePreviewTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份内容预览'**
+  String get backupRestorePreviewTitle;
+
+  /// No description provided for @backupRestoreCreatedAt.
+  ///
+  /// In zh, this message translates to:
+  /// **'创建时间：{date}'**
+  String backupRestoreCreatedAt(Object date);
+
+  /// No description provided for @backupRestoreAppVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'备份应用版本：{version}'**
+  String backupRestoreAppVersion(Object version);
+
+  /// No description provided for @backupRestoreAccountsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含账户：{count} 个'**
+  String backupRestoreAccountsCount(Object count);
+
+  /// No description provided for @backupRestoreAddressesCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含地址：{count} 个'**
+  String backupRestoreAddressesCount(Object count);
+
+  /// No description provided for @backupRestoreVaultItemsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含密钥条目：{count} 个'**
+  String backupRestoreVaultItemsCount(Object count);
+
+  /// No description provided for @backupRestoreCredentialsCount.
+  ///
+  /// In zh, this message translates to:
+  /// **'包含交易所凭据：{count} 个'**
+  String backupRestoreCredentialsCount(Object count);
+
+  /// No description provided for @backupRestoreSkippedUnreadable.
+  ///
+  /// In zh, this message translates to:
+  /// **'有 {count} 项数据格式无法读取，将被跳过'**
+  String backupRestoreSkippedUnreadable(Object count);
+
+  /// No description provided for @backupRestoreModeFreshTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'全新设备恢复'**
+  String get backupRestoreModeFreshTitle;
+
+  /// No description provided for @backupRestoreModeFreshDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'将在本地创建新保险库并导入备份中所有数据。'**
+  String get backupRestoreModeFreshDesc;
+
+  /// No description provided for @backupRestoreModeMergeTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'合并导入'**
+  String get backupRestoreModeMergeTitle;
+
+  /// No description provided for @backupRestoreModeMergeDesc.
+  ///
+  /// In zh, this message translates to:
+  /// **'将备份内容合并到当前数据中。相同条目与地址自动跳过，重名账户自动添加序号后缀。'**
+  String get backupRestoreModeMergeDesc;
+
+  /// No description provided for @backupRestoreMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'请输入本地保险库主密码'**
+  String get backupRestoreMasterPasswordHint;
+
+  /// No description provided for @backupRestoreNewMasterPasswordHint.
+  ///
+  /// In zh, this message translates to:
+  /// **'为本机保险库设置主密码（至少 10 位）'**
+  String get backupRestoreNewMasterPasswordHint;
+
+  /// No description provided for @backupRestoreSameAsBackupPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'沿用备份密码作为本机主密码'**
+  String get backupRestoreSameAsBackupPassword;
+
+  /// No description provided for @backupRestoreExecuteButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'开始恢复'**
+  String get backupRestoreExecuteButton;
+
+  /// No description provided for @backupRestoreRestoring.
+  ///
+  /// In zh, this message translates to:
+  /// **'正在恢复数据...'**
+  String get backupRestoreRestoring;
+
+  /// No description provided for @backupRestoreResultTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'恢复完成'**
+  String get backupRestoreResultTitle;
+
+  /// No description provided for @backupRestoreResultAdded.
+  ///
+  /// In zh, this message translates to:
+  /// **'成功导入：{accounts} 个账户、{addresses} 个地址、{items} 个密钥'**
+  String backupRestoreResultAdded(
+    Object accounts,
+    Object addresses,
+    Object items,
+  );
+
+  /// No description provided for @backupRestoreResultSkipped.
+  ///
+  /// In zh, this message translates to:
+  /// **'跳过重复：{accounts} 个账户、{addresses} 个地址、{items} 个密钥'**
+  String backupRestoreResultSkipped(
+    Object accounts,
+    Object addresses,
+    Object items,
+  );
+
+  /// No description provided for @backupRestoreFinishButton.
+  ///
+  /// In zh, this message translates to:
+  /// **'完成'**
+  String get backupRestoreFinishButton;
+
+  /// No description provided for @backupRestoreWrongPassword.
+  ///
+  /// In zh, this message translates to:
+  /// **'密码不正确或文件已损坏'**
+  String get backupRestoreWrongPassword;
+
+  /// No description provided for @backupRestoreCorrupted.
+  ///
+  /// In zh, this message translates to:
+  /// **'这不是 OneWallet 的备份文件，或文件已损坏，无法读取'**
+  String get backupRestoreCorrupted;
+
+  /// No description provided for @backupRestoreUnsupportedVersion.
+  ///
+  /// In zh, this message translates to:
+  /// **'这个备份文件来自更新版本的 OneWallet，当前版本无法读取'**
+  String get backupRestoreUnsupportedVersion;
+
+  /// No description provided for @backupRestoreTargetNotEmpty.
+  ///
+  /// In zh, this message translates to:
+  /// **'本地已有数据，无法以初始模式恢复'**
+  String get backupRestoreTargetNotEmpty;
+
+  /// No description provided for @backupUnbackedBanner.
+  ///
+  /// In zh, this message translates to:
+  /// **'保险库有未备份的更改，建议及时导出备份'**
+  String get backupUnbackedBanner;
+
+  /// No description provided for @backupGoBackup.
+  ///
+  /// In zh, this message translates to:
+  /// **'去备份'**
+  String get backupGoBackup;
 }
 
 class _AppLocalizationsDelegate

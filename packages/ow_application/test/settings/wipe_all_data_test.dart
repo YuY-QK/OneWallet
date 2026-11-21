@@ -61,42 +61,81 @@ final class FakeClearableSecretStore implements ClearableSecretStore {
   Future<void> write(String key, String value) async => data[key] = value;
 }
 
+final class FakeHardwareKeyStore implements HardwareKeyStore {
+  FakeHardwareKeyStore([this.log]);
+  final List<String>? log;
+  final List<String> deletedKeys = [];
+
+  @override
+  Future<void> delete(String keyAlias) async {
+    deletedKeys.add(keyAlias);
+    log?.add('deleteHardwareKey');
+  }
+
+  @override
+  Future<Result<Uint8List>> unwrap(
+    String keyAlias,
+    Uint8List wrapped, {
+    required String reason,
+  }) async => Ok(Uint8List(0));
+
+  @override
+  Future<Result<Uint8List>> wrap(String keyAlias, Uint8List plaintext) async =>
+      Ok(Uint8List(0));
+}
+
 void main() {
   group('WipeAllData', () {
-    test('严格按顺序执行：关闭连接、删除数据库文件、删除保险库与清空安全存储', () async {
+    test('严格按顺序执行：关闭连接、删除数据库文件、删除保险库、清空安全存储与删除硬件密钥', () async {
       final log = <String>[];
       final closer = FakeDatabaseCloser(log);
       final deleter = FakeDatabaseDeleter(log);
       final vault = FakeVaultStorage(log);
       final secrets = FakeClearableSecretStore(log);
+      final hw = FakeHardwareKeyStore(log);
 
       final usecase = WipeAllData(
         closer: closer,
         databaseDeleter: deleter,
         vaultStorage: vault,
         secrets: secrets,
+        hardwareKeyStore: hw,
       );
 
       final result = await usecase();
       expect(result.isOk, isTrue);
-      expect(log, ['close', 'deleteDb', 'deleteVault', 'clearSecrets']);
+      expect(log, [
+        'close',
+        'deleteDb',
+        'deleteVault',
+        'clearSecrets',
+        'deleteHardwareKey',
+      ]);
+      expect(hw.deletedKeys, contains(vaultMasterKeyHardwareAlias));
     });
 
-    test('closer为空时_正常执行删库、删保险库与清安全存储', () async {
+    test('closer为空时_正常执行删库、删保险库、清安全存储与删硬件密钥', () async {
       final log = <String>[];
       final deleter = FakeDatabaseDeleter(log);
       final vault = FakeVaultStorage(log);
       final secrets = FakeClearableSecretStore(log);
+      final hw = FakeHardwareKeyStore(log);
 
       final usecase = WipeAllData(
         databaseDeleter: deleter,
         vaultStorage: vault,
         secrets: secrets,
+        hardwareKeyStore: hw,
       );
 
       final result = await usecase();
       expect(result.isOk, isTrue);
-      expect(log, ['deleteDb', 'deleteVault', 'clearSecrets']);
+      expect(log, [
+        'deleteDb',
+        'deleteVault',
+        'clearSecrets',
+        'deleteHardwareKey',
+      ]);
     });
 
     test('也可在call时动态传入closer覆盖构造函数closer', () async {

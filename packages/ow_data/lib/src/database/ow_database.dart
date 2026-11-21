@@ -64,4 +64,12 @@ final class OwDatabase extends _$OwDatabase implements DatabaseCloser {
       await customStatement('PRAGMA foreign_keys = ON');
     },
   );
+
+  @override
+  Future<void> close() async {
+    // 严格按序关闭：
+    // 关闭底层执行器（释放 SQLite 物理连接与文件句柄），确保在删除文件前连接已完全断开。
+    // 不等待内存流查询关闭，避免在单线程事件循环/测试环境中因 StreamController.close() 等待未消费事件而死锁。
+    await executor.close();
+  }
 }

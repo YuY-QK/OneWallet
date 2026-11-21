@@ -21,6 +21,8 @@ void main() {
         const BackupCorruptedFailure('bc'),
         const BackupVersionUnsupportedFailure('bv'),
         const UnsupportedFailure('p'),
+        const BiometricUnavailableFailure('bio'),
+        LockedOutFailure(DateTime.utc(2026, 11, 15, 12, 0), 'lock'),
         const UnknownFailure('x'),
       ];
       expect(failures.map((f) => f.detail), [
@@ -40,6 +42,8 @@ void main() {
         'bc',
         'bv',
         'p',
+        'bio',
+        'lock',
         'x',
       ]);
     });

@@ -26,6 +26,7 @@ final class ValueFeed<T> {
     late StreamController<T> c;
     StreamSubscription<T>? sub;
     c = StreamController<T>(
+      sync: true,
       onListen: () {
         c.add(_value);
         sub = _controller.stream.listen(c.add);
@@ -514,7 +515,18 @@ final class TestRig {
   /// 打开链接是否成功。
   bool openSucceeds = true;
 
+  /// 保险库是否已初始化。
+  bool isVaultInitialized = false;
+
+  /// 保险库条目列表。
+  List<VaultItemSummary> vaultItems = const [];
+
+  /// 平台能力。
+  PlatformCapabilities capabilities = FakePlatformCapabilities();
+
   List<Override> get overrides => [
+    isVaultInitializedProvider.overrideWith((ref) => isVaultInitialized),
+    vaultItemsProvider.overrideWith((ref) => Stream.value(vaultItems)),
     accountRepositoryProvider.overrideWithValue(accounts),
     addressRepositoryProvider.overrideWithValue(addresses),
     holdingRepositoryProvider.overrideWithValue(holdings),
@@ -539,7 +551,7 @@ final class TestRig {
     clockProvider.overrideWithValue(clock),
     idGeneratorProvider.overrideWithValue(ids),
     retryPolicyProvider.overrideWithValue(RetryPolicy(delay: (_) async {})),
-    platformCapabilitiesProvider.overrideWithValue(FakePlatformCapabilities()),
+    platformCapabilitiesProvider.overrideWithValue(capabilities),
     clipboardReaderProvider.overrideWithValue(() async => clipboard),
     clipboardWriterProvider.overrideWithValue((t) async => copied.add(t)),
     externalUrlOpenerProvider.overrideWithValue((u) async {

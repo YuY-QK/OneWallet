@@ -94,3 +94,23 @@ final class FakeVaultStorage implements VaultStorage {
     data = bytes;
   }
 }
+
+final class FakeHardwareKeyStore implements HardwareKeyStore {
+  final List<String> deletedKeys = [];
+
+  @override
+  Future<void> delete(String keyAlias) async {
+    deletedKeys.add(keyAlias);
+  }
+
+  @override
+  Future<Result<Uint8List>> unwrap(
+    String keyAlias,
+    Uint8List wrapped, {
+    required String reason,
+  }) async => Ok(Uint8List(0));
+
+  @override
+  Future<Result<Uint8List>> wrap(String keyAlias, Uint8List plaintext) async =>
+      Ok(Uint8List(0));
+}

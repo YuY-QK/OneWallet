@@ -4,6 +4,7 @@ import 'package:ow_domain/ow_domain.dart';
 
 import 'adapter_providers.dart';
 import 'foundation_providers.dart';
+import 'vault_providers.dart';
 
 // 用例与读模型的 provider。页面通过控制器使用它们，不直接调用仓储或适配器。
 
@@ -177,6 +178,7 @@ final wipeAllDataProvider = Provider<WipeAllData>(
     databaseDeleter: ref.watch(databaseOpenerProvider),
     vaultStorage: ref.watch(vaultStorageProvider),
     secrets: ref.watch(secretStoreProvider),
+    hardwareKeyStore: ref.watch(hardwareKeyStoreProvider),
   ),
 );
 

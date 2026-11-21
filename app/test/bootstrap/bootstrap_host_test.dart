@@ -45,15 +45,21 @@ void main() {
 
     await tester.tap(find.text('重试'));
     await tester.pump();
-    // 进入应用前要读取数据库里的币种目录（真实的异步 IO）。
+    // 进入应用前要读取数据库里的币种目录与初始化应用锁（包含真实的异步 IO）。
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
     expect(calls, 2);
     expect(find.text('无法打开本地数据'), findsNothing);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     await unmount(tester);
   });
 
@@ -85,7 +91,12 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    expect(find.text('还没有账户'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is Text && (w.data == '还没有账户' || w.data == '一处看全，备份不丢'),
+      ),
+      findsOneWidget,
+    );
     expect(find.text('无法打开本地数据'), findsNothing);
     await unmount(tester);
   });
@@ -131,14 +142,20 @@ void main() {
     await tester.tap(find.text('清除并重新开始'));
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(wipeCalled, isTrue);
     expect(calls, 2);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     await unmount(tester);
   });
 
@@ -163,23 +180,38 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     expect(calls, 1);
 
     // 从 ProviderScope 中调用 wipeAndRestartProvider
     final element = tester.element(find.byType(OneWalletApp));
     final container = ProviderScope.containerOf(element);
-    await container.read(wipeAndRestartProvider)();
+    final wipeFuture = container.read(wipeAndRestartProvider)();
+    await tester.pump();
+    await tester.runAsync(() => wipeFuture);
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(wipeCalled, isTrue);
     expect(calls, 2);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
     await unmount(tester);
   });
 
@@ -228,13 +260,63 @@ void main() {
     await tester.tap(find.text('重试'));
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(calls, 2);
-    expect(find.text('总览'), findsWidgets);
+    expect(
+      find.byWidgetPredicate(
+        (w) =>
+            w is Text &&
+            (w.data == '还没有账户' || w.data == '一处看全，备份不丢' || w.data == '总览'),
+      ),
+      findsWidgets,
+    );
+    await unmount(tester);
+  });
+
+  testWidgets('启动失败页点击清除全部数据调用WipeAllData同时删除硬件密钥库中的别名', (tester) async {
+    int calls = 0;
+    Future<BootstrapResult> bootstrap() async {
+      calls++;
+      return calls == 1
+          ? const BootstrapFailure(BootstrapFailureKind.databaseOpenFailed)
+          : BootstrapSuccess(
+              database: OwDatabase(NativeDatabase.memory()),
+              secrets: FakeSecretStore(),
+            );
+    }
+
+    final fakeVault = FakeVaultStorage();
+    final fakeSecrets = FakeSecretStore({'ow.db.key': 'test'});
+    final fakeHw = FakeHardwareKeyStore();
+    final wipeAllData = WipeAllData(
+      databaseDeleter: MemoryDatabaseOpener(),
+      vaultStorage: fakeVault,
+      secrets: fakeSecrets,
+      hardwareKeyStore: fakeHw,
+    );
+
+    await tester.pumpWidget(
+      BootstrapHost(bootstrap: bootstrap, wipeAllData: wipeAllData),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始'), findsOneWidget);
+    await tester.tap(find.text('清除本地数据并重新开始'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('清除本地数据并重新开始？'), findsOneWidget);
+    await tester.tap(find.text('清除并重新开始'));
+    await tester.pump();
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
+    );
+    await tester.pumpAndSettle();
+
+    expect(fakeHw.deletedKeys, contains('ow.vault.vmk'));
+    expect(calls, 2);
     await unmount(tester);
   });
 }

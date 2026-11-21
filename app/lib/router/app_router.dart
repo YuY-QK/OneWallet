@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ow_application/ow_application.dart';
 
 import '../features/accounts/presentation/accounts_page.dart';
 import '../features/accounts/presentation/add_account_page.dart';
@@ -8,20 +9,31 @@ import '../features/accounts/presentation/add_wallet_page.dart';
 import '../features/accounts/presentation/address_book_page.dart';
 import '../features/accounts/presentation/exchange_detail_page.dart';
 import '../features/accounts/presentation/wallet_detail_page.dart';
-import '../features/common/presentation/coming_soon_page.dart';
+import '../features/backup/presentation/backup_export_page.dart';
+import '../features/backup/presentation/backup_page.dart';
+import '../features/backup/presentation/backup_restore_page.dart';
+import '../features/lock/presentation/lock_page.dart';
+import '../features/onboarding/presentation/onboarding_page.dart';
 import '../features/overview/presentation/asset_detail_page.dart';
 import '../features/overview/presentation/overview_page.dart';
 import '../features/settings/presentation/about_page.dart';
 import '../features/settings/presentation/data_sources_page.dart';
+import '../features/settings/presentation/security_settings_page.dart';
 import '../features/settings/presentation/settings_page.dart';
 import '../features/settings/presentation/sync_status_page.dart';
 import '../features/vault/presentation/backup_checklist_page.dart';
+import '../features/vault/presentation/derive_addresses_page.dart';
+import '../features/vault/presentation/vault_import_page.dart';
+import '../features/vault/presentation/vault_item_detail_page.dart';
 import '../features/vault/presentation/vault_page.dart';
+import '../features/vault/presentation/vault_setup_page.dart';
 import '../l10n/app_localizations.dart';
 import '../shell/adaptive_scaffold.dart';
 import 'route_names.dart';
 
 abstract final class AppRoutes {
+  static const lock = '/lock';
+  static const onboarding = '/onboarding';
   static const overview = '/overview';
   static const accounts = '/accounts';
   static const vault = '/vault';
@@ -60,7 +72,11 @@ class _ShellNavigationObserver extends NavigatorObserver {
 }
 
 /// 构建应用路由。路径与路由名见 IMPLEMENTATION_SPEC 7.1；参数只传 id。
-GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
+GoRouter buildAppRouter({
+  String initialLocation = AppRoutes.overview,
+  AppLockStateMachine? Function()? appLock,
+  Listenable? refreshListenable,
+}) {
   final overviewKey = GlobalKey<NavigatorState>(debugLabel: 'overview');
   final accountsKey = GlobalKey<NavigatorState>(debugLabel: 'accounts');
   final vaultKey = GlobalKey<NavigatorState>(debugLabel: 'vault');
@@ -81,11 +97,49 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
       GoRoute(path: path, builder: (_, _) => page, routes: sub ?? const []),
     ],
   );
-  Widget soon(BuildContext context, String title) =>
-      ComingSoonPage(title: title);
   return GoRouter(
     initialLocation: initialLocation,
+    refreshListenable: refreshListenable,
+    redirect: (context, state) {
+      if (appLock == null) return null;
+      final machine = appLock();
+      if (machine == null) return null;
+      final path = state.uri.path;
+      final lockState = machine.current;
+
+      if (lockState is AppLockUninitialized) {
+        if (path == AppRoutes.onboarding ||
+            path.startsWith('/settings/backup/restore')) {
+          return null;
+        }
+        return AppRoutes.onboarding;
+      }
+
+      if (lockState is AppLockLocked) {
+        if (path == AppRoutes.lock) return null;
+        return AppRoutes.lock;
+      }
+
+      if (lockState is AppLockUnlocked) {
+        if (path == AppRoutes.lock || path == AppRoutes.onboarding) {
+          return AppRoutes.overview;
+        }
+        return null;
+      }
+
+      return null;
+    },
     routes: [
+      GoRoute(
+        path: AppRoutes.lock,
+        name: RouteNames.lock,
+        builder: (_, _) => const LockPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.onboarding,
+        name: RouteNames.onboarding,
+        builder: (_, _) => const OnboardingPage(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => _Shell(
           shell: shell,
@@ -166,10 +220,28 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
             navigatorKey: vaultKey,
             sub: [
               GoRoute(
+                path: 'setup',
+                name: RouteNames.vaultSetup,
+                builder: (c, _) => const VaultSetupPage(),
+              ),
+              GoRoute(
                 path: 'import',
                 name: RouteNames.vaultImport,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.accountAddImportTitle),
+                builder: (c, state) => VaultImportPage(
+                  linkToAccountId: state.uri.queryParameters['accountId'],
+                ),
+              ),
+              GoRoute(
+                path: 'item/:id',
+                name: RouteNames.vaultItem,
+                builder: (c, state) =>
+                    VaultItemDetailPage(itemId: state.pathParameters['id']!),
+              ),
+              GoRoute(
+                path: 'derive/:id',
+                name: RouteNames.vaultDerive,
+                builder: (c, state) =>
+                    DeriveAddressesPage(itemId: state.pathParameters['id']!),
               ),
               GoRoute(
                 path: 'checklist',
@@ -184,6 +256,40 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
             navigatorKey: settingsKey,
             sub: [
               GoRoute(
+                path: 'security',
+                name: RouteNames.settingsSecurity,
+                builder: (_, _) => const SecuritySettingsPage(),
+              ),
+              GoRoute(
+                path: 'backup',
+                name: RouteNames.backup,
+                builder: (_, _) => const BackupPage(),
+                routes: [
+                  GoRoute(
+                    path: 'export',
+                    name: RouteNames.backupExport,
+                    builder: (_, state) => BackupExportPage(
+                      includeExchangeCredentials:
+                          state.uri.queryParameters['includeExchange'] ==
+                          'true',
+                    ),
+                  ),
+                  GoRoute(
+                    path: 'restore',
+                    name: RouteNames.backupRestore,
+                    builder: (_, state) {
+                      final lock = appLock?.call()?.current;
+                      final isUninit = lock is AppLockUninitialized;
+                      final modeParam = state.uri.queryParameters['mode'];
+                      final mode = modeParam == 'fresh' || isUninit
+                          ? RestoreMode.fresh
+                          : RestoreMode.merge;
+                      return BackupRestorePage(mode: mode);
+                    },
+                  ),
+                ],
+              ),
+              GoRoute(
                 path: 'sources',
                 name: RouteNames.settingsSources,
                 builder: (_, _) => const DataSourcesPage(),
@@ -192,12 +298,6 @@ GoRouter buildAppRouter({String initialLocation = AppRoutes.overview}) {
                 path: 'sync',
                 name: RouteNames.settingsSync,
                 builder: (_, _) => const SyncStatusPage(),
-              ),
-              GoRoute(
-                path: 'backup/export',
-                name: RouteNames.backupExport,
-                builder: (c, _) =>
-                    soon(c, AppLocalizations.of(c)!.backupChecklistExport),
               ),
               GoRoute(
                 path: 'about',

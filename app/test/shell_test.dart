@@ -13,7 +13,7 @@ Future<void> pumpAt(WidgetTester tester, Size size, {String? location}) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: TestRig().overrides,
-      child: OneWalletApp(initialLocation: location),
+      child: OneWalletApp(initialLocation: location ?? '/overview'),
     ),
   );
   await tester.pumpAndSettle();

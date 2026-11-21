@@ -18,6 +18,26 @@ final platformCapabilitiesProvider = Provider<PlatformCapabilities>(
   (ref) => DevicePlatformCapabilities(),
 );
 
+/// 系统生物识别。默认是平台通道实现；测试换成假实现。
+final biometricAuthProvider = Provider<BiometricAuth>(
+  (ref) => DeviceBiometricAuth(),
+);
+
+/// 设备完整性检查（M3-08）。
+final deviceIntegrityProvider = Provider<DeviceIntegrity>(
+  (ref) => const SafeDeviceIntegrity(),
+);
+
+final class SafeDeviceIntegrity implements DeviceIntegrity {
+  const SafeDeviceIntegrity();
+
+  @override
+  Future<bool> looksCompromised() async => false;
+}
+
+/// 屏幕保护（Android FLAG_SECURE、iOS 录屏监听）。
+final screenGuardProvider = Provider<ScreenGuard>((ref) => DeviceScreenGuard());
+
 final loggerProvider = Provider<OwLogger>((ref) => OwLogger());
 
 final clockProvider = Provider<Clock>((ref) => const SystemClock());
@@ -76,10 +96,6 @@ final assetRepositoryProvider = Provider<AssetRepository>(
 
 final credentialRepositoryProvider = Provider<CredentialRepository>(
   (ref) => SecretStoreCredentialRepository(ref.watch(secretStoreProvider)),
-);
-
-final vaultStorageProvider = Provider<VaultStorage>(
-  (ref) => FileVaultStorage(),
 );
 
 final databaseOpenerProvider = Provider<DatabaseOpener>(

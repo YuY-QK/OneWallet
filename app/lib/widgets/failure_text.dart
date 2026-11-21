@@ -38,6 +38,10 @@ String failureText(AppLocalizations l10n, Failure failure) {
       UnsupportedReason.platform => l10n.failureUnsupported,
       UnsupportedReason.notIntegrated => l10n.failureUnsupportedNotIntegrated,
     },
+    BiometricUnavailableFailure() => l10n.failureBiometricUnavailable,
+    LockedOutFailure(:final until) => l10n.failureLockedOut(
+      '${until.toLocal().hour.toString().padLeft(2, '0')}:${until.toLocal().minute.toString().padLeft(2, '0')}',
+    ),
     UnknownFailure() => l10n.failureUnknown,
   };
 }

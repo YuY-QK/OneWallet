@@ -50,7 +50,7 @@ class BackupChecklistPage extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Text(
-              err.toString(),
+              l.failureUnknown,
               style: OwTextStyles.body.copyWith(color: context.ow.down),
             ),
           ),

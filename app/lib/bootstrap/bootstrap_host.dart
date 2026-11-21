@@ -36,6 +36,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
   late Future<BootstrapResult> _future = widget.bootstrap();
   BootstrapSuccess? _opened;
   bool _wipeFailed = false;
+  bool _wiping = false;
 
   @override
   void dispose() {
@@ -47,6 +48,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
 
   void _retry() {
     setState(() {
+      _wiping = false;
       _wipeFailed = false;
       _future = widget.bootstrap();
     });
@@ -57,13 +59,25 @@ class _BootstrapHostState extends State<BootstrapHost> {
     final closer = opened?.database;
     if (opened != null) {
       _opened = null;
+      // 正在运行应用时触发清除：先卸载当前 ProviderScope 与 OneWalletApp，
+      // 使所有监听数据库的 Riverpod Stream 提供者取消订阅，
+      // 避免 Drift 的 closer.close() 因活跃流订阅未关闭而永久阻塞死锁。
+      if (mounted) {
+        setState(() {
+          _wiping = true;
+          _wipeFailed = false;
+        });
+      }
+      await WidgetsBinding.instance.endOfFrame;
     }
+
     final wipeAll = widget.wipeAllData;
     if (wipeAll != null) {
       final res = await wipeAll(closer: closer);
       if (res case Err()) {
         if (mounted) {
           setState(() {
+            _wiping = false;
             _wipeFailed = true;
           });
         }
@@ -78,6 +92,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
         } catch (_) {
           if (mounted) {
             setState(() {
+              _wiping = false;
               _wipeFailed = true;
             });
           }
@@ -93,6 +108,11 @@ class _BootstrapHostState extends State<BootstrapHost> {
     if (_wipeFailed) {
       return _BootstrapShell(
         child: _BootstrapWipeErrorPage(onRetry: _wipeAndRestart),
+      );
+    }
+    if (_wiping) {
+      return const _BootstrapShell(
+        child: Center(child: CircularProgressIndicator()),
       );
     }
     return FutureBuilder<BootstrapResult>(

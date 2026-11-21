@@ -157,7 +157,7 @@ final class VaultAccess {
 
 1. `allowBiometric` 为假 → `ValidationFailure('password_required')`。
 2. `capabilities.hardwareKeystore` 为假，或 `settings.vaultBiometrics` 为假，或 `SecretStore` 中没有 `ow.vault.hw_wrapped` → `BiometricUnavailableFailure`。
-3. `hardwareKeyStore.unwrap(别名, 包裹字节, reason: reason)`：失败 → **删除**硬件包裹（`disableHardwareWrap()` 的删除部分，但**不改** `settings.vaultBiometrics`，这样下次主密码解锁时会按第 7 步自动恢复），返回 `BiometricUnavailableFailure`。
+3. `hardwareKeyStore.unwrap(别名, 包裹字节, reason: reason)`：用户取消（`USER_CANCELED`，通过 `BiometricUnavailableFailure.detail == 'user_canceled'` 区分）只返回 `BiometricUnavailableFailure`，**不删除**包裹；其他失败 → **删除**硬件包裹（`disableHardwareWrap()` 的删除部分，但**不改** `settings.vaultBiometrics`，这样下次主密码解锁时会按第 7 步自动恢复），返回 `BiometricUnavailableFailure`。
 4. `vault.unlockWithMasterKey(主密钥)`；无论成败都在 `finally` 中清零解出的主密钥字节。失败（`WrongPasswordFailure`，即包裹过期，例如保险库被重建过）→ 同第 3 步删除包裹，返回 `BiometricUnavailableFailure`。
 5. 生物识别解锁**不计**错误次数，也不清零错误次数。
 6. 执行 `body(session)`，`finally` 中关闭会话。
@@ -437,13 +437,13 @@ final class RestoreReport {
 
 **前置条件**
 
-- `fresh`：本地数据库里没有任何账户、本地没有保险库，否则 `ValidationFailure('restore_target_not_empty')`。必须给 `newMasterPassword`（按 2.4 校验）。
-- `merge`：本地有保险库时必须给 `existingVault`；没有保险库但备份里有条目时必须给 `newMasterPassword`。
+- `fresh`：本地数据库里没有任何账户、本地没有保险库，否则 `ValidationFailure('restore_target_not_empty')`。备份里有条目时必须给 `newMasterPassword`（按 2.4 校验）；备份里没有保险库条目且本地没有保险库时，不创建保险库、不要求 `newMasterPassword`。
+- `merge`：本地有保险库且备份里有条目时必须给 `existingVault`；没有保险库但备份里有条目时必须给 `newMasterPassword`。备份里没有保险库条目且本地没有保险库时，不创建保险库、不要求 `newMasterPassword`。
 
 **顺序与合并规则**（照做，不要"优化"）
 
-1. **保险库条目**（先做，因为账户要引用条目 id）：
-   - 本地没有保险库：`vault.create(newMasterPassword)`。
+1. **保险库条目**（先做，因为账户要引用条目 id；备份里没有保险库条目且本地没有保险库时，跳过本步直接跳到第 2 步）：
+   - 本地没有保险库（且备份里有条目）：`vault.create(newMasterPassword)`。
    - 对备份里的每个条目，在同一个会话内：计算指纹；本地元数据已有相同指纹 → 跳过，并记下"备份条目 id → 本地已有条目 id"的映射；否则用**新 id**（`ids.newId()`）`addItem` 并写元数据（失败时按 4.2 第 6 步补偿），映射为"备份 id → 新 id"。
    - 名称冲突**不处理**（条目名称允许重复）。
 2. **账户与地址**：
