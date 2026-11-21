@@ -127,8 +127,10 @@ final class _TestBiometricAuth implements BiometricAuth {
 }
 
 final class _TestDeviceIntegrity implements DeviceIntegrity {
+  bool compromised = false;
+
   @override
-  Future<bool> looksCompromised() async => false;
+  Future<bool> looksCompromised() async => compromised;
 }
 
 void main() {
@@ -523,6 +525,26 @@ void main() {
         expect(sessionRes.isOk, isTrue);
         (sessionRes as Ok<VaultSession>).value.close();
       });
+    });
+
+    testWidgets('设备环境状态_正常时显示未检测到越狱或root与正常徽标', (tester) async {
+      deviceIntegrity.compromised = false;
+      await tester.pumpWidget(buildTestPage());
+      await tester.pumpAndSettle();
+
+      expect(find.text('设备安全状态'), findsOneWidget);
+      expect(find.text('未检测到越狱或 root'), findsOneWidget);
+      expect(find.text('正常'), findsOneWidget);
+    });
+
+    testWidgets('设备环境状态_检测到异常时显示风险与对应说明', (tester) async {
+      deviceIntegrity.compromised = true;
+      await tester.pumpWidget(buildTestPage());
+      await tester.pumpAndSettle();
+
+      expect(find.text('设备安全状态'), findsOneWidget);
+      expect(find.text('检测到设备环境异常，可能已被越狱或 root'), findsOneWidget);
+      expect(find.text('风险'), findsOneWidget);
     });
   });
 }

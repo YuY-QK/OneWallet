@@ -23,6 +23,7 @@ class MainActivity : FlutterFragmentActivity() {
     private val biometricsChannelName = "ow.platform/biometrics"
     private val screenGuardChannelName = "ow.platform/screen_guard"
     private val hardwareKeyStoreChannelName = "ow.platform/hardware_key_store"
+    private val deviceIntegrityChannelName = "ow.platform/device_integrity"
     private val androidKeystore = "AndroidKeyStore"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
@@ -260,5 +261,73 @@ class MainActivity : FlutterFragmentActivity() {
                     else -> result.notImplemented()
                 }
             }
+
+        // 4. DeviceIntegrity (M3-08 设备完整性检查)
+        // 未编译：需在真机或配置好原生编译工具链的环境中构建验证
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, deviceIntegrityChannelName)
+            .setMethodCallHandler { call, result ->
+                when (call.method) {
+                    "looksCompromised" -> {
+                        val compromised = isRooted() || isDebuggingOrAdb()
+                        result.success(compromised)
+                    }
+                    else -> result.notImplemented()
+                }
+            }
+    }
+
+    // M3-08 设备完整性检查辅助方法（未编译）
+    private fun isRooted(): Boolean {
+        val buildTags = Build.TAGS
+        if (buildTags != null && buildTags.contains("test-keys")) {
+            return true
+        }
+
+        val commonPaths = arrayOf(
+            "/system/app/Superuser.apk",
+            "/sbin/su",
+            "/system/bin/su",
+            "/system/xbin/su",
+            "/data/local/xbin/su",
+            "/data/local/bin/su",
+            "/system/sd/xbin/su",
+            "/system/bin/failsafe/su",
+            "/data/local/su"
+        )
+        for (path in commonPaths) {
+            try {
+                if (java.io.File(path).exists()) {
+                    return true
+                }
+            } catch (_: Exception) {
+                // 忽略权限或读取异常
+            }
+        }
+        return false
+    }
+
+    private fun isDebuggingOrAdb(): Boolean {
+        if (android.os.Debug.isDebuggerConnected() || android.os.Debug.waitingForDebugger()) {
+            return true
+        }
+
+        if ((applicationContext.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
+            return true
+        }
+
+        try {
+            val adbEnabled = android.provider.Settings.Global.getInt(
+                contentResolver,
+                android.provider.Settings.Global.ADB_ENABLED,
+                0
+            )
+            if (adbEnabled != 0) {
+                return true
+            }
+        } catch (_: Exception) {
+            // 忽略读取异常
+        }
+
+        return false
     }
 }

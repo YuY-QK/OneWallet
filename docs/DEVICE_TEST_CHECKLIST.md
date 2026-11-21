@@ -436,4 +436,20 @@
   - [ ] P18 设置页"加密备份"入口行展示橙色"有未备份的更改"徽标
   - [ ] 成功导出并确认保存后，徽标变更为上次导出日期，横幅自动消失
 
+## 18. 设备完整性检查（任务 M3-08）
+
+依据：PRD 第 10 节（越狱或 root 设备处理）；SECURITY_DESIGN 第 6.6 节；IMPLEMENTATION_SPEC 第 3.3 节。
+自动化测试已覆盖平台通道实现（`looksCompromised` 成功/失败/降级）、启动告警弹窗（非阻塞提示、点击确认后继续使用）、P19 安全设置页设备完整性状态展示（正常/风险徽标与说明）（`packages/ow_platform/test/device_platform_integrity_test.dart`、`app/test/app_device_integrity_warning_test.dart`、`app/test/features/settings/security_settings_page_test.dart`）。
+
+原生代码状态：Android (`MainActivity.kt`) 与 iOS (`AppDelegate.swift`) 已实现原生通道 `ow.platform/device_integrity`，**原生代码未经真机验证（标"未编译/未在真机运行"）**，需在真机或配置好编译环境的设备上联调走查：
+
+- [ ] Android 设备完整性检查（M3-08，未编译/未在真机运行）：
+  - [ ] 正常无 root 设备：启动无告警弹窗；进入 P19 安全设置页，"设备安全状态"显示"正常"（绿色徽标）及"未检测到越狱或 root"。
+  - [ ] Root 设备（安装 Magisk / KernelSU 或存在 `/system/xbin/su`）：冷启动时弹出"设备安全风险提示"非阻塞对话框，点击"我知道了"后可正常继续使用，不阻止任何功能；进入 P19 安全设置页，"设备安全状态"显示"风险"（红色徽标）及"检测到设备环境异常，可能已被越狱或 root"。
+  - [ ] 开启 ADB 调试 / 调试器连接（`isDebuggerConnected` / `ADB_ENABLED`）：检测到调试状态时能够触发风险提示与 P19 状态变更为风险。
+- [ ] iOS 设备完整性检查（M3-08，未编译/未在真机运行）：
+  - [ ] 正常无越狱 iPhone：启动无告警弹窗；进入 P19 安全设置页显示"未检测到越狱或 root"及"正常"（绿色徽标）。
+  - [ ] 越狱设备（安装 Cydia / Sileo 或沙盒写权限异常）：冷启动时弹出"设备安全风险提示"非阻塞对话框，点击"我知道了"后可正常进入应用；进入 P19 安全设置页显示"风险"（红色徽标）及风险说明。
+
+
 

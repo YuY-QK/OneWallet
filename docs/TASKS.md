@@ -251,7 +251,14 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
     4. 关于与帮助（P22 `AboutPage`）：版本号（1.0.0）、CoinGecko 署名与官方外链、安全设计原则说明弹窗、备份文件格式与离线 Python 解密工具说明弹窗、常见问题（FAQ）折叠列表、开源许可列表。
     5. 规格与抽象：`DatabaseCloser` 与 `DatabaseDeleter` 接口、`ClearableSecretStore` 接口、`DatabaseOpener.delete()` 接口与原生实现，同步更新 IMPLEMENTATION_SPEC 第 3.3、4 节，移除无用的 `DatabaseWiper`。
   - 验收：平台层单测覆盖 `DatabaseOpener.delete()` 清理 `.db`, `-wal`, `-shm`；用例单测覆盖 `WipeAllData` 严格按序执行关闭、删库、删保险库与清空存储；启动测试覆盖清除后再次启动成功且为全新启动状态（非 `databaseKeyMissing`）；组件单测覆盖 `_BootstrapErrorPage` 清除本地数据确认并重启、P18 货币与主题与隐藏小额与危险按钮清除数据重启、P22 署名外链与安全弹窗与 FAQ 与开源许可；生成 P18/P22 浅深色金样截图并通过比对；`tools/check.sh` 全部通过。
-- [ ] **M3-08** 设备完整性提示 〔设备〕：`DeviceIntegrity` 的平台实现；启动警告与 P19 的状态行。
+- [x] **M3-08** 设备完整性提示 〔设备〕 2026-11-21
+  - 做什么：
+    1. 平台实现 `DevicePlatformIntegrity`：实现 `DeviceIntegrity` 接口，通过 `ow.platform/device_integrity` 通道调用原生检测；非移动平台或通道未注册时优雅降级返回 `false`。
+    2. 原生检测（标"未编译"）：Android (`MainActivity.kt`) 检测 `Build.TAGS` ("test-keys")、常见 `su` 路径与调试状态（`isDebuggerConnected`、`FLAG_DEBUGGABLE`、`ADB_ENABLED`）；iOS (`AppDelegate.swift`) 检测越狱特征文件（Cydia、Sileo 等）、沙盒写权限探测及 URL Scheme。
+    3. 启动警告：启动检测到 `looksCompromised` 时弹出一次性提示对话框（"设备安全风险提示"），仅提醒不阻止使用，点击确认后正常进入应用。
+    4. P19 安全设置页：展示"设备安全状态"行，正常显示绿色"正常"徽标及"未检测到越狱或 root"，异常显示红色"风险"徽标及风险说明。
+    5. 真机核对项追加至 `DEVICE_TEST_CHECKLIST.md`。
+  - 验收：平台层单测覆盖 `DevicePlatformIntegrity` 成功返回、失败降级与异常捕获；组件测试覆盖启动告警弹窗弹出、关闭不阻断流程及正常环境不弹窗；设置页测试覆盖正常与风险状态展示；`tools/check.sh` 全部通过。
 - [ ] **M3-09** M3 验收 〔设备〕：PRD 第 11 节"应用锁"三条、"备份清单"第一条；PRD 第 10 节相关边界逐条走查。
 
 ---
