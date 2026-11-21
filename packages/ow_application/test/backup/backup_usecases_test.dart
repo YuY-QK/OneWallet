@@ -676,6 +676,112 @@ void main() {
       expect(newAcc.vaultItemId, isNot('backup-item-2'));
       expect(newAcc.vaultItemId, isNotNull);
     });
+
+    test('只含观察账户且无保险库条目的备份_fresh和merge模式均能成功恢复且不创建保险库', () async {
+      final watchAcc = Account(
+        id: 'acc-watch-1',
+        type: AccountType.wallet,
+        name: 'Watch Only Wallet',
+        colorIndex: 1,
+        createdAt: clock.nowUtc(),
+        vaultItemId: null,
+        backup: const BackupStatus(),
+      );
+      final watchAddr = WatchAddress(
+        id: 'addr-watch-1',
+        accountId: 'acc-watch-1',
+        family: ChainFamily.evm,
+        address: '0x2222222222222222222222222222222222222222',
+        enabledChainIds: {'ethereum'},
+      );
+      final payload = BackupPayload(
+        exportedAt: clock.nowUtc(),
+        accounts: [watchAcc],
+        addresses: [watchAddr],
+        vaultItems: const [],
+        settings: BackupSettings.of(const AppSettings()),
+      );
+
+      // 1. fresh 模式：本地无保险库且无账户时恢复（不传 newMasterPassword）
+      final freshStorage = MemoryVaultStorage();
+      final freshVault = Vault(
+        crypto: crypto,
+        storage: freshStorage,
+        defaultParams: testKdfParams,
+      );
+      final freshSecretStore = MemorySecretStore();
+      final freshLimiter = AttemptLimiter(
+        keyPrefix: 'ow.vault.unlock',
+        store: freshSecretStore,
+        clock: clock,
+      );
+      final freshAccess = VaultAccess(
+        vault: freshVault,
+        hardwareKeyStore: hardwareStore,
+        secretStore: freshSecretStore,
+        capabilities: capabilities,
+        settings: settingsRepo,
+        passwordLimiter: freshLimiter,
+      );
+      final freshAddressRepo = InMemoryAddressRepository();
+      final freshAccountRepo = InMemoryAccountRepository(
+        addresses: freshAddressRepo,
+      );
+      final freshRestore = RestoreBackup(
+        vault: freshVault,
+        vaultAccess: freshAccess,
+        vaultMetaRepo: vaultMetaRepo,
+        accountRepo: freshAccountRepo,
+        addressRepo: freshAddressRepo,
+        credentialRepo: credentialRepo,
+        settings: settingsRepo,
+        ids: ids,
+        clock: clock,
+      );
+
+      final freshPending = PendingRestore(
+        payload,
+        BackupHeader(
+          containerVersion: 1,
+          createdAt: clock.nowUtc(),
+          appVersion: '1.0.0',
+          kdfParams: testKdfParams,
+        ),
+      );
+
+      final freshRes = await freshRestore(
+        pending: freshPending,
+        mode: RestoreMode.fresh,
+        newMasterPassword: null,
+      );
+      expect(freshRes, isA<Ok<RestoreReport>>());
+      final freshReport = (freshRes as Ok<RestoreReport>).value;
+      expect(freshReport.accountsAdded, 1);
+      expect(freshReport.itemsAdded, 0);
+      expect(await freshAccess.exists(), isFalse);
+      freshPending.dispose();
+
+      // 2. merge 模式：备份无条目时恢复，不传密码，顺利合并
+      final mergePending = PendingRestore(
+        payload,
+        BackupHeader(
+          containerVersion: 1,
+          createdAt: clock.nowUtc(),
+          appVersion: '1.0.0',
+          kdfParams: testKdfParams,
+        ),
+      );
+      final mergeRes = await restoreBackup(
+        pending: mergePending,
+        mode: RestoreMode.merge,
+        newMasterPassword: null,
+      );
+      expect(mergeRes, isA<Ok<RestoreReport>>());
+      final mergeReport = (mergeRes as Ok<RestoreReport>).value;
+      expect(mergeReport.accountsAdded, 1);
+      expect(mergeReport.itemsAdded, 0);
+      mergePending.dispose();
+    });
   });
 
   group('T14: 备份/恢复幂等性与错误重试', () {

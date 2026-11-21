@@ -116,15 +116,19 @@ final class RestoreBackup {
         if (localAccounts.isNotEmpty || vaultExists) {
           return const Err(ValidationFailure('restore_target_not_empty'));
         }
-        if (newMasterPassword == null) {
-          return const Err(ValidationFailure('master_password_required'));
-        }
-        final pw = newMasterPassword.use((b) => utf8.decode(b).trim());
-        if (pw.runes.length < 10) {
-          return const Err(ValidationFailure('master_password_too_short'));
+        if (payload.vaultItems.isNotEmpty) {
+          if (newMasterPassword == null) {
+            return const Err(ValidationFailure('master_password_required'));
+          }
+          final pw = newMasterPassword.use((b) => utf8.decode(b).trim());
+          if (pw.runes.length < 10) {
+            return const Err(ValidationFailure('master_password_too_short'));
+          }
         }
       case RestoreMode.merge:
-        if (vaultExists && existingVault == null) {
+        if (vaultExists &&
+            payload.vaultItems.isNotEmpty &&
+            existingVault == null) {
           return const Err(
             ValidationFailure('existing_vault_credential_required'),
           );
@@ -144,17 +148,27 @@ final class RestoreBackup {
     var itemsSkipped = 0;
     final itemMapping = <String, String>{};
 
-    // 1. 恢复保险库条目
-    if (payload.vaultItems.isNotEmpty || !vaultExists) {
+    // 1. 恢复保险库条目（备份里无条目且本地无保险库时跳过）
+    if (payload.vaultItems.isNotEmpty) {
       if (!vaultExists) {
-        final createRes = await vault.create(newMasterPassword!);
+        if (newMasterPassword == null) {
+          return const Err(ValidationFailure('master_password_required'));
+        }
+        final createRes = await vault.create(newMasterPassword);
         if (createRes case Err(:final failure)) {
           return Err(failure);
         }
         createRes.valueOrNull!.close();
       }
 
-      final cred = existingVault ?? PasswordCredential(newMasterPassword!);
+      final cred =
+          existingVault ??
+          (newMasterPassword != null
+              ? PasswordCredential(newMasterPassword)
+              : null);
+      if (cred == null) {
+        return const Err(ValidationFailure('master_password_required'));
+      }
       final sessionRes = await vaultAccess.withSession<void>(cred, (
         session,
       ) async {

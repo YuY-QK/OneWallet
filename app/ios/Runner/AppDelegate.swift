@@ -99,6 +99,15 @@ import Security
           return
         }
 
+        var token = Data(count: 16)
+        let tokenStatus = token.withUnsafeMutableBytes {
+          SecRandomCopyBytes(kSecRandomDefault, 16, $0.baseAddress!)
+        }
+        guard tokenStatus == errSecSuccess else {
+          result(FlutterError(code: "WRAP_FAILED", message: "Failed to generate random token", details: nil))
+          return
+        }
+
         var error: Unmanaged<CFError>?
         guard let accessControl = SecAccessControlCreateWithFlags(
           kCFAllocatorDefault,
@@ -121,10 +130,11 @@ import Security
           kSecAttrAccount as String: alias,
           kSecValueData as String: plaintextData,
           kSecAttrAccessControl as String: accessControl,
+          kSecAttrGeneric as String: token,
         ]
         let status = SecItemAdd(addQuery as CFDictionary, nil)
         if status == errSecSuccess {
-          result(FlutterStandardTypedData(bytes: plaintextData))
+          result(FlutterStandardTypedData(bytes: token))
         } else {
           result(FlutterError(code: "WRAP_FAILED", message: "Keychain status: \(status)", details: nil))
         }
@@ -135,28 +145,42 @@ import Security
           result(FlutterError(code: "INVALID_ARGS", message: "Missing alias or reason", details: nil))
           return
         }
+        let expectedToken = (args["wrapped"] as? FlutterStandardTypedData)?.data
 
-        let context = LAContext()
-        context.localizedReason = reason
+        DispatchQueue.global(qos: .userInitiated).async {
+          let context = LAContext()
+          context.localizedReason = reason
 
-        let getQuery: [String: Any] = [
-          kSecClass as String: kSecClassGenericPassword,
-          kSecAttrAccount as String: alias,
-          kSecReturnData as String: true,
-          kSecMatchLimit as String: kSecMatchLimitOne,
-          kSecUseAuthenticationContext as String: context,
-        ]
+          let getQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrAccount as String: alias,
+            kSecReturnData as String: true,
+            kSecReturnAttributes as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecUseAuthenticationContext as String: context,
+          ]
 
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(getQuery as CFDictionary, &item)
-        if status == errSecSuccess, let data = item as? Data {
-          result(FlutterStandardTypedData(bytes: data))
-        } else if status == errSecAuthFailed || status == errSecItemNotFound {
-          result(FlutterError(code: "KEY_PERMANENTLY_INVALIDATED", message: "Biometric enrollment changed or item missing", details: nil))
-        } else if status == errSecUserCanceled {
-          result(FlutterError(code: "USER_CANCELED", message: "User canceled authentication", details: nil))
-        } else {
-          result(FlutterError(code: "UNWRAP_FAILED", message: "Keychain status: \(status)", details: nil))
+          var item: CFTypeRef?
+          let status = SecItemCopyMatching(getQuery as CFDictionary, &item)
+          DispatchQueue.main.async {
+            if status == errSecSuccess, let dict = item as? [String: Any],
+               let data = dict[kSecValueData as String] as? Data {
+              if let expectedToken = expectedToken, !expectedToken.isEmpty {
+                let storedToken = dict[kSecAttrGeneric as String] as? Data
+                if storedToken != expectedToken {
+                  result(FlutterError(code: "KEY_PERMANENTLY_INVALIDATED", message: "Wrapped token mismatch", details: nil))
+                  return
+                }
+              }
+              result(FlutterStandardTypedData(bytes: data))
+            } else if status == errSecAuthFailed || status == errSecItemNotFound {
+              result(FlutterError(code: "KEY_PERMANENTLY_INVALIDATED", message: "Biometric enrollment changed or item missing", details: nil))
+            } else if status == errSecUserCanceled {
+              result(FlutterError(code: "USER_CANCELED", message: "User canceled authentication", details: nil))
+            } else {
+              result(FlutterError(code: "UNWRAP_FAILED", message: "Keychain status: \(status)", details: nil))
+            }
+          }
         }
       } else if call.method == "delete" {
         guard let args = call.arguments as? [String: Any],

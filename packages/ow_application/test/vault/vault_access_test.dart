@@ -221,6 +221,19 @@ void main() {
       );
       expect(await secretStore.read('ow.vault.hw_wrapped'), isNotNull);
 
+      // 用户取消生物识别：返回 BiometricUnavailableFailure('user_canceled')，但不删除包裹
+      hardwareKeyStore.cancelUnwrap = true;
+      final cancelRes = await access.withSession(
+        bioCred,
+        (s) async => const Ok(null),
+      );
+      expect(cancelRes, isA<Err<void>>());
+      final cancelFailure = (cancelRes as Err).failure;
+      expect(cancelFailure, isA<BiometricUnavailableFailure>());
+      expect(cancelFailure.detail, 'user_canceled');
+      // 包裹依然保留在 secretStore 中，没有被删除
+      expect(await secretStore.read('ow.vault.hw_wrapped'), isNotNull);
+
       pw.wipe();
     });
 

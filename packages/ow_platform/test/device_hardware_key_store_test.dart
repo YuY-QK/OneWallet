@@ -94,7 +94,23 @@ void main() {
     expect((res as Ok<Uint8List>).value, plaintext);
   });
 
-  test('unwrap_生物识别变更或取消时返回BiometricUnavailableFailure', () async {
+  test('unwrap_用户取消生物识别时返回BiometricUnavailableFailure user_canceled', () async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, (call) async {
+          throw PlatformException(
+            code: 'USER_CANCELED',
+            message: 'User canceled authentication',
+          );
+        });
+
+    final res = await store.unwrap('test.key', Uint8List(16), reason: '解锁保险库');
+    expect(res, isA<Err<Uint8List>>());
+    final failure = (res as Err<Uint8List>).failure;
+    expect(failure, isA<BiometricUnavailableFailure>());
+    expect(failure.detail, 'user_canceled');
+  });
+
+  test('unwrap_生物识别变更或失效时返回BiometricUnavailableFailure', () async {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (call) async {
           throw PlatformException(

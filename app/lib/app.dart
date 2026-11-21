@@ -47,19 +47,25 @@ class _OneWalletAppState extends ConsumerState<OneWalletApp>
 
   Future<void> _initAppLock() async {
     final machine = await ref.read(appLockStateMachineProvider.future);
+    if (!mounted) return;
     _appLock = machine;
     _lockSub = machine.stream.listen((_) {
       _lockNotifier.notify();
     });
+    setState(() {});
     _lockNotifier.notify();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.paused ||
-        state == AppLifecycleState.inactive ||
         state == AppLifecycleState.hidden) {
       _appLock?.handleAppPaused();
+      if (!_isBackgroundShielded) {
+        setState(() => _isBackgroundShielded = true);
+      }
+    } else if (state == AppLifecycleState.inactive) {
+      // inactive 仅覆盖隐私遮挡层，不记录后台时间
       if (!_isBackgroundShielded) {
         setState(() => _isBackgroundShielded = true);
       }
@@ -91,6 +97,19 @@ class _OneWalletAppState extends ConsumerState<OneWalletApp>
       ThemePreference.light => ThemeMode.light,
       ThemePreference.dark => ThemeMode.dark,
     };
+
+    // 冷启动时应用锁状态机初始化完成前，显示启动加载页，不渲染任何业务页面
+    if (widget.initialLocation == null && _appLock == null) {
+      return MaterialApp(
+        onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+        theme: buildOwTheme(Brightness.light),
+        darkTheme: buildOwTheme(Brightness.dark),
+        themeMode: themeMode,
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: const Scaffold(body: Center(child: CircularProgressIndicator())),
+      );
+    }
 
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,

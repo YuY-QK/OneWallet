@@ -87,6 +87,20 @@ final class AppLockStateMachine {
   AppLockState get current => _current;
 
   DateTime? _pausedAt;
+  int _externalOperationCount = 0;
+
+  /// 是否有外部界面（如系统弹窗、分享面板、文件选择器）正在进行中。
+  bool get isExternalOperationInProgress => _externalOperationCount > 0;
+
+  /// 在外部系统界面进行期间执行 [action]，外部界面期间切到后台不计超时自动锁定。
+  Future<T> runExternal<T>(Future<T> Function() action) async {
+    _externalOperationCount++;
+    try {
+      return await action();
+    } finally {
+      _externalOperationCount--;
+    }
+  }
 
   /// 初始化应用锁状态。
   Future<AppLockState> initialize() async {
@@ -146,18 +160,23 @@ final class AppLockStateMachine {
     await onUnlock?.call();
   }
 
-  /// 应用切到后台时记录暂停时间戳。
+  /// 应用切到后台时记录暂停时间戳。外部界面进行中时不计时间。
   void handleAppPaused() {
+    if (_externalOperationCount > 0) {
+      return;
+    }
     _pausedAt = clock.nowUtc();
   }
 
   /// 应用回到前台时，根据后台持续时间与 [autoLock] 设置决定是否锁定。
+  /// 处理完成后无论是否锁定都清空 [_pausedAt]。
   Future<void> handleAppResumed(AutoLock autoLock) async {
-    if (_current is! AppLockUnlocked) {
+    final pausedAt = _pausedAt;
+    _pausedAt = null;
+    if (_current is! AppLockUnlocked || pausedAt == null) {
       return;
     }
-    final pausedAt = _pausedAt;
-    if (pausedAt == null) {
+    if (_externalOperationCount > 0) {
       return;
     }
     final now = clock.nowUtc();

@@ -193,10 +193,12 @@ class LockController extends Notifier<LockViewState> {
   Future<void> authenticateWithBiometric() async {
     if (state.isLockedOut) return;
 
+    final machine = await ref.read(appLockStateMachineProvider.future);
     final biometrics = ref.read(biometricAuthProvider);
-    final res = await biometrics.authenticate(reason: '解锁 OneWallet');
+    final res = await machine.runExternal(
+      () => biometrics.authenticate(reason: '解锁 OneWallet'),
+    );
     if (res.isOk) {
-      final machine = await ref.read(appLockStateMachineProvider.future);
       await machine.unlockWithBiometric();
     }
   }

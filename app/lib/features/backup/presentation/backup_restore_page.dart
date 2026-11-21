@@ -162,7 +162,7 @@ class _BackupRestorePageState extends ConsumerState<BackupRestorePage> {
         } else {
           newPw = _newMasterPasswordController.text;
         }
-        if (newPw.length < 10) {
+        if (newPw.trim().runes.length < 10) {
           setState(() => _errorMessage = l.backupExportPasswordTooShort);
           return;
         }
@@ -187,7 +187,7 @@ class _BackupRestorePageState extends ConsumerState<BackupRestorePage> {
         } else {
           newPw = _newMasterPasswordController.text;
         }
-        if (newPw.length < 10) {
+        if (newPw.trim().runes.length < 10) {
           setState(() => _errorMessage = l.backupExportPasswordTooShort);
           return;
         }

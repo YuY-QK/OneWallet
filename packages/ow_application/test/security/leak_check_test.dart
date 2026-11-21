@@ -250,5 +250,55 @@ void main() {
 
       pw.wipe();
     });
+
+    test('硬件包裹存进 SecretStore 的 ow.vault.hw_wrapped 不是主密钥明文', () async {
+      final storage = MemoryVaultStorage();
+      final vault = Vault(
+        crypto: crypto,
+        storage: storage,
+        defaultParams: testKdfParams,
+      );
+      final secretStore = MemorySecretStore();
+      final capabilities = FakePlatformCapabilities(hardwareKeystore: true);
+      final hardwareStore = FakeHardwareKeyStore();
+      final settingsRepo = InMemorySettingsRepository(
+        const AppSettings(vaultBiometrics: true),
+      );
+      final clock = FakeClock();
+      final limiter = AttemptLimiter(
+        keyPrefix: 'ow.vault.unlock',
+        store: secretStore,
+        clock: clock,
+      );
+      final vaultAccess = VaultAccess(
+        vault: vault,
+        hardwareKeyStore: hardwareStore,
+        secretStore: secretStore,
+        capabilities: capabilities,
+        settings: settingsRepo,
+        passwordLimiter: limiter,
+      );
+
+      final pw = sensitiveString(secretPassword);
+      final cRes = await vault.create(pw);
+      cRes.valueOrNull!.close();
+
+      Uint8List? rawVmk;
+      await vaultAccess.withSession(PasswordCredential(pw), (session) async {
+        final exported = session.exportMasterKey();
+        rawVmk = exported.use((bytes) => Uint8List.fromList(bytes));
+        exported.wipe();
+        await vaultAccess.enableHardwareWrap(session);
+        return const Ok(null);
+      });
+      pw.wipe();
+
+      final storedWrappedB64 = await secretStore.read('ow.vault.hw_wrapped');
+      expect(storedWrappedB64, isNotNull);
+      final storedBytes = base64Decode(storedWrappedB64!);
+
+      expect(rawVmk, isNotNull);
+      expect(storedBytes, isNot(equals(rawVmk)));
+    });
   });
 }

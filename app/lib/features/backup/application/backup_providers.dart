@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../../bootstrap/app_lock_providers.dart';
 import '../domain/backup_file_handler.dart';
 
 export '../domain/backup_file_handler.dart';
@@ -22,7 +23,9 @@ export '../domain/backup_file_handler.dart';
 ///    为避免 Android 接收端应用（如“文件”或网盘）异步读取未完成，分享完成后不在 finally 中立刻删除，
 ///    而在下次启动时或下次导出前统一清空该私有临时子目录。
 class DefaultBackupFileHandler implements BackupFileHandler {
-  const DefaultBackupFileHandler();
+  const DefaultBackupFileHandler({this.runExternal});
+
+  final Future<T> Function<T>(Future<T> Function() action)? runExternal;
 
   /// 备份导出文件存放的固定私有临时子目录名。
   static const String backupExportSubdir = 'ow_backup_export';
@@ -43,62 +46,70 @@ class DefaultBackupFileHandler implements BackupFileHandler {
     required Uint8List bytes,
     required String filename,
   }) async {
-    try {
-      // 导出前先清空旧的导出子目录
-      await cleanTempExportDir();
+    final runner = runExternal ?? <T>(fn) => fn();
+    return runner(() async {
+      try {
+        // 导出前先清空旧的导出子目录
+        await cleanTempExportDir();
 
-      final tempDir = await getTemporaryDirectory();
-      final exportDir = Directory('${tempDir.path}/$backupExportSubdir');
-      if (!await exportDir.exists()) {
-        await exportDir.create(recursive: true);
+        final tempDir = await getTemporaryDirectory();
+        final exportDir = Directory('${tempDir.path}/$backupExportSubdir');
+        if (!await exportDir.exists()) {
+          await exportDir.create(recursive: true);
+        }
+        final tempFile = File('${exportDir.path}/$filename');
+        await tempFile.writeAsBytes(bytes, flush: true);
+
+        final xFile = XFile(
+          tempFile.path,
+          mimeType: 'application/octet-stream',
+          name: filename,
+        );
+        final result = await SharePlus.instance.share(
+          ShareParams(
+            files: [xFile],
+            subject: filename,
+            text: 'OneWallet 加密备份文件',
+          ),
+        );
+        return result.status == ShareResultStatus.success;
+      } on MissingPluginException {
+        return false;
+      } on PlatformException {
+        return false;
+      } catch (_) {
+        return false;
       }
-      final tempFile = File('${exportDir.path}/$filename');
-      await tempFile.writeAsBytes(bytes, flush: true);
-
-      final xFile = XFile(
-        tempFile.path,
-        mimeType: 'application/octet-stream',
-        name: filename,
-      );
-      final result = await SharePlus.instance.share(
-        ShareParams(
-          files: [xFile],
-          subject: filename,
-          text: 'OneWallet 加密备份文件',
-        ),
-      );
-      return result.status == ShareResultStatus.success;
-    } on MissingPluginException {
-      return false;
-    } on PlatformException {
-      return false;
-    } catch (_) {
-      return false;
-    }
+    });
   }
 
   @override
   Future<SelectedBackupFile?> pickBackupFile() async {
-    try {
-      // Android 对自定义后缀可能无法匹配 MIME 类型，使用 FileType.any 允许用户选择任意文件，
-      // 再在代码层检查 .owbak 扩展名和 OWBK 文件头魔数。
-      final file = await FilePicker.pickFile(type: FileType.any);
-      if (file == null) {
+    final runner = runExternal ?? <T>(fn) => fn();
+    return runner(() async {
+      try {
+        // Android 对自定义后缀可能无法匹配 MIME 类型，使用 FileType.any 允许用户选择任意文件，
+        // 再在代码层检查 .owbak 扩展名和 OWBK 文件头魔数。
+        final file = await FilePicker.pickFile(type: FileType.any);
+        if (file == null) {
+          return null;
+        }
+        final bytes = await file.readAsBytes();
+        return SelectedBackupFile(bytes: bytes, name: file.name);
+      } on MissingPluginException {
+        return null;
+      } on PlatformException {
+        return null;
+      } catch (_) {
         return null;
       }
-      final bytes = await file.readAsBytes();
-      return SelectedBackupFile(bytes: bytes, name: file.name);
-    } on MissingPluginException {
-      return null;
-    } on PlatformException {
-      return null;
-    } catch (_) {
-      return null;
-    }
+    });
   }
 }
 
 /// 备份文件处理器 Provider。
 final backupFileHandlerProvider = Provider<BackupFileHandler>((ref) {
-  return const DefaultBackupFileHandler();
+  final appLockAsync = ref.watch(appLockStateMachineProvider);
+  final runExternal = appLockAsync.asData?.value.runExternal;
+  return DefaultBackupFileHandler(runExternal: runExternal);
 });

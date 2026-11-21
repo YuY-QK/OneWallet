@@ -42,8 +42,10 @@ final class DeviceHardwareKeyStore implements HardwareKeyStore {
       if (e.code == 'UNSUPPORTED') {
         return const Err(UnsupportedFailure('当前设备不支持硬件密钥'));
       }
+      if (e.code == 'USER_CANCELED' || e.message == 'user_canceled') {
+        return const Err(BiometricUnavailableFailure('user_canceled'));
+      }
       if (e.code == 'BIOMETRIC_UNAVAILABLE' ||
-          e.code == 'USER_CANCELED' ||
           e.code == 'KEY_PERMANENTLY_INVALIDATED') {
         return Err(BiometricUnavailableFailure(e.message));
       }
@@ -73,8 +75,10 @@ final class DeviceHardwareKeyStore implements HardwareKeyStore {
       if (e.code == 'UNSUPPORTED') {
         return const Err(UnsupportedFailure('当前设备不支持硬件密钥'));
       }
+      if (e.code == 'USER_CANCELED' || e.message == 'user_canceled') {
+        return const Err(BiometricUnavailableFailure('user_canceled'));
+      }
       if (e.code == 'BIOMETRIC_UNAVAILABLE' ||
-          e.code == 'USER_CANCELED' ||
           e.code == 'KEY_PERMANENTLY_INVALIDATED') {
         return Err(BiometricUnavailableFailure(e.message));
       }

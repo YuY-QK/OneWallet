@@ -45,12 +45,11 @@ void main() {
 
     await tester.tap(find.text('重试'));
     await tester.pump();
-    // 进入应用前要读取数据库里的币种目录（真实的异步 IO）。
+    // 进入应用前要读取数据库里的币种目录与初始化应用锁（包含真实的异步 IO）。
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
     expect(calls, 2);
     expect(find.text('无法打开本地数据'), findsNothing);
     expect(
@@ -143,10 +142,9 @@ void main() {
     await tester.tap(find.text('清除并重新开始'));
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(wipeCalled, isTrue);
     expect(calls, 2);
@@ -197,13 +195,12 @@ void main() {
     final container = ProviderScope.containerOf(element);
     final wipeFuture = container.read(wipeAndRestartProvider)();
     await tester.pump();
-    await wipeFuture;
+    await tester.runAsync(() => wipeFuture);
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(wipeCalled, isTrue);
     expect(calls, 2);
@@ -263,10 +260,9 @@ void main() {
     await tester.tap(find.text('重试'));
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(calls, 2);
     expect(
@@ -315,10 +311,9 @@ void main() {
     await tester.tap(find.text('清除并重新开始'));
     await tester.pump();
     await tester.runAsync(
-      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+      () => Future<void>.delayed(const Duration(milliseconds: 300)),
     );
-    await tester.pump(const Duration(milliseconds: 100));
-    await tester.pump(const Duration(milliseconds: 100));
+    await tester.pumpAndSettle();
 
     expect(fakeHw.deletedKeys, contains('ow.vault.vmk'));
     expect(calls, 2);

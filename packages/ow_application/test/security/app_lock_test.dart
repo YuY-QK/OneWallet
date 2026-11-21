@@ -407,5 +407,36 @@ void main() {
       expect(stateMachine.current, equals(const AppLockLocked()));
       expect(lockCallbackCount, 3);
     });
+
+    test('runExternal外部界面进行期间切到后台不计时间_默认立即锁定回来也不锁定', () async {
+      await setUpPin(sensitivePin('123456'));
+      await stateMachine.initialize();
+      await stateMachine.unlockWithPin(sensitivePin('123456'));
+
+      // 处于 runExternal 期间（模拟系统生物识别/系统分享/文件选择）
+      await stateMachine.runExternal(() async {
+        expect(stateMachine.isExternalOperationInProgress, isTrue);
+        // 系统弹窗导致应用进入后台
+        stateMachine.handleAppPaused();
+        clock.advance(const Duration(seconds: 10));
+        // 回到前台
+        await stateMachine.handleAppResumed(AutoLock.immediately);
+        expect(stateMachine.current, equals(const AppLockUnlocked()));
+      });
+
+      // 外部界面已结束
+      expect(stateMachine.isExternalOperationInProgress, isFalse);
+      expect(stateMachine.current, equals(const AppLockUnlocked()));
+
+      // 回到前台处理完后再次直接resume不应锁定（_pausedAt已清空）
+      await stateMachine.handleAppResumed(AutoLock.immediately);
+      expect(stateMachine.current, equals(const AppLockUnlocked()));
+
+      // 外部界面结束后，真正切到后台再回来 -> 仍然锁定
+      stateMachine.handleAppPaused();
+      clock.advance(const Duration(seconds: 1));
+      await stateMachine.handleAppResumed(AutoLock.immediately);
+      expect(stateMachine.current, equals(const AppLockLocked()));
+    });
   });
 }

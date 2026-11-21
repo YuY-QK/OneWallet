@@ -110,17 +110,30 @@ final class FakeBackupFileHandler implements BackupFileHandler {
   SelectedBackupFile? fileToPick;
   final sharedFiles = <({Uint8List bytes, String filename})>[];
   bool shareResult = true;
+  Future<T> Function<T>(Future<T> Function() action)? runExternal;
+  void Function()? onShare;
+  void Function()? onPick;
 
   @override
-  Future<SelectedBackupFile?> pickBackupFile() async => fileToPick;
+  Future<SelectedBackupFile?> pickBackupFile() async {
+    final runner = runExternal ?? <T>(fn) => fn();
+    return runner(() async {
+      onPick?.call();
+      return fileToPick;
+    });
+  }
 
   @override
   Future<bool> shareFile({
     required Uint8List bytes,
     required String filename,
   }) async {
-    sharedFiles.add((bytes: bytes, filename: filename));
-    return shareResult;
+    final runner = runExternal ?? <T>(fn) => fn();
+    return runner(() async {
+      sharedFiles.add((bytes: bytes, filename: filename));
+      onShare?.call();
+      return shareResult;
+    });
   }
 }
 
@@ -254,10 +267,28 @@ void main() {
     );
   });
 
-  Widget buildAppWithRouter({required String initialLocation}) {
+  Widget buildAppWithRouter({
+    required String initialLocation,
+    AppLockStateMachine? appLock,
+    Listenable? lockNotifier,
+  }) {
     final router = GoRouter(
       initialLocation: initialLocation,
+      refreshListenable: lockNotifier,
+      redirect: (context, state) {
+        if (appLock == null) return null;
+        if (appLock.current is AppLockLocked) {
+          if (state.uri.path == AppRoutes.lock) return null;
+          return AppRoutes.lock;
+        }
+        return null;
+      },
       routes: [
+        GoRoute(
+          path: AppRoutes.lock,
+          name: RouteNames.lock,
+          builder: (_, _) => const Scaffold(body: Text('LOCK_SCREEN')),
+        ),
         GoRoute(
           path: AppRoutes.settings,
           name: RouteNames.settings,
@@ -523,6 +554,59 @@ void main() {
       expect(find.text('我已保存到安全位置'), findsNothing);
       expect(rig.settings.feed.value.lastBackupExportedAt, isNull);
     });
+
+    testWidgets('导出时系统分享弹窗切后台回来仍停在“我已保存”步骤且未触发应用锁', (tester) async {
+      final lockNotifier = ChangeNotifier();
+      final limiter = AttemptLimiter(
+        store: rig.secrets,
+        clock: rig.clock,
+        keyPrefix: 'ow.app.pin',
+      );
+      final verifyPin = VerifyPin(
+        store: rig.secrets,
+        crypto: crypto,
+        limiter: limiter,
+      );
+      final machine = AppLockStateMachine(
+        store: rig.secrets,
+        limiter: limiter,
+        verifyPin: verifyPin,
+        clock: rig.clock,
+      );
+      await machine.initialize();
+      await machine.unlockWithBiometric();
+      fileHandler.runExternal = machine.runExternal;
+      fileHandler.onShare = () {
+        // 模拟系统分享弹窗引发的生命周期变化（包含 paused 与 resumed）
+        machine.handleAppPaused();
+        machine.handleAppResumed(AutoLock.immediately);
+      };
+
+      await tester.pumpWidget(
+        buildAppWithRouter(
+          initialLocation: '/settings/backup/export',
+          appLock: machine,
+          lockNotifier: lockNotifier,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField).first, masterPassword);
+      await tester.tap(find.text('开始导出'));
+      await tester.pump();
+      await tester.runAsync(() async {
+        for (var i = 0; i < 50; i++) {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          if (find.text('备份已生成').evaluate().isNotEmpty) break;
+        }
+      });
+      await tester.pumpAndSettle();
+
+      // 分享返回后，依然停留在“我已保存到安全位置”这一步，未锁屏
+      expect(find.text('备份已生成'), findsOneWidget);
+      expect(find.text('我已保存到安全位置'), findsOneWidget);
+      expect(find.text('LOCK_SCREEN'), findsNothing);
+    });
   });
 
   group('P17 恢复流程 (M5-04)', () {
@@ -661,6 +745,202 @@ void main() {
 
       expect(find.text('备份内容预览'), findsOneWidget);
       expect(find.text('全新设备恢复'), findsOneWidget);
+    });
+
+    testWidgets('恢复时文件选择弹窗切后台回来已选文件依然保留且未触发应用锁', (tester) async {
+      final lockNotifier = ChangeNotifier();
+      final limiter = AttemptLimiter(
+        store: rig.secrets,
+        clock: rig.clock,
+        keyPrefix: 'ow.app.pin',
+      );
+      final verifyPin = VerifyPin(
+        store: rig.secrets,
+        crypto: crypto,
+        limiter: limiter,
+      );
+      final machine = AppLockStateMachine(
+        store: rig.secrets,
+        limiter: limiter,
+        verifyPin: verifyPin,
+        clock: rig.clock,
+      );
+      await machine.initialize();
+      await machine.unlockWithBiometric();
+      fileHandler.fileToPick = SelectedBackupFile(
+        bytes: validBackupBytes,
+        name: 'selected_backup.owbak',
+      );
+      fileHandler.runExternal = machine.runExternal;
+      fileHandler.onPick = () {
+        // 模拟系统文件选择器引发的生命周期变化（包含 paused 与 resumed）
+        machine.handleAppPaused();
+        machine.handleAppResumed(AutoLock.immediately);
+      };
+
+      await tester.pumpWidget(
+        buildAppWithRouter(
+          initialLocation: '/settings/backup/restore?mode=merge',
+          appLock: machine,
+          lockNotifier: lockNotifier,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // 点击选取文件
+      await tester.tap(find.text('选择 .owbak 备份文件'));
+      await tester.pumpAndSettle();
+
+      // 文件选择器关闭回到应用后，已选文件依然显示在页面上，未锁屏
+      expect(find.textContaining('selected_backup.owbak'), findsOneWidget);
+      expect(find.text('LOCK_SCREEN'), findsNothing);
+    });
+
+    testWidgets('fresh 模式恢复只含观察账户的备份：不创建保险库、不要求主密码、成功恢复账户', (tester) async {
+      rig.isVaultInitialized = false;
+      await vaultStorage.delete();
+
+      final backupSensitive = Sensitive(
+        Uint8List.fromList(utf8.encode(backupPassword)),
+      );
+      final payload = BackupPayload(
+        exportedAt: rig.clock.nowUtc(),
+        accounts: [
+          Account(
+            id: 'watch_acc_1',
+            type: AccountType.wallet,
+            name: '观察钱包',
+            colorIndex: 0,
+            createdAt: rig.clock.nowUtc(),
+          ),
+        ],
+        addresses: [
+          WatchAddress(
+            id: 'watch_addr_1',
+            accountId: 'watch_acc_1',
+            family: ChainFamily.evm,
+            address: '0x1234567890123456789012345678901234567890',
+            enabledChainIds: {'ethereum'},
+          ),
+        ],
+        vaultItems: const [],
+        settings: const BackupSettings(),
+      );
+
+      final watchOnlyBackupBytes = await BackupCodec.encode(
+        payload: payload,
+        password: backupSensitive,
+        crypto: crypto,
+        params: KdfParams(memKib: 8, iterations: 1),
+        createdAt: rig.clock.nowUtc(),
+        appVersion: '1.0.0',
+      );
+      backupSensitive.wipe();
+
+      fileHandler.fileToPick = SelectedBackupFile(
+        bytes: watchOnlyBackupBytes,
+        name: 'watch_only.owbak',
+      );
+
+      await tester.pumpWidget(
+        buildAppWithRouter(
+          initialLocation: '/settings/backup/restore?mode=fresh',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('选择 .owbak 备份文件'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), backupPassword);
+      await tester.tap(find.text('解析备份文件'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('备份内容预览'), findsOneWidget);
+      // 不应包含密码输入框
+      expect(find.byType(TextField), findsNothing);
+
+      await tester.tap(find.text('开始恢复'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('恢复完成'), findsOneWidget);
+      expect(find.textContaining('成功导入'), findsOneWidget);
+
+      expect(rig.accounts.feed.value.any((a) => a.id == 'watch_acc_1'), isTrue);
+    });
+
+    testWidgets('merge 模式（本地无保险库）恢复只含观察账户的备份：不创建保险库、不要求主密码、成功恢复账户', (
+      tester,
+    ) async {
+      rig.isVaultInitialized = false;
+      await vaultStorage.delete();
+
+      final backupSensitive = Sensitive(
+        Uint8List.fromList(utf8.encode(backupPassword)),
+      );
+      final payload = BackupPayload(
+        exportedAt: rig.clock.nowUtc(),
+        accounts: [
+          Account(
+            id: 'watch_acc_2',
+            type: AccountType.wallet,
+            name: '观察钱包2',
+            colorIndex: 1,
+            createdAt: rig.clock.nowUtc(),
+          ),
+        ],
+        addresses: [
+          WatchAddress(
+            id: 'watch_addr_2',
+            accountId: 'watch_acc_2',
+            family: ChainFamily.evm,
+            address: '0x9999999999999999999999999999999999999999',
+            enabledChainIds: {'ethereum'},
+          ),
+        ],
+        vaultItems: const [],
+        settings: const BackupSettings(),
+      );
+
+      final watchOnlyBackupBytes = await BackupCodec.encode(
+        payload: payload,
+        password: backupSensitive,
+        crypto: crypto,
+        params: KdfParams(memKib: 8, iterations: 1),
+        createdAt: rig.clock.nowUtc(),
+        appVersion: '1.0.0',
+      );
+      backupSensitive.wipe();
+
+      fileHandler.fileToPick = SelectedBackupFile(
+        bytes: watchOnlyBackupBytes,
+        name: 'watch_only_merge.owbak',
+      );
+
+      await tester.pumpWidget(
+        buildAppWithRouter(
+          initialLocation: '/settings/backup/restore?mode=merge',
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('选择 .owbak 备份文件'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), backupPassword);
+      await tester.tap(find.text('解析备份文件'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('备份内容预览'), findsOneWidget);
+      expect(find.byType(TextField), findsNothing);
+
+      await tester.tap(find.text('开始恢复'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('恢复完成'), findsOneWidget);
+      expect(find.textContaining('成功导入'), findsOneWidget);
+
+      expect(rig.accounts.feed.value.any((a) => a.id == 'watch_acc_2'), isTrue);
     });
   });
 }

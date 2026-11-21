@@ -7,31 +7,13 @@ import 'package:ow_domain/ow_domain.dart';
 import 'package:ow_platform/ow_platform.dart';
 import 'package:ow_vault/ow_vault.dart';
 
+import 'app_lock_providers.dart';
 import 'foundation_providers.dart';
 
 // 保险库与备份相关的 provider。清单见 docs/M4-00_VAULT_USECASES_SPEC.md 第 6 节。
 
 /// 应用版本号。M6-05 会接入 package_info_plus 读取真实版本。
 final appVersionProvider = Provider<String>((ref) => '1.0.0');
-
-/// 占位实现：在 M0-11 接入真实原生 KeyStore/Keychain 前返回不支持。
-final class UnsupportedHardwareKeyStore implements HardwareKeyStore {
-  const UnsupportedHardwareKeyStore();
-
-  @override
-  Future<Result<Uint8List>> wrap(String keyAlias, Uint8List plaintext) async =>
-      const Err(UnsupportedFailure('硬件密钥不可用'));
-
-  @override
-  Future<Result<Uint8List>> unwrap(
-    String keyAlias,
-    Uint8List wrapped, {
-    required String reason,
-  }) async => const Err(UnsupportedFailure('硬件密钥不可用'));
-
-  @override
-  Future<void> delete(String keyAlias) async {}
-}
 
 /// 基于 [SecretStore] 的交易所凭据存储。
 final class SecretStoreCredentialRepository implements CredentialRepository {
@@ -111,6 +93,7 @@ final vaultPasswordLimiterProvider = Provider<AttemptLimiter>((ref) {
 
 final vaultAccessProvider = FutureProvider<VaultAccess>((ref) async {
   final vault = await ref.watch(vaultProvider.future);
+  final appLock = await ref.watch(appLockStateMachineProvider.future);
   return VaultAccess(
     vault: vault,
     hardwareKeyStore: ref.watch(hardwareKeyStoreProvider),
@@ -118,6 +101,7 @@ final vaultAccessProvider = FutureProvider<VaultAccess>((ref) async {
     capabilities: ref.watch(platformCapabilitiesProvider),
     settings: ref.watch(settingsRepositoryProvider),
     passwordLimiter: ref.watch(vaultPasswordLimiterProvider),
+    runExternal: appLock.runExternal,
   );
 });
 

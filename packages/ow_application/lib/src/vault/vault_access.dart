@@ -20,6 +20,7 @@ final class VaultAccess {
     required this.capabilities,
     required this.settings,
     required this.passwordLimiter,
+    this.runExternal,
   });
 
   final Vault vault;
@@ -28,6 +29,7 @@ final class VaultAccess {
   final PlatformCapabilities capabilities;
   final SettingsRepository settings;
   final AttemptLimiter passwordLimiter;
+  final Future<T> Function<T>(Future<T> Function() action)? runExternal;
 
   static const String _keyAlias = vaultMasterKeyHardwareAlias;
   static const String _secretKeyHwWrapped = 'ow.vault.hw_wrapped';
@@ -134,12 +136,24 @@ final class VaultAccess {
     }
 
     // 3. 硬件解包
-    final unwrapRes = await hardwareKeyStore.unwrap(
-      _keyAlias,
-      wrappedBytes,
-      reason: reason,
-    );
-    if (unwrapRes case Err()) {
+    final unwrapRes = runExternal != null
+        ? await runExternal!(
+            () => hardwareKeyStore.unwrap(
+              _keyAlias,
+              wrappedBytes,
+              reason: reason,
+            ),
+          )
+        : await hardwareKeyStore.unwrap(
+            _keyAlias,
+            wrappedBytes,
+            reason: reason,
+          );
+    if (unwrapRes case Err(:final failure)) {
+      if (failure is BiometricUnavailableFailure &&
+          failure.detail == 'user_canceled') {
+        return const Err(BiometricUnavailableFailure('user_canceled'));
+      }
       await _deleteWrapArtifacts();
       return const Err(BiometricUnavailableFailure());
     }
@@ -172,9 +186,12 @@ final class VaultAccess {
   Future<Result<void>> enableHardwareWrap(VaultSession session) async {
     final masterKey = session.exportMasterKey();
     try {
-      final wrappedResult = await masterKey.use(
-        (bytes) => hardwareKeyStore.wrap(_keyAlias, bytes),
-      );
+      final wrappedResult = await masterKey.use((bytes) async {
+        if (runExternal != null) {
+          return runExternal!(() => hardwareKeyStore.wrap(_keyAlias, bytes));
+        }
+        return hardwareKeyStore.wrap(_keyAlias, bytes);
+      });
       if (wrappedResult case Ok(:final value)) {
         await secretStore.write(_secretKeyHwWrapped, base64Encode(value));
         return const Ok(null);

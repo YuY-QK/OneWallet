@@ -101,6 +101,7 @@ final class FakePlatformCapabilities implements PlatformCapabilities {
 final class FakeHardwareKeyStore implements HardwareKeyStore {
   final wrappedData = <String, Uint8List>{};
   bool failUnwrap = false;
+  bool cancelUnwrap = false;
   bool unwrapThrows = false;
 
   @override
@@ -118,6 +119,9 @@ final class FakeHardwareKeyStore implements HardwareKeyStore {
     required String reason,
   }) async {
     if (unwrapThrows) throw Exception('HardwareKeyStore unwrap exception');
+    if (cancelUnwrap) {
+      return const Err(BiometricUnavailableFailure('user_canceled'));
+    }
     if (failUnwrap) return const Err(UnsupportedFailure('生物识别失败'));
     if (wrapped.length < 3 ||
         wrapped[0] != 1 ||

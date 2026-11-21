@@ -329,10 +329,11 @@
   - [ ] `wrap` 与 `unwrap` 均由 `BiometricPrompt.CryptoObject(cipher)` 包裹，在系统验证成功回调（`onAuthenticationSucceeded`）中执行 `doFinal`，防止无验证触发 `UserNotAuthenticatedException`
   - [ ] 新增指纹后硬件包裹失效：设备在系统设置中新增一枚指纹后，再次调用解密旧 VMK 包裹触发 `KeyPermanentlyInvalidatedException`，明确报错并安全回退到主密码验证
   - [ ] 关闭锁屏密码后硬件密钥不可用：关闭系统锁屏密码后，硬件包裹密钥失效，无法解密
-- [ ] iOS 硬件密钥（M0-11）：
+- [ ] iOS 硬件密钥（M0-11，未编译/未在真机运行）：
   - [ ] Info.plist 已包含中文 `NSFaceIDUsageDescription`（"使用面容识别解锁 OneWallet 及保险库"），避免调用面容时被系统终止应用
   - [ ] Keychain 写入条目带 `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly` 与 `.biometryCurrentSet`
-  - [ ] `wrap` 成功保存；`unwrap` 触发系统 Face ID / Touch ID 提示并正确读出 VMK
+  - [ ] ow.vault.hw_wrapped 里存的不是主密钥：检查 SecretStore 中的 `ow.vault.hw_wrapped` 存储的是 16 字节随机标记，而不是保险库主密钥明文；主密钥仅保留在受 Secure Enclave 保护的钥匙串项中
+  - [ ] `wrap` 成功保存随机标记至条目属性并返回；`unwrap` 在后台队列异步执行 `SecItemCopyMatching`，触发系统 Face ID / Touch ID 提示并正确读出 VMK，主线程不卡死
   - [ ] 设备新增面容/指纹后，旧条目解密失败（`errSecAuthFailed`），正确回退到主密码
   - [ ] `excludeAppDocumentsFromBackup` 确认 documents 目录具有 `isExcludedFromBackup = true`，iTunes/iCloud 备份不包含应用数据
 - [ ] 防截屏与安全输入（M4-04）：

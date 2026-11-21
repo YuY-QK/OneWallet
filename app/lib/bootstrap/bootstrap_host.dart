@@ -68,7 +68,7 @@ class _BootstrapHostState extends State<BootstrapHost> {
           _wipeFailed = false;
         });
       }
-      await Future.microtask(() {});
+      await WidgetsBinding.instance.endOfFrame;
     }
 
     final wipeAll = widget.wipeAllData;
