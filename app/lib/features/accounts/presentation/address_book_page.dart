@@ -11,6 +11,7 @@ import '../../../theme/ow_colors.dart';
 import '../../../theme/ow_metrics.dart';
 import '../../../theme/ow_text_styles.dart';
 import '../../../widgets/empty_state.dart';
+import '../../../widgets/failure_text.dart';
 import '../../../widgets/formatters.dart';
 import '../../../widgets/ow_avatar.dart';
 import '../../../widgets/ow_chip.dart';
@@ -256,9 +257,15 @@ class _AddressBookPageState extends ConsumerState<AddressBookPage> {
               child: switch (asyncState) {
                 AsyncLoading() => const OwSkeleton(),
                 AsyncError(:final error) => Center(
-                  child: Text(
-                    error.toString(),
-                    style: TextStyle(color: c.down),
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      error is Failure
+                          ? failureText(l, error)
+                          : failureText(l, const UnknownFailure()),
+                      style: OwTextStyles.body.copyWith(color: c.down),
+                      textAlign: TextAlign.center,
+                    ),
                   ),
                 ),
                 AsyncData(:final value) => _buildContent(
