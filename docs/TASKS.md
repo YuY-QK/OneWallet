@@ -333,6 +333,9 @@ M0 门禁（已按上面的决定调整）：M0-11、M0-12 的代码完成后即
 
 - [ ] P17 恢复：选取文件后先把整个文件读入内存，再校验 `.owbak` 后缀与 `OWBK` 文件头；可改为先校验后缀与文件大小。（`app/lib/features/backup/application/backup_providers.dart`）
 - [ ] 应用锁：系统分享面板或文件选择器打开期间（`runExternal` 进行中）离开应用，回来时不计后台时间，不会自动锁定；需确认是否给外部界面期间设一个上限。（`AppLockStateMachine.runExternal`）
+- [ ] 应用锁：SECURITY_DESIGN 第 7 节要求锁定时关闭数据库连接，目前锁定只清空总览数据，没有关闭数据库。（`app/lib/bootstrap/app_lock_providers.dart` 的 `onLock`）
+- [ ] 数据库：`OwDatabase.close()` 只关闭底层连接，跳过了 drift 自身的 `super.close()`，原因是测试环境里会死锁（见代码注释）；需确认真机上能否改回调用 `super.close()`。
+- [ ] 设备完整性（M3-08）：Android 把"可调试构建"和"开启了 USB 调试"都算作设备异常，开发期和开着 USB 调试的手机每次启动都会弹警告；需按真机结果决定是否只检测 root 与调试器连接。
 
 ---
 
