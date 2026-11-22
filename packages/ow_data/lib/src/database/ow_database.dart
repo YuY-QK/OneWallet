@@ -67,9 +67,16 @@ final class OwDatabase extends _$OwDatabase implements DatabaseCloser {
 
   @override
   Future<void> close() async {
-    // 严格按序关闭：
-    // 关闭底层执行器（释放 SQLite 物理连接与文件句柄），确保在删除文件前连接已完全断开。
-    // 不等待内存流查询关闭，避免在单线程事件循环/测试环境中因 StreamController.close() 等待未消费事件而死锁。
+    // 【死锁根因与关闭设计说明】
+    // Drift 原生 super.close() 会在调用 executor.close() 之前先 await streamQueries.close()。
+    // 在 streamQueries.close() 内部，Drift 会循环等待所有 _pendingTimers（由流取消时 Timer.run
+    // 延迟清理缓存生成）。
+    // 在 Flutter 单测环境（testWidgets 的 FakeAsync）中，Timer.run 注册的是 FakeTimer；
+    // 若在测试线程中 await closer.close()，由于事件循环被 await 挂起无法由 tester.pump() 推进，
+    // FakeTimer 永远不会被触发完成，导致测试出现不可恢复的死锁（超时 10 分钟）。
+    // 此外，WipeAllData 的核心需求是“关闭底层 SQLite/SQLCipher 物理连接并释放物理文件句柄”，
+    // 以便紧接着安全删除 .db / -wal / -shm 物理文件。
+    // 因此这里直接调用 await executor.close() 立即安全释放物理连接，跳过对未消费 FakeTimer 的死锁等待。
     await executor.close();
   }
 }
