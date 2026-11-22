@@ -9,6 +9,7 @@ import Security
   private let screenGuardChannelName = "ow.platform/screen_guard"
   private let screenGuardEventsName = "ow.platform/screen_guard_events"
   private let hardwareKeyStoreChannelName = "ow.platform/hardware_key_store"
+  private let deviceIntegrityChannelName = "ow.platform/device_integrity"
 
   var screenGuardEventSink: FlutterEventSink?
 
@@ -198,6 +199,59 @@ import Security
         result(FlutterMethodNotImplemented)
       }
     }
+
+    // 4. DeviceIntegrity (M3-08 设备完整性检查)
+    // 未编译：需在真机或配置好原生编译工具链的环境中构建验证
+    let deviceIntegrityChannel = FlutterMethodChannel(name: deviceIntegrityChannelName, binaryMessenger: messenger)
+    deviceIntegrityChannel.setMethodCallHandler { (call, result) in
+      if call.method == "looksCompromised" {
+        let compromised = AppDelegate.isJailbroken()
+        result(compromised)
+      } else {
+        result(FlutterMethodNotImplemented)
+      }
+    }
+  }
+
+  // M3-08 设备完整性检查方法（未编译）
+  private static func isJailbroken() -> Bool {
+    #if targetEnvironment(simulator)
+    return false
+    #else
+    // 1. 常见越狱特征文件与应用
+    let jailbreakPaths = [
+      "/Applications/Cydia.app",
+      "/Library/MobileSubstrate/MobileSubstrate.dylib",
+      "/bin/bash",
+      "/usr/sbin/sshd",
+      "/etc/apt",
+      "/usr/bin/ssh",
+      "/private/var/lib/apt",
+      "/Applications/Sileo.app"
+    ]
+    for path in jailbreakPaths {
+      if FileManager.default.fileExists(atPath: path) {
+        return true
+      }
+    }
+
+    // 2. 沙盒写权限探测（尝试写入沙盒外部目录）
+    let testPath = "/private/jailbreak_test.txt"
+    do {
+      try "test".write(toFile: testPath, atomically: true, encoding: .utf8)
+      try? FileManager.default.removeItem(atPath: testPath)
+      return true
+    } catch {
+      // 沙盒正常限制，预期捕获异常
+    }
+
+    // 3. 常见越狱 Scheme 探测
+    if let url = URL(string: "cydia://package/com.example.package"), UIApplication.shared.canOpenURL(url) {
+      return true
+    }
+
+    return false
+    #endif
   }
 
   @objc private func screenCaptureChanged() {

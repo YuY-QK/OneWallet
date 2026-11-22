@@ -2674,6 +2674,24 @@ abstract class AppLocalizations {
   /// **'未检测到越狱或 root'**
   String get securityDeviceNormalDesc;
 
+  /// No description provided for @deviceIntegrityWarningTitle.
+  ///
+  /// In zh, this message translates to:
+  /// **'设备安全风险提示'**
+  String get deviceIntegrityWarningTitle;
+
+  /// No description provided for @deviceIntegrityWarningBody.
+  ///
+  /// In zh, this message translates to:
+  /// **'检测到当前设备环境存在异常（可能已被 root、越狱或处于调试状态），系统沙盒与硬件保护可能失效。请谨慎使用。'**
+  String get deviceIntegrityWarningBody;
+
+  /// No description provided for @deviceIntegrityWarningConfirm.
+  ///
+  /// In zh, this message translates to:
+  /// **'我知道了'**
+  String get deviceIntegrityWarningConfirm;
+
   /// No description provided for @securityFeaturePending.
   ///
   /// In zh, this message translates to:

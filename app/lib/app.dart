@@ -32,6 +32,7 @@ class _OneWalletAppState extends ConsumerState<OneWalletApp>
   AppLockStateMachine? _appLock;
   late final GoRouter _router;
   bool _isBackgroundShielded = false;
+  bool _hasCheckedIntegrityWarning = false;
 
   @override
   void initState() {
@@ -54,6 +55,44 @@ class _OneWalletAppState extends ConsumerState<OneWalletApp>
     });
     setState(() {});
     _lockNotifier.notify();
+    unawaited(_checkDeviceIntegrityWarning());
+  }
+
+  Future<void> _checkDeviceIntegrityWarning() async {
+    if (_hasCheckedIntegrityWarning) return;
+    _hasCheckedIntegrityWarning = true;
+    try {
+      final integrity = ref.read(deviceIntegrityProvider);
+      final compromised = await integrity.looksCompromised();
+      if (!compromised || !mounted) return;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final navContext = _router.routerDelegate.navigatorKey.currentContext;
+        if (navContext != null && navContext.mounted) {
+          final l = AppLocalizations.of(navContext);
+          if (l == null) return;
+          showDialog<void>(
+            context: navContext,
+            barrierDismissible: true,
+            builder: (ctx) {
+              return AlertDialog(
+                title: Text(l.deviceIntegrityWarningTitle),
+                content: Text(l.deviceIntegrityWarningBody),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    child: Text(l.deviceIntegrityWarningConfirm),
+                  ),
+                ],
+              );
+            },
+          );
+        }
+      });
+    } catch (_) {
+      // 忽略检查异常，不阻断使用
+    }
   }
 
   @override

@@ -25,7 +25,7 @@ final biometricAuthProvider = Provider<BiometricAuth>(
 
 /// 设备完整性检查（M3-08）。
 final deviceIntegrityProvider = Provider<DeviceIntegrity>(
-  (ref) => const SafeDeviceIntegrity(),
+  (ref) => DevicePlatformIntegrity(),
 );
 
 final class SafeDeviceIntegrity implements DeviceIntegrity {

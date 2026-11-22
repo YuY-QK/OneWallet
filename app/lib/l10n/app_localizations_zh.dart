@@ -1404,6 +1404,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityDeviceNormalDesc => '未检测到越狱或 root';
 
   @override
+  String get deviceIntegrityWarningTitle => '设备安全风险提示';
+
+  @override
+  String get deviceIntegrityWarningBody =>
+      '检测到当前设备环境存在异常（可能已被 root、越狱或处于调试状态），系统沙盒与硬件保护可能失效。请谨慎使用。';
+
+  @override
+  String get deviceIntegrityWarningConfirm => '我知道了';
+
+  @override
   String get securityFeaturePending => '功能准备中';
 
   @override
